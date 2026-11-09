@@ -114,7 +114,9 @@ final class BrowserLearningUITests: XCTestCase {
         waitFor(confirmation, predicate: "exists == true AND hittable == true")
         confirmation.tap()
         waitFor(app.buttons["navigation.browser"], predicate: "exists == true AND value == '已選取'")
-        waitForLabel(app.staticTexts["browser.status"], "路線重走已結束", timeout: 45)
+        // A fresh app can need >25s merely to launch WebContent on hosted CI.
+        // Keep all per-step URL/quote and judged-result assertions below.
+        waitForLabel(app.staticTexts["browser.status"], "路線重走已結束", timeout: 75)
         XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 5))
         XCTAssertFalse(app.staticTexts["browser.error"].exists)
         tap("browser.research")
@@ -286,7 +288,9 @@ final class BrowserLearningUITests: XCTestCase {
         XCTAssertFalse(app.buttons["browser.research"].isEnabled)
         // Return submits the address exactly once through BrowserView.onSubmit.
         enter(fixtureURL + "\n", into: app.textFields["browser.address"])
-        waitForLabel(app.staticTexts["browser.status"], "頁面已載入", timeout: 15)
+        // Recorded iOS 26 WebContent startup alone took 25.754s. This remains
+        // a bounded wait for real page readiness, not a fixed sleep or a retry.
+        waitForLabel(app.staticTexts["browser.status"], "頁面已載入", timeout: 45)
         XCTAssertFalse(app.staticTexts["browser.error"].exists)
         XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["browser.research"].isEnabled)

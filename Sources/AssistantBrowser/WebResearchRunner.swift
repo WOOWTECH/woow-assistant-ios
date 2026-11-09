@@ -44,11 +44,52 @@ public struct WebResearchResult: Sendable {
     public let reachedLimit: Bool
 }
 
-public enum WebResearchError: Error { case invalidCommand, noPage, unsafeNavigation, pageChanged, deadline }
+public enum WebResearchError: Error, Equatable, Sendable {
+    case invalidCommand, invalidModelJSON, unsupportedCommand, unknownLink, modelResponseTooLarge
+    case noPage, unsafeNavigation, pageChanged, navigationFailed, navigationTimedOut, observationTimedOut, deadline
+}
 
 public struct WebResearchRunner: Sendable {
     private let client: any ChatModelClient
     public init(client: any ChatModelClient) { self.client = client }
+
+    /// Fixed categories only. Never interpolate a model response, URL, underlying
+    /// localizedDescription or command arguments into UI/test diagnostics.
+    public static func failureDescription(for error: Error) -> (code: String, message: String) {
+        if let failure = error as? WebResearchError {
+            switch failure {
+            case .invalidCommand: return ("invalid_command_arguments", "研究目標或模型指令的參數不完整，已停止研究。")
+            case .invalidModelJSON: return ("invalid_command_json", "模型回傳的研究指令格式無法辨識，已停止研究。")
+            case .unsupportedCommand: return ("unsupported_command", "模型要求不支援的研究操作；未執行該操作。")
+            case .unknownLink: return ("unknown_link", "模型選取的連結不在目前頁面的可用清單內；未開啟該連結。")
+            case .modelResponseTooLarge: return ("command_too_large", "模型回傳的研究指令超過大小限制，已停止研究。")
+            case .noPage: return ("page_unavailable", "目前頁面無法讀取；請確認頁面已載入。")
+            case .unsafeNavigation: return ("unsafe_navigation", "此導覽不在目前允許的公開網站範圍內，已停止研究。")
+            case .pageChanged: return ("page_changed", "讀取時頁面已變更或內容格式無法辨識，已停止研究。")
+            case .navigationFailed: return ("navigation_failed", "網頁導覽失敗或被瀏覽器阻擋；未當成已完成的讀取。")
+            case .navigationTimedOut: return ("navigation_timeout", "等待網頁載入超過時間限制，已停止研究。")
+            case .observationTimedOut: return ("page_read_timeout", "讀取網頁內容超過時間限制，已停止研究。")
+            case .deadline: return ("research_timeout", "網站研究超過整體時間限制，已停止研究。")
+            }
+        }
+        if let failure = error as? HTTPChatModelError {
+            switch failure {
+            case .invalidConfiguration: return ("model_configuration", "模型設定不完整；請檢查服務、模型與金鑰設定。")
+            case .redirectRejected: return ("model_redirect", "模型服務要求重新導向，已基於安全限制拒絕。")
+            case .httpStatus(let code):
+                guard (100...599).contains(code) else { return ("model_http_error", "模型服務回報無效的 HTTP 狀態，研究未完成。") }
+                return ("model_http_\(code)", "模型服務回報 HTTP \(code)，研究未完成；請檢查服務與存取設定。")
+            case .invalidResponse: return ("model_invalid_response", "模型服務回應格式無法辨識，研究未完成。")
+            case .incompleteResponse: return ("model_incomplete_response", "模型回應未完整結束，研究未完成。")
+            case .responseTooLarge: return ("model_response_too_large", "模型服務回應超過大小限制，研究未完成。")
+            case .consumerTooSlow: return ("model_output_backpressure", "模型輸出超過處理緩衝限制，研究未完成。")
+            case .timedOut: return ("model_timeout", "等待模型服務超過時間限制，研究未完成。")
+            case .transportFailure: return ("model_connection_failed", "模型服務連線失敗，研究未完成；請檢查網路與服務設定。")
+            }
+        }
+        if error is CancellationError { return ("cancelled", "研究已取消；已讀取內容保留。") }
+        return ("research_failed", "頁面或模型請求未完成；已讀取內容保留，未產生已驗證的技能。")
+    }
 
     public func run(goal: String, context: String = "", browser: any WebResearchExecuting,
                     configuration: ModelConfiguration, apiKey: String,
@@ -97,34 +138,42 @@ public struct WebResearchRunner: Sendable {
             messages.append(ModelMessage(role: "user", content: "Observed page data:\n" + String(decoding: encoded, as: UTF8.self)))
             let raw = try await client.complete(messages: messages, configuration: configuration, apiKey: apiKey)
             try Task.checkCancellation()
-            guard raw.utf8.count <= 24_000,
-                  let command = try? JSONDecoder().decode(Command.self, from: Data(raw.utf8)) else {
-                throw WebResearchError.invalidCommand
-            }
-            if command.action == "finish", let answer = command.answer,
-               !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, answer.utf16.count <= 8000 {
-                return WebResearchResult(answer: answer, actions: actions, reachedLimit: false)
+            guard raw.utf8.count <= 24_000 else { throw WebResearchError.modelResponseTooLarge }
+            guard let command = try? JSONDecoder().decode(Command.self, from: Data(raw.utf8)) else {
+                throw WebResearchError.invalidModelJSON
             }
             let tool: String, argument: String, result: WebObservation
-            if command.action == "open", let id = command.linkID,
-               let link = actions.last!.observation.links.first(where: { $0.id == id }) {
+            switch command.action {
+            case "finish":
+                guard let answer = command.answer, !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                      answer.utf16.count <= 8000 else { throw WebResearchError.invalidCommand }
+                return WebResearchResult(answer: answer, actions: actions, reachedLimit: false)
+            case "open":
+                guard let id = command.linkID else { throw WebResearchError.invalidCommand }
+                guard let link = actions.last!.observation.links.first(where: { $0.id == id }) else { throw WebResearchError.unknownLink }
                 tool = "browser_open_link"; argument = link.url.absoluteString
-                guard seen.insert(tool + "|" + argument).inserted else { break }
+                guard seen.insert(tool + "|" + argument).inserted else { return stopped(actions) }
                 result = try await browser.openLink(id: id)
-            } else if command.action == "find", let text = command.text,
-                      !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, text.utf16.count <= 120 {
+            case "find":
+                guard let text = command.text, !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                      text.utf16.count <= 120 else { throw WebResearchError.invalidCommand }
                 tool = "browser_find"; argument = text
                 let key = tool + "|" + actions.last!.observation.url.absoluteString + "|" + text.lowercased()
-                guard seen.insert(key).inserted else { break }
+                guard seen.insert(key).inserted else { return stopped(actions) }
                 result = try await browser.find(text: text)
-            } else { throw WebResearchError.invalidCommand }
+            default: throw WebResearchError.unsupportedCommand
+            }
             let action = WebResearchAction(tool: tool, argument: argument, observation: result)
             actions.append(action); await onAction(action)
             messages.append(ModelMessage(role: "assistant", content: raw))
             // Keep the goal/references and four recent evidence/command pairs.
             if messages.count > 11 { messages = Array(messages.prefix(3)) + Array(messages.suffix(8)) }
         }
-        return WebResearchResult(answer: "已停止研究：達到步數上限或遇到重複操作。已讀取的頁面保留在操作紀錄，尚未確認任務完成。", actions: actions, reachedLimit: true)
+        return stopped(actions)
+    }
+
+    private func stopped(_ actions: [WebResearchAction]) -> WebResearchResult {
+        WebResearchResult(answer: "已停止研究：達到步數上限或遇到重複操作。已讀取的頁面保留在操作紀錄，尚未確認任務完成。", actions: actions, reachedLimit: true)
     }
 
     private struct Command: Decodable {

@@ -408,3 +408,49 @@ bounds before masking. **603 standalone skill assertions** pass (102 new checks)
 and the actual App adapter typechecks with the updated module. Native App checking
 on this old macOS SDK retains its existing WebKit actor-annotation warnings; it
 is not represented as an iOS acceptance result.
+
+### Cold WebKit startup and real multi-page diagnostics
+
+Full `23a20ab` run
+[42688899398](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42688899398)
+recorded 65/65 portable, 65/65 native and **21/22 fixture UI** passes; six opt-in
+live cases were skipped. The manual-website failure remained at initial loading.
+Its App diagnostic log measured **25.754479 seconds to launch WebContent** and
+25.890365 seconds for the GPU process, exceeding the test's 15-second readiness
+wait. The run also hit the 30-minute Test step limit before xcresult finalization;
+raw failure attachments and diagnostics were preserved. It is not a full pass.
+
+At `5f58196`, browser matrix
+[42692240898](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42692240898)
+passed all three UI cases on the large device. Current iOS passed cancellation and
+manual knowledge, but the skill case stopped at the same initial-load wait with
+the correct address, no keyboard/error and a blank loading WebKit view. SE passed
+the first two cases and the skill review/relaunch portion, then stopped on route
+replay before its first page observation. Cold navigation previously had a
+25-second timeout. These failures do not indicate a new provenance/judge failure.
+
+The correction permits 45 seconds only when navigation has no prior observation;
+warmed navigation stays at 25 seconds and the research/replay deadline remains
+180 seconds. Fixture initial-load readiness now waits up to 45 seconds and route
+completion up to 75 seconds, preserving all actual-page, quote, answer, judgment
+and persistence assertions. The CI step limit is 40 minutes (job limit 60) so a
+full suite can finalize its results. These bounds address observed cold-start
+latency, not arbitrary retries or replacement of execution with fixture success.
+
+Live `5f58196` run
+[42692247932](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42692247932)
+passed seven native requests and **5/6 App UI cases, zero skips**. The actual IANA
+single-page research passed, including an independently judged done outcome and
+no invented skill. The new five-page case failed in the research phase about four
+seconds after Start, before an answer or skill draft; its generic error did not
+identify the cause. It remains an acceptance failure, not a learning success.
+
+Research now distinguishes command decoding, unsupported commands, unavailable
+links, model transport/HTTP failures, navigation failure, navigation timeout and
+page-read timeout. User messages are fixed; DEBUG tests add only a fixed category
+and actual completed-action count. Replay uses the same diagnostics. Raw responses,
+URLs, credentials and underlying error descriptions are excluded. **202 standalone
+research assertions** pass, including non-execution of rejected commands, accurate
+completed-action counts and error-content redaction. No additional command format,
+automatic retry or navigation permission was enabled. The next live run must
+establish the actual multi-page failure category or complete the strict flow.

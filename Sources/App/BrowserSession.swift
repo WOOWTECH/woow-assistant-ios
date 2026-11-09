@@ -108,8 +108,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
                     guard self.runID == id else { return }
                     chat.learning.recordResearchFailure(usedSkills: usedSkills, kind: .environment, expectedGeneration: generation)
                     self.origin = nil; self.isRunning = false; self.runID = nil; self.work = nil
-                    self.status = "研究未完成；已讀取內容保留"
-                    self.error = "頁面或模型請求未完成，未產生已驗證的技能。可檢查網址與設定後重試。"
+                    self.reportFailure(error, status: "研究未完成；已讀取內容保留")
                 }
             }
         } catch { self.error = "請先到設定儲存模型服務與金鑰。" }
@@ -118,6 +117,20 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     private func record(_ action: WebResearchAction, for id: UUID) {
         guard runID == id else { return }
         actions.append(action)
+    }
+
+    private func reportFailure(_ underlying: Error, status: String) {
+        let failure = WebResearchRunner.failureDescription(for: underlying)
+        self.status = status
+        self.error = failure.message
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-LiveModelUITest") || arguments.contains("-UITestMode") {
+            // Fixed category and actual completed count only. This remains
+            // visible in the research sheet even if failure precedes an answer.
+            self.status += "〔\(failure.code)；已完成讀取 \(actions.count) 筆〕"
+        }
+        #endif
     }
 
     static let toolNames: Set<String> = ["browser_inspect", "browser_open_link", "browser_find"]
@@ -169,7 +182,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
                 if Task.isCancelled { finishEvaluation(evaluationID, result: .failure(CancellationError())); return }
                 let deadline = Task { [weak self] in
                     do { try await Task.sleep(nanoseconds: 10_000_000_000) } catch { return }
-                    self?.finishEvaluation(evaluationID, result: .failure(WebResearchError.deadline))
+                    self?.finishEvaluation(evaluationID, result: .failure(WebResearchError.observationTimedOut))
                 }
                 webView.evaluateJavaScript(Self.observationScript, in: nil, in: .defaultClient) { [weak self] result in
                     deadline.cancel()
@@ -216,15 +229,20 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
 
     private func navigate(to url: URL) async throws -> WebObservation {
         guard permitted(url), origin == nil || Self.origin(url) == origin else { throw WebResearchError.unsafeNavigation }
+        // Hosted WebContent cold startup was measured above 25s. Only the
+        // first navigation without an observation gets this bounded allowance;
+        // warmed navigation and the enclosing 180s task deadline are unchanged.
+        let navigationTimeout: TimeInterval = current == nil ? 45 : 25
         navigationFinished = nil
         if fixtureMode { loadFixture(url: url) }
         else { expectedNavigation = webView.load(URLRequest(url: url)) }
-        let end = Date().addingTimeInterval(25)
+        let end = Date().addingTimeInterval(navigationTimeout)
         while navigationFinished == nil && Date() < end {
             try await Task.sleep(nanoseconds: 100_000_000)
         }
         try Task.checkCancellation()
-        guard navigationFinished == true else { webView.stopLoading(); throw WebResearchError.deadline }
+        if navigationFinished == false { webView.stopLoading(); throw WebResearchError.navigationFailed }
+        guard navigationFinished == true else { webView.stopLoading(); throw WebResearchError.navigationTimedOut }
         return try await inspect()
     }
 
@@ -293,8 +311,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
                     self.status = "路線重走已結束"
                 } catch {
                     guard self.runID == id else { return }
-                    self.status = "路線已停止；內容變更或請求未完成"
-                    self.error = "沒有跳過內容核對，也未自動重新學習。已讀取內容保留。"
+                    self.reportFailure(error, status: "路線已停止；內容變更或請求未完成")
+                    self.error = (self.error ?? "") + " 沒有跳過內容核對，也未自動重新學習。已讀取內容保留。"
                 }
                 guard self.runID == id else { return }
                 self.runID = nil; self.isRunning = false; self.work = nil; self.origin = nil

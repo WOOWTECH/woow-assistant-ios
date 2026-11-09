@@ -143,6 +143,8 @@ final class LiveModelUITests: XCTestCase {
         let completion = XCTWaiter.wait(for: [completed], timeout: 120)
         printBrowserPhase(in: app)
         XCTAssertEqual(completion, .completed, "Live website research and judging did not finish.")
+        XCTAssertEqual(app.staticTexts["browser.task.status"].label, "研究已結束",
+                       "Research must end successfully before looking for an answer; fixed failure category is shown above.")
         let answer = app.staticTexts["browser.answer"]
         revealLearningElement(answer, in: app)
         XCTAssertTrue(answer.exists, "Live website research did not deliver a result.")
@@ -187,6 +189,8 @@ final class LiveModelUITests: XCTestCase {
         let finished = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"), object: start)
         XCTAssertEqual(XCTWaiter.wait(for: [finished], timeout: 65), .completed)
         printBrowserPhase(in: app)
+        XCTAssertEqual(taskStatus.label, "研究已結束",
+                       "Research must end successfully before scrolling; failed/limited runs cannot pass.")
         revealLearningElement(answer, in: app)
         XCTAssertTrue(answer.exists, "Real multi-page research must deliver an answer.")
         let answerText = answer.label

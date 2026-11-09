@@ -30,7 +30,7 @@ concurrency:
 jobs:
   build-and-test:
     runs-on: macos-15
-    timeout-minutes: 50
+    timeout-minutes: 60
     strategy:
       fail-fast: false
       matrix:
@@ -72,7 +72,9 @@ jobs:
             -derivedDataPath build/DerivedData build CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
             2>&1 | tee build/ios-build.log
       - name: Test
-        timeout-minutes: 30
+        # Native and 22 fixture UI cases completed in the prior full run, but
+        # its 30-minute step limit interrupted xcresult finalization.
+        timeout-minutes: 40
         run: |
           device_id="$(xcrun simctl list devices available -j | /usr/bin/python3 scripts/select_simulator.py --runtime "$WOOW_SIM_RUNTIME" --device "$WOOW_SIM_DEVICE")"
           echo "Testing $WOOW_SIM_DEVICE on $WOOW_SIM_RUNTIME"
