@@ -48,6 +48,11 @@ accepted the actual large event with a 4 MiB response limit.
 - Missing entity and unknown tool returned tool-level errors normally.
 - No device control, service calls, configuration changes, restarts, deletions,
   camera images or other mutating requests were sent.
+- Repeated the same real-service acceptance with the production Swift `MCPClient`
+  on macOS: initialize/notification/ping, all catalogs, eight read-only tools,
+  missing-entity business error and guide resource read passed. An unallowlisted
+  service-control call was rejected locally without sending a request. This is
+  native client evidence, not an iOS Simulator or App UI pass.
 
 Catalog discovery is not execution of all 77 tools. Prompts/templates have no positive
 real-server case because this server advertises empty catalogs. Mutating tests require
@@ -76,8 +81,22 @@ App UI cases failed before chat because bootstrap did not establish saved settin
 Simulator builds had explicitly disabled code signing; the next revision enables
 ad-hoc signing and adds sanitized Keychain OSStatus diagnostics to test the suspected
 credential-store failure. This is not yet a confirmed root cause or passing UI result.
-Live HA run [42630886024](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42630886024)
-is queued; no native iOS MCP pass is claimed yet.
+After simulator ad-hoc signing was enabled, run
+[42633296355](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42633296355)
+passed both iOS 18.5 variants (iPhone SE and iPhone 16 Pro Max): 37 native unit tests
+and 12 fixture UI tests each. Four opt-in live tests are deliberately skipped in
+normal CI, not counted as passes. The iOS 26.2 variant passed 37 unit and 11 UI tests;
+one removal UI test failed because its confirmation dialog exposes nested buttons
+with the same identifier. The locator now also checks the intended action label and
+uses the first matching wrapper; persistent deletion and model-setting isolation
+assertions remain. A focused iOS 26.2 rerun is required.
+
+Live HA/model retries
+[42633367501](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42633367501) and
+[42633373248](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42633373248)
+first failed before executing any step because GitHub could not allocate hosted
+arm64 runners. Their second attempts are executing. No live HA iOS/App UI pass is
+claimed yet. This infrastructure failure is separate from App test failures.
 
 ## Remaining acceptance gaps
 

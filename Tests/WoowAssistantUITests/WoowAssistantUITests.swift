@@ -223,7 +223,10 @@ final class WoowAssistantUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["mcp.status"].label, "端點已儲存，尚未驗證連線")
         revealMCP(app.buttons["mcp.remove"], in: app)
         app.buttons["mcp.remove"].tap()
-        let confirm = app.buttons["mcp.confirmRemove"]
+        // iOS 26 exposes both the confirmation row and its nested button. Match
+        // the intended action by identifier AND label, then verify persistence below.
+        let confirm = app.buttons.matching(identifier: "mcp.confirmRemove")
+            .matching(NSPredicate(format: "label == %@", "移除端點")).firstMatch
         XCTAssertTrue(confirm.waitForExistence(timeout: 5))
         confirm.tap()
         XCTAssertEqual(app.staticTexts["mcp.status"].label, "尚未設定 MCP")

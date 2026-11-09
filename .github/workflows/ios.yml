@@ -5,6 +5,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      current_only:
+        description: Run only the current iOS 26.2 regression variant
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -24,19 +29,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - label: ios18-compact
-            xcode: '16.4'
-            runtime: iOS-18-5
-            device: iPhone SE (3rd generation)
-          - label: ios18-large
-            xcode: '16.4'
-            runtime: iOS-18-5
-            device: iPhone 16 Pro Max
-          - label: ios26-current
-            xcode: '26.2'
-            runtime: iOS-26-2
-            device: iPhone 17
+        include: ${{ github.event_name == 'workflow_dispatch' && inputs.current_only && fromJSON('[{"label":"ios26-current","xcode":"26.2","runtime":"iOS-26-2","device":"iPhone 17"}]') || fromJSON('[{"label":"ios18-compact","xcode":"16.4","runtime":"iOS-18-5","device":"iPhone SE (3rd generation)"},{"label":"ios18-large","xcode":"16.4","runtime":"iOS-18-5","device":"iPhone 16 Pro Max"},{"label":"ios26-current","xcode":"26.2","runtime":"iOS-26-2","device":"iPhone 17"}]') }}
     env:
       DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
       WOOW_SIM_RUNTIME: ${{ matrix.runtime }}

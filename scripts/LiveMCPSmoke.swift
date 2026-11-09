@@ -6,10 +6,13 @@ import Foundation
 @main
 struct LiveMCPSmoke {
     static func main() async {
-        #if !targetEnvironment(simulator)
+        #if !targetEnvironment(simulator) && !MCP_LOCAL_PROBE
         print("FAIL: live acceptance must run inside iOS Simulator")
         exit(1)
         #else
+        #if MCP_LOCAL_PROBE
+        print("LOCAL macOS native client probe; this is NOT an iOS Simulator acceptance run")
+        #endif
         guard let raw = ProcessInfo.processInfo.environment["WOOW_HA_MCP_TEST_URL"],
               let endpoint = URL(string: raw) else {
             print("FAIL: missing private MCP test configuration")
