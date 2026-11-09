@@ -5,6 +5,7 @@ struct ContentView: View {
     @State private var selection: AppSection = .chat
     @StateObject private var session = ChatSession()
     @StateObject private var mcpSession = MCPSession()
+    @StateObject private var browser = BrowserSession()
 
     var body: some View {
         NavigationStack {
@@ -17,9 +18,9 @@ struct ContentView: View {
                 case .tools:
                     MCPToolsView(session: mcpSession)
                 case .memory:
-                    MemoryDataView(store: session.learning)
-                default:
-                    FeaturePlaceholder(section: selection)
+                    MemoryDataView(store: session.learning, browser: browser, modelAccess: session.modelAccess)
+                case .browser:
+                    BrowserView(browser: browser, chat: session)
                 }
             }
             .navigationTitle(selection.title)

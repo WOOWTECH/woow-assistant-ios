@@ -39,6 +39,9 @@ targets:
     deploymentTarget: "17.0"
     sources:
       - Sources/AssistantBrowser
+    dependencies:
+      - target: AssistantModels
+      - target: AssistantSkills
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant.browser
@@ -79,6 +82,8 @@ targets:
     platform: iOS
     deploymentTarget: "17.0"
     sources: [Sources/AssistantSkills]
+    dependencies:
+      - target: AssistantModels
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant.skills
@@ -125,6 +130,7 @@ targets:
       - target: AssistantContracts
       - target: AssistantDomain
       - target: AssistantBrowser
+      - target: AssistantModels
 
   AssistantModelsTests:
     type: bundle.unit-test
@@ -159,6 +165,7 @@ targets:
     sources: [Tests/AssistantSkillsTests]
     dependencies:
       - target: AssistantSkills
+      - target: AssistantModels
 
   AssistantPersistenceTests:
     type: bundle.unit-test

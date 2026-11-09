@@ -1,4 +1,5 @@
 import Foundation
+import CryptoKit
 
 /// Caller serializes mutations and commits the new snapshot transactionally.
 /// This type performs no filesystem/network/model/tool operations. Failed
@@ -22,8 +23,8 @@ public struct SkillsState: Codable, Equatable, Sendable {
                   builtinNames: builtinNames, now: now, draftID: draftID)
     }
 
-    /// Optional hook for judged web/MCP tasks. Current plain chat has no trusted
-    /// OutcomeJudge, so stays unknown; generation and user review remain app concerns.
+    /// Low-level compatibility hook for trusted orchestrators. Prefer applying a
+    /// SkillLearningService assessment: it carries an optimistic snapshot guard.
     @discardableResult
     public mutating func proposeLearnedDraft(_ markdown: String, evidence: SkillRunEvidence,
                                             availableToolNames: Set<String>, builtinNames: Set<String> = [],
@@ -135,6 +136,70 @@ public struct SkillsState: Codable, Equatable, Sendable {
               let result = SkillLearningGate.result(for: evidence) else { return nil }
         SkillOutcomeRules.record(result, on: &installed[index], followed: evidence.followed)
         return result
+    }
+
+    /// Atomic in-memory application; the caller still commits the resulting value
+    /// to encrypted storage before publishing. No partial outcomes on any conflict.
+    @discardableResult
+    public mutating func apply(_ assessment: SkillLearningAssessment, availableToolNames: Set<String>,
+                               builtinNames: Set<String> = [], now: Date = Date()) throws -> SkillDraft? {
+        guard try learningFingerprint() == assessment.baseStateFingerprint else { throw SkillsError.changedSinceRead }
+        var next = self
+        var seen: Set<String> = []
+        for reference in assessment.usedSkills where seen.insert(reference.name).inserted {
+            try next.recordOutcome(reference: reference, evidence: assessment.evidence)
+        }
+        let draft: SkillDraft?
+        if let proposal = assessment.proposal {
+            draft = try next.apply(proposal, availableToolNames: availableToolNames, builtinNames: builtinNames, now: now)
+        } else { draft = nil }
+        self = next
+        return draft
+    }
+
+    @discardableResult
+    public mutating func apply(_ proposal: SkillLearningProposal, availableToolNames: Set<String>,
+                               builtinNames: Set<String> = [], now: Date = Date()) throws -> SkillDraft {
+        guard try learningFingerprint() == proposal.baseStateFingerprint else { throw SkillsError.changedSinceRead }
+        guard SkillLearningGate.canAutoDraft(proposal.evidence) else { throw SkillsError.insufficientEvidence }
+        let document = try SkillDocument.parse(proposal.markdown, availableToolNames: availableToolNames)
+        guard !builtinNames.contains(document.name) else { throw SkillsError.builtinName }
+        let draft: SkillDraft
+        if let id = proposal.replacesPendingID {
+            guard let index = pending.firstIndex(where: { $0.id == id && $0.name == document.name }) else {
+                throw SkillsError.changedSinceRead
+            }
+            let original = pending[index]
+            draft = SkillDraft(id: id, document: document, source: .learned,
+                               replacesName: original.replacesName, baseHash: original.baseHash, createdAt: now)
+            pending[index] = draft
+        } else {
+            guard !pending.contains(where: { $0.name == document.name }) else { throw SkillsError.draftPending }
+            guard pending.count < Self.maxPending else { throw SkillsError.capacityReached }
+            let existing = installed.first { $0.name == document.name }
+            draft = SkillDraft(id: UUID(), document: document, source: .learned,
+                               replacesName: existing?.name, baseHash: existing?.fingerprint, createdAt: now)
+            pending.append(draft)
+        }
+        return draft
+    }
+
+    @discardableResult
+    public mutating func recordOutcome(reference: SkillUsedReference, evidence: SkillRunEvidence) throws -> SkillResult? {
+        guard let skill = installed.first(where: { $0.name == reference.name }) else { throw SkillsError.notFound }
+        guard skill.fingerprint == reference.fingerprint else { throw SkillsError.changedSinceRead }
+        guard evidence.wasRead else { return nil }
+        let attributed = SkillRunEvidence(end: evidence.end, outcome: evidence.outcome, failureKind: evidence.failureKind,
+            wasRead: true, followed: reference.followed, verifierReviewed: evidence.verifierReviewed,
+            verifierPassed: evidence.verifierPassed, hasUnconfirmedClaims: evidence.hasUnconfirmedClaims,
+            successfulActionCount: evidence.successfulActionCount, userInterrupted: evidence.userInterrupted,
+            explicitSkillSave: evidence.explicitSkillSave, replayMatched: evidence.replayMatched)
+        return try recordOutcome(name: reference.name, evidence: attributed)
+    }
+
+    func learningFingerprint() throws -> String {
+        let encoder = JSONEncoder(); encoder.outputFormatting = [.sortedKeys]
+        return SHA256.hash(data: try encoder.encode(self)).map { String(format: "%02x", $0) }.joined()
     }
 
     private func reviewedDocument(_ raw: String, draft: SkillDraft,

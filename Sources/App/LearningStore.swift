@@ -1,4 +1,5 @@
 import AssistantMemory
+import AssistantBrowser
 import AssistantModels
 import AssistantPersistence
 import AssistantSkills
@@ -9,8 +10,12 @@ private struct LearningSnapshot: Codable {
     let version: Int
     let memory: MemoryState
     let skills: SkillsState
-    init(memory: MemoryState = .init(), skills: SkillsState = .init()) {
-        version = 1; self.memory = memory; self.skills = skills
+    let websites: WebsiteKnowledgeState?
+    let routes: WebRouteState?
+    init(memory: MemoryState = .init(), skills: SkillsState = .init(),
+         websites: WebsiteKnowledgeState = .init(), routes: WebRouteState = .init()) {
+        version = 2; self.memory = memory; self.skills = skills
+        self.websites = websites; self.routes = routes
     }
 }
 
@@ -18,6 +23,8 @@ private struct LearningSnapshot: Codable {
 final class LearningStore: ObservableObject {
     @Published private(set) var memory = MemoryState()
     @Published private(set) var skills = SkillsState()
+    @Published private(set) var websites = WebsiteKnowledgeState()
+    @Published private(set) var routes = WebRouteState()
     @Published private(set) var notes: [MemoryNote] = []
     @Published private(set) var error: String?
     @Published private(set) var notice: String?
@@ -48,8 +55,9 @@ final class LearningStore: ObservableObject {
         do {
             guard let vault else { throw LearningFileError.unavailable }
             let snapshot = try vault.load(LearningSnapshot.self) ?? LearningSnapshot()
-            guard snapshot.version == 1 else { throw LearningFileError.invalidData }
+            guard snapshot.version == 1 || snapshot.version == 2 else { throw LearningFileError.invalidData }
             memory = snapshot.memory; skills = snapshot.skills
+            websites = snapshot.websites ?? .init(); routes = snapshot.routes ?? .init()
             available = true; error = nil; notes = []
         } catch {
             available = false
@@ -102,8 +110,9 @@ final class LearningStore: ObservableObject {
             let nextSkills = SkillsState()
             let retiredKeysRemoved = try vault.save(LearningSnapshot(memory: nextMemory, skills: nextSkills), rotateKey: true)
             memory = nextMemory; skills = nextSkills; notes = []; available = true; error = nil
+            websites = .init(); routes = .init()
             notice = retiredKeysRemoved
-                ? "已清除記憶、技能與草稿，並更新加密金鑰；模型和 MCP 設定保留。"
+                ? "已清除記憶、技能、網站知識與路線，並更新加密金鑰；模型和 MCP 設定保留。"
                 : "資料已清除並更新加密金鑰，但舊金鑰清理未完成；請解鎖後再次執行清除。"
             return true
         } catch { self.error = Self.message(error); return false }
@@ -198,9 +207,76 @@ final class LearningStore: ObservableObject {
         notes = []; notice = nil
     }
 
+    @discardableResult
+    func mutateWeb(_ change: (inout WebsiteKnowledgeState, inout WebRouteState) throws -> Void) -> Bool {
+        cancelLearning()
+        do {
+            guard available, let vault else { throw LearningFileError.notLoaded }
+            var nextWebsites = websites, nextRoutes = routes
+            try change(&nextWebsites, &nextRoutes)
+            try vault.save(LearningSnapshot(memory: memory, skills: skills, websites: nextWebsites, routes: nextRoutes))
+            websites = nextWebsites; routes = nextRoutes; error = nil
+            return true
+        } catch { self.error = "網站資料未儲存；請檢查內容、來源與版本，既有資料保留。"; return false }
+    }
+
+    func websiteContext(for url: URL) -> String {
+        guard available, let lessons = try? websites.context(for: url),
+              let data = try? JSONEncoder().encode(lessons.map(\.text)) else { return "" }
+        return "Website reference data (user reviewed, exact origin only):\n" + String(decoding: data, as: UTF8.self)
+    }
+
+    @discardableResult
+    func applyResearch(_ assessment: SkillLearningAssessment, goal: String, actions: [WebResearchAction],
+                       expectedGeneration: UUID) -> Bool {
+        guard available, generation == expectedGeneration, let vault else { return false }
+        do {
+            var nextSkills = skills, nextWebsites = websites, nextRoutes = routes
+            _ = try nextSkills.apply(assessment, availableToolNames: BrowserSession.toolNames)
+            if memory.preferences.learnSkills, assessment.judgment.outcome == .done {
+                let task = try WebTaskEvidence(outcome: .succeeded, confirmed: true, summary: "已由獨立成果判定核對網站研究回答。")
+                if let citation = assessment.judgment.citations.first,
+                   let index = Int(citation.actionID.replacingOccurrences(of: "action-", with: "")),
+                   actions.indices.contains(index), actions[index].tool != "browser_find",
+                   actions[index].observation.text.contains(citation.quote) {
+                    let page = actions[index].observation
+                    let snapshot = PageSnapshot(url: page.url, title: page.title, visibleText: page.text, capturedAt: page.capturedAt)
+                    if let evidence = try? WebsiteLessonEvidence(snapshot: snapshot, quote: citation.quote),
+                       !nextWebsites.lessons.contains(where: { $0.evidence.sourceURL == evidence.sourceURL && $0.text == citation.quote }) {
+                        _ = try nextWebsites.propose(text: citation.quote, evidence: evidence, task: task)
+                    }
+                }
+                // A one-page answer is not a reusable multi-step route.
+                if actions.filter({ $0.tool == "browser_open_link" }).count >= 2 {
+                    let steps = try actions.filter { $0.tool != "browser_find" }.map { action -> WebRouteStep in
+                        let page = action.observation
+                        return try WebRouteStep(kind: action.tool == "browser_open_link" ? .navigate : .observe,
+                            snapshot: PageSnapshot(url: page.url, title: page.title, visibleText: page.text, capturedAt: page.capturedAt),
+                            evidenceQuote: String(page.text.prefix(160)))
+                    }
+                    _ = try nextRoutes.record(intent: goal, steps: steps, task: task)
+                }
+            }
+            try vault.save(LearningSnapshot(memory: memory, skills: nextSkills, websites: nextWebsites, routes: nextRoutes))
+            skills = nextSkills; websites = nextWebsites; routes = nextRoutes; error = nil
+            return true
+        } catch { self.error = "學習資料未儲存；原有技能、網站知識與路線保留。"; return false }
+    }
+
+    func recordResearchFailure(usedSkills: [SkillUsedReference], kind: SkillFailureKind, expectedGeneration: UUID) {
+        guard available, generation == expectedGeneration, !usedSkills.isEmpty else { return }
+        do {
+            var next = skills
+            let evidence = SkillRunEvidence(end: .failed, failureKind: kind, wasRead: true)
+            for reference in usedSkills { _ = try next.recordOutcome(reference: reference, evidence: evidence) }
+            try persist(memory: memory, skills: next)
+            skills = next
+        } catch { error = "任務已停止；技能結果紀錄未能儲存，既有資料保留。" }
+    }
+
     private func persist(memory: MemoryState, skills: SkillsState) throws {
         guard available, let vault else { throw LearningFileError.notLoaded }
-        try vault.save(LearningSnapshot(memory: memory, skills: skills))
+        try vault.save(LearningSnapshot(memory: memory, skills: skills, websites: websites, routes: routes))
     }
 
     private static func message(_ error: Error) -> String {

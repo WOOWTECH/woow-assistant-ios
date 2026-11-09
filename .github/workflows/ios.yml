@@ -80,7 +80,7 @@ jobs:
           test_filters=()
           case '${{ inputs.test_scope }}' in
             learning)
-              test_filters=(-only-testing:AssistantMemoryTests -only-testing:AssistantSkillsTests -only-testing:AssistantPersistenceTests -only-testing:WoowAssistantUITests/MemoryUITests -only-testing:WoowAssistantUITests/MemoryRaceUITests)
+              test_filters=(-only-testing:AssistantMemoryTests -only-testing:AssistantSkillsTests -only-testing:AssistantPersistenceTests -only-testing:AssistantDomainTests/WebsiteLearningTests -only-testing:AssistantDomainTests/WebResearchRunnerTests -only-testing:WoowAssistantUITests/MemoryUITests -only-testing:WoowAssistantUITests/MemoryRaceUITests -only-testing:WoowAssistantUITests/BrowserLearningUITests)
               ;;
             core)
               test_filters=(-only-testing:AssistantMemoryTests -only-testing:AssistantSkillsTests -only-testing:AssistantPersistenceTests)
@@ -89,7 +89,7 @@ jobs:
           xcodebuild -project WoowAssistant.xcodeproj -scheme WoowAssistant \
             -destination "platform=iOS Simulator,id=$device_id" \
             -derivedDataPath build/DerivedData -resultBundlePath build/Tests.xcresult \
-            -parallel-testing-enabled NO "${test_filters[@]}" test CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
+            -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 300 "${test_filters[@]}" test CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
             2>&1 | tee build/ios-tests.log
       - name: Export simulator evidence
         if: always()

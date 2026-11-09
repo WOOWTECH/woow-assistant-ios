@@ -50,16 +50,25 @@ complete locations rather than treating shortened table paths as filesystem path
 - Browser website logins must eventually be backed by real WebKit website-data
   records, not screenshot counts or invented records. They are not stored in memory.
 - The screenshot's LINE native-app knowledge is outside the agreed iOS scope.
-  Website knowledge/revisions and reusable web routes remain browser work, not a
-  claim that iOS can operate the LINE app.
+  Website knowledge/revisions and observed read-only web routes now have a native
+  implementation; their new App integration is awaiting CI. It does not operate LINE.
 - No local shell, downloaded executable scripts, or phone-control tools are exposed.
   Unsupported tool references must be rejected or explicitly unavailable.
 - Plain chat completion is not proof that a skill was followed successfully.
-  Current model-to-MCP/browser action orchestration and outcome judging are absent;
-  automatic skill drafting/promotion cannot be accepted until that evidence exists.
-- Model-controlled memory/skill tools, profile consolidation, event-driven automatic
-  draft production, complete bundled catalog and website-knowledge lifecycle still
-  require integration tests. A lifecycle unit test does not prove these integrations.
+  The current browser research runner now supplies actual read/navigation evidence
+  to an independent outcome judge; model-to-MCP orchestration remains absent.
+  Drafting/promotion must be accepted with separate core, App UI and live evidence.
+- Model-controlled memory/skill tools, profile consolidation and complete bundled
+  catalog remain unimplemented. Event-driven browser draft production and website
+  lifecycle now have integration tests prepared, not yet passing evidence. A lifecycle
+  unit test does not prove these integrations.
+
+The 2026-11-10 browser increment deliberately restricts URLs to public HTTPS without
+queries/fragments, same-origin research links, ephemeral website data and read-only
+actions. It is not full Mika browser parity. Outcome assessment adds exact observation
+citations, and deduplicates executed actions before the five-action drafting gate.
+Website quotes are references, not user memory; approval remains separate. Tests
+must distinguish real models over synthetic traces from actual browser execution.
 
 ## Acceptance matrix
 

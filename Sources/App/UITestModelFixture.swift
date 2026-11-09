@@ -44,6 +44,40 @@ actor UITestChatModelClient: ChatModelClient {
     private var failedOnce = false
 
     func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
+        let instructions = messages.first?.content ?? ""
+        if instructions.hasPrefix("You research the currently open website") {
+            if messages.contains(where: { $0.content.contains("[fixture:wait]") }) {
+                try await Task.sleep(nanoseconds: 60_000_000_000)
+            }
+            let raw = messages.last?.content.components(separatedBy: "\n").dropFirst().joined(separator: "\n") ?? ""
+            let page = try JSONSerialization.jsonObject(with: Data(raw.utf8)) as? [String: Any]
+            let path = (page?["url"] as? String).flatMap(URL.init(string:))?.lastPathComponent ?? "start"
+            let names = ["start", "alpha", "beta", "gamma", "delta"]
+            if let index = names.firstIndex(of: path) { return "{\"action\":\"open\",\"linkID\":\(index)}" }
+            return #"{"action":"finish","answer":"WOOW_WEB_GUIDE: five sections reviewed."}"#
+        }
+        if instructions.hasPrefix("Assess whether the final answer") {
+            return #"{"outcome":"done","reason":"The observed pages support the answer.","evidence":[{"actionID":"action-0","quote":"WOOW_WEB_GUIDE"}]}"#
+        }
+        if instructions.hasPrefix("Draft a reusable") {
+            return """
+            ---
+            name: website-research
+            description: Research a website and compare its guide sections.
+            ---
+            ## Entry
+            Open the requested public website.
+            ## Steps
+            Use `browser_inspect` and `browser_open_link` to read relevant guide sections.
+            ## Pitfalls
+            Stop when the pages change or evidence is missing.
+            ## Success criteria
+            Give a grounded summary with page sources.
+            ## When to stop
+            Ask the user when the requested scope changes.
+            """
+        }
+        if instructions.hasPrefix("Answer the user's website research goal") { return "WOOW_WEB_GUIDE: five sections reviewed." }
         // Extraction is a separate system-instructed call; ordinary UI fixtures
         // intentionally create no learned records. Real behavior has a live suite.
         if messages.first?.role == "system" {

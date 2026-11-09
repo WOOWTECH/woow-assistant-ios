@@ -44,13 +44,16 @@ jobs:
             -emit-library -static -emit-module -module-name AssistantMemory \
             Sources/AssistantMemory/*.swift -emit-module-path build/live/AssistantMemory.swiftmodule \
             -o build/live/libAssistantMemory.a
-          xcrun swiftc -sdk "$sdk_path" -target "$sim_target" \
+          xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -I build/live \
             -emit-library -static -emit-module -module-name AssistantSkills \
             Sources/AssistantSkills/*.swift -emit-module-path build/live/AssistantSkills.swiftmodule \
             -o build/live/libAssistantSkills.a
           xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -parse-as-library \
             -I build/live -L build/live -lAssistantModels -lAssistantMemory -lAssistantSkills \
             scripts/LiveLearningSmoke.swift -o build/live/LiveLearningSmoke
+          xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -parse-as-library \
+            -I build/live -L build/live -lAssistantModels -lAssistantSkills \
+            scripts/LiveSkillLearningSmoke.swift -o build/live/LiveSkillLearningSmoke
       - name: Boot iOS 18.5 iPhone simulator
         run: |
           device_id="$(xcrun simctl list devices available -j | python3 scripts/select_simulator.py --runtime iOS-18-5 --device 'iPhone 16 Pro Max')"
@@ -86,8 +89,15 @@ jobs:
           SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
           SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveLearningSmoke"
+      - name: Real outcome judge and pending skill generation
+        timeout-minutes: 6
+        env:
+          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
+        run: xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveSkillLearningSmoke"
       - name: Real model App UI tests
-        timeout-minutes: 15
+        timeout-minutes: 20
         env:
           WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
           WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
@@ -99,7 +109,7 @@ jobs:
           xcodebuild -xctestrun "${test_runs[0]}" \
             -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
             -only-testing:WoowAssistantUITests/LiveModelUITests \
-            -parallel-testing-enabled NO test-without-building
+            -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 300 test-without-building
       - name: Clear private runner configuration
         if: always()
         run: |

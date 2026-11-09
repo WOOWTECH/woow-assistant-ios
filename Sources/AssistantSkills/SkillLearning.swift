@@ -41,8 +41,8 @@ public struct SkillRunEvidence: Equatable, Sendable {
 }
 
 public enum SkillLearningGate {
-    /// No LLM call or automatic drafting is implemented by this module. The app
-    /// can only submit a learned draft with a trusted judged task result.
+    /// Pure lifecycle gate. SkillLearningService derives these fields from an
+    /// executed trajectory and an independent model-backed outcome judgment.
     public static func canAutoDraft(_ evidence: SkillRunEvidence) -> Bool {
         evidence.end == .succeeded && evidence.outcome == .done &&
         !evidence.hasUnconfirmedClaims && (!evidence.verifierReviewed || evidence.verifierPassed) &&

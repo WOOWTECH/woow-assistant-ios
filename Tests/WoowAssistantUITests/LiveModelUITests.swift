@@ -125,6 +125,30 @@ final class LiveModelUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["chat.message.1.assistant"].exists)
     }
 
+    func testRealWebKitResearchUsesPublicWebsiteAndJudgesOutcome() throws {
+        let app = try launchLiveApp()
+        navigate(to: "browser", in: app)
+        let address = app.textFields["browser.address"]
+        waitUntilHittable(address); address.tap(); address.typeText("https://www.iana.org/\n")
+        let loaded = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", "頁面已載入"), object: app.staticTexts["browser.status"])
+        XCTAssertEqual(XCTWaiter.wait(for: [loaded], timeout: 40), .completed)
+        app.buttons["browser.research"].tap()
+        let goal = app.textFields["browser.goal"].exists ? app.textFields["browser.goal"] : app.textViews["browser.goal"]
+        waitUntilHittable(goal); goal.tap()
+        goal.typeText("Read the currently open IANA home page and explain its three main responsibility areas in one short paragraph. Include IANA in your answer. Do not navigate unless the current page lacks the information.")
+        app.buttons["browser.goal.done"].tap()
+        let start = app.buttons["browser.start"]
+        waitUntilHittable(start); start.tap()
+        let answer = app.staticTexts["browser.answer"]
+        XCTAssertTrue(answer.waitForExistence(timeout: 120), "Live website research did not deliver a result.")
+        XCTAssertTrue(answer.label.localizedCaseInsensitiveContains("IANA"))
+        let learning = app.staticTexts["browser.learning"]
+        XCTAssertTrue(learning.waitForExistence(timeout: 65), "The actual outcome judge did not finish.")
+        XCTAssertTrue(learning.label.contains("完成"), "The website outcome was not judged completed.")
+        // A one-page explanation must not fabricate five navigations to create a skill.
+        XCTAssertFalse(learning.label.contains("技能草稿已加入"))
+    }
+
     private func launchLiveApp(transportFailure: Bool = false) throws -> XCUIApplication {
         let environment = ProcessInfo.processInfo.environment
         guard let baseURL = environment["WOOW_LIVE_BASE_URL"], !baseURL.isEmpty,

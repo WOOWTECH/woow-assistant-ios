@@ -5,6 +5,8 @@ import SwiftUI
 @MainActor
 struct MemoryDataView: View {
     @ObservedObject var store: LearningStore
+    @ObservedObject var browser: BrowserSession
+    let modelAccess: () throws -> ModelAccess
     @State private var segment: LearningSegment = .memories
     @State private var query = ""
     @State private var sheet: LearningSheet?
@@ -12,7 +14,7 @@ struct MemoryDataView: View {
 
     // This UI manages text instructions. Neither imported text nor approval grants
     // capabilities; no executable model tools are available in this milestone.
-    private let toolNames: Set<String> = []
+    private let toolNames = BrowserSession.toolNames
 
     private var pendingCount: Int {
         store.memory.memories.filter { $0.status == .pending }.count + store.skills.pending.count
@@ -84,9 +86,11 @@ struct MemoryDataView: View {
                 }
                 preferencesSection
                 Section("其他資料") {
+                    Button("網站知識與路線（\(store.websites.lessons.count)／\(store.routes.routes.count)）") { sheet = .websites }
+                        .accessibilityIdentifier("memory.websites")
                     Text("網站登入資料：瀏覽器整合尚未實作，尚無可管理的網站登入清單。")
                         .accessibilityIdentifier("memory.browserPending")
-                    Text("操作路線管理尚未提供；此 iOS 版本不支援跨應用程式控制。")
+                    Text("網頁路線以實際讀取與完成判定建立；目前只支援公開網站的導覽與核對。")
                         .accessibilityIdentifier("memory.routesPending")
                 }
                 Section {
@@ -116,6 +120,8 @@ struct MemoryDataView: View {
                     SkillTextView(title: title, markdown: markdown)
                 case .clear:
                     LearningClearView(store: store)
+                case .websites:
+                    WebsiteDataView(store: store, browser: browser, modelAccess: modelAccess)
                 }
             }
         }
@@ -312,7 +318,7 @@ struct MemoryDataView: View {
             Text("使用記憶不影響已核准技能；技能請用各自開關停用。學習技能開關只控制起草，不影響匯入或使用已核准技能。")
                 .font(.footnote).foregroundStyle(.secondary)
                 .accessibilityIdentifier("memory.preferenceScope")
-            Text("Skills 學習偏好會保存；目前一般模型對話不會自動產生技能草稿，也不代表任何任務已通過驗證。")
+            Text("網站研究達到學習條件後會提出技能草稿，需核准才會使用。一般模型對話不會直接被當成技能驗證成功。")
                 .font(.footnote).foregroundStyle(.secondary)
                 .accessibilityIdentifier("skills.learningLimit")
             if store.isLearning { ProgressView("正在整理對話記憶…") }
@@ -342,7 +348,7 @@ private enum LearningSegment: String, CaseIterable, Identifiable {
 }
 
 private enum LearningSheet: Identifiable {
-    case memory(MemoryItem?), importSkill, editSkill(SkillDraft), fullText(String, String), clear
+    case memory(MemoryItem?), importSkill, editSkill(SkillDraft), fullText(String, String), clear, websites
     var id: String {
         switch self {
         case .memory(let item): return "memory-" + (item?.id.uuidString ?? "new")
@@ -350,6 +356,7 @@ private enum LearningSheet: Identifiable {
         case .editSkill(let draft): return "edit-" + draft.id.uuidString
         case .fullText: return "fulltext"
         case .clear: return "clear"
+        case .websites: return "websites"
         }
     }
 }
@@ -531,7 +538,7 @@ private struct LearningClearView: View {
             VStack(alignment: .leading, spacing: 24) {
                 Text(stage == 1 ? "第一步：確認清除範圍" : "第二步：最後確認")
                     .font(.headline).accessibilityIdentifier("memory.clear.stage")
-                Text("將清除所有記憶、Skills、待確認草稿與版本紀錄。模型設定、模型金鑰與 MCP 端點會保留。此操作無法復原。")
+                Text("將清除所有記憶、Skills、待確認草稿、網站知識、路線與版本紀錄。模型設定、模型金鑰與 MCP 端點會保留。此操作無法復原。")
                 if stage == 1 {
                     Button("繼續") { stage = 2 }
                         .buttonStyle(.borderedProminent)

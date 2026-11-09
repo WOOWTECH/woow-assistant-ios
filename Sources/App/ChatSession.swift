@@ -2,6 +2,12 @@ import AssistantModels
 import Combine
 import Foundation
 
+struct ModelAccess {
+    let client: any ChatModelClient
+    let configuration: ModelConfiguration
+    let key: String
+}
+
 struct ChatEntry: Identifiable {
     let id = UUID()
     let role: String
@@ -80,6 +86,12 @@ final class ChatSession: ObservableObject {
     var canSend: Bool {
         savedSettings != nil && hasStoredKey && !isSubmitting
             && !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    func modelAccess() throws -> ModelAccess {
+        guard let savedSettings, hasStoredKey else { throw HTTPChatModelError.invalidConfiguration }
+        return ModelAccess(client: client, configuration: savedSettings.configuration,
+                           key: try repository.key(for: savedSettings))
     }
 
     var chatStatus: String {

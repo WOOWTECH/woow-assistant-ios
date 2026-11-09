@@ -102,6 +102,19 @@ public struct SkillDocument: Codable, Equatable, Sendable {
         try replacingLocalFields(markdown, source: nil)
     }
 
+    static func replacingField(_ markdown: String, key: String, value: String) throws -> String {
+        let lines = normalize(markdown).components(separatedBy: "\n")
+        guard lines.first == "---", let end = closingDelimiter(lines) else { throw SkillsError.invalidFrontMatter }
+        var output = ["---"]
+        for line in lines[1..<end] {
+            if let colon = line.firstIndex(of: ":"), line[..<colon].trimmingCharacters(in: .whitespaces) == key { continue }
+            output.append(line)
+        }
+        output.append("\(key): \(value)")
+        output.append(contentsOf: lines[end...])
+        return output.joined(separator: "\n")
+    }
+
     private static func replacingLocalFields(_ markdown: String, source: String?) throws -> String {
         let lines = normalize(markdown).components(separatedBy: "\n")
         guard lines.first == "---", let end = closingDelimiter(lines) else { throw SkillsError.invalidFrontMatter }

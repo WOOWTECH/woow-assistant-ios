@@ -21,20 +21,20 @@ let package = Package(
             dependencies: ["AssistantContracts"],
             path: "Sources/AssistantDomain"
         ),
-        .target(name: "AssistantBrowser", path: "Sources/AssistantBrowser"),
+        .target(name: "AssistantBrowser", dependencies: ["AssistantModels", "AssistantSkills"], path: "Sources/AssistantBrowser"),
         .target(name: "AssistantModels", path: "Sources/AssistantModels"),
         .target(name: "AssistantMCP", path: "Sources/AssistantMCP"),
         .target(name: "AssistantMemory", dependencies: ["AssistantModels"], path: "Sources/AssistantMemory"),
-        .target(name: "AssistantSkills", path: "Sources/AssistantSkills"),
+        .target(name: "AssistantSkills", dependencies: ["AssistantModels"], path: "Sources/AssistantSkills"),
         .target(name: "AssistantPersistence", path: "Sources/AssistantPersistence"),
         .testTarget(name: "AssistantMemoryTests", dependencies: ["AssistantMemory"], path: "Tests/AssistantMemoryTests"),
-        .testTarget(name: "AssistantSkillsTests", dependencies: ["AssistantSkills"], path: "Tests/AssistantSkillsTests"),
+        .testTarget(name: "AssistantSkillsTests", dependencies: ["AssistantSkills", "AssistantModels"], path: "Tests/AssistantSkillsTests"),
         .testTarget(name: "AssistantPersistenceTests", dependencies: ["AssistantPersistence"], path: "Tests/AssistantPersistenceTests"),
         .testTarget(name: "AssistantMCPTests", dependencies: ["AssistantMCP"], path: "Tests/AssistantMCPTests"),
         .testTarget(name: "AssistantModelsTests", dependencies: ["AssistantModels"], path: "Tests/AssistantModelsTests"),
         .testTarget(
             name: "AssistantDomainTests",
-            dependencies: ["AssistantContracts", "AssistantDomain", "AssistantBrowser"],
+            dependencies: ["AssistantContracts", "AssistantDomain", "AssistantBrowser", "AssistantModels"],
             path: "Tests/AssistantDomainTests"
         )
     ]

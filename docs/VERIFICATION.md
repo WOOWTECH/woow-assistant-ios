@@ -206,7 +206,12 @@ retry a destructive tap. Underlying layout correctness remains subject to rerun.
 
 Focused matrix
 [42649999149](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42649999149)
-tests `d2615fe` on all three simulators; **results pending** at this checkpoint.
+tested `d2615fe`: compact and current variants passed all 15 focused native cases
+and seven fixture UI cases. Large failed: its first UI case repeatedly stalled on
+60-second animation-idle waits, and the remaining six UI cases did not run. It is
+not a pass; the animation trigger is unproven. The next checkpoint enables XCTest
+execution timeouts (the prior runner reported testTimeoutsEnabled:NO despite each
+test's declared allowance) and uses fresh simulators.
 It includes a final review correction: scroll downward when a target's top edge,
 not only its midpoint, is above the viewport. It replaces the queued `93acfa7` run
 [42649315791](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42649315791) and
@@ -220,3 +225,40 @@ focus case still failed. This supports the switch fix, not a whole-job pass.
 
 Automatic action-derived skill drafting, website knowledge, browser login/route
 management, native-app knowledge and executable scripts are not implied by these passes.
+
+## Website research / task learning integration — 2026-11-10
+
+New code connects actual WKWebView reads to a bounded read-only research loop,
+independent model outcome assessment with exact executed-observation citations,
+and pending skill generation. Five distinct successful qualifying actions are
+required for a draft; observations/finds do not count. A one-page response can be
+judged completed without a skill draft. Reviewed skill versions receive outcome
+updates; limits count as failure, network/environment failures as unreviewed, and
+user cancellation does not penalize the skill. Late results are generation guarded.
+
+Website knowledge has source quotes, approval, edit/delete/revisions and exact-origin
+context. Routes contain observed navigation/read steps only. Explicit replay checks
+fresh page URL/quotes, then generates an answer and judges it before recording success.
+Two consecutive divergences at the same step disable the route. Research stops at
+12 model decisions/180 seconds, replay at 13 steps/180 seconds. Browser uses a
+nonpersistent website-data store, public HTTPS URLs without queries/fragments,
+and no arbitrary JavaScript, forms, native-app controls or model-selected MCP calls.
+The URL policy is not complete DNS/subresource isolation or full Mika browser parity.
+
+Local evidence before CI:
+
+- Website knowledge/routes: 152 offline assertions, strict-concurrency compilation.
+- Model-backed skill service: 89 new + 179 existing = 268 fixture assertions;
+  strict-concurrency/warnings-as-errors compilation.
+- Native App store/chat/browser integration typechecked on macOS SDK; older WebKit
+  delegate actor-annotation warnings remain on this host. SwiftUI parsed, project
+  generated, Python 36 tests passed. These do not substitute for an iOS build.
+- New XCTest cases cover bounded research execution, repeated actions, invalid
+  commands, executor failure, website state, learned draft gates, conflicts and
+  cancellation. Fixture UI uses actual WebKit with local HTML and fake model HTTP.
+- Live workflow now separately tests real WebKit + real model on public IANA pages,
+  and real judge/drafter on explicitly labelled synthetic executor evidence. The
+  synthetic trace probe is not an end-to-end live browsing/automatic-learning pass.
+
+New iOS build, UI and live results are pending at this checkpoint. No new feature
+above is represented as fully accepted until its run completes.
