@@ -154,7 +154,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
             SkillExecutedAction(id: "action-\(index)", toolName: action.tool,
                 kind: action.tool == "browser_open_link" ? .navigation : .observation,
                 arguments: ["url": action.observation.url.absoluteString, "input": action.argument],
-                result: action.observation.text, succeeded: true)
+                result: action.observation.text, succeeded: true, observedURL: action.observation.url)
         }
     }
 

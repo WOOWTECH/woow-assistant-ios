@@ -397,3 +397,14 @@ that all six observations pass existing evidence hygiene. That preflight is not
 an iOS or real-model end-to-end acceptance result. The one-off startup-diagnostics
 workflow was removed after identifying the runtime defect; normal fixture CI now
 exports those diagnostics itself.
+
+Source-identity follow-up: browser observations now carry an explicit optional
+`observedURL` from the completed executor result. The judge receives only its
+`sourceURLIdentity`, shared with goal/answer identities, so it can tie a cited URL
+to the corresponding observed page. Requested arguments and URLs embedded in
+page prose cannot establish that provenance. Exact typed URLs bypass prose
+punctuation trimming; the new field participates in input and sensitive-data
+bounds before masking. **603 standalone skill assertions** pass (102 new checks),
+and the actual App adapter typechecks with the updated module. Native App checking
+on this old macOS SDK retains its existing WebKit actor-annotation warnings; it
+is not represented as an iOS acceptance result.

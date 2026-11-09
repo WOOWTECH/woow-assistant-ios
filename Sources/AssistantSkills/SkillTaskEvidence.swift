@@ -17,11 +17,15 @@ public struct SkillExecutedAction: Equatable, Sendable {
     public let arguments: [String: String]
     public let result: String
     public let succeeded: Bool
+    /// Actual page URL returned by the executor after the observation completed,
+    /// never a requested URL, model argument, or URL inferred from page prose.
+    public let observedURL: URL?
 
     public init(id: String, toolName: String, kind: SkillActionKind,
-                arguments: [String: String], result: String, succeeded: Bool) {
+                arguments: [String: String], result: String, succeeded: Bool, observedURL: URL? = nil) {
         self.id = id; self.toolName = toolName; self.kind = kind
         self.arguments = arguments; self.result = result; self.succeeded = succeeded
+        self.observedURL = observedURL
     }
 }
 

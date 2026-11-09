@@ -155,13 +155,16 @@ enum SkillLearningFixtures {
         try c.expect(privateAssessment.proposal?.markdown.contains("AliceExample") == false, "quoted task value generalized")
         try c.expect(privateAssessment.proposal?.markdown.contains("987654") == false, "task numbers generalized")
         let aliasChecks = try await judgeURLIdentityAndCitations()
-        return c.count + aliasChecks
+        let sourceChecks = try await observedSourceURLIdentities()
+        return c.count + aliasChecks + sourceChecks
     }
 
     /// The fake judge compares the actual masked request, not the unmasked fixture
     /// inputs. This catches same-host URL collisions without a live model or key.
     actor URLJudgeClient: ChatModelClient {
-        enum Mode: Sendable { case compare, quoteAlias, quoteAliasPart, quoteAcrossAlias, forgedReason, rawURLQuote }
+        enum Mode: Sendable {
+            case compare, compareSources, quoteSourceIdentity, quoteAlias, quoteAliasPart, quoteAcrossAlias, forgedReason, rawURLQuote
+        }
         let mode: Mode
         var requests: [[ModelMessage]] = []
         init(_ mode: Mode = .compare) { self.mode = mode }
@@ -177,6 +180,11 @@ enum SkillLearningFixtures {
             var reason = "Compared the supplied URL identities."
             switch mode {
             case .compare: break
+            case .compareSources:
+                let observations = value["observations"] as! [[String: Any]]
+                let sources = observations.compactMap { $0["sourceURLIdentity"] as? String }
+                outcome = sources.count == 2 && sources == Self.aliases(answer) ? "done" : "partial"
+            case .quoteSourceIdentity: outcome = "done"; quote = observation["sourceURLIdentity"] as! String
             case .quoteAlias: outcome = "done"; quote = Self.aliases(result).first!
             case .quoteAliasPart: outcome = "done"; quote = "WOOW_URL_"
             case .quoteAcrossAlias: outcome = "done"; quote = result
@@ -292,6 +300,113 @@ enum SkillLearningFixtures {
                          "forged aliases in any untrusted field fail closed")
             try c.expect(await client.calls() == 0, "forged source alias is blocked before sending judge request")
         }
+        return c.count
+    }
+
+    static func observedSourceURLIdentities() async throws -> Int {
+        var c = SkillsCoreFixtures.Checks()
+        let first = "https://example.test/Alpha", second = "https://example.test/Beta"
+        let body = "Public documentation confirms the reference."
+        let args = ["url": "https://requested.test/BeforeRedirect", "input": "MUST_NOT_SEND_ARGUMENT"]
+        func trace(_ sources: [String?], succeeded: Bool = true) -> [SkillExecutedAction] {
+            sources.enumerated().map { index, source in
+                .init(id: "source-\(index)", toolName: index == 0 ? "browser_inspect" : "browser_open_link",
+                      kind: index == 0 ? .observation : .navigation, arguments: args,
+                      result: body, succeeded: succeeded, observedURL: source.flatMap(URL.init(string:)))
+            }
+        }
+        func citedAnswer(_ urls: [String]) -> String { urls.map { "\"\($0)\"" }.joined(separator: "; ") }
+        var mapping = SkillLearningSafety.JudgeURLAliases(inputs: [])!
+        let literalDot = mapping.identity(forExactURL: first + ".")
+        try c.expect(mapping.mask("'\(first).'").text == "'\(literalDot)'", "typed observed URL preserves literal terminal dot and matches quoted answer")
+        try c.expect(literalDot != mapping.identity(forExactURL: first), "typed observed URL punctuation is identity, not prose suffix")
+        try c.expect(URLJudgeClient.aliases(literalDot) == [literalDot], "exact source identity contains no serialized punctuation suffix")
+        let cases: [([String], [String], SkillTaskOutcome)] = [
+            ([first, second], [first, second], .done),
+            ([first, second], [second, first], .partial),
+            ([first, second], ["https://example.test/alpha", second], .partial),
+            ([first, second], [first + "?q=one", second], .partial),
+            ([first, second], [first, "https://example.test/Unvisited"], .partial),
+            ([first, second], [first + ".", second], .partial),
+            ([first + ".", second], [first + ".", second], .done),
+            ([first, first], [first, first], .done)
+        ]
+        for (sources, answerURLs, expected) in cases {
+            let client = URLJudgeClient(.compareSources)
+            let assessment = try await SkillLearningService(client: client).assess(
+                goal: "Cite the first guide and the second guide, in that order.", answer: citedAnswer(answerURLs),
+                actions: trace(sources.map { Optional($0) }), state: .init(), availableToolNames: tools, allowDraft: false,
+                configuration: configuration, apiKey: key)
+            try c.expect(assessment.judgment.outcome == expected, "source identities tie answer citations to actual pages even when goal and bodies contain no URLs")
+            let payload = await client.request()[1].content
+            let value = try JSONSerialization.jsonObject(with: Data(payload.utf8)) as! [String: Any]
+            let observations = value["observations"] as! [[String: Any]]
+            let sourceIDs = observations.map { $0["sourceURLIdentity"] as! String }
+            let answerIDs = URLJudgeClient.aliases(value["answer"] as! String)
+            try c.expect((sourceIDs[0] == sourceIDs[1]) == (sources[0] == sources[1]), "same observed URL equal, same host different path distinct")
+            for index in 0..<2 {
+                try c.expect((sourceIDs[index] == answerIDs[index]) == (sources[index] == answerURLs[index]), "source and answer share exact URL map")
+                try c.expect(URLJudgeClient.aliases(sourceIDs[index]) == [sourceIDs[index]], "source field contains only one opaque identity")
+                try c.expect(observations[index]["result"] as? String == body && observations[index]["citationSegments"] == nil,
+                             "source provenance never rewrites body or serializes local quote metadata")
+            }
+            try c.expect(!payload.contains("http") && !payload.contains("example.test") && !payload.contains("requested.test") &&
+                         !payload.contains("/Alpha") && !payload.contains("/Beta") && !payload.contains("?q=") &&
+                         !payload.contains("MUST_NOT_SEND_ARGUMENT") && !payload.contains("arguments"),
+                         "no actual or requested URL path query host or input leaks into judge payload")
+            try c.expect(assessment.judgment.citations.allSatisfy { body.contains($0.quote) && !$0.quote.contains("WOOW_URL_") },
+                         "source identity is not a fabricated page quotation")
+        }
+        let missing = URLJudgeClient(.compareSources)
+        let missingAssessment = try await SkillLearningService(client: missing).assess(
+            goal: "Cite both guides.", answer: citedAnswer([first, second]), actions: trace([nil, nil]), state: .init(),
+            availableToolNames: tools, allowDraft: false, configuration: configuration, apiKey: key)
+        let missingPayload = await missing.request()[1].content
+        try c.expect(!missingPayload.contains("sourceURLIdentity"), "legacy nil sources omit optional identity; arguments URL is never substituted")
+        try c.expect(missingAssessment.judgment.outcome == .partial, "requested URL is not observed-page provenance")
+        let quotedIdentity = try await SkillLearningService(client: URLJudgeClient(.quoteSourceIdentity)).assess(
+            goal: "Cite both guides.", answer: citedAnswer([first, second]), actions: trace([first, second]), state: .init(),
+            availableToolNames: tools, allowDraft: false, configuration: configuration, apiKey: key)
+        try c.expect(quotedIdentity.skipReason == .invalidJudgment && quotedIdentity.judgment.citations.isEmpty,
+                     "source-only alias cannot become a stored website quote")
+
+        let unsupported = Client([.text("{\"outcome\":\"partial\"}")])
+        let other = SkillExecutedAction(id: "other", toolName: "other_tool", kind: .observation, arguments: args,
+                                       result: body, succeeded: true, observedURL: URL(string: first)!)
+        _ = try await SkillLearningService(client: unsupported).assess(goal: "Read the guide.", answer: "Read.", actions: [other],
+            state: .init(), availableToolNames: ["other_tool"], allowDraft: false, configuration: configuration, apiKey: key)
+        try c.expect(!(await unsupported.request(0)[1].content).contains("sourceURLIdentity"), "nonbrowser tool cannot establish browser source identity")
+        let failedClient = URLJudgeClient(.compareSources)
+        let failedTrace = trace([first]) + trace([second], succeeded: false).map {
+            SkillExecutedAction(id: "failed", toolName: $0.toolName, kind: $0.kind, arguments: $0.arguments,
+                result: $0.result, succeeded: false, observedURL: $0.observedURL)
+        }
+        let failed = try await SkillLearningService(client: failedClient).assess(goal: "Cite both guides.", answer: citedAnswer([first, second]),
+            actions: failedTrace, state: .init(), availableToolNames: tools, allowDraft: false, configuration: configuration, apiKey: key)
+        let failedValue = try JSONSerialization.jsonObject(with: Data((await failedClient.request()[1].content).utf8)) as! [String: Any]
+        try c.expect((failedValue["observations"] as! [[String: Any]]).count == 1 && failed.judgment.outcome == .partial,
+                     "failed observations cannot establish a cited source identity")
+
+        let huge = first + String(repeating: "x", count: 4000)
+        let aggregate = (0..<30).map { index in
+            SkillExecutedAction(id: "large-\(index)", toolName: "browser_inspect", kind: .observation, arguments: [:],
+                result: body, succeeded: true, observedURL: URL(string: first + String(repeating: "x", count: 3900))!)
+        }
+        var invalid = [trace([huge]), trace(["file:///tmp/source"]), trace(["/relative"]),
+                       trace(["https://user:fixture@example.test/source"]), aggregate]
+        invalid.append([.init(id: "based", toolName: "browser_inspect", kind: .observation, arguments: [:], result: body,
+            succeeded: true, observedURL: URL(string: "relative", relativeTo: URL(string: first)!))])
+        for actions in invalid {
+            let client = Client([])
+            let result = try await assess(client, actions: actions, allowDraft: false)
+            try c.expect(result.skipReason == .invalidTrajectory && result.evidence.successfulActionCount == 0,
+                         "observed URL bounds format credentials and aggregate checked before counting or masking")
+            try c.expect(await client.calls() == 0, "invalid observed URL never invokes model")
+        }
+        let sensitive = Client([])
+        let rejected = try await assess(sensitive, actions: trace([first + "/" + key]), allowDraft: false)
+        try c.expect(rejected.skipReason == .unsafeEvidence, "new observed URL field participates in sensitive scan")
+        try c.expect(await sensitive.calls() == 0, "sensitive observed URL blocked before judge request")
         return c.count
     }
 

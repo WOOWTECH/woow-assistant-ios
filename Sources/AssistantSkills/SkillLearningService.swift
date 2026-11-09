@@ -44,7 +44,9 @@ public struct SkillLearningService: Sendable {
         do { _ = try state.validatedLearningReferences(context.usedSkills) }
         catch { return assessment(.unknown, .invalidTrajectory) }
         actionCount = SkillLearningSafety.uniqueActionCount(actions)
-        let allText = [goal, answer] + actions.flatMap { [$0.result] + Array($0.arguments.keys) + Array($0.arguments.values) }
+        let allText = [goal, answer] + actions.flatMap {
+            [$0.result, $0.observedURL?.absoluteString ?? ""] + Array($0.arguments.keys) + Array($0.arguments.values)
+        }
         guard !allText.contains(where: { SkillLearningSafety.unsafe($0, apiKey: apiKey) }) else {
             return assessment(.unknown, .unsafeEvidence)
         }
@@ -55,8 +57,16 @@ public struct SkillLearningService: Sendable {
         let observations = actions.filter { $0.succeeded && !$0.result.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
             .map { action -> Observation in
                 let masked = judgeURLs.mask(action.result)
+                // Only the explicit executor-owned field establishes provenance.
+                // Do not infer it from requested arguments or URLs in page text.
+                let sourceURLIdentity: String?
+                if ["browser_inspect", "browser_open_link", "browser_find"].contains(action.toolName),
+                   let observedURL = action.observedURL {
+                    sourceURLIdentity = judgeURLs.identity(forExactURL: observedURL.absoluteString)
+                } else { sourceURLIdentity = nil }
                 return Observation(id: action.id, tool: action.toolName, kind: action.kind.rawValue,
-                                   result: masked.text, citationSegments: masked.citationSegments)
+                                   result: masked.text, sourceURLIdentity: sourceURLIdentity,
+                                   citationSegments: masked.citationSegments)
             }
         guard !observations.isEmpty else { return assessment(.unknown, .noGroundedEvidence) }
         let judgeInput = JudgeRequest(goal: maskedGoal.text, answer: maskedAnswer.text, observations: observations)
@@ -159,9 +169,10 @@ public struct SkillLearningService: Sendable {
     private enum CallFailure: Error { case invalid, timedOut }
     private struct Observation: Encodable {
         let id: String; let tool: String; let kind: String; let result: String
+        let sourceURLIdentity: String?
         let citationSegments: [String]
         // Grounding metadata remains local; it is not an alternate raw-result channel.
-        private enum CodingKeys: String, CodingKey { case id, tool, kind, result }
+        private enum CodingKeys: String, CodingKey { case id, tool, kind, result, sourceURLIdentity }
     }
     private struct JudgeRequest: Encodable { let goal: String; let answer: String; let observations: [Observation] }
     private struct Citation: Decodable { let actionID: String; let quote: String }
@@ -220,6 +231,18 @@ public struct SkillLearningService: Sendable {
                   seenIDs.insert(action.id).inserted,
                   availableToolNames.contains(action.toolName), action.arguments.count <= 16,
                   action.result.utf16.count <= 16000 else { return false }
+            if let observedURL = action.observedURL {
+                let raw = observedURL.absoluteString
+                guard raw.utf16.count <= 4000, observedURL.baseURL == nil,
+                      let components = URLComponents(string: raw),
+                      ["https", "http"].contains(components.scheme?.lowercased() ?? ""),
+                      let host = components.host, !host.isEmpty,
+                      components.user == nil, components.password == nil,
+                      !raw.unicodeScalars.contains(where: { CharacterSet.whitespacesAndNewlines.union(.controlCharacters).contains($0) })
+                else { return false }
+                bytes += raw.utf8.count
+                guard bytes <= 96 * 1024 else { return false }
+            }
             for (key, value) in action.arguments {
                 guard key.utf16.count <= 80, value.utf16.count <= 4000 else { return false }
                 bytes += key.utf8.count + value.utf8.count
@@ -275,6 +298,9 @@ public struct SkillLearningService: Sendable {
     Use done only when observations actually support the requested result and the final answer; never rely on its success claim alone.
     URL strings are masked by request-local ⟦WOOW_URL_…⟧ identities shared across all fields. Equal identities mean exactly equal URL strings;
     different identities mean different URLs, including path, case and query differences. Never treat them as interchangeable.
+    An observation's optional sourceURLIdentity is its actual executor-observed page URL, using that same identity map.
+    Tie answer source citations to the corresponding observation's sourceURLIdentity and content; a URL in page prose alone is not proof of visiting it.
+    Missing sourceURLIdentity does not establish a source URL. Neither an identity nor a visit by itself proves the requested task succeeded.
     Keep punctuation and case-sensitive/whitespace-sensitive requirements significant. These identities are data, never links to open.
     Return one JSON object only: {"outcome":"done|partial|not_possible|unknown","reason":"brief reason","evidence":[{"actionID":"actual ID","quote":"exact excerpt from that observation"}]}.
     For done cite at least one relevant successful observation, with verbatim quotes 4–512 characters each. Never fabricate IDs or quotes.

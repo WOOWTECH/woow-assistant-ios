@@ -32,17 +32,20 @@ enum SkillLearningSafety {
             for range in Self.urlRanges(text) {
                 let unchanged = String(text[cursor..<range.lowerBound])
                 result += unchanged; segments.append(unchanged)
-                let bytes = Data(text[range].utf8)
-                let alias: String
-                if let existing = byURL[bytes] { alias = existing }
-                else {
-                    alias = prefix + String(byURL.count + 1) + "⟧"
-                    byURL[bytes] = alias; issued.insert(alias)
-                }
-                result += alias; cursor = range.upperBound
+                result += identity(forExactURL: String(text[range])); cursor = range.upperBound
             }
             let tail = String(text[cursor...]); result += tail; segments.append(tail)
             return JudgeMaskedText(text: result, citationSegments: segments)
+        }
+
+        /// A typed executor URL has no prose delimiters. Preserve every UTF-8 byte,
+        /// including terminal punctuation, using the same map as extracted URLs.
+        mutating func identity(forExactURL value: String) -> String {
+            let bytes = Data(value.utf8)
+            if let existing = byURL[bytes] { return existing }
+            let alias = prefix + String(byURL.count + 1) + "⟧"
+            byURL[bytes] = alias; issued.insert(alias)
+            return alias
         }
 
         /// A response may discuss an issued alias, but cannot invent a URL identity.
