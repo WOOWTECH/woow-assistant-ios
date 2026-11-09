@@ -13,7 +13,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, learning, core]
+        options: [all, learning, core, startup]
         default: all
 
 permissions:
@@ -79,6 +79,9 @@ jobs:
           xcrun simctl bootstatus "$device_id" -b
           test_filters=()
           case '${{ inputs.test_scope }}' in
+            startup)
+              test_filters=(-only-testing:WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded)
+              ;;
             learning)
               test_filters=(-only-testing:AssistantMemoryTests -only-testing:AssistantSkillsTests -only-testing:AssistantPersistenceTests -only-testing:AssistantDomainTests/WebsiteLearningTests -only-testing:AssistantDomainTests/WebResearchRunnerTests -only-testing:WoowAssistantUITests/MemoryUITests -only-testing:WoowAssistantUITests/MemoryRaceUITests -only-testing:WoowAssistantUITests/BrowserLearningUITests)
               ;;
@@ -97,6 +100,7 @@ jobs:
           if [ -d build/Tests.xcresult ]; then
             xcrun xcresulttool get test-results summary --path build/Tests.xcresult > build/test-summary.json
             xcrun xcresulttool export attachments --path build/Tests.xcresult --output-path build/screenshots
+            xcrun xcresulttool export diagnostics --path build/Tests.xcresult --output-path build/diagnostics
           fi
       - name: Preserve test evidence
         if: always()
@@ -108,5 +112,6 @@ jobs:
             build/*.xcresult
             build/test-summary.json
             build/screenshots/
+            build/diagnostics/
           if-no-files-found: warn
           retention-days: 14

@@ -7,7 +7,23 @@ import WebKit
 
 @MainActor
 final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WebResearchExecuting {
-    let webView: WKWebView
+    private var storedWebView: WKWebView?
+    // WebKit is created when its view is requested, after the App has a scene.
+    // Chat/settings startup must not depend on launching WebKit's processes.
+    var webView: WKWebView {
+        if let storedWebView { return storedWebView }
+        let configuration = WKWebViewConfiguration()
+        configuration.websiteDataStore = .nonPersistent()
+        configuration.preferences.javaScriptCanOpenWindowsAutomatically = false
+        let view = WKWebView(frame: .zero, configuration: configuration)
+        view.navigationDelegate = self
+        view.allowsBackForwardNavigationGestures = true
+        #if os(iOS)
+        view.accessibilityIdentifier = "browser.webView"
+        #endif
+        storedWebView = view
+        return view
+    }
     @Published var address = ""
     @Published var goal = ""
     @Published private(set) var status = "輸入網址開始瀏覽"
@@ -27,22 +43,12 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     let fixtureMode: Bool
 
     override init() {
-        let configuration = WKWebViewConfiguration()
-        // Browser data stays in this session until website-data management ships.
-        configuration.websiteDataStore = .nonPersistent()
-        configuration.preferences.javaScriptCanOpenWindowsAutomatically = false
-        webView = WKWebView(frame: .zero, configuration: configuration)
         #if DEBUG
         fixtureMode = ProcessInfo.processInfo.arguments.contains("-UITestMode")
         #else
         fixtureMode = false
         #endif
         super.init()
-        webView.navigationDelegate = self
-        webView.allowsBackForwardNavigationGestures = true
-        #if os(iOS)
-        webView.accessibilityIdentifier = "browser.webView"
-        #endif
     }
 
     func openAddress() {
@@ -58,7 +64,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
 
     func cancel() {
         runID = nil; work?.cancel(); work = nil; origin = nil
-        webView.stopLoading(); isRunning = false
+        storedWebView?.stopLoading(); isRunning = false
         for id in Array(evaluations.keys) { finishEvaluation(id, result: .failure(CancellationError())) }
         status = "已停止；已取得的內容與草稿保留"
     }
