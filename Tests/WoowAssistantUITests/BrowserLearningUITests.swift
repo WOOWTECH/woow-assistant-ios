@@ -29,6 +29,9 @@ final class BrowserLearningUITests: XCTestCase {
         configureModel()
         openFixture()
         enterGoal()
+        // The modal sheet owns accessibility focus, but the real WKWebView
+        // remains mounted and must still execute all five navigations below.
+        waitFor(app.webViews.firstMatch, predicate: "exists == false")
         let start = app.buttons["browser.start"]
         XCTAssertTrue(start.isEnabled)
         start.tap()
@@ -42,7 +45,9 @@ final class BrowserLearningUITests: XCTestCase {
         let learning = app.staticTexts["browser.learning"]
         reveal(learning)
         XCTAssertEqual(learning.label, "已判定任務完成；技能草稿已加入待確認，核准後才能使用。")
+        XCTAssertFalse(app.webViews.firstMatch.exists, "Background page must stay outside the modal accessibility tree.")
         tap("browser.research.close")
+        XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 5), "Dismissing research must restore page accessibility.")
         XCTAssertFalse(app.staticTexts["browser.error"].exists)
         XCTAssertEqual(app.textFields["browser.address"].value as? String,
                        "https://research.example.invalid/epsilon")

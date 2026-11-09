@@ -28,7 +28,9 @@ struct BrowserView: View {
                     Button("停止") { browser.cancel() }.accessibilityIdentifier("browser.cancel")
                 }
             }
-            BrowserWebView(webView: browser.webView).allowsHitTesting(!browser.isRunning)
+            BrowserWebView(webView: browser.webView, coveredByResearch: showResearch)
+                .allowsHitTesting(!browser.isRunning)
+                .accessibilityHidden(showResearch)
             Text("目前提供公開網站瀏覽與同站唯讀研究；登入、表單提交、分頁及下載仍待整合。")
                 .font(.caption2).foregroundStyle(.secondary).padding(.horizontal)
                 .accessibilityIdentifier("browser.explanation")
@@ -92,8 +94,22 @@ private struct BrowserResearchView: View {
     }
 }
 
+@MainActor
 private struct BrowserWebView: UIViewRepresentable {
     let webView: WKWebView
-    func makeUIView(context: Context) -> WKWebView { webView }
-    func updateUIView(_ uiView: WKWebView, context: Context) {}
+    let coveredByResearch: Bool
+    func makeUIView(context: Context) -> WKWebView {
+        webView.accessibilityElementsHidden = coveredByResearch
+        return webView
+    }
+    func updateUIView(_ uiView: WKWebView, context: Context) {
+        // The presented research sheet owns VoiceOver focus. Hide only the
+        // underlying accessibility subtree, including large registry pages;
+        // keep the same WKWebView mounted and its renderer/DOM fully running.
+        uiView.accessibilityElementsHidden = coveredByResearch
+    }
+    static func dismantleUIView(_ uiView: WKWebView, coordinator: Void) {
+        // BrowserSession retains this view across navigation between App tabs.
+        uiView.accessibilityElementsHidden = false
+    }
 }

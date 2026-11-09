@@ -3,6 +3,43 @@
 This is an in-progress implementation, not full-feature acceptance. Tests distinguish
 fixtures, real network calls, iOS UI, and unimplemented functionality.
 
+## Current acceptance checkpoint
+
+Application source `896e447` includes observed-source URL identities, learned-draft
+provenance preservation, exact original route goals, cold WebKit navigation bounds
+and fixed research failure categories. The following runs must finish before this
+revision is considered accepted:
+
+| Execution | Evidence | Current result |
+|---|---|---|
+| Full App regression: SE / iPhone 16 Pro Max / iPhone 17 | [42697447884](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42697447884) | Running; no pass claimed |
+| Native model probes and six real App UI cases | [42697453900](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42697453900) | Seven native probes and five UI cases passed; multi-page UI exceeded 300 seconds after research finished. Approval/relaunch unverified |
+| Local skill assertions | 603 checks; strict-concurrency build | Passed; not iOS UI evidence |
+| Local research assertions | 202 checks; strict-concurrency build | Passed; no live model/network |
+
+Earlier successes and failures below are revision-specific history. In particular,
+the real single-page IANA flow passed at `5f58196`, while its real multi-page learning
+case failed; fixture three-device passes do not substitute for that missing result.
+
+## Modal WebKit accessibility correction (pending iOS verification)
+
+The `896e447` live multi-page case reached the fixed App status “研究已結束”,
+but subsequent accessibility queries took roughly 5–10 seconds each; its first
+result-scroll gesture occurred near the 300-second case limit. This does not prove
+that the answer, learning verdict or pending skill satisfied acceptance. The earlier
+short research failure at `5f58196` did not recur; its precise cause remains unknown.
+
+While the research sheet is presented, the underlying retained WKWebView now excludes
+its subtree from accessibility traversal and restores it on dismissal/dismantling.
+The renderer and DOM continue running. Large underlying page trees are a suspected
+contributor to the slow queries; the next simulator run must verify the effect.
+The UI helper reuses its scroll container and allows partially visible **static text**
+to be read, while controls must remain fully visible before tapping. Twenty-four
+standalone geometry assertions passed. The 300-second limit and all six-action,
+full-answer/source, exact-verdict, explicit-approval and byte-identical relaunch
+assertions remain unchanged. The fixture additionally checks that browser accessibility
+is excluded during the sheet and restored afterward.
+
 ## Executed locally
 
 - XcodeGen 2.44.1 generated the project; plist and Swift syntax checks passed.

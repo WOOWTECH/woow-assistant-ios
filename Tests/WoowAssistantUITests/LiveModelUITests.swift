@@ -146,7 +146,7 @@ final class LiveModelUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["browser.task.status"].label, "研究已結束",
                        "Research must end successfully before looking for an answer; fixed failure category is shown above.")
         let answer = app.staticTexts["browser.answer"]
-        revealLearningElement(answer, in: app)
+        revealLearningElement(answer, in: app, visibility: .readableText)
         XCTAssertTrue(answer.exists, "Live website research did not deliver a result.")
         XCTAssertTrue(answer.label.localizedCaseInsensitiveContains("IANA"))
         let learning = app.staticTexts["browser.learning"]
@@ -191,7 +191,7 @@ final class LiveModelUITests: XCTestCase {
         printBrowserPhase(in: app)
         XCTAssertEqual(taskStatus.label, "研究已結束",
                        "Research must end successfully before scrolling; failed/limited runs cannot pass.")
-        revealLearningElement(answer, in: app)
+        revealLearningElement(answer, in: app, visibility: .readableText)
         XCTAssertTrue(answer.exists, "Real multi-page research must deliver an answer.")
         let answerText = answer.label
         for source in sources {
