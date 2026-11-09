@@ -5,13 +5,16 @@ fixtures, real network calls, iOS UI, and unimplemented functionality.
 
 ## Current acceptance checkpoint
 
-Application source `896e447` includes observed-source URL identities, learned-draft
-provenance preservation, exact original route goals, cold WebKit navigation bounds
-and fixed research failure categories. `67e1d4e` adds the modal accessibility and
-long-answer UI correction described below. Results are tied to their source revision:
+Application source `daf0152` includes the browser/learning integration and the
+reproduced fixes below: modal accessibility, exact reviewed provenance, trusted UUID
+validation, bounded model-command correction and measured cold-start allowances.
+The latest full matrix and live run use this same revision. Earlier evidence remains
+listed by source revision and must not be confused with current acceptance:
 
 | Execution / revision | Evidence | Current result |
 |---|---|---|
+| Full App regression, `daf0152`: SE / iPhone 16 Pro Max / iPhone 17 | [42707028819](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42707028819) | Superseded after the inherited modal-boundary failure was confirmed |
+| Native model probes and six real App UI cases, `daf0152` | [42707038595](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42707038595) | Superseded while queued; no result claimed |
 | Full App regression, `896e447`: SE / iPhone 16 Pro Max / iPhone 17 | [42697447884](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42697447884) | SE and iPhone 17: 65 portable + 65 native + 22 fixture UI passed each, 7 opt-in skips. Large: 21/22 UI; invalid-input test received 199 rather than 201 characters |
 | Browser regression, `67e1d4e`: same three devices | [42701757230](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42701757230) | All three failed the new whole-WebView absence assertion; large also failed initial page readiness |
 | Native model probes and six real App UI cases, `67e1d4e` | [42701765437](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42701765437) | Seven native probes and 5/6 UI cases passed. Multi-page stopped after one inspection with invalid_command_json; no learning pass claimed |
@@ -102,6 +105,26 @@ proposal and reports its outcome/skip category instead of force-unwrapping it.
 
 These corrections require the next full simulator matrix and real-model run; local
 checks alone do not establish iOS or live acceptance.
+
+## Native modal container correction
+
+The `0e1d415` learning matrix's large-device case found the actual fixture DOM
+heading still present in the automation tree after opening research, before Start.
+The direct WKWebView flags were therefore insufficient for the intended boundary;
+the unchanged absence/restoration assertions remain mandatory. `daf0152` inherited
+that implementation, so its full/live runs are superseded rather than accepted.
+
+A native UIView now contains the same retained WKWebView with four-edge constraints.
+During research, both `accessibilityElements` and `automationElements` are empty,
+with accessibility descendants hidden. Dismissal restores both lists to the WebView.
+The renderer, DOM and mounted layout continue operating. Dismantling resets and
+removes the WebView only if the old container still owns it, so an old wrapper cannot
+undo a replacement wrapper's policy. This is the production modal behavior, not a
+UI-test-only branch. Apple's [WWDC23 accessibility session](https://developer.apple.com/videos/play/wwdc2023/10035/)
+explains the distinct accessibility and automation lists; the
+[`automationElements` API](https://developer.apple.com/documentation/objectivec/nsobject-swift.class/automationelements)
+is available from iOS 17. These APIs do not establish runtime acceptance: the next
+three-device and live runs must demonstrate the real DOM boundary and complete flow.
 
 ## Executed locally
 

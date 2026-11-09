@@ -98,18 +98,58 @@ private struct BrowserResearchView: View {
 private struct BrowserWebView: UIViewRepresentable {
     let webView: WKWebView
     let coveredByResearch: Bool
-    func makeUIView(context: Context) -> WKWebView {
-        webView.accessibilityElementsHidden = coveredByResearch
-        return webView
+    func makeUIView(context: Context) -> BrowserWebContainer {
+        let container = BrowserWebContainer(webView: webView)
+        container.setCoveredByResearch(coveredByResearch)
+        return container
     }
-    func updateUIView(_ uiView: WKWebView, context: Context) {
-        // The presented research sheet owns VoiceOver focus. Hide only the
-        // underlying accessibility subtree, including large registry pages;
-        // keep the same WKWebView mounted and its renderer/DOM fully running.
-        uiView.accessibilityElementsHidden = coveredByResearch
+    func updateUIView(_ uiView: BrowserWebContainer, context: Context) {
+        uiView.setCoveredByResearch(coveredByResearch)
     }
-    static func dismantleUIView(_ uiView: WKWebView, coordinator: Void) {
-        // BrowserSession retains this view across navigation between App tabs.
-        uiView.accessibilityElementsHidden = false
+    static func dismantleUIView(_ uiView: BrowserWebContainer, coordinator: Void) {
+        uiView.detachWebView()
+    }
+}
+
+@MainActor
+private final class BrowserWebContainer: UIView {
+    private let webView: WKWebView
+
+    init(webView: WKWebView) {
+        self.webView = webView
+        super.init(frame: .zero)
+        isAccessibilityElement = false
+        webView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(webView)
+        NSLayoutConstraint.activate([
+            webView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            webView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            webView.topAnchor.constraint(equalTo: topAnchor),
+            webView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+    }
+
+    required init?(coder: NSCoder) { return nil }
+
+    func setCoveredByResearch(_ covered: Bool) {
+        guard webView.superview === self else { return }
+        // WebKit exposes remote AX descendants. A native container defines the
+        // modal boundary for both VoiceOver and automation, which have separate
+        // element lists. Keep the same mounted view, layout and renderer alive.
+        accessibilityElementsHidden = covered
+        accessibilityElements = covered ? [] : [webView]
+        automationElements = covered ? [] : [webView]
+        webView.accessibilityElementsHidden = covered
+    }
+
+    func detachWebView() {
+        // BrowserSession caches WKWebView. A replacement wrapper may already
+        // own it when SwiftUI dismantles the old wrapper; never undo its policy.
+        guard webView.superview === self else { return }
+        accessibilityElementsHidden = false
+        accessibilityElements = nil
+        automationElements = nil
+        webView.accessibilityElementsHidden = false
+        webView.removeFromSuperview()
     }
 }
