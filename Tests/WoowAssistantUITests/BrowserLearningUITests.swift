@@ -20,6 +20,12 @@ final class BrowserLearningUITests: XCTestCase {
             attachment.name = "browser-learning-fixture-failure"
             attachment.lifetime = .keepAlways
             add(attachment)
+            // This suite launches only local HTML and dummy model settings.
+            // Preserve the actual AX child tree on failure, not live page data.
+            let accessibility = XCTAttachment(string: app.debugDescription)
+            accessibility.name = "browser-learning-fixture-ax-tree"
+            accessibility.lifetime = .keepAlways
+            add(accessibility)
         }
         app.terminate()
     }
@@ -28,10 +34,13 @@ final class BrowserLearningUITests: XCTestCase {
         launch()
         configureModel()
         openFixture()
+        waitFor(fixtureHeading, predicate: "exists == true")
         enterGoal()
         // The modal sheet owns accessibility focus, but the real WKWebView
         // remains mounted and must still execute all five navigations below.
-        waitFor(app.webViews.firstMatch, predicate: "exists == false")
+        // Assert the real DOM child is hidden, not that its WebView container
+        // vanishes: iOS 18 still exposed that root in the previous fixture run.
+        waitFor(fixtureHeading, predicate: "exists == false")
         let start = app.buttons["browser.start"]
         XCTAssertTrue(start.isEnabled)
         start.tap()
@@ -45,9 +54,9 @@ final class BrowserLearningUITests: XCTestCase {
         let learning = app.staticTexts["browser.learning"]
         reveal(learning)
         XCTAssertEqual(learning.label, "已判定任務完成；技能草稿已加入待確認，核准後才能使用。")
-        XCTAssertFalse(app.webViews.firstMatch.exists, "Background page must stay outside the modal accessibility tree.")
+        XCTAssertFalse(fixtureHeading.exists, "Background DOM content must stay outside the modal accessibility tree.")
         tap("browser.research.close")
-        XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 5), "Dismissing research must restore page accessibility.")
+        waitFor(fixtureHeading, predicate: "exists == true")
         XCTAssertFalse(app.staticTexts["browser.error"].exists)
         XCTAssertEqual(app.textFields["browser.address"].value as? String,
                        "https://research.example.invalid/epsilon")
@@ -299,6 +308,13 @@ final class BrowserLearningUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["browser.error"].exists)
         XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 5))
         XCTAssertTrue(app.buttons["browser.research"].isEnabled)
+    }
+
+    // Every real fixture page, including /start and /epsilon, has this h1.
+    // Scope to WebKit descendants so a native sheet label cannot satisfy it.
+    private var fixtureHeading: XCUIElement {
+        app.webViews.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == %@", "Website guide")).firstMatch
     }
 
     private var goalField: XCUIElement {

@@ -7,19 +7,21 @@ fixtures, real network calls, iOS UI, and unimplemented functionality.
 
 Application source `896e447` includes observed-source URL identities, learned-draft
 provenance preservation, exact original route goals, cold WebKit navigation bounds
-and fixed research failure categories. The following runs must finish before this
-revision is considered accepted:
+and fixed research failure categories. `67e1d4e` adds the modal accessibility and
+long-answer UI correction described below. Results are tied to their source revision:
 
-| Execution | Evidence | Current result |
+| Execution / revision | Evidence | Current result |
 |---|---|---|
-| Full App regression: SE / iPhone 16 Pro Max / iPhone 17 | [42697447884](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42697447884) | Running; no pass claimed |
-| Native model probes and six real App UI cases | [42697453900](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42697453900) | Seven native probes and five UI cases passed; multi-page UI exceeded 300 seconds after research finished. Approval/relaunch unverified |
+| Full App regression, `896e447`: SE / iPhone 16 Pro Max / iPhone 17 | [42697447884](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42697447884) | SE and iPhone 17: 65 portable + 65 native + 22 fixture UI passed each, 7 opt-in skips. Large: 21/22 UI; invalid-input test received 199 rather than 201 characters |
+| Browser regression, `67e1d4e`: same three devices | [42701757230](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42701757230) | Large and SE failed the new whole-WebView absence assertion; large also failed initial page readiness. Current device pending |
+| Native model probes and six real App UI cases, `67e1d4e` | [42701765437](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42701765437) | Running; multi-page learning remains unaccepted |
+| Earlier live attempt, `896e447` | [42697453900](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42697453900) | Seven native probes and five UI cases passed; multi-page UI exceeded 300 seconds after research finished. Approval/relaunch unverified |
 | Local skill assertions | 603 checks; strict-concurrency build | Passed; not iOS UI evidence |
 | Local research assertions | 202 checks; strict-concurrency build | Passed; no live model/network |
+| UI visibility geometry | 24 standalone checks | Passed; not iOS UI evidence |
 
-Earlier successes and failures below are revision-specific history. In particular,
-the real single-page IANA flow passed at `5f58196`, while its real multi-page learning
-case failed; fixture three-device passes do not substitute for that missing result.
+Earlier successes and failures below are revision-specific history. Fixture passes
+do not substitute for real model, website, or App interaction evidence.
 
 ## Modal WebKit accessibility correction (pending iOS verification)
 
@@ -39,6 +41,29 @@ standalone geometry assertions passed. The 300-second limit and all six-action,
 full-answer/source, exact-verdict, explicit-approval and byte-identical relaunch
 assertions remain unchanged. The fixture additionally checks that browser accessibility
 is excluded during the sheet and restored afterward.
+
+## Fixture input and modal-content checks
+
+Full `896e447` run completed without a step timeout. All three devices passed all
+three browser cases, including actual fixture navigation, skill review/relaunch and
+route replay. SE and iPhone 17 each passed all 22 fixture UI cases. Large passed 21;
+its single memory-validation failure was investigated with the exported PNG and AX
+tree: the editor had saved **199** characters, although the test sent a burst intended
+to contain **201**. There was no hidden validation message: this input was valid.
+The test now waits for the keyboard and verifies each input segment, then checks
+exactly 201 characters before Save. It neither retries nor repairs lost input and
+retains the existing validation-error and unchanged-draft assertions. No production
+memory validation behavior changed.
+
+At `67e1d4e`, the new whole-WebView absence assertion failed on both iOS 18 devices.
+A native container's existence is not the intended assertion about page content.
+The corrected fixture checks its real DOM heading before presentation, absence
+while the research sheet is open, and restoration after dismissal. It still requires
+all five actual navigations and the complete learning/relaunch flow. Failure artifacts
+now include the fixture-only AX tree. Large also failed 45-second initial loading:
+the PNG shows the correct full URL, dismissed keyboard and blank loading WebKit.
+The runtime cause remains under investigation; no timeout was increased for this
+failure. The next learning matrix must verify these test corrections.
 
 ## Executed locally
 

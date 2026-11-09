@@ -54,7 +54,23 @@ final class MemoryUITests: XCTestCase {
         tap("memory.add", scroll: true)
         XCTAssertFalse(app.buttons["memory.editor.save"].isEnabled)
         let invalid = String(repeating: "a", count: 201)
-        enter(invalid, into: app.textViews["memory.editor.content"])
+        let content = app.textViews["memory.editor.content"]
+        waitUntilHittable(content)
+        content.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        // A single 201-key burst previously saved only 199 characters on iOS 18.
+        // Verify every input segment; do not retry or silently repair lost input.
+        var entered = ""
+        for count in [1, 50, 50, 50, 50] {
+            let segment = String(repeating: "a", count: count)
+            content.typeText(segment)
+            entered += segment
+            let received = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "value == %@", entered), object: content)
+            XCTAssertEqual(XCTWaiter.wait(for: [received], timeout: 5), .completed,
+                           "The editor must receive the exact validation input before Save.")
+        }
+        XCTAssertEqual(content.value as? String, invalid)
         tap("memory.editor.save")
         XCTAssertTrue(app.staticTexts["memory.editor.error"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.textViews["memory.editor.content"].value as? String, invalid)
