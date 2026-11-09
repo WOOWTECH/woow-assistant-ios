@@ -57,6 +57,7 @@ private final class WebsiteLearningChecks {
         try knowledgeLifecycle()
         try knowledgeBoundsAndDecoding()
         try routeLifecycle()
+        try routeOriginalGoal()
         try routeBoundsAndDecoding()
     }
 
@@ -291,6 +292,75 @@ private final class WebsiteLearningChecks {
         try expect(state.routes.isEmpty && state.revision != beforeClear, "Clear removes routes")
     }
 
+    func routeOriginalGoal() throws {
+        var state = WebRouteState()
+        let goal = "  Reply EXACTLY \"WOOW_TAG\"\nThen preserve \"A  B\tC\".\r\nLiteral cafe\u{301}.  "
+        let key = "reply exactly \"woow_tag\" then preserve \"a b c\". literal café."
+        let id = try state.record(intent: goal, steps: steps(), task: task())
+        let saved = state.routes[0]
+        try expect(Array(saved.originalGoal.utf8) == Array(goal.utf8), "Original goal preserves exact bytes, case, whitespace and Unicode")
+        try expect(saved.originalGoal.contains("WOOW_TAG"), "Uppercase exact output marker retained")
+        try expect(saved.originalGoal.contains("A  B\tC"), "Quoted whitespace literal retained")
+        try expect(saved.intent == key, "Only matching key is normalized")
+        try expect(state.match(originURL: originURL, intent: key).first?.id == id, "Normalized key still matches")
+        let plan = try state.replayPlan(id: id, originURL: originURL, intent: goal, expectedContentHash: saved.contentHash)
+        try expect(plan.routeID == id && plan.requiresUserConfirmation, "Original goal accepted by guarded replay matching")
+
+        let encoded = try JSONEncoder().encode(state)
+        let decoded = try JSONDecoder().decode(WebRouteState.self, from: encoded)
+        try expect(Array(decoded.routes[0].originalGoal.utf8) == Array(goal.utf8), "Original goal Codable exact-byte roundtrip")
+        try expect(decoded == state && decoded.routes[0].contentHash == saved.contentHash, "Original goal hash stable on roundtrip")
+        let changedCaseOnly = try altered(saved) { $0["originalGoal"] = goal.replacingOccurrences(of: "WOOW_TAG", with: "woow_tag") }
+        let changed = try JSONDecoder().decode(WebRoute.self, from: changedCaseOnly)
+        try expect(changed.intent == saved.intent && changed.contentHash != saved.contentHash, "Hash covers case-sensitive original independently of match key")
+        let changedSpacesOnly = try altered(saved) { $0["originalGoal"] = goal.replacingOccurrences(of: "A  B", with: "A B") }
+        try expect(JSONDecoder().decode(WebRoute.self, from: changedSpacesOnly).contentHash != saved.contentHash, "Hash covers exact literal whitespace")
+
+        let legacyData = try altered(saved) { $0.removeValue(forKey: "originalGoal") }
+        let legacy = try JSONDecoder().decode(WebRoute.self, from: legacyData)
+        try expect(legacy.originalGoal == saved.intent && legacy.intent == saved.intent, "Legacy missing original falls back to intent")
+        let legacyRoundTrip = try JSONDecoder().decode(WebRoute.self, from: JSONEncoder().encode(legacy))
+        try expect(legacyRoundTrip == legacy && legacyRoundTrip.contentHash == legacy.contentHash, "Legacy migration roundtrip")
+        let legacyState = try altered(state) { object in
+            var routes = object["routes"] as! [[String: Any]]
+            routes[0].removeValue(forKey: "originalGoal"); object["routes"] = routes
+        }
+        try expect(JSONDecoder().decode(WebRouteState.self, from: legacyState).routes[0].originalGoal == key, "Legacy nested state decodes")
+        for badGoal in ["a different request", "password: fixtureOnly", String(repeating: "a", count: 4001), "   "] {
+            let poisoned = try altered(saved) { $0["originalGoal"] = badGoal }
+            try rejects("Decoded original must be safe, bounded and match intent") { _ = try JSONDecoder().decode(WebRoute.self, from: poisoned) }
+        }
+        let nullGoal = try altered(saved) { $0["originalGoal"] = NSNull() }
+        try rejects("Explicit null is malformed, not legacy omission") { _ = try JSONDecoder().decode(WebRoute.self, from: nullGoal) }
+
+        let revisedGoal = "REPLY exactly \"woow_TAG\"\tThen preserve \"A B C\".\nLiteral café."
+        let replacementID = try state.record(intent: revisedGoal, steps: steps(20), task: task(30))
+        try expect(replacementID == id && state.routes.count == 1, "Same normalized intent deduplicates")
+        try expect(Array(state.routes[0].originalGoal.utf8) == Array(revisedGoal.utf8), "Rerecord keeps latest original, not old goal or normalized copy")
+        try expect(state.routes[0].intent == key && state.routes[0].successes == saved.successes, "Rerecord preserves matching key and success statistics")
+        try rejects("Previous goal hash cannot replay latest goal", error: .staleRevision) {
+            _ = try state.replayPlan(id: id, originURL: originURL, intent: revisedGoal, expectedContentHash: saved.contentHash)
+        }
+
+        var bounded = WebRouteState()
+        let maximumGoal = String(repeating: "A", count: 4000)
+        _ = try bounded.record(intent: maximumGoal, steps: steps(), task: task())
+        try expect(bounded.routes[0].originalGoal == maximumGoal && bounded.routes[0].intent.count == 4000, "4000 UTF16 goal and match key accepted")
+        try expect(bounded.match(originURL: originURL, intent: maximumGoal.lowercased()).count == 1, "Long normalized matching supported")
+        let beforeFailure = bounded
+        for invalid in [String(repeating: "a", count: 4001), String(repeating: " ", count: 4000) + "a",
+                        "\n\t  \r\n", "Reply with api_key=fixtureOnly", "Literal\u{0000}value", "Literal\u{202E}value"] {
+            try rejects("Invalid original goal rejected") { _ = try bounded.record(intent: invalid, steps: steps(), task: task()) }
+        }
+        try expect(bounded == beforeFailure, "Invalid original goal changes are atomic")
+        var unicode = WebRouteState()
+        let expandedKeyGoal = String(repeating: "İ", count: 4000)
+        _ = try unicode.record(intent: expandedKeyGoal, steps: steps(), task: task())
+        let unicodeDecoded = try JSONDecoder().decode(WebRouteState.self, from: JSONEncoder().encode(unicode))
+        try expect(unicodeDecoded == unicode, "Unicode lowercase expansion does not break decoding")
+        try expect(unicode.match(originURL: originURL, intent: expandedKeyGoal).count == 1, "Unicode long original matches")
+    }
+
     func routeBoundsAndDecoding() throws {
         var state = WebRouteState()
         let observed = try steps(), result = try task()
@@ -332,7 +402,7 @@ private final class WebsiteLearningChecks {
             _ = try state.record(intent: "password: fixtureOnly", steps: observed, task: result)
         }
         try rejects("Oversized intent", error: .invalidText) {
-            _ = try state.record(intent: String(repeating: "a", count: 1001), steps: observed, task: result)
+            _ = try state.record(intent: String(repeating: "a", count: 4001), steps: observed, task: result)
         }
         try expect(state.routes.isEmpty, "Rejected routes leave state untouched")
         let id = try state.record(intent: "read guide", steps: observed, task: result)

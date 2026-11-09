@@ -19,7 +19,7 @@ public struct WebRouteState: Codable, Equatable, Sendable {
             let old = routes[index]
             guard task.completedAt >= old.lastUsedAt else { throw WebsiteLearningError.staleRevision }
             let samePath = old.steps.count == steps.count && zip(old.steps, steps).allSatisfy { $0.kind == $1.kind && $0.url == $1.url }
-            item = try WebRoute(id: old.id, intent: item.intent, steps: steps, task: task,
+            item = try WebRoute(id: old.id, intent: item.originalGoal, steps: steps, task: task,
                                 successes: old.successes, consecutiveMisses: samePath ? old.consecutiveMisses : 0,
                                 missStep: samePath ? old.missStep : nil, disabled: samePath ? old.disabled : false,
                                 createdAt: old.createdAt)

@@ -55,7 +55,7 @@ struct WebsiteDataView: View {
                 if store.routes.routes.isEmpty { Text("尚無已確認路線").accessibilityIdentifier("website.routes.empty") }
                 ForEach(store.routes.routes) { route in
                     VStack(alignment: .leading, spacing: 8) {
-                        Text(route.intent).accessibilityIdentifier("website.route.\(route.id)")
+                        Text(route.originalGoal).accessibilityIdentifier("website.route.\(route.id)")
                         Text("\(route.steps.count) 步 · \(route.origin.url.host ?? "")")
                         if route.disabled { Text("已停用：同一步驟連續兩次不符") }
                         HStack {

@@ -19,7 +19,11 @@ public struct WebRouteStep: Codable, Equatable, Sendable {
 public struct WebRoute: Codable, Equatable, Sendable, Identifiable {
     public let id: UUID
     public let origin: WebsiteOrigin
+    /// Normalized matching/deduplication key; never use as the replay instruction.
     public let intent: String
+    /// Exact saved user goal, including case-sensitive literals and whitespace.
+    /// Legacy records can only fall back to their already-normalized intent.
+    public let originalGoal: String
     public let steps: [WebRouteStep]
     public let task: WebTaskEvidence
     public private(set) var successes: Int
@@ -29,13 +33,13 @@ public struct WebRoute: Codable, Equatable, Sendable, Identifiable {
     public let createdAt: Date
     public private(set) var lastUsedAt: Date
     public var contentHash: String {
-        WebsiteLearningSafety.fingerprint([id.uuidString, origin.url.absoluteString, intent,
+        WebsiteLearningSafety.fingerprint([id.uuidString, origin.url.absoluteString, intent, originalGoal,
             String(successes), String(consecutiveMisses), missStep.map(String.init) ?? "", String(disabled),
             WebsiteLearningSafety.dateKey(createdAt), WebsiteLearningSafety.dateKey(lastUsedAt)]
             + task.hashFields + steps.flatMap(\.hashFields))
     }
 
-    init(id: UUID = UUID(), intent: String, steps: [WebRouteStep], task: WebTaskEvidence,
+    init(id: UUID = UUID(), intent: String, originalGoal: String? = nil, steps: [WebRouteStep], task: WebTaskEvidence,
          successes: Int = 1, consecutiveMisses: Int = 0, missStep: Int? = nil,
          disabled: Bool = false, createdAt: Date? = nil, lastUsedAt: Date? = nil) throws {
         guard let first = steps.first, steps.count <= WebRouteState.maximumSteps else {
@@ -43,7 +47,10 @@ public struct WebRoute: Codable, Equatable, Sendable, Identifiable {
         }
         guard task.isEligible else { throw WebsiteLearningError.ineligibleTask }
         self.id = id; origin = first.evidence.origin
-        self.intent = try WebsiteLearningSafety.intent(intent); self.steps = steps; self.task = task
+        self.originalGoal = try WebsiteLearningSafety.originalGoal(originalGoal ?? intent)
+        self.intent = try WebsiteLearningSafety.intent(self.originalGoal)
+        if originalGoal != nil, intent != self.intent { throw WebsiteLearningError.invalidState }
+        self.steps = steps; self.task = task
         self.successes = successes; self.consecutiveMisses = consecutiveMisses; self.missStep = missStep
         self.disabled = disabled; self.createdAt = createdAt ?? task.completedAt
         self.lastUsedAt = lastUsedAt ?? task.completedAt
@@ -90,11 +97,12 @@ public struct WebRoute: Codable, Equatable, Sendable, Identifiable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case id, origin, intent, steps, task, successes, consecutiveMisses, missStep, disabled, createdAt, lastUsedAt
+        case id, origin, intent, originalGoal, steps, task, successes, consecutiveMisses, missStep, disabled, createdAt, lastUsedAt
     }
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         try self.init(id: c.decode(UUID.self, forKey: .id), intent: c.decode(String.self, forKey: .intent),
+                      originalGoal: c.contains(.originalGoal) ? c.decode(String.self, forKey: .originalGoal) : nil,
                       steps: c.decode([WebRouteStep].self, forKey: .steps), task: c.decode(WebTaskEvidence.self, forKey: .task),
                       successes: c.decode(Int.self, forKey: .successes), consecutiveMisses: c.decode(Int.self, forKey: .consecutiveMisses),
                       missStep: c.decodeIfPresent(Int.self, forKey: .missStep), disabled: c.decode(Bool.self, forKey: .disabled),

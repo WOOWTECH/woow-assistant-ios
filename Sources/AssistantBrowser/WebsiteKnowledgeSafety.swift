@@ -78,8 +78,16 @@ enum WebsiteLearningSafety {
         guard !sensitive(clean) else { throw WebsiteLearningError.sensitiveContent }
         return clean
     }
+    /// Validate without rewriting user literals, whitespace, case or Unicode spelling.
+    static func originalGoal(_ value: String) throws -> String {
+        guard value.utf16.count <= 4000 else { throw WebsiteLearningError.invalidText }
+        // CR/CRLF are legitimate goal line breaks. Normalize ONLY this validation
+        // copy; all other control/secret checks are the same as retained text.
+        _ = try text(value.replacingOccurrences(of: "\r", with: "\n"), max: 4000)
+        return value
+    }
     static func intent(_ value: String) throws -> String {
-        let clean = try text(value, max: 1000)
+        let clean = normalized(try originalGoal(value))
         return clean.components(separatedBy: .whitespacesAndNewlines)
             .filter { !$0.isEmpty }.joined(separator: " ").lowercased()
     }

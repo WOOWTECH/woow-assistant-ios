@@ -13,7 +13,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, learning, core, startup]
+        options: [all, learning, browser, core, startup]
         default: all
 
 permissions:
@@ -83,6 +83,9 @@ jobs:
           case '${{ inputs.test_scope }}' in
             startup)
               test_filters=(-only-testing:WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded)
+              ;;
+            browser)
+              test_filters=(-only-testing:AssistantDomainTests/WebsiteLearningTests -only-testing:AssistantDomainTests/WebResearchRunnerTests -only-testing:WoowAssistantUITests/BrowserLearningUITests)
               ;;
             learning)
               test_filters=(-only-testing:AssistantMemoryTests -only-testing:AssistantSkillsTests -only-testing:AssistantPersistenceTests -only-testing:AssistantDomainTests/WebsiteLearningTests -only-testing:AssistantDomainTests/WebResearchRunnerTests -only-testing:WoowAssistantUITests/MemoryUITests -only-testing:WoowAssistantUITests/MemoryRaceUITests -only-testing:WoowAssistantUITests/BrowserLearningUITests)

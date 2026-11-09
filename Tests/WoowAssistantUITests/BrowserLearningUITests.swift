@@ -96,7 +96,7 @@ final class BrowserLearningUITests: XCTestCase {
         XCTAssertTrue(approve.isEnabled)
         let route = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@", "website.route.")).firstMatch
         reveal(route)
-        XCTAssertEqual(route.label, goal.lowercased())
+        XCTAssertEqual(route.label, goal)
         let routeID = String(route.identifier.dropFirst("website.route.".count))
         reveal(app.staticTexts["6 步 · research.example.invalid"])
         XCTAssertFalse(app.staticTexts["website.error"].exists)
@@ -119,7 +119,7 @@ final class BrowserLearningUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["browser.error"].exists)
         tap("browser.research")
         XCTAssertTrue(app.buttons["browser.start"].waitForExistence(timeout: 5))
-        XCTAssertEqual(goalField.value as? String, goal.lowercased())
+        XCTAssertEqual(goalField.value as? String, goal)
         let replayAnswer = app.staticTexts["browser.answer"]
         reveal(replayAnswer)
         XCTAssertEqual(replayAnswer.label, "WOOW_WEB_GUIDE: five sections reviewed.")
