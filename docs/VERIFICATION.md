@@ -160,19 +160,60 @@ Executed locally:
   The memory-off path produced neither memory context nor an extraction request.
   No real household data or response bodies were logged.
 
-New iOS simulator XCTest/UI/live-memory acceptance remains pending for this increment.
-Live native/model UI workflow
+Actual iOS 18.5 model workflow
+[42646342662](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42646342662)
+at `17e750f` **passed**: native JSON/SSE, three real learning requests, and all four
+App UI tests (zero skips). The memory UI case verifies real extraction, encrypted
+persistence across termination/relaunch, recall in a fresh conversation, and no
+recall after disabling memory without deleting the record. Native learning also
+verifies approved text-skill influence, pending/disabled exclusion, no promotion
+from an ordinary reply, and rejection of credential-bearing URLs/synthetic identity
+data. No action-derived automatic drafting is exercised by these passes.
+
+Earlier live runs
 [42643616002](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42643616002)
-tests checkpoint `20f2eab`; the later generation-race fix has separate fixture UI
-coverage and must be verified at its own revision. That fix prevents an old main
-model reply from starting extraction after memory was cleared/edited, and removes
-previous-conversation notes on new chat/model change. Seven fixture learning UI
-cases cover settings, memory CRUD, procedures, skill review/revisions, clear-all
-isolation and the delayed-reply clear race.
-Matrix [42644351064](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42644351064)
-is testing `d58dd6d` on the three simulator variants. A subsequent security-only
-increment rejects credential-bearing Webhook/query/userinfo URLs and synthetic
-identity data in Skills, with four added native checks; its live simulator workflow
-will run those checks separately rather than retroactively attributing them to this matrix.
+(`20f2eab`) and
+[42645456186](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42645456186)
+(`91d480a`) passed native requests and three UI cases, but failed the memory UI case
+at the off-switch assertion (value remained `1` after tapping the outer accessibility
+wrapper). Selecting the nested native switch when present and waiting for its value
+transition fixed the latest live test; persistence/recall assertions were not relaxed.
+
+Full fixture matrix
+[42644351064](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42644351064)
+at `d58dd6d` **failed on all three variants**; it is not full acceptance:
+
+| Simulator | Core XCTest | Fixture UI | Failing learning UI cases |
+|---|---:|---:|---|
+| iOS 18.5 SE 3 | 52 passed | 16 passed, 3 failed | Keywords field keyboard focus; preference switches; skill switch |
+| iOS 18.5 16 Pro Max | 52 passed | 15 passed, 4 failed | Clear race; preference switches; skill switch; clear cancellation/isolation |
+| iOS 26.2 iPhone 17 | 52 passed | 17 passed, 2 failed | Preference switches; skill switch |
+
+Each full variant additionally skipped five opt-in live cases; these are not passes.
+All 12 existing non-learning UI cases passed on all three variants. The seven new
+fixture cases use the real production store/encryption but fixture-only model HTTP.
+The generation-race and clear-isolation tests passed on SE/iOS 26.2, not yet on the
+large variant. The race fix prevents an old main reply from starting extraction
+after clear/edit; new-conversation notes are also cleared.
+
+The large-device failure log shows `memory.clear` reported hittable, yet the next
+accessibility snapshot had the bottom Tools navigation selected, not a confirmation
+sheet. The SE keyword test reported no keyboard focus after a purported field tap.
+Revision `93acfa7` adds bounded scrolling that requires the complete target frame
+inside visible content above navigation/keyboard, and dismisses/waits for the editor
+keyboard before changing fields. It does not bypass either clear confirmation or
+retry a destructive tap. Underlying layout correctness remains subject to rerun.
+
+Focused matrix
+[42649315791](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42649315791)
+tests `93acfa7` on all three simulators; **results pending** at this checkpoint. It
+supersedes the partially executed `17e750f` focused matrix
+[42646588669](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42646588669),
+not the completed full-regression evidence above. A superseded/cancelled run is not
+a pass. The follow-up changes only UI tests, not the live-tested production modules.
+The superseded SE job did finish all seven learning UI cases before cancellation:
+six passed, including both repaired switch cases and the clear race; the keyword
+focus case still failed. This supports the switch fix, not a whole-job pass.
+
 Automatic action-derived skill drafting, website knowledge, browser login/route
 management, native-app knowledge and executable scripts are not implied by these passes.
