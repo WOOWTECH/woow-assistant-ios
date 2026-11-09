@@ -19,7 +19,12 @@ struct BrowserView: View {
                 Button("開啟") { open() }.accessibilityIdentifier("browser.open")
             }
             .padding(.horizontal).disabled(browser.isRunning || browser.isInteracting)
-            Text(browser.status).font(.caption).accessibilityIdentifier("browser.status")
+            if let diagnostics = browser.manualLoadDiagnostics {
+                Text(browser.status).font(.caption).accessibilityIdentifier("browser.status")
+                    .accessibilityValue(diagnostics)
+            } else {
+                Text(browser.status).font(.caption).accessibilityIdentifier("browser.status")
+            }
             if let error = browser.error {
                 Text(error).font(.caption).foregroundStyle(.red).accessibilityIdentifier("browser.error")
             }

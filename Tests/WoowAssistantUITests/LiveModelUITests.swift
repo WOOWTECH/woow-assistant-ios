@@ -314,9 +314,20 @@ final class LiveModelUITests: XCTestCase {
         let readiness = XCTWaiter.wait(for: [addressReady], timeout: 15)
         print("Live browser address readiness seconds: \(Date().timeIntervalSince(addressStart)); exists: \(address.exists); hittable: \(address.isHittable); frame: \(address.frame)")
         XCTAssertEqual(readiness, .completed, "The real browser address must be interactable.")
-        address.tap(); address.typeText("https://www.iana.org/\n")
-        let loaded = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", "頁面已載入"), object: app.staticTexts["browser.status"])
-        XCTAssertEqual(XCTWaiter.wait(for: [loaded], timeout: 75), .completed)
+        address.tap(); address.typeText("https://www.iana.org/")
+        XCTAssertTrue(address.value as? String == "https://www.iana.org/", "The complete public URL must arrive before navigation.")
+        address.typeText("\n")
+        let status = app.staticTexts["browser.status"]
+        let loaded = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            status.label == "頁面已載入" || app.staticTexts["browser.error"].exists
+        }, object: nil)
+        let completion = XCTWaiter.wait(for: [loaded], timeout: 75)
+        // Both fields are App-owned fixed categories; no page/endpoint/model
+        // content or full accessibility tree is exposed by this diagnostic.
+        print("Live initial page status: \(status.label); diagnostics: \(status.value as? String ?? "unavailable")")
+        XCTAssertEqual(completion, .completed, "Initial page did not reach a terminal load state.")
+        XCTAssertTrue(status.label == "頁面已載入", "Initial page loading or observation failed; see fixed diagnostics above.")
+        XCTAssertFalse(app.staticTexts["browser.error"].exists)
     }
 
     private func selectLearningSegment(_ segment: String, in app: XCUIApplication) {

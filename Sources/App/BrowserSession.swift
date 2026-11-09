@@ -59,6 +59,13 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     private var navigationFinished: Bool?
     private var lastLinks: [WebResearchLink] = []
     private var evaluations: [UUID: CheckedContinuation<String, Error>] = [:]
+    private var pageGeneration = UUID()
+    private var trackedNavigation: WKNavigation?
+    private var requestedNavigationPending = false
+    private var pageObservationTask: Task<Void, Never>?
+    @Published private(set) var manualLoadDiagnostics: String?
+    private var loadTrace = ManualLoadTrace()
+    private var diagnosticTicker: Task<Void, Never>?
     let fixtureMode: Bool
 
     override init() {
@@ -78,12 +85,16 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
             error = "請使用公開 HTTPS 網址；不接受內網、憑證網址或操作端點。"; return
         }
         status = "正在載入…"
+        preparePageNavigation()
         if fixtureMode { loadFixture(url: url); return }
-        webView.load(URLRequest(url: url))
+        trackedNavigation = webView.load(URLRequest(url: url))
     }
 
     func cancel() {
         cancelInteraction()
+        invalidatePageObservation()
+        trackedNavigation = nil; requestedNavigationPending = false
+        traceLoad(.failed, failure: .cancelled)
         runID = nil; work?.cancel(); work = nil; origin = nil
         storedWebView?.stopLoading(); isRunning = false
         for id in Array(evaluations.keys) { finishEvaluation(id, result: .failure(CancellationError())) }
@@ -195,6 +206,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
 
     func inspect() async throws -> WebObservation {
         try Task.checkCancellation()
+        let generation = pageGeneration
         guard let url = webView.url, permitted(url) else { throw WebResearchError.noPage }
         guard origin == nil || Self.origin(url) == origin else { throw WebResearchError.unsafeNavigation }
         let evaluationID = UUID()
@@ -222,7 +234,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
             Task { @MainActor [weak self] in self?.finishEvaluation(evaluationID, result: .failure(CancellationError())) }
         }
         try Task.checkCancellation()
-        guard webView.url == url, let data = value.data(using: .utf8),
+        guard pageGeneration == generation, webView.url == url, let data = value.data(using: .utf8),
               let page = try? JSONDecoder().decode(DOMObservation.self, from: data) else {
             throw WebResearchError.pageChanged
         }
@@ -256,8 +268,9 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
         // warmed navigation and the enclosing 180s task deadline are unchanged.
         let navigationTimeout: TimeInterval = current == nil ? 75 : 25
         navigationFinished = nil
+        preparePageNavigation()
         if fixtureMode { loadFixture(url: url) }
-        else { expectedNavigation = webView.load(URLRequest(url: url)) }
+        else { expectedNavigation = webView.load(URLRequest(url: url)); trackedNavigation = expectedNavigation }
         let end = Date().addingTimeInterval(navigationTimeout)
         while navigationFinished == nil && Date() < end {
             try await Task.sleep(nanoseconds: 100_000_000)
@@ -469,13 +482,19 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     func reloadPage() {
         guard !isRunning, !isInteracting, let url = webView.url else { return }
         interactionStatus = "頁面已重新整理；先前的提案已取消。"
-        if fixtureMode { invalidateControls(); current = nil; status = "正在載入…"; loadFixture(url: url) }
+        if fixtureMode {
+            invalidateControls(); current = nil; status = "正在載入…"
+            preparePageNavigation(); loadFixture(url: url)
+        }
         else { manualNavigation { webView.reload() } }
     }
     private func manualNavigation(_ operation: () -> WKNavigation?) {
         guard !isRunning, !isInteracting else { return }
         invalidateControls(); error = nil; current = nil
-        if operation() != nil { status = "正在載入…" }
+        preparePageNavigation()
+        trackedNavigation = operation()
+        if trackedNavigation != nil { status = "正在載入…" }
+        else { requestedNavigationPending = false; failManualLoad(.navigationFailed) }
     }
     private func invalidateControls() {
         interactionGate.reject(); interactionProposal = nil; controlSnapshot = nil; postAllowance = nil
@@ -505,42 +524,177 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
         guard let url = navigationAction.request.url,
               permitted(url), navigationAction.request.httpMethod == "GET" || postPermitted,
               origin == nil || Self.origin(url) == origin else {
-            decisionHandler(.cancel); error = "此導覽不在目前允許的公開網站範圍內。"; return
+            decisionHandler(.cancel); error = "此導覽不在目前允許的公開網站範圍內。"
+            if !isRunning, navigationAction.targetFrame?.isMainFrame == true { failManualLoad(.policyRejected) }
+            return
         }
         decisionHandler(.allow)
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        guard let navigation else { return }
+        if requestedNavigationPending {
+            // Ignore callbacks from the load superseded by a newer request.
+            guard trackedNavigation === navigation else { return }
+            requestedNavigationPending = false
+        } else if trackedNavigation !== navigation {
+            // User/site-initiated navigation has no WKWebView.load return value.
+            invalidatePageObservation()
+            trackedNavigation = navigation
+            if !isRunning { resetLoadTrace() }
+        }
         invalidateControls()
         // A normal click/reload changes the displayed document too. Do not
         // offer research/interaction against the preceding page while loading.
         // Readonly runner navigation keeps its observation for warm deadlines.
-        if !isRunning { current = nil; status = "正在載入…" }
+        if !isRunning { current = nil; status = "正在載入…"; traceLoad(.started) }
+    }
+
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        guard let navigation, trackedNavigation === navigation, !isRunning else { return }
+        traceLoad(.committed)
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
                  decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
         guard navigationResponse.canShowMIMEType, let url = navigationResponse.response.url, permitted(url),
-              origin == nil || Self.origin(url) == origin else { decisionHandler(.cancel); return }
+              origin == nil || Self.origin(url) == origin else {
+            decisionHandler(.cancel)
+            if !isRunning, navigationResponse.isForMainFrame { failManualLoad(.responseRejected) }
+            return
+        }
         decisionHandler(.allow)
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        guard let navigation, trackedNavigation === navigation else { return }
         canGoBack = webView.canGoBack; canGoForward = webView.canGoForward
         if expectedNavigation === navigation { navigationFinished = true; expectedNavigation = nil }
         if !isRunning {
-            Task { [weak self] in
+            let generation = pageGeneration
+            traceLoad(.finished)
+            pageObservationTask = Task { [weak self] in
                 guard let self else { return }
-                do { _ = try await self.inspect(); self.status = "頁面已載入" }
-                catch { self.error = "頁面內容無法讀取。" }
+                guard self.pageGeneration == generation, !self.isRunning else { return }
+                self.traceLoad(.observing)
+                do {
+                    _ = try await self.inspect()
+                    guard self.pageGeneration == generation, !self.isRunning else { return }
+                    self.status = "頁面已載入"; self.error = nil
+                    self.traceLoad(.observed)
+                } catch {
+                    guard self.pageGeneration == generation, !self.isRunning else { return }
+                    let category: ManualLoadFailure
+                    if error is CancellationError { category = .cancelled }
+                    else if let failure = error as? WebResearchError, failure == .observationTimedOut { category = .observationTimeout }
+                    else if let failure = error as? WebResearchError, failure == .pageChanged { category = .pageChanged }
+                    else { category = .observationFailed }
+                    self.failManualLoad(category)
+                }
+                if self.pageGeneration == generation { self.pageObservationTask = nil }
             }
         }
     }
-    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { failed(navigation) }
-    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { failed(navigation) }
-    private func failed(_ navigation: WKNavigation?) {
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
+    private func failed(_ navigation: WKNavigation?, error underlying: Error) {
+        guard let navigation, trackedNavigation === navigation else { return }
         if expectedNavigation === navigation { navigationFinished = false; expectedNavigation = nil }
-        error = "網站載入失敗，請檢查網址或網路。"; if !isRunning { status = "載入未完成" }
+        invalidatePageObservation(); requestedNavigationPending = false
+        error = "網站載入失敗，請檢查網址或網路。"
+        if !isRunning {
+            let nsError = underlying as NSError
+            let category: ManualLoadFailure = nsError.domain == NSURLErrorDomain && nsError.code == NSURLErrorTimedOut
+                ? .navigationTimeout : .navigationFailed
+            failManualLoad(category)
+        }
+    }
+
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        invalidatePageObservation(); invalidateControls()
+        navigationFinished = false; expectedNavigation = nil; trackedNavigation = nil; requestedNavigationPending = false
+        current = nil; error = "網頁程序已停止；請確認後重新開啟，沒有自動重試。"
+        traceLoad(.terminated, failure: .processTerminated)
+        if !isRunning { status = "載入未完成" }
+    }
+
+    private func invalidatePageObservation() {
+        pageGeneration = UUID()
+        pageObservationTask?.cancel(); pageObservationTask = nil
+    }
+    private func preparePageNavigation() {
+        invalidatePageObservation()
+        trackedNavigation = nil; requestedNavigationPending = true
+        if !isRunning { resetLoadTrace(); traceLoad(.requested) }
+    }
+    private func failManualLoad(_ category: ManualLoadFailure) {
+        invalidatePageObservation()
+        trackedNavigation = nil; requestedNavigationPending = false
+        current = nil; status = "載入未完成"
+        if category == .observationTimeout || category == .observationFailed || category == .pageChanged {
+            error = "頁面載入後的內容讀取未完成；沒有自動重試。"
+        } else if error == nil { error = "頁面載入未完成；請確認網址與網路。" }
+        traceLoad(.failed, failure: category)
+    }
+
+    private enum ManualLoadPhase: String {
+        case idle, requested, started, committed, finished, observing, observed = "ready", failed, terminated
+        var terminal: Bool { self == .observed || self == .failed || self == .terminated }
+    }
+    private enum ManualLoadFailure: String {
+        case none, cancelled
+        case navigationFailed = "navigation_failed", navigationTimeout = "navigation_timeout"
+        case observationFailed = "observation_failed", observationTimeout = "observation_timeout"
+        case pageChanged = "page_changed", policyRejected = "policy_rejected", responseRejected = "response_rejected"
+        case processTerminated = "process_terminated"
+    }
+    private struct ManualLoadTrace {
+        var phase = ManualLoadPhase.idle
+        var failure = ManualLoadFailure.none
+        var requested = 0, started = 0, committed = 0, finished = 0, observed = 0, failed = 0, terminated = 0
+        var beganAt = ProcessInfo.processInfo.systemUptime
+        var value: String {
+            let elapsed = Int(min(86_400_000, max(0, (ProcessInfo.processInfo.systemUptime - beganAt) * 1000)))
+            return "phase=\(phase.rawValue);requested=\(requested);started=\(started);committed=\(committed);finished=\(finished);observed=\(observed);failed=\(failed);terminated=\(terminated);elapsed_ms=\(elapsed);failure=\(failure.rawValue)"
+        }
+    }
+    private var diagnosticsEnabled: Bool {
+        #if DEBUG
+        return fixtureMode || ProcessInfo.processInfo.arguments.contains("-LiveModelUITest")
+        #else
+        return false
+        #endif
+    }
+    private func resetLoadTrace() {
+        guard diagnosticsEnabled else { return }
+        diagnosticTicker?.cancel(); diagnosticTicker = nil
+        loadTrace = ManualLoadTrace()
+    }
+    private func traceLoad(_ phase: ManualLoadPhase, failure: ManualLoadFailure = .none) {
+        guard diagnosticsEnabled else { return }
+        loadTrace.phase = phase; loadTrace.failure = failure
+        switch phase {
+        case .requested: loadTrace.requested += 1
+        case .started: loadTrace.started += 1
+        case .committed: loadTrace.committed += 1
+        case .finished: loadTrace.finished += 1
+        case .observed: loadTrace.observed += 1
+        case .failed: loadTrace.failed += 1
+        case .terminated: loadTrace.terminated += 1; loadTrace.failed += 1
+        case .idle, .observing: break
+        }
+        manualLoadDiagnostics = loadTrace.value
+        if phase.terminal { diagnosticTicker?.cancel(); diagnosticTicker = nil; return }
+        guard diagnosticTicker == nil else { return }
+        // Test-only AX elapsed clock, bounded to 120 ticks. This is NOT a load
+        // timeout: it never cancels/retries navigation or changes readiness.
+        diagnosticTicker = Task { [weak self] in
+            for _ in 0..<120 {
+                do { try await Task.sleep(nanoseconds: 1_000_000_000) } catch { return }
+                guard let self, !Task.isCancelled, !self.loadTrace.phase.terminal else { return }
+                self.manualLoadDiagnostics = self.loadTrace.value
+            }
+        }
     }
 
     private func permitted(_ url: URL) -> Bool {
@@ -564,6 +718,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
             html = "<html><head><title>Research guide</title></head><body><h1>Website guide</h1><p>Section \(url.lastPathComponent). Verified marker WOOW_WEB_GUIDE. Each section explains its own step.</p>\(links)</body></html>"
         }
         expectedNavigation = webView.loadHTMLString(html, baseURL: url)
+        trackedNavigation = expectedNavigation
         #endif
     }
     #if DEBUG
