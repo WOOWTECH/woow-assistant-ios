@@ -78,6 +78,14 @@ struct MemoryDataView: View {
                         Button("關閉提示") { store.dismissNotice() }
                     }
                 }
+                if segment == .skills {
+                    Section {
+                        Button("Mika 內建技能目錄（6）") { sheet = .catalog }
+                            .accessibilityIdentifier("skills.catalog.open")
+                        Text("閱讀完整原文與授權；僅可匯入有明確限制的 iOS 文字改寫，仍需核准。")
+                            .font(.footnote).foregroundStyle(.secondary)
+                    }
+                }
                 if store.available {
                     switch segment {
                     case .memories: memorySections
@@ -123,6 +131,8 @@ struct MemoryDataView: View {
                     LearningClearView(store: store)
                 case .websites:
                     WebsiteDataView(store: store, browser: browser, modelAccess: modelAccess, onOpenBrowser: onOpenBrowser)
+                case .catalog:
+                    SkillCatalogView(store: store)
                 }
             }
         }
@@ -349,7 +359,7 @@ private enum LearningSegment: String, CaseIterable, Identifiable {
 }
 
 private enum LearningSheet: Identifiable {
-    case memory(MemoryItem?), importSkill, editSkill(SkillDraft), fullText(String, String), clear, websites
+    case memory(MemoryItem?), importSkill, editSkill(SkillDraft), fullText(String, String), clear, websites, catalog
     var id: String {
         switch self {
         case .memory(let item): return "memory-" + (item?.id.uuidString ?? "new")
@@ -358,6 +368,7 @@ private enum LearningSheet: Identifiable {
         case .fullText: return "fulltext"
         case .clear: return "clear"
         case .websites: return "websites"
+        case .catalog: return "catalog"
         }
     }
 }

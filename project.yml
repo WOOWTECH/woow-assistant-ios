@@ -62,6 +62,8 @@ targets:
     deploymentTarget: "17.0"
     sources:
       - Sources/AssistantMCP
+    dependencies:
+      - target: AssistantModels
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant.mcp
@@ -149,6 +151,7 @@ targets:
       - Tests/AssistantMCPTests
     dependencies:
       - target: AssistantMCP
+      - target: AssistantModels
 
   AssistantMemoryTests:
     type: bundle.unit-test

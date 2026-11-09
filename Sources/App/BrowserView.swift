@@ -1,11 +1,13 @@
 import SwiftUI
 import WebKit
+import AssistantBrowser
 
 @MainActor
 struct BrowserView: View {
     @ObservedObject var browser: BrowserSession
     @ObservedObject var chat: ChatSession
     @State private var showResearch = false
+    @State private var showInteractions = false
     @FocusState private var addressFocused: Bool
     var body: some View {
         VStack(spacing: 8) {
@@ -16,30 +18,165 @@ struct BrowserView: View {
                     .onSubmit { open() }.accessibilityIdentifier("browser.address")
                 Button("開啟") { open() }.accessibilityIdentifier("browser.open")
             }
-            .padding(.horizontal).disabled(browser.isRunning)
+            .padding(.horizontal).disabled(browser.isRunning || browser.isInteracting)
             Text(browser.status).font(.caption).accessibilityIdentifier("browser.status")
             if let error = browser.error {
                 Text(error).font(.caption).foregroundStyle(.red).accessibilityIdentifier("browser.error")
             }
             HStack {
+                Button { browser.goBack() } label: { Image(systemName: "chevron.backward") }
+                    .accessibilityLabel("上一頁").accessibilityIdentifier("browser.back")
+                    .disabled(!browser.canGoBack || browser.isRunning || browser.isInteracting)
+                Button { browser.goForward() } label: { Image(systemName: "chevron.forward") }
+                    .accessibilityLabel("下一頁").accessibilityIdentifier("browser.forward")
+                    .disabled(!browser.canGoForward || browser.isRunning || browser.isInteracting)
+                Button { browser.reloadPage() } label: { Image(systemName: "arrow.clockwise") }
+                    .accessibilityLabel("重新整理").accessibilityIdentifier("browser.reload")
+                    .disabled(browser.current == nil || browser.isRunning || browser.isInteracting)
                 Button("研究此網站") { addressFocused = false; showResearch = true }
-                    .disabled(browser.current == nil).accessibilityIdentifier("browser.research")
+                    .disabled(browser.current == nil || browser.isInteracting).accessibilityIdentifier("browser.research")
+                Button("操作") { addressFocused = false; showInteractions = true }
+                    .disabled(browser.current == nil || browser.isRunning).accessibilityIdentifier("browser.interactions")
                 if browser.isRunning {
                     Button("停止") { browser.cancel() }.accessibilityIdentifier("browser.cancel")
                 }
             }
-            BrowserWebView(webView: browser.webView, coveredByResearch: showResearch)
-                .allowsHitTesting(!browser.isRunning)
-                .accessibilityHidden(showResearch)
-            Text("目前提供公開網站瀏覽與同站唯讀研究；登入、表單提交、分頁及下載仍待整合。")
+            BrowserWebView(webView: browser.webView, coveredByResearch: showResearch || showInteractions)
+                .allowsHitTesting(!browser.isRunning && !browser.isInteracting)
+                .accessibilityHidden(showResearch || showInteractions)
+            Text("提供公開網站瀏覽、同站唯讀研究及逐次核准的 DOM 操作；可信輸入、登入、分頁與下載仍待整合。")
                 .font(.caption2).foregroundStyle(.secondary).padding(.horizontal)
                 .accessibilityIdentifier("browser.explanation")
         }
         .sheet(isPresented: $showResearch) {
             BrowserResearchView(browser: browser, chat: chat)
         }
+        .sheet(isPresented: $showInteractions, onDismiss: { browser.cancelInteraction() }) {
+            BrowserInteractionView(browser: browser, chat: chat)
+        }
+        .onChange(of: browser.interactionProposal?.id) { _, value in
+            if value != nil && !showResearch { addressFocused = false; showInteractions = true }
+        }
     }
     private func open() { addressFocused = false; browser.openAddress() }
+}
+
+@MainActor
+private struct BrowserInteractionView: View {
+    @ObservedObject var browser: BrowserSession
+    @ObservedObject var chat: ChatSession
+    @Environment(\.dismiss) private var dismiss
+    @State private var selected: BrowserDOMControl?
+    @State private var text = ""
+    @State private var localError: String?
+    @FocusState private var editing: Bool
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Text(browser.interactionStatus).accessibilityIdentifier("browser.interaction.status")
+                    if let error = localError ?? browser.interactionError {
+                        Text(error).foregroundStyle(.red).accessibilityIdentifier("browser.interaction.error")
+                    }
+                }
+                if let proposal = browser.interactionProposal {
+                    Section("核准這一個動作？") {
+                        Text("頁面標籤只是網站資料，不是你的指令。網頁事件可能提交資料或觸發其他效果；核准後無法保證撤回。")
+                        Text(proposal.pageURL.absoluteString).font(.caption).textSelection(.enabled)
+                        Text(actionLabel(proposal.request.kind))
+                            .accessibilityIdentifier("browser.interaction.previewKind")
+                            .accessibilityValue(proposal.request.kind.rawValue)
+                        if let control = proposal.control { Text(control.label) }
+                        if let value = proposal.request.text {
+                            Text(value).textSelection(.enabled).accessibilityIdentifier("browser.interaction.previewText")
+                        }
+                        if let index = proposal.request.optionIndex,
+                           let option = proposal.control?.options.first(where: { $0.index == index }) { Text(option.label) }
+                        if let direction = proposal.request.direction { Text(direction == .down ? "向下捲動一屏" : "向上捲動一屏") }
+                        if let target = proposal.control?.navigationURL {
+                            Text("導覽方法：\(proposal.control?.navigationMethod ?? "GET")").font(.caption)
+                            Text(target.absoluteString).font(.caption).accessibilityIdentifier("browser.interaction.previewDestination")
+                        }
+                        Button("核准並執行一次") { editing = false; browser.approveInteraction(id: proposal.id) }
+                            .disabled(browser.isInteracting).accessibilityIdentifier("browser.interaction.approve")
+                        Button("拒絕", role: .cancel) { browser.rejectInteraction() }
+                            .accessibilityIdentifier("browser.interaction.reject")
+                        Button("重新整理並取消提案") { browser.reloadPage() }
+                            .accessibilityIdentifier("browser.interaction.reload")
+                    }
+                } else if let control = selected {
+                    Section(control.label) {
+                        if control.kind == .text {
+                            TextField("要填入的非敏感文字", text: $text, axis: .vertical)
+                                .focused($editing).accessibilityIdentifier("browser.interaction.text")
+                            Text("這會取代整個欄位；目前欄位值不會讀取或帶給模型。")
+                            Button("提出填入") { editing = false; propose(.type, controlID: control.id, text: text) }
+                                .accessibilityIdentifier("browser.interaction.proposeType")
+                        } else if control.kind == .select {
+                            ForEach(control.options, id: \.index) { option in
+                                Button(option.label) { propose(.select, controlID: control.id, optionIndex: option.index) }
+                                    .disabled(option.disabled).accessibilityIdentifier("browser.interaction.option.\(option.index)")
+                            }
+                        }
+                        Button("返回控制項") { editing = false; selected = nil }.accessibilityIdentifier("browser.interaction.back")
+                    }
+                } else {
+                    Section("下一個動作") {
+                        TextField("希望這個網頁完成什麼？", text: $browser.interactionGoal, axis: .vertical)
+                            .focused($editing).accessibilityIdentifier("browser.interaction.goal")
+                        Button("請模型提出下一步") { editing = false; browser.requestModelInteraction(using: chat) }
+                            .disabled(browser.isInteracting || !chat.hasStoredKey || browser.interactionGoal.isEmpty)
+                            .accessibilityIdentifier("browser.interaction.plan")
+                        Text("只傳送控制項標籤與選項，不含欄位值。模型提案不會自動執行，也不會自動學習為成功技能。")
+                    }
+                    Section("手動選擇動作") {
+                        Button("重新讀取控制項") { browser.refreshControls() }
+                            .disabled(browser.isInteracting).accessibilityIdentifier("browser.interaction.refresh")
+                        if let snapshot = browser.controlSnapshot {
+                            Button("向下捲動") { propose(.scroll, direction: .down) }.accessibilityIdentifier("browser.interaction.scrollDown")
+                            Button("向上捲動") { propose(.scroll, direction: .up) }.accessibilityIdentifier("browser.interaction.scrollUp")
+                            ForEach(snapshot.controls) { control in
+                                Button(control.label) {
+                                    localError = nil
+                                    if control.kind == .text || control.kind == .select { selected = control; text = "" }
+                                    else { propose(.click, controlID: control.id) }
+                                }
+                                .disabled(!control.enabled || browser.isInteracting)
+                                .accessibilityIdentifier("browser.control.\(control.id)")
+                            }
+                            if snapshot.truncated { Text("控制項數量達上限；未列出的項目不能由模型操作。") }
+                        }
+                    }
+                }
+                if browser.isInteracting {
+                    Button("停止操作") { browser.cancelInteraction() }.accessibilityIdentifier("browser.interaction.stop")
+                }
+            }
+            .navigationTitle("單次網頁操作")
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("關閉") { browser.cancelInteraction(); dismiss() }.accessibilityIdentifier("browser.interaction.close")
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer(); Button("完成輸入") { editing = false }.accessibilityIdentifier("browser.interaction.done")
+                }
+            }
+            .task { if browser.controlSnapshot == nil && browser.interactionProposal == nil { browser.refreshControls() } }
+        }
+    }
+    private func propose(_ kind: BrowserInteractionKind, controlID: String? = nil, text: String? = nil,
+                         optionIndex: Int? = nil, direction: BrowserScrollDirection? = nil) {
+        guard let snapshot = browser.controlSnapshot else { return }
+        do {
+            _ = try browser.proposeInteraction(BrowserInteractionRequest(documentID: snapshot.documentID,
+                snapshotID: snapshot.snapshotID, kind: kind, controlID: controlID, text: text, optionIndex: optionIndex, direction: direction))
+            selected = nil; localError = nil
+        } catch { localError = (error as? BrowserInteractionError)?.message ?? BrowserInteractionError.invalidRequest.message }
+    }
+    private func actionLabel(_ kind: BrowserInteractionKind) -> String {
+        switch kind { case .click: return "點擊"; case .type: return "填入文字"; case .select: return "選擇選項"; case .scroll: return "捲動" }
+    }
 }
 
 // A presented sheet owns its focus binding. Sharing a FocusState from the

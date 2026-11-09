@@ -33,7 +33,7 @@ struct MCPToolsView: View {
                     Text(session.supportsResources ? "資源：\(session.resourceNames.count) 個" : "伺服器未宣告資源能力")
                         .accessibilityIdentifier("mcp.resourceCount")
                 }
-                Text("僅支援 HTTPS Streamable HTTP。本版只探索目錄，不執行工具、不讀取資源內容，也不會自動連線。")
+                Text("支援 HTTPS Streamable HTTP。連線後選取要提供給對話模型的工具，再到對話開啟 MCP。每次執行前會顯示工具名稱與完整參數，等你核准；工具說明及結果會送給已設定的模型。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("tools.explanation")
@@ -104,17 +104,26 @@ struct MCPToolsView: View {
 
             if session.phase == .connected {
                 Section("伺服器工具") {
-                    ForEach(Array(session.toolNames.enumerated()), id: \.offset) { index, name in
-                        Text(verbatim: name)
-                            .privacySensitive()
-                            .accessibilityIdentifier("mcp.tool.\(index)")
+                    Text("已選取 \(session.selectedToolNames.count) 個工具供對話使用")
+                        .accessibilityIdentifier("mcp.selectionCount")
+                    TextField("搜尋工具名稱", text: $session.toolSearch)
+                        .autocorrectionDisabled().textInputAutocapitalization(.never)
+                        .accessibilityIdentifier("mcp.toolSearch")
+                    ForEach(session.visibleTools, id: \.name) { tool in
+                        Toggle(isOn: Binding(get: { session.selectedToolNames.contains(tool.name) },
+                                             set: { session.selectTool(tool.name, enabled: $0) })) {
+                            Text(verbatim: tool.name).privacySensitive()
+                        }
+                        .accessibilityIdentifier("mcp.enable.\(tool.name)")
                     }
                 }
                 Section("伺服器資源") {
-                    ForEach(Array(session.resourceNames.enumerated()), id: \.offset) { index, name in
-                        Text(verbatim: name)
-                            .privacySensitive()
-                            .accessibilityIdentifier("mcp.resource.\(index)")
+                    ForEach(Array(session.resources.enumerated()), id: \.element.uri) { index, resource in
+                        Toggle(isOn: Binding(get: { session.selectedResourceURIs.contains(resource.uri) },
+                                             set: { session.selectResource(resource.uri, enabled: $0) })) {
+                            Text(verbatim: resource.name).privacySensitive()
+                        }
+                        .accessibilityIdentifier("mcp.resource.\(index)")
                     }
                 }
             }
@@ -122,7 +131,7 @@ struct MCPToolsView: View {
             Section("Skills") {
                 Text("請到「資料 → 技能」管理")
                     .accessibilityIdentifier("mcp.skillsStatus")
-                Text("可匯入並審核文字技能，已啟用且相關的內容會提供給對話模型。工具執行與自動學習任務技能仍待整合；MCP 目錄探索不代表模型已能操作工具。")
+                Text("可匯入並審核文字技能，已啟用且相關的內容會提供給對話模型。網站研究可產生待審核技能；MCP 工具依每次對話的核准執行。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

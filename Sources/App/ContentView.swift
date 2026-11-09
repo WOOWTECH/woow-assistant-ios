@@ -6,13 +6,14 @@ struct ContentView: View {
     @StateObject private var session = ChatSession()
     @StateObject private var mcpSession = MCPSession()
     @StateObject private var browser = BrowserSession()
+    @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
         NavigationStack {
             Group {
                 switch selection {
                 case .chat:
-                    ChatView(session: session)
+                    ChatView(session: session, mcp: mcpSession)
                 case .settings:
                     ModelSettingsView(session: session)
                 case .tools:
@@ -33,6 +34,15 @@ struct ContentView: View {
         .onAppear {
             session.learning.onUserChange = { [weak browser] in
                 if browser?.isRunning == true { browser?.cancel() }
+                browser?.cancelInteraction()
+            }
+            mcpSession.onConnectionChange = { [weak session] in session?.cancelMCP() }
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase != .active {
+                session.cancelMCP()
+                browser.cancelInteraction()
+                if mcpSession.phase == .connected || mcpSession.isBusy { mcpSession.disconnect() }
             }
         }
     }
@@ -126,7 +136,9 @@ private enum AppSection: String, CaseIterable, Identifiable {
 @MainActor
 private struct ChatView: View {
     @ObservedObject var session: ChatSession
+    @ObservedObject var mcp: MCPSession
     @FocusState private var isEditingDraft: Bool
+    @State private var showsMCPResults = false
 
     var body: some View {
         VStack(spacing: 12) {
@@ -147,6 +159,22 @@ private struct ChatView: View {
             .multilineTextAlignment(.center)
 
             LearningChatNotes(store: session.learning)
+
+            if mcp.canUseInConversation || session.usesMCP {
+                Toggle("本次對話使用 MCP 工具", isOn: $session.usesMCP)
+                    .font(.callout)
+                    .disabled(session.isSubmitting)
+                    .accessibilityIdentifier("chat.useMCP")
+            }
+            if let activity = session.mcpActivity {
+                Text(activity).font(.caption)
+                    .accessibilityIdentifier("chat.mcpActivity")
+            }
+            if !session.mcpSteps.isEmpty {
+                Button("檢視工具結果（\(session.mcpSteps.count)）") { showsMCPResults = true }
+                    .font(.caption).accessibilityIdentifier("chat.mcpResults")
+                    .disabled(session.isSubmitting)
+            }
 
             ScrollViewReader { proxy in
                 ScrollView {
@@ -202,7 +230,7 @@ private struct ChatView: View {
                     .accessibilityIdentifier("chat.newConversation")
                 Button("傳送") {
                     isEditingDraft = false
-                    session.send()
+                    session.send(mcp: session.usesMCP ? mcp : nil)
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(!session.canSend)
@@ -217,6 +245,13 @@ private struct ChatView: View {
             .frame(minHeight: 44)
         }
         .padding()
+        .sheet(item: Binding(get: { session.pendingMCPApproval }, set: { _ in })) { proposal in
+            MCPApprovalView(proposal: proposal,
+                            approve: { session.resolveMCPApproval(id: proposal.id, approved: true) },
+                            decline: { session.resolveMCPApproval(id: proposal.id, approved: false) })
+                .interactiveDismissDisabled()
+        }
+        .sheet(isPresented: $showsMCPResults) { MCPResultsView(steps: session.mcpSteps) }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()

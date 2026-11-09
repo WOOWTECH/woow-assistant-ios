@@ -8,7 +8,14 @@ struct MCPStandaloneSmoke {
             ("handshake", MCPClientChecks.handshake), ("catalogsAndTools", MCPClientChecks.catalogsAndTools),
             ("capabilitiesAndLimits", MCPClientChecks.capabilitiesAndLimits),
             ("parserAndErrors", MCPClientChecks.parserAndErrors),
-            ("deadlinesAndCancellation", MCPClientChecks.deadlinesAndCancellation)
+            ("deadlinesAndCancellation", MCPClientChecks.deadlinesAndCancellation),
+            ("conversationCatalog", MCPConversationChecks.approvedExecutionAndCatalog),
+            ("conversationApproval", MCPConversationChecks.refusalAndChangedArguments),
+            ("conversationCommands", MCPConversationChecks.strictCommandsAndSelection),
+            ("conversationErrors", MCPConversationChecks.errorsAndBounds),
+            ("conversationBudgets", MCPConversationChecks.budgetsAndRepeatedCalls),
+            ("conversationCancellation", MCPConversationChecks.cancellationAndDeadline),
+            ("authorizedTransport", MCPConversationChecks.singleCallTransportAPI)
         ]
         var count = 0
         for (name, check) in groups {
@@ -16,7 +23,7 @@ struct MCPStandaloneSmoke {
             count += passed
             print("PASS \(name): \(passed) checks")
         }
-        print("PASS MCP: \(groups.count) groups, \(count) checks; URLProtocol fixtures only")
+        print("PASS MCP: \(groups.count) groups, \(count) checks; local fixtures only")
     }
 }
 #else

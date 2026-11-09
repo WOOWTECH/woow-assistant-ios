@@ -158,6 +158,42 @@ final class LiveModelUITests: XCTestCase {
         XCTAssertFalse(learning.label.contains("技能草稿已加入"))
     }
 
+    func testRealModelProposesObservedDOMLinkAndApprovedClickNavigates() throws {
+        let app = try launchLiveApp()
+        openPublicIANA(in: app)
+        app.buttons["browser.interactions"].tap()
+        let field = app.textFields["browser.interaction.goal"].exists
+            ? app.textFields["browser.interaction.goal"] : app.textViews["browser.interaction.goal"]
+        waitUntilHittable(field); field.tap()
+        field.typeText("Click the observed link whose navigationURL is exactly https://www.iana.org/about. Propose only that one click.")
+        app.buttons["browser.interaction.done"].tap()
+        let plan = app.buttons["browser.interaction.plan"]
+        let enabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"), object: plan)
+        XCTAssertEqual(XCTWaiter.wait(for: [enabled], timeout: 15), .completed)
+        plan.tap()
+        let proposal = app.staticTexts["browser.interaction.previewKind"]
+        XCTAssertTrue(proposal.waitForExistence(timeout: 65), "The real model did not produce an observed DOM proposal.")
+        XCTAssertTrue(proposal.label == "點擊")
+        XCTAssertTrue(app.staticTexts["browser.interaction.previewDestination"].label == "https://www.iana.org/about",
+                      "Only the observed public About link may be approved.")
+        let approve = app.buttons["browser.interaction.approve"]
+        revealLearningElement(approve, in: app)
+        approve.tap()
+        let completed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            app.staticTexts["browser.interaction.status"].label.contains("已送出單次 DOM 動作")
+                || app.staticTexts["browser.interaction.error"].exists
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [completed], timeout: 20), .completed)
+        XCTAssertFalse(app.staticTexts["browser.interaction.error"].exists, "The approved DOM dispatch failed.")
+        app.buttons["browser.interaction.close"].tap()
+        let address = app.textFields["browser.address"]
+        let navigated = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "https://www.iana.org/about"), object: address)
+        XCTAssertEqual(XCTWaiter.wait(for: [navigated], timeout: 45), .completed,
+                       "A proposal alone is insufficient: the actual WebKit URL must change.")
+        XCTAssertTrue(app.buttons["browser.back"].isEnabled)
+        XCTAssertFalse(app.staticTexts["browser.answer"].exists, "An interaction must not fabricate a research answer.")
+    }
+
     func testRealMultiPageResearchLearnsPendingSkillAndApprovalSurvivesRelaunch() throws {
         executionTimeAllowance = 300
         var app = try launchLiveApp()

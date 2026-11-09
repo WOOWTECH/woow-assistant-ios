@@ -28,7 +28,12 @@ enum UITestModelFixture {
         }
         let credentials: any ModelCredentialStoring = arguments.contains("-UITestKeychainWriteFailure")
             ? FailingWrites(base: keychain) : keychain
-        return ModelSettingsRepository(defaults: defaults, credentials: credentials)
+        let repository = ModelSettingsRepository(defaults: defaults, credentials: credentials)
+        if arguments.contains("-UITestMCPFixture") {
+            do { _ = try repository.save(baseURL: "https://model.example.invalid/v1", model: "fixture", newKey: "fixture-not-a-key") }
+            catch { preconditionFailure("Cannot configure isolated MCP conversation fixture") }
+        }
+        return repository
     }
 
     private struct FailingWrites: ModelCredentialStoring {
@@ -45,6 +50,23 @@ actor UITestChatModelClient: ChatModelClient {
 
     func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
         let instructions = messages.first?.content ?? ""
+        if instructions.hasPrefix("You operate selected MCP tools") {
+            if let result = messages.last?.content, result.hasPrefix("MCP execution result") {
+                let raw = result.components(separatedBy: "\n").dropFirst().joined(separator: "\n")
+                let payload = try JSONSerialization.jsonObject(with: Data(raw.utf8)) as? [String: Any]
+                let body = payload?["result"] as? [String: Any]
+                let parts = (body?["content"] ?? body?["contents"]) as? [[String: Any]]
+                let answer = parts?.first?["text"] as? String ?? "Missing fixture result"
+                return String(decoding: try JSONSerialization.data(withJSONObject: ["action": "finish", "answer": answer]), as: UTF8.self)
+            }
+            if messages.contains(where: { $0.content == "[fixture:mcp-resource]" }) {
+                return #"{"action":"read_resource","uri":"fixture://guide"}"#
+            }
+            if messages.contains(where: { $0.content == "[fixture:mcp-error]" }) {
+                return #"{"action":"call_tool","name":"fixture_echo","arguments":{"text":"error"}}"#
+            }
+            return #"{"action":"call_tool","name":"fixture_echo","arguments":{"text":"hello"}}"#
+        }
         if instructions.hasPrefix("You research the currently open website") {
             if messages.contains(where: { $0.content.contains("[fixture:wait]") }) {
                 try await Task.sleep(nanoseconds: 60_000_000_000)

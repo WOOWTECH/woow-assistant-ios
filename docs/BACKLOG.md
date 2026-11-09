@@ -27,14 +27,14 @@
 - [x] HTTPS Streamable HTTP MCP client, explicit tool allowlist, bounded requests and discovery.
 - [x] Keychain-backed model keys and whole MCP endpoints; no plaintext credentials in preferences or logs.
 - [x] User-configurable MCP endpoint with discovery/cancel/disconnect UI.
-- [ ] App-level tool invocation and model-to-MCP orchestration with explicit approval cards.
+- [x] App-level tool/resource selection and bounded model-to-MCP orchestration with explicit per-call approval cards (simulator/live acceptance tracked in VERIFICATION).
 - [ ] OAuth PKCE, explicit session reinitialization UI and other required transport modes.
 - [ ] Authorized real-device HA control tests (target and allowed actions pending).
 - [ ] Declarative Skills registry and remote compute job contracts.
 
 ## M3 — Browser parity and notifications
 
-- [ ] Page reader, citations, page ask and safe DOM action bridge.
+- [x] Page reader, grounded research and fixed DOM action bridge with single-action approval (full browser parity remains open).
 - [ ] Optional remote browser gateway contract for CDP-only capabilities.
 - [ ] Notifications for completed jobs and approval requests.
 - [ ] Real-device iOS 17 validation matrix, TestFlight metadata and App Review demo mode.

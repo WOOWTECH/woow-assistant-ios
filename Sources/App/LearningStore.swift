@@ -286,7 +286,13 @@ final class LearningStore: ObservableObject {
         try vault.save(LearningSnapshot(memory: memory, skills: skills, websites: websites, routes: routes))
     }
 
+    @discardableResult
+    func importCatalogSkill(id: String, catalog: BundledSkillCatalog) -> Bool {
+        mutateSkills { _ = try catalog.stageAdaptation(id: id, into: &$0) }
+    }
+
     private static func message(_ error: Error) -> String {
+        if let catalog = error as? SkillCatalogError { return catalog.errorDescription ?? "內建技能未匯入。" }
         if let memory = error as? MemoryError {
             switch memory {
             case .sensitiveContent: return "密碼、驗證碼、金鑰與其他敏感資料不能存入記憶。"

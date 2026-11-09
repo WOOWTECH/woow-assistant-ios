@@ -18,7 +18,7 @@ jobs:
   live-native-mcp:
     if: github.ref == 'refs/heads/main'
     runs-on: macos-15
-    timeout-minutes: 25
+    timeout-minutes: 45
     env:
       DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
     steps:
@@ -32,12 +32,17 @@ jobs:
           sim_arch="$(uname -m)"
           sim_target="$sim_arch-apple-ios17.0-simulator"
           xcrun swiftc -sdk "$sdk_path" -target "$sim_target" \
+            -emit-library -static -emit-module -module-name AssistantModels \
+            Sources/AssistantModels/*.swift \
+            -emit-module-path build/live/AssistantModels.swiftmodule \
+            -o build/live/libAssistantModels.a
+          xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -I build/live \
             -emit-library -static -emit-module -module-name AssistantMCP \
             Sources/AssistantMCP/*.swift \
             -emit-module-path build/live/AssistantMCP.swiftmodule \
             -o build/live/libAssistantMCP.a
           xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -parse-as-library \
-            -I build/live -L build/live -lAssistantMCP scripts/LiveMCPSmoke.swift \
+            -I build/live -L build/live -lAssistantMCP -lAssistantModels scripts/LiveMCPSmoke.swift \
             -o build/live/LiveMCPSmoke
       - name: Boot iOS simulator
         run: |
@@ -79,11 +84,29 @@ jobs:
             -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
             -only-testing:WoowAssistantUITests/LiveMCPUITests \
             -parallel-testing-enabled NO test-without-building
+      - name: Real model selects and invokes approved HA tools in App
+        timeout-minutes: 12
+        env:
+          WOOW_HA_MCP_TEST_URL: ${{ secrets.WOOW_HA_MCP_TEST_URL }}
+          WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
+          WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
+        run: |
+          test_runs=(build/LiveDerivedData/Build/Products/*.xctestrun)
+          [ "${#test_runs[@]}" -eq 1 ] || { echo 'Expected one generated test runner'; exit 1; }
+          python3 scripts/prepare_live_xctestrun.py "${test_runs[0]}" --service model
+          python3 scripts/prepare_live_xctestrun.py "${test_runs[0]}" --service mcp
+          xcodebuild -xctestrun "${test_runs[0]}" \
+            -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
+            -only-testing:WoowAssistantUITests/LiveMCPConversationUITests \
+            -parallel-testing-enabled NO -test-timeouts-enabled YES \
+            -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 300 test-without-building
       - name: Clear private runner configuration
         if: always()
         run: |
           for test_run in build/LiveDerivedData/Build/Products/*.xctestrun; do
             [ ! -f "$test_run" ] || python3 scripts/prepare_live_xctestrun.py "$test_run" --service mcp --clear
+            [ ! -f "$test_run" ] || python3 scripts/prepare_live_xctestrun.py "$test_run" --service model --clear
           done
       - name: Stop test simulator
         if: always() && env.WOOW_LIVE_SIMULATOR != ''

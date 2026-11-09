@@ -97,9 +97,13 @@ struct MCPSettingsStore: MCPEndpointStoring {
         #if DEBUG
         let liveMCP = arguments.contains("-LiveMCPUITest")
         let cleanupMCP = arguments.contains("-LiveMCPUITestCleanup")
+        let liveConversation = arguments.contains("-LiveMCPConversationUITest")
         let regular = arguments.contains("-UITestNamespace") || arguments.contains("-UITestMode") || liveMCP || cleanupMCP
         let live = arguments.contains("-LiveModelUITestNamespace") || arguments.contains("-LiveModelUITest")
         guard !(regular && live) else { throw MCPSettingsError.invalidTestNamespace }
+        guard !liveConversation || (live && arguments.contains("-LiveModelUITest")) else {
+            throw MCPSettingsError.invalidTestNamespace
+        }
         if liveMCP || cleanupMCP {
             guard arguments.contains("-UITestMode") else { throw MCPSettingsError.invalidTestNamespace }
         }
@@ -119,11 +123,14 @@ struct MCPSettingsStore: MCPEndpointStoring {
             }
             // Only this explicit DEBUG mode bootstraps a real endpoint. Cleanup never
             // reads the environment, and regular UI tests cannot inherit this secret.
-            if liveMCP && !cleanupMCP {
+            if (liveMCP && !cleanupMCP) || (liveConversation && !arguments.contains("-LiveModelUITestCleanup")) {
                 guard let endpoint = (environment ?? ProcessInfo.processInfo.environment)["WOOW_LIVE_MCP_URL"] else {
                     throw MCPSettingsError.missingLiveTestEndpoint
                 }
                 try store.save(endpoint: endpoint)
+            }
+            if regular && arguments.contains("-UITestMode") && arguments.contains("-UITestMCPFixture") {
+                try store.save(endpoint: "https://fixture.invalid/mcp")
             }
             return store
         }
@@ -134,8 +141,14 @@ struct MCPSettingsStore: MCPEndpointStoring {
     static func networkAllowed(arguments: [String] = ProcessInfo.processInfo.arguments) -> Bool {
         #if DEBUG
         let testFlags = ["-UITestNamespace", "-UITestMode", "-LiveModelUITestNamespace", "-LiveModelUITest",
-                         "-LiveMCPUITest", "-LiveMCPUITestCleanup"]
+                         "-LiveMCPUITest", "-LiveMCPUITestCleanup", "-LiveMCPConversationUITest"]
         if arguments.contains(where: testFlags.contains) {
+            if arguments.contains("-LiveModelUITest"), arguments.contains("-LiveMCPConversationUITest"),
+               !arguments.contains("-LiveModelUITestCleanup"), !arguments.contains("-UITestMode"),
+               !arguments.contains("-UITestNamespace"),
+               arguments.filter({ $0 == "-LiveModelUITestNamespace" }).count == 1,
+               let index = arguments.firstIndex(of: "-LiveModelUITestNamespace"), arguments.indices.contains(index + 1),
+               UUID(uuidString: arguments[index + 1]) != nil { return true }
             guard arguments.contains("-UITestMode"), arguments.contains("-LiveMCPUITest"),
                   !arguments.contains("-LiveMCPUITestCleanup"),
                   !arguments.contains("-LiveModelUITestNamespace"), !arguments.contains("-LiveModelUITest"),

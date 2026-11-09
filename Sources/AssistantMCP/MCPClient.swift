@@ -42,7 +42,9 @@ public actor MCPClient {
                       case .object? = value["inputSchema"], let schema = value["inputSchema"] else {
                     throw MCPError.invalidResponse
                 }
-                return MCPTool(name: name, inputSchema: schema)
+                if let description = value["description"], description != .null,
+                   description.stringValue == nil { throw MCPError.invalidResponse }
+                return MCPTool(name: name, description: value["description"]?.stringValue, inputSchema: schema)
             }
         }
     }
@@ -52,6 +54,14 @@ public actor MCPClient {
     /// No client can guarantee that an allowlisted server tool is actually read-only.
     public func callReadOnlyTool(name: String, arguments: JSONValue, allowlist: Set<String>) async throws -> JSONValue {
         guard allowlist.contains(name) else { throw MCPError.toolNotAllowed }
+        return try await callAuthorizedTool(name: name, arguments: arguments)
+    }
+
+    /// Single, already-authorized invocation for trusted host integrations.
+    /// The host must obtain consent for this exact name/arguments before calling;
+    /// use MCPConversationRunner for model-generated proposals. Neither tool
+    /// annotations nor this API's name establish consent. Never retries a call.
+    public func callAuthorizedTool(name: String, arguments: JSONValue) async throws -> JSONValue {
         guard !name.isEmpty, case .object = arguments else { throw MCPError.invalidRequest }
         return try await perform { deadline in
             try await self.requireCapability("tools")

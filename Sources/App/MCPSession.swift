@@ -2,8 +2,8 @@ import AssistantMCP
 import Combine
 import Foundation
 
-// The UI deliberately has no tool invocation or resource-content API.
-protocol MCPDiscovering: Sendable {
+// Discovery and execution share one explicitly connected, ephemeral client.
+protocol MCPDiscovering: MCPConversationExecuting {
     func initialize() async throws -> MCPServerInfo
     func listTools() async throws -> [MCPTool]
     func listResources() async throws -> [MCPResource]
@@ -24,6 +24,13 @@ final class MCPSession: ObservableObject {
     @Published private(set) var protocolVersion: String?
     @Published private(set) var toolNames: [String] = []
     @Published private(set) var resourceNames: [String] = []
+    @Published private(set) var tools: [MCPTool] = []
+    @Published private(set) var resources: [MCPResource] = []
+    @Published private(set) var selectedToolNames: Set<String> = []
+    @Published private(set) var selectedResourceURIs: Set<String> = []
+    @Published var toolSearch = ""
+    /// Invalidates conversation snapshots before changing the endpoint or selection.
+    var onConnectionChange: (() -> Void)?
     @Published private(set) var supportsTools = false
     @Published private(set) var supportsResources = false
     @Published private(set) var errorMessage: String?
@@ -38,8 +45,20 @@ final class MCPSession: ObservableObject {
     private var requestID: UUID?
 
     init() {
+        #if DEBUG
+        let fixture = ProcessInfo.processInfo.arguments.contains("-UITestMode")
+            && ProcessInfo.processInfo.arguments.contains("-UITestMCPFixture")
+        if fixture {
+            allowsNetwork = true
+            clientFactory = { _ in UITestMCPFixture() }
+        } else {
+            allowsNetwork = MCPSettingsStore.networkAllowed()
+            clientFactory = { MCPClient(endpoint: $0) }
+        }
+        #else
         allowsNetwork = MCPSettingsStore.networkAllowed()
         clientFactory = { MCPClient(endpoint: $0) }
+        #endif
         let store: MCPSettingsStore
         do {
             store = try MCPSettingsStore.makeDefault()
@@ -77,6 +96,36 @@ final class MCPSession: ObservableObject {
     deinit { request?.cancel(); deadline?.cancel() }
 
     var isBusy: Bool { phase == .connecting || phase == .discovering }
+    var canUseInConversation: Bool { phase == .connected && (!selectedToolNames.isEmpty || !selectedResourceURIs.isEmpty) }
+
+    var visibleTools: [MCPTool] {
+        let query = toolSearch.trimmingCharacters(in: .whitespacesAndNewlines)
+        return query.isEmpty ? tools : tools.filter { $0.name.localizedCaseInsensitiveContains(query) }
+    }
+
+    func selectTool(_ name: String, enabled: Bool) {
+        guard tools.contains(where: { $0.name == name }) else { return }
+        guard !enabled || selectedToolNames.count < 64 else {
+            notice = "每次對話最多選取 64 個工具。"; return
+        }
+        onConnectionChange?()
+        if enabled { selectedToolNames.insert(name) }
+        else { selectedToolNames.remove(name) }
+    }
+
+    func selectResource(_ uri: String, enabled: Bool) {
+        guard resources.contains(where: { $0.uri == uri }) else { return }
+        guard !enabled || selectedResourceURIs.count < 64 else { return }
+        onConnectionChange?()
+        if enabled { selectedResourceURIs.insert(uri) }
+        else { selectedResourceURIs.remove(uri) }
+    }
+
+    func conversationConnection() throws -> (any MCPDiscovering, [MCPTool], [MCPResource]) {
+        guard canUseInConversation, let client else { throw MCPError.notInitialized }
+        return (client, tools.filter { selectedToolNames.contains($0.name) },
+                resources.filter { selectedResourceURIs.contains($0.uri) })
+    }
     var canSave: Bool { repository != nil && !isBusy && !endpointDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     var canConnect: Bool {
         hasStoredEndpoint && !isBusy && phase != .connected
@@ -159,12 +208,23 @@ final class MCPSession: ObservableObject {
                 try Task.checkCancellation()
                 let resources = info.capabilities.contains("resources") ? try await connection.listResources() : []
                 try Task.checkCancellation()
+                // The whole webhook endpoint is a credential, never model context.
+                let catalogData = try JSONEncoder().encode(tools)
+                let resourceData = try JSONEncoder().encode(resources)
+                guard let catalogText = String(data: catalogData, encoding: .utf8),
+                      !catalogText.replacingOccurrences(of: "\\/", with: "/").contains(endpoint.absoluteString),
+                      let resourceText = String(data: resourceData, encoding: .utf8),
+                      !resourceText.replacingOccurrences(of: "\\/", with: "/").contains(endpoint.absoluteString),
+                      Set(tools.map(\.name)).count == tools.count,
+                      Set(resources.map(\.uri)).count == resources.count else { throw MCPError.invalidResponse }
                 guard let self, self.requestID == id else { return }
                 self.protocolVersion = info.protocolVersion
                 self.supportsTools = info.capabilities.contains("tools")
                 self.supportsResources = info.capabilities.contains("resources")
                 self.toolNames = tools.map { Self.displayName($0.name, endpoint: endpoint) }
                 self.resourceNames = resources.map { Self.displayName($0.name, endpoint: endpoint) }
+                self.tools = tools
+                self.resources = resources
                 self.finish(id: id)
                 self.phase = .connected
                 self.notice = "僅完成握手與目錄探索，未執行工具或讀取資源內容；不代表服務持續在線。"
@@ -214,6 +274,7 @@ final class MCPSession: ObservableObject {
     }
 
     private func stopWork() {
+        onConnectionChange?()
         requestID = nil // Invalidate before cancellation, so late replies cannot restore the UI.
         request?.cancel()
         request = nil
@@ -227,6 +288,11 @@ final class MCPSession: ObservableObject {
         protocolVersion = nil
         toolNames = []
         resourceNames = []
+        tools = []
+        resources = []
+        selectedToolNames = []
+        selectedResourceURIs = []
+        toolSearch = ""
         supportsTools = false
         supportsResources = false
     }

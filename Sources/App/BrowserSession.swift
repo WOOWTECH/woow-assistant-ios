@@ -33,6 +33,25 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     @Published private(set) var answer: String?
     @Published private(set) var isRunning = false
     @Published private(set) var learningStatus: String?
+    @Published private(set) var canGoBack = false
+    @Published private(set) var canGoForward = false
+    @Published private(set) var controlSnapshot: BrowserDOMSnapshot?
+    @Published private(set) var interactionProposal: BrowserInteractionProposal?
+    @Published private(set) var interactionStatus = "讀取控制項後，每個動作都需單次核准。"
+    @Published private(set) var interactionError: String?
+    @Published private(set) var isInteracting = false
+    @Published var interactionGoal = ""
+    private var interactionGate = BrowserInteractionGate()
+    private var interactionWork: Task<Void, Never>?
+    private var interactionRunID: UUID?
+    private var storedDOMExecutor: BrowserDOMExecutor?
+    private var postAllowance: (url: URL, expires: Date)?
+    private var domExecutor: BrowserDOMExecutor {
+        if let storedDOMExecutor { return storedDOMExecutor }
+        let executor = BrowserDOMExecutor(webView: webView)
+        storedDOMExecutor = executor
+        return executor
+    }
     private var work: Task<Void, Never>?
     private var runID: UUID?
     private var origin: String?
@@ -52,7 +71,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     }
 
     func openAddress() {
-        guard !isRunning else { return }
+        guard !isRunning, !isInteracting else { return }
+        invalidateControls()
         error = nil; answer = nil; current = nil
         guard let url = URL(string: address), permitted(url) else {
             error = "請使用公開 HTTPS 網址；不接受內網、憑證網址或操作端點。"; return
@@ -63,6 +83,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     }
 
     func cancel() {
+        cancelInteraction()
         runID = nil; work?.cancel(); work = nil; origin = nil
         storedWebView?.stopLoading(); isRunning = false
         for id in Array(evaluations.keys) { finishEvaluation(id, result: .failure(CancellationError())) }
@@ -70,7 +91,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     }
 
     func beginResearch(using chat: ChatSession) {
-        guard !isRunning, current != nil, !goal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        guard !isRunning, !isInteracting, current != nil, !goal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        invalidateControls()
         error = nil; answer = nil; actions = []; learningStatus = nil
         do {
             let access = try chat.modelAccess()
@@ -248,7 +270,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
 
     /// Invoked only by the route review's explicit confirmation button.
     func replay(route: WebRoute, store: LearningStore, modelAccess: () throws -> ModelAccess) {
-        guard !isRunning else { return }
+        guard !isRunning, !isInteracting else { return }
+        invalidateControls()
         do {
             let access = try modelAccess()
             let plan = try store.routes.replayPlan(id: route.id, originURL: route.origin.url,
@@ -328,14 +351,157 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
             text: matches.isEmpty ? "此頁未找到指定文字。" : matches.prefix(20).joined(separator: "\n"), links: snapshot.links)
     }
 
+    // Interaction and readonly research deliberately have separate entry points,
+    // state, and provenance. No interaction is recorded as a readonly route or
+    // automatically counted as successful skill execution.
+    func snapshotControls() async throws -> BrowserDOMSnapshot {
+        guard !isRunning else { throw BrowserInteractionError.busy }
+        guard let url = webView.url, permitted(url) else { throw BrowserInteractionError.noSnapshot }
+        interactionGate.reject(); interactionProposal = nil
+        let snapshot = try await domExecutor.snapshot()
+        try Task.checkCancellation()
+        guard snapshot.url == webView.url, snapshot.url == url else { throw BrowserInteractionError.staleSnapshot }
+        controlSnapshot = snapshot
+        return snapshot
+    }
+
+    @discardableResult
+    func proposeInteraction(_ request: BrowserInteractionRequest) throws -> BrowserInteractionProposal {
+        guard !isRunning, let snapshot = controlSnapshot else { throw BrowserInteractionError.noSnapshot }
+        guard snapshot.url == webView.url else { throw BrowserInteractionError.staleSnapshot }
+        let proposal = try interactionGate.propose(request, snapshot: snapshot)
+        interactionProposal = proposal; interactionError = nil
+        interactionStatus = "等待單次核准；尚未操作網頁。"
+        return proposal
+    }
+
+    func refreshControls() {
+        guard !isRunning, !isInteracting else { return }
+        let id = startInteraction(status: "正在讀取控制項…")
+        interactionWork = Task { [weak self] in
+            guard let self else { return }
+            do {
+                _ = try await self.snapshotControls()
+                guard self.interactionRunID == id else { return }
+                self.interactionStatus = "控制項已更新；網頁欄位值不會傳給模型。"
+            } catch { self.reportInteraction(error, id: id) }
+            self.finishInteraction(id)
+        }
+    }
+
+    func requestModelInteraction(using chat: ChatSession) {
+        guard !isRunning, !isInteracting else { return }
+        do {
+            let access = try chat.modelAccess(), taskGoal = interactionGoal
+            let id = startInteraction(status: "模型正在提出下一個動作，尚未執行…")
+            interactionWork = Task { [weak self] in
+                guard let self else { return }
+                let timeout = Task { [weak self] in
+                    do { try await Task.sleep(nanoseconds: 60_000_000_000) } catch { return }
+                    guard self?.interactionRunID == id else { return }
+                    self?.cancelInteraction(); self?.interactionError = "模型提案逾時；沒有核准或執行動作。"
+                }
+                defer { timeout.cancel() }
+                do {
+                    let snapshot = try await self.snapshotControls()
+                    let request = try await BrowserInteractionPlanner(client: access.client).propose(goal: taskGoal,
+                        snapshot: snapshot, configuration: access.configuration, apiKey: access.key)
+                    try Task.checkCancellation()
+                    guard self.interactionRunID == id else { return }
+                    _ = try self.proposeInteraction(request)
+                } catch { self.reportInteraction(error, id: id) }
+                self.finishInteraction(id)
+            }
+        } catch { interactionError = "請先到設定儲存模型服務與金鑰。" }
+    }
+
+    /// Native review button only. Parent orchestration may propose, never call
+    /// this from a model tool. One consumed approval cannot authorize a batch.
+    func approveInteraction(id proposalID: UUID) {
+        guard !isRunning, !isInteracting else { return }
+        do {
+            let proposal = try interactionGate.consumeApproval(id: proposalID)
+            interactionProposal = nil
+            let id = startInteraction(status: "正在執行這一個已核准動作…")
+            // Existing readonly GET policy stays intact. Only the exact POST
+            // form destination previewed by this approval receives one short
+            // navigation allowance. Page fetch/XHR listeners are not a sandbox.
+            if proposal.control?.navigationMethod == "POST", let url = proposal.control?.navigationURL, permitted(url) {
+                postAllowance = (url, Date().addingTimeInterval(10))
+            }
+            interactionWork = Task { [weak self] in
+                guard let self else { return }
+                do {
+                    try await self.domExecutor.performApproved(proposal)
+                    guard self.interactionRunID == id else { return }
+                    self.controlSnapshot = nil
+                    self.interactionStatus = "已送出單次 DOM 動作；請確認網頁結果，不代表網站任務已成功。"
+                } catch { self.reportInteraction(error, id: id) }
+                self.finishInteraction(id)
+            }
+        } catch { interactionError = (error as? BrowserInteractionError)?.message ?? BrowserInteractionError.executionFailed.message }
+    }
+
+    func rejectInteraction() {
+        interactionGate.reject(); interactionProposal = nil
+        interactionStatus = "已拒絕；沒有執行動作。"
+    }
+
+    func cancelInteraction() {
+        interactionRunID = nil; interactionWork?.cancel(); interactionWork = nil
+        storedDOMExecutor?.cancel(); isInteracting = false; postAllowance = nil
+        invalidateControls()
+        interactionStatus = "已取消；尚未核准的動作不會執行，已送出的動作無法撤回。"
+    }
+
+    func goBack() { manualNavigation { webView.goBack() } }
+    func goForward() { manualNavigation { webView.goForward() } }
+    func reloadPage() {
+        guard !isRunning, !isInteracting, let url = webView.url else { return }
+        interactionStatus = "頁面已重新整理；先前的提案已取消。"
+        if fixtureMode { invalidateControls(); status = "正在載入…"; loadFixture(url: url) }
+        else { manualNavigation { webView.reload() } }
+    }
+    private func manualNavigation(_ operation: () -> WKNavigation?) {
+        guard !isRunning, !isInteracting else { return }
+        invalidateControls(); error = nil; current = nil
+        if operation() != nil { status = "正在載入…" }
+    }
+    private func invalidateControls() {
+        interactionGate.reject(); interactionProposal = nil; controlSnapshot = nil; postAllowance = nil
+    }
+    private func startInteraction(status: String) -> UUID {
+        let id = UUID(); interactionRunID = id; isInteracting = true
+        interactionError = nil; interactionStatus = status
+        return id
+    }
+    private func finishInteraction(_ id: UUID) {
+        guard interactionRunID == id else { return }
+        interactionRunID = nil; interactionWork = nil; isInteracting = false
+    }
+    private func reportInteraction(_ error: Error, id: UUID) {
+        guard interactionRunID == id else { return }
+        interactionError = (error as? BrowserInteractionError)?.message ?? "請求未完成；沒有自動重試或核准其他動作。"
+        controlSnapshot = nil; interactionGate.reject(); interactionProposal = nil; postAllowance = nil
+    }
+
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        let postPermitted: Bool
+        if let allowance = postAllowance, !isRunning, navigationAction.targetFrame?.isMainFrame == true,
+           navigationAction.request.url == allowance.url, navigationAction.request.httpMethod == "POST", Date() < allowance.expires {
+            postPermitted = true; postAllowance = nil
+        } else { postPermitted = false }
         guard let url = navigationAction.request.url,
-              permitted(url), navigationAction.request.httpMethod == "GET",
+              permitted(url), navigationAction.request.httpMethod == "GET" || postPermitted,
               origin == nil || Self.origin(url) == origin else {
             decisionHandler(.cancel); error = "此導覽不在目前允許的公開網站範圍內。"; return
         }
         decisionHandler(.allow)
+    }
+
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        invalidateControls()
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
@@ -346,6 +512,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        canGoBack = webView.canGoBack; canGoForward = webView.canGoForward
         if expectedNavigation === navigation { navigationFinished = true; expectedNavigation = nil }
         if !isRunning {
             Task { [weak self] in
@@ -376,10 +543,29 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
         guard fixtureMode, url.host == "research.example.invalid" else { return }
         let pages = ["alpha", "beta", "gamma", "delta", "epsilon"]
         let links = pages.map { "<a href='https://research.example.invalid/\($0)'>\($0)</a>" }.joined(separator: "<br>")
-        let html = "<html><head><title>Research guide</title></head><body><h1>Website guide</h1><p>Section \(url.lastPathComponent). Verified marker WOOW_WEB_GUIDE. Each section explains its own step.</p>\(links)</body></html>"
+        let html: String
+        if url.path == "/interaction" {
+            html = Self.interactionFixtureHTML
+        } else {
+            html = "<html><head><title>Research guide</title></head><body><h1>Website guide</h1><p>Section \(url.lastPathComponent). Verified marker WOOW_WEB_GUIDE. Each section explains its own step.</p>\(links)</body></html>"
+        }
         expectedNavigation = webView.loadHTMLString(html, baseURL: url)
         #endif
     }
+    #if DEBUG
+    private static let interactionFixtureHTML = #"""
+    <!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Local interaction fixture</title></head>
+    <body><h1>Interaction fixture</h1><form onsubmit="event.preventDefault();document.getElementById('result').textContent='SAVED '+document.getElementById('note').value+' '+document.getElementById('choice').value">
+    <p><label>Public note <input id="note" type="text" value="initial"></label></p>
+    <p><label>Mode <select id="choice"><option value="basic">Basic</option><option value="advanced">Advanced</option><option disabled>Unavailable</option></select></label></p>
+    <button type="submit">Save locally</button></form><p id="result" role="status">NOT SAVED</p>
+    <label>Password <input type="password" value="fixture-password-not-a-secret"></label>
+    <input type="file" aria-label="Upload excluded"><button disabled>Disabled action</button>
+    <button type="button" onclick="document.getElementById('note').replaceWith(document.getElementById('note').cloneNode(true))">Replace note</button>
+    <button type="button" onclick="setTimeout(()=>document.getElementById('note').replaceWith(document.getElementById('note').cloneNode(true)),2500)">Arm replacement</button>
+    <p style="height:1500px">Scroll area</p><p>FIXTURE BOTTOM</p></body></html>
+    """#
+    #endif
     private struct DOMObservation: Decodable {
         let title: String; let text: String; let links: [Link]
         struct Link: Decodable { let href: String; let title: String }

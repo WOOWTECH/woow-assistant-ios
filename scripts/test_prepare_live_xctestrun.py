@@ -44,6 +44,18 @@ class LiveRunnerConfigurationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             configure({}, {}, service="unknown")
 
+    def test_combined_services_clear_independently(self):
+        payload = {"WoowAssistantUITests": {}}
+        configure(payload, self.env)
+        configure(payload, {"WOOW_HA_MCP_TEST_URL": "https://mcp.example.invalid/private"}, service="mcp")
+        variables = payload["WoowAssistantUITests"]["EnvironmentVariables"]
+        self.assertEqual(len(variables), 4)
+        configure(payload, {}, clear=True, service="mcp")
+        self.assertNotIn("WOOW_LIVE_MCP_URL", variables)
+        self.assertEqual(len(variables), 3)
+        configure(payload, {}, clear=True)
+        self.assertEqual(variables, {})
+
     def test_duplicate_runner_rejected(self):
         with self.assertRaises(ValueError):
             configure({"TestConfigurations": [{"TestTargets": [

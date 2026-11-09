@@ -1,5 +1,41 @@
 # Verification — 2026-11-10
 
+## New MCP / DOM / bundled-catalog increment — acceptance in progress
+
+New code connects selected MCP tools/resources to a model conversation, exact
+per-call approval, bounded execution, cancellation and reviewable received results.
+The MCP runner uses strict JSON commands over the existing model transport; it does
+not yet implement provider-native function-call streaming, OAuth, stdio or legacy SSE.
+Tool schemas are supplied verbatim; schema enforcement remains the server's job.
+Server annotations never grant consent. Limits: 12 model calls, 6 operations, 180s.
+The App reports attempts and received results separately; cancellation cannot undo
+an operation that reached the server. No automatic tool retry occurs.
+
+Browser additions are observed DOM IDs and individually reviewed click/type/select/
+scroll operations, a single-step model proposer, back/forward/reload. Actual event
+dispatch does not assert site task success. Forms remain constrained by the existing
+public-HTTPS navigation policy, synthetic events, no frames/closed shadow DOM,
+no password/file input, and no tabs/login/download parity. Interaction events do not
+silently become readonly route evidence or verified skills.
+
+The pinned Mika catalog contains all six bundled skills, three support files,
+LICENSE and NOTICE; original bytes/hashes are verified. Original scripts remain
+inert. Separately labeled iOS text adaptations use pending-review → approved trial,
+and do not claim execution parity with the original skills.
+
+Local evidence before iOS CI: MCP 333 checks (234 existing + 99 new), catalog 255
+and existing Skills 643, DOM policy 80 and real macOS WebKit DOM 29, App MCP
+network/namespace isolation 16, private-runner injection/cleanup 9. App logic typechecks
+with Swift 5.8 (old macOS WebKit delegate-isolation warnings remain); full SwiftPM is
+unavailable on this CLT-only host. Three new catalog UI, three DOM UI, five MCP UI,
+one real-model/public-site DOM UI and two combined real-model/HA UI cases await CI.
+These local checks do not count as iOS UI or live-service success.
+
+USB inventory currently contains no connected iPhone; local Xcode selection is
+Command Line Tools. iOS 17 physical-device validation remains unperformed.
+
+## Previous completed browser/learning checkpoint
+
 The implemented browser/learning increment has passed the full simulator matrix and
 real-model App flow described below. The broader App remains in development; this
 is not full Mika feature parity. Fixture, native-network and live UI evidence are

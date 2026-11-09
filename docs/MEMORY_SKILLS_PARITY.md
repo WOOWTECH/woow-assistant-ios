@@ -57,20 +57,92 @@ complete locations rather than treating shortened table paths as filesystem path
   Unsupported tool references must be rejected or explicitly unavailable.
 - Plain chat completion is not proof that a skill was followed successfully.
   The current browser research runner now supplies actual read/navigation evidence
-  to an independent outcome judge; model-to-MCP orchestration remains absent.
+  to an independent outcome judge. Model-to-MCP conversation orchestration and
+  constrained DOM interaction are separate increments; catalog evidence below
+  does not establish their acceptance or full browser parity.
   Drafting/promotion must be accepted with separate core, App UI and live evidence.
-- Model-controlled memory/skill tools, profile consolidation and complete bundled
-  catalog remain unimplemented. Event-driven browser draft production and website
+- Model-controlled memory/skill mutation tools and profile consolidation remain
+  unimplemented. The complete pinned bundled-source archive and separately labeled
+  iOS text adaptations are implemented below; this is not original-skill execution
+  parity. Event-driven browser draft production and website
   lifecycle have passing fixture App tests on all three simulators. Real-model
   multi-page learning through approval/relaunch also passed separately (evidence
   below); lifecycle unit results are not substituted for that integration.
 
-The 2026-11-10 browser increment deliberately restricts URLs to public HTTPS without
+The previously accepted 2026-11-10 read-only website-learning path restricts URLs to public HTTPS without
 queries/fragments, same-origin research links, ephemeral website data and read-only
 actions. It is not full Mika browser parity. Outcome assessment adds exact observation
 citations, and deduplicates executed actions before the five-action drafting gate.
 Website quotes are references, not user memory; approval remains separate. Tests
 must distinguish real models over synthetic traces from actual browser execution.
+
+### Bundled Skills catalog increment — 2026-11-10
+
+The local catalog archives **all six SKILL.md entries at the pinned Mika revision**,
+their **three supporting files**, and the full root **LICENSE and NOTICE**: eleven
+original files in total. Their complete UTF-8 contents, including final newlines,
+are retained in
+[`MikaBundledSkills.json`](../Sources/AssistantSkills/Resources/MikaBundledSkills.json).
+Each file carries its original path and SHA-256; the loader also pins the complete
+resource hash and source commit. A missing or modified resource fails closed.
+No downloaded catalog replaces this archive at runtime.
+
+All original skill paths start with `core/src/main/resources/skills/`. Supporting
+paths in this table are relative to the corresponding skill directory.
+
+| Original entry | Supporting files retained | Separate iOS text adaptation / boundary |
+|---|---|---|
+| `configure-mika/SKILL.md` | None | Manual settings explanation; no original settings mutation tools, credential changes or automatic deletion |
+| `content-transcribe/SKILL.md` | `references/transcript-output-formats.md` | Organize supplied text into summaries/transcripts; no audio transcription, subtitle downloading or other-App access |
+| `documents/SKILL.md` | `scripts/extract_pdf.py`, `scripts/manifest.json` | Organize supplied document text; no PDF extraction, merge, OCR, decryption, Python or shell execution |
+| `info-research/SKILL.md` | None | Compare supplied evidence and cite sources; explicitly initiated constrained browser research remains subject to its own policy, not original cross-site/App automation |
+| `messaging/SKILL.md` | None | Draft replies or messages from supplied text; no original cross-App inbox/contact lookup or automatic sending |
+| `skill-authoring/SKILL.md` | None | Draft SKILL.md text for manual import and review; no model-controlled save, approval, enablement or mutation tools |
+
+Memory → Skills → **Mika bundled skills catalog** provides full-text search across
+names, aliases, original documents, supporting files and adaptations. Original
+SKILL.md, supporting files, Apache-2.0 license and NOTICE are readable as verbatim
+text, not executable Markdown or scripts. In particular, the archived manifest's
+`runnable: true` is preserved source data, **not iOS execution authority**. Copyright
+attribution and a modification notice accompany the iOS adaptations.
+
+Each adaptation has a separate `ios-mika-<original-id>` name and explicitly states
+that it is a changed text-only version, **not execution parity**. Import stages only
+this adaptation as an imported pending draft, through the existing encrypted
+atomic save path. It neither imports the raw original as instructions nor enables
+anything automatically. Explicit approval creates a trial skill with no success
+outcomes; pending or installed duplicates are rejected without replacing user edits.
+Save failure cannot publish an imported state. An unavailable learning store still
+permits catalog reading but disables import.
+
+Approved, enabled adaptations use the existing bounded personal-skill retrieval
+path; pending and suspended skills remain excluded. This is guidance as user-context,
+not an additional permission or automatic tool dispatch. The iOS app's constrained
+DOM actions and MCP conversation tools have separate capability/approval boundaries.
+An MCP server may expose additional capabilities, but catalog import neither grants
+access to them nor establishes equivalence with Mika's original tools. Desktop,
+shell, Python and Android/native-App requirements are explicitly marked unsupported
+where applicable. The catalog's six entries being complete does not mean those six
+original skills are executable or functionally equivalent on iOS.
+
+Executed local evidence for this increment:
+
+- **255 catalog fixture assertions passed**, including the complete source inventory,
+  provenance/hash checks, search, capability labels, draft/approval/trial transitions,
+  duplicate rejection, approved-only retrieval, Codable persistence and tamper rejection.
+- **643 existing Skills core/learning assertions passed** unchanged, including strict
+  sensitive-content, provenance and judge URL-identity regressions. These are native
+  deterministic fixtures, not live model or external-service tests.
+- All eleven archived files were independently compared byte-for-byte and by SHA-256
+  against the clone at `0c172724f3f0c96f7345262588072f6e95db1138`.
+- Strict native Swift compilation/typechecking, App/UI source parsing and diff checks
+  passed. A local SwiftPM build could not start because CLT lacks the SDK `PlatformPath`;
+  this is not a successful packaged-resource build or an XCTest run.
+- **Three `SkillCatalogUITests` are implemented but pending execution**: full catalog
+  search/original/support-file/license reading; adaptation import, explicit approval
+  into trial and relaunch; empty search and rejection without enablement. UI parsing
+  is not simulator evidence. Three-device CI and actual bundled-resource loading in
+  the App remain to be verified; earlier browser-learning passes do not cover them.
 
 ### Website adaptation and review flow
 
@@ -165,6 +237,16 @@ or bundled-catalog parity, physical-device behavior, or native-app knowledge/con
     leaves no late answer, memory, skill, website fact or route from that run.
 28. Interrupted assessment, invalid verdicts, stale fingerprints and conflicting
     duplicate skill references cannot partially publish outcome/draft state.
+29. The pinned catalog contains six original skills, three supporting files and full
+    LICENSE/NOTICE; missing or altered resource bytes cannot silently change content.
+30. Full-text search and verbatim original/support-file/license reading work without
+    executing embedded scripts, links or instructions. Capability gaps are visible.
+31. Catalog import stages only the separately attributed iOS text adaptation; approval
+    remains explicit and creates trial, not verified status. Duplicates preserve edits.
+32. Pending, rejected and suspended adaptations cannot enter model context; approved
+    text guidance grants no new browser/MCP authority and cannot claim task success.
+33. Catalog draft/rejection/approval state survives relaunch; failed storage cannot
+    publish success, and an unavailable vault disables import without hiding source text.
 
 Evidence and remaining failures are recorded in [VERIFICATION.md](VERIFICATION.md).
 Do not substitute fixture-only UI counts for real-service behavior or missing

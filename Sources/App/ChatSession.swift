@@ -1,4 +1,5 @@
 import AssistantModels
+import AssistantMCP
 import Combine
 import Foundation
 
@@ -12,6 +13,17 @@ struct ChatEntry: Identifiable {
     let id = UUID()
     let role: String
     let content: String
+}
+
+struct MCPApprovalRequest: Identifiable {
+    let id = UUID()
+    let name: String
+    let arguments: JSONValue
+    var argumentsText: String {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
+        return (try? encoder.encode(arguments)).flatMap { String(data: $0, encoding: .utf8) } ?? "{}"
+    }
 }
 
 @MainActor
@@ -30,6 +42,13 @@ final class ChatSession: ObservableObject {
     @Published private(set) var chatNotice: String?
     @Published private(set) var settingsError: String?
     @Published private(set) var settingsNotice: String?
+    @Published var usesMCP = false
+    @Published private(set) var pendingMCPApproval: MCPApprovalRequest?
+    @Published private(set) var mcpActivity: String?
+    @Published private(set) var mcpSteps: [MCPConversationStep] = []
+    private var mcpApprovalContinuation: CheckedContinuation<Bool, Never>?
+    private var isMCPRun = false
+    private var mcpSentCount = 0
 
     let isUITestMode: Bool
     private let repository: ModelSettingsRepository
@@ -95,6 +114,8 @@ final class ChatSession: ObservableObject {
     }
 
     var chatStatus: String {
+        if pendingMCPApproval != nil { return "等待你核准 MCP 工具…" }
+        if isSubmitting && isMCPRun { return "正在使用 MCP 處理對話…" }
         if isSubmitting { return "正在等待模型回覆…" }
         return savedSettings != nil && hasStoredKey ? "模型已設定" : "尚未設定模型"
     }
@@ -154,8 +175,18 @@ final class ChatSession: ObservableObject {
         }
     }
 
-    func send() {
+    func send(mcp: MCPSession? = nil) {
         guard canSend, let savedSettings else { return }
+        let mcpConnection: ((any MCPDiscovering), [MCPTool], [MCPResource])?
+        if usesMCP {
+            do {
+                guard let mcp else { throw MCPError.notInitialized }
+                mcpConnection = try mcp.conversationConnection()
+            } catch {
+                chatError = "請先連線並選取 MCP 工具，或關閉對話的 MCP 選項；草稿已保留。"
+                return
+            }
+        } else { mcpConnection = nil }
         learning.cancelLearning()
         let key: String
         do { key = try repository.key(for: savedSettings) }
@@ -173,12 +204,22 @@ final class ChatSession: ObservableObject {
         let id = UUID()
         requestID = id
         isSubmitting = true
+        isMCPRun = mcpConnection != nil
+        mcpActivity = nil
+        mcpSteps = []
+        mcpSentCount = 0
         chatError = nil
         chatNotice = nil
         let client = client
         request = Task { [weak self] in
             do {
-                let reply = try await client.complete(messages: messages, configuration: configuration, apiKey: key)
+                let reply: String
+                if let (connection, tools, resources) = mcpConnection {
+                    reply = try await self?.completeWithMCP(messages: messages, configuration: configuration,
+                        key: key, client: client, connection: connection, tools: tools, resources: resources, requestID: id) ?? ""
+                } else {
+                    reply = try await client.complete(messages: messages, configuration: configuration, apiKey: key)
+                }
                 try Task.checkCancellation()
                 guard let self, self.requestID == id else { return }
                 guard !reply.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
@@ -196,15 +237,19 @@ final class ChatSession: ObservableObject {
             } catch {
                 guard let self, self.requestID == id else { return }
                 // Do not surface provider error bodies/URLs: they may contain secrets.
-                self.finish(id: id, error: "傳送失敗，草稿已保留。請檢查模型設定或網路後重試。")
+                let message = (error as? MCPChatStop)?.message
+                    ?? (mcpConnection == nil ? "傳送失敗，草稿已保留。請檢查模型設定或網路後重試。"
+                        : "MCP 對話未完成，草稿與已收到的工具結果保留；請先確認已送出操作，不會自動重試。")
+                self.finish(id: id, error: message)
             }
         }
         deadline = Task { [weak self] in
-            do { try await Task.sleep(nanoseconds: 90_000_000_000) }
+            let seconds: UInt64 = mcpConnection == nil ? 90 : 180
+            do { try await Task.sleep(nanoseconds: seconds * 1_000_000_000) }
             catch { return }
             guard let self, self.requestID == id else { return }
             self.request?.cancel()
-            self.finish(id: id, error: "等待超過 90 秒，已停止等待；草稿已保留，可重試。")
+            self.finish(id: id, error: "等待超過 \(seconds) 秒，已停止等待；草稿已保留，可重試。")
         }
     }
 
@@ -216,17 +261,81 @@ final class ChatSession: ObservableObject {
         chatNotice = "已取消等待，草稿已保留。伺服器可能已收到請求。"
     }
 
+    func cancelMCP() {
+        guard isMCPRun else { return }
+        cancel()
+    }
+
+    private func completeWithMCP(messages: [ModelMessage], configuration: ModelConfiguration,
+                                 key: String, client: any ChatModelClient,
+                                 connection: any MCPDiscovering, tools: [MCPTool], resources: [MCPResource], requestID: UUID) async throws -> String {
+        let result = try await MCPConversationRunner(client: client).run(
+            messages: messages, configuration: configuration, apiKey: key,
+            tools: tools, resources: resources, executor: connection,
+            approve: { [weak self] proposal in
+                switch proposal.action {
+                case .callTool(let name, let arguments):
+                    return await self?.approveMCP(name: name, arguments: arguments, requestID: requestID) ?? false
+                case .readResource(let uri):
+                    return await self?.approveMCP(name: "讀取 MCP 資源", arguments: .object(["uri": .string(uri)]), requestID: requestID) ?? false
+                }
+            }, onEvent: { [weak self] event in
+                await self?.receiveMCP(event, requestID: requestID)
+            })
+        guard result.stopReason == .finished, let answer = result.answer else { throw MCPChatStop(reason: result.stopReason) }
+        return answer
+    }
+
+    private func receiveMCP(_ event: MCPConversationEvent, requestID: UUID) {
+        guard self.requestID == requestID else { return }
+        switch event {
+        case .executing: mcpSentCount += 1
+        case .completed(let step): mcpSteps.append(step)
+        default: break
+        }
+        mcpActivity = "MCP 嘗試呼叫 \(mcpSentCount) 次；已收到 \(mcpSteps.count) 次結果；工具錯誤 \(mcpSteps.filter(\.isError).count) 次。"
+    }
+
+    func resolveMCPApproval(id: UUID, approved: Bool) {
+        guard pendingMCPApproval?.id == id else { return }
+        pendingMCPApproval = nil
+        let continuation = mcpApprovalContinuation
+        mcpApprovalContinuation = nil
+        continuation?.resume(returning: approved)
+    }
+
+    private func approveMCP(name: String, arguments: JSONValue, requestID: UUID) async -> Bool {
+        guard self.requestID == requestID, !Task.isCancelled else { return false }
+        return await withTaskCancellationHandler {
+            await withCheckedContinuation { continuation in
+                guard self.requestID == requestID, !Task.isCancelled else {
+                    continuation.resume(returning: false); return
+                }
+                mcpApprovalContinuation = continuation
+                pendingMCPApproval = MCPApprovalRequest(name: name, arguments: arguments)
+            }
+        } onCancel: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self, self.requestID == requestID, let proposal = self.pendingMCPApproval else { return }
+                self.resolveMCPApproval(id: proposal.id, approved: false)
+            }
+        }
+    }
+
     func newConversation() {
         guard !isSubmitting else { return }
         learning.resetConversationPresentation()
         entries = []; conversationID = UUID().uuidString
+        mcpActivity = nil; mcpSteps = []; mcpSentCount = 0
         chatError = nil; chatNotice = "已開啟新對話；已確認的記憶與技能保留。"
     }
 
     private func finish(id: UUID, error: String? = nil) {
         guard requestID == id else { return }
+        if let pending = pendingMCPApproval { resolveMCPApproval(id: pending.id, approved: false) }
         requestID = nil
         isSubmitting = false
+        isMCPRun = false
         request = nil
         deadline?.cancel()
         deadline = nil
@@ -239,5 +348,16 @@ final class ChatSession: ObservableObject {
 
     private static func settingsMessage(_ error: Error) -> String {
         (error as? ModelSettingsError)?.errorDescription ?? "無法讀取或儲存模型設定，請移除設定後重新填寫。"
+    }
+}
+
+private struct MCPChatStop: Error {
+    let reason: MCPConversationStopReason
+    var message: String {
+        switch reason {
+        case .approvalDenied: return "你已拒絕這次呼叫，MCP 對話已停止；草稿與先前工具結果保留。"
+        case .toolError: return "工具回報錯誤，已停止；請檢視工具結果。草稿保留，不會自動重試。"
+        default: return "已達 MCP 執行限制或偵測到重複呼叫；草稿與已收到的工具結果保留。"
+        }
     }
 }

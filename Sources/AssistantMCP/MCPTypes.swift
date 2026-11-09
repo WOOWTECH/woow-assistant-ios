@@ -46,17 +46,30 @@ public enum JSONValue: Codable, Sendable, Equatable {
 public struct MCPServerInfo: Sendable, Equatable {
     public let protocolVersion: String
     public let capabilities: Set<String>
+
+    public init(protocolVersion: String, capabilities: Set<String>) {
+        self.protocolVersion = protocolVersion; self.capabilities = capabilities
+    }
 }
 
-public struct MCPTool: Sendable, Equatable {
+public struct MCPTool: Codable, Sendable, Equatable {
     public let name: String
+    public let description: String?
     public let inputSchema: JSONValue
+
+    public init(name: String, description: String? = nil, inputSchema: JSONValue) {
+        self.name = name; self.description = description; self.inputSchema = inputSchema
+    }
 }
 
-public struct MCPResource: Sendable, Equatable {
+public struct MCPResource: Codable, Sendable, Equatable {
     public let uri: String
     public let name: String
     public let mimeType: String?
+
+    public init(uri: String, name: String, mimeType: String? = nil) {
+        self.uri = uri; self.name = name; self.mimeType = mimeType
+    }
 }
 
 public struct MCPPrompt: Sendable, Equatable {

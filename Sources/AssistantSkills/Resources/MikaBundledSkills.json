@@ -1,0 +1,197 @@
+{
+  "version": 1,
+  "repository": "https://github.com/wangzan101/Mika",
+  "commit": "0c172724f3f0c96f7345262588072f6e95db1138",
+  "license": {
+    "path": "LICENSE",
+    "content": "\n                                 Apache License\n                           Version 2.0, January 2004\n                        http://www.apache.org/licenses/\n\n   TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION\n\n   1. Definitions.\n\n      \"License\" shall mean the terms and conditions for use, reproduction,\n      and distribution as defined by Sections 1 through 9 of this document.\n\n      \"Licensor\" shall mean the copyright owner or entity authorized by\n      the copyright owner that is granting the License.\n\n      \"Legal Entity\" shall mean the union of the acting entity and all\n      other entities that control, are controlled by, or are under common\n      control with that entity. For the purposes of this definition,\n      \"control\" means (i) the power, direct or indirect, to cause the\n      direction or management of such entity, whether by contract or\n      otherwise, or (ii) ownership of fifty percent (50%) or more of the\n      outstanding shares, or (iii) beneficial ownership of such entity.\n\n      \"You\" (or \"Your\") shall mean an individual or Legal Entity\n      exercising permissions granted by this License.\n\n      \"Source\" form shall mean the preferred form for making modifications,\n      including but not limited to software source code, documentation\n      source, and configuration files.\n\n      \"Object\" form shall mean any form resulting from mechanical\n      transformation or translation of a Source form, including but\n      not limited to compiled object code, generated documentation,\n      and conversions to other media types.\n\n      \"Work\" shall mean the work of authorship, whether in Source or\n      Object form, made available under the License, as indicated by a\n      copyright notice that is included in or attached to the work\n      (an example is provided in the Appendix below).\n\n      \"Derivative Works\" shall mean any work, whether in Source or Object\n      form, that is based on (or derived from) the Work and for which the\n      editorial revisions, annotations, elaborations, or other modifications\n      represent, as a whole, an original work of authorship. For the purposes\n      of this License, Derivative Works shall not include works that remain\n      separable from, or merely link (or bind by name) to the interfaces of,\n      the Work and Derivative Works thereof.\n\n      \"Contribution\" shall mean any work of authorship, including\n      the original version of the Work and any modifications or additions\n      to that Work or Derivative Works thereof, that is intentionally\n      submitted to Licensor for inclusion in the Work by the copyright owner\n      or by an individual or Legal Entity authorized to submit on behalf of\n      the copyright owner. For the purposes of this definition, \"submitted\"\n      means any form of electronic, verbal, or written communication sent\n      to the Licensor or its representatives, including but not limited to\n      communication on electronic mailing lists, source code control systems,\n      and issue tracking systems that are managed by, or on behalf of, the\n      Licensor for the purpose of discussing and improving the Work, but\n      excluding communication that is conspicuously marked or otherwise\n      designated in writing by the copyright owner as \"Not a Contribution.\"\n\n      \"Contributor\" shall mean Licensor and any individual or Legal Entity\n      on behalf of whom a Contribution has been received by Licensor and\n      subsequently incorporated within the Work.\n\n   2. Grant of Copyright License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      copyright license to reproduce, prepare Derivative Works of,\n      publicly display, publicly perform, sublicense, and distribute the\n      Work and such Derivative Works in Source or Object form.\n\n   3. Grant of Patent License. Subject to the terms and conditions of\n      this License, each Contributor hereby grants to You a perpetual,\n      worldwide, non-exclusive, no-charge, royalty-free, irrevocable\n      (except as stated in this section) patent license to make, have made,\n      use, offer to sell, sell, import, and otherwise transfer the Work,\n      where such license applies only to those patent claims licensable\n      by such Contributor that are necessarily infringed by their\n      Contribution(s) alone or by combination of their Contribution(s)\n      with the Work to which such Contribution(s) was submitted. If You\n      institute patent litigation against any entity (including a\n      cross-claim or counterclaim in a lawsuit) alleging that the Work\n      or a Contribution incorporated within the Work constitutes direct\n      or contributory patent infringement, then any patent licenses\n      granted to You under this License for that Work shall terminate\n      as of the date such litigation is filed.\n\n   4. Redistribution. You may reproduce and distribute copies of the\n      Work or Derivative Works thereof in any medium, with or without\n      modifications, and in Source or Object form, provided that You\n      meet the following conditions:\n\n      (a) You must give any other recipients of the Work or\n          Derivative Works a copy of this License; and\n\n      (b) You must cause any modified files to carry prominent notices\n          stating that You changed the files; and\n\n      (c) You must retain, in the Source form of any Derivative Works\n          that You distribute, all copyright, patent, trademark, and\n          attribution notices from the Source form of the Work,\n          excluding those notices that do not pertain to any part of\n          the Derivative Works; and\n\n      (d) If the Work includes a \"NOTICE\" text file as part of its\n          distribution, then any Derivative Works that You distribute must\n          include a readable copy of the attribution notices contained\n          within such NOTICE file, excluding those notices that do not\n          pertain to any part of the Derivative Works, in at least one\n          of the following places: within a NOTICE text file distributed\n          as part of the Derivative Works; within the Source form or\n          documentation, if provided along with the Derivative Works; or,\n          within a display generated by the Derivative Works, if and\n          wherever such third-party notices normally appear. The contents\n          of the NOTICE file are for informational purposes only and\n          do not modify the License. You may add Your own attribution\n          notices within Derivative Works that You distribute, alongside\n          or as an addendum to the NOTICE text from the Work, provided\n          that such additional attribution notices cannot be construed\n          as modifying the License.\n\n      You may add Your own copyright statement to Your modifications and\n      may provide additional or different license terms and conditions\n      for use, reproduction, or distribution of Your modifications, or\n      for any such Derivative Works as a whole, provided Your use,\n      reproduction, and distribution of the Work otherwise complies with\n      the conditions stated in this License.\n\n   5. Submission of Contributions. Unless You explicitly state otherwise,\n      any Contribution intentionally submitted for inclusion in the Work\n      by You to the Licensor shall be under the terms and conditions of\n      this License, without any additional terms or conditions.\n      Notwithstanding the above, nothing herein shall supersede or modify\n      the terms of any separate license agreement you may have executed\n      with Licensor regarding such Contributions.\n\n   6. Trademarks. This License does not grant permission to use the trade\n      names, trademarks, service marks, or product names of the Licensor,\n      except as required for reasonable and customary use in describing the\n      origin of the Work and reproducing the content of the NOTICE file.\n\n   7. Disclaimer of Warranty. Unless required by applicable law or\n      agreed to in writing, Licensor provides the Work (and each\n      Contributor provides its Contributions) on an \"AS IS\" BASIS,\n      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or\n      implied, including, without limitation, any warranties or conditions\n      of TITLE, NON-INFRINGEMENT, MERCHANTABILITY, or FITNESS FOR A\n      PARTICULAR PURPOSE. You are solely responsible for determining the\n      appropriateness of using or redistributing the Work and assume any\n      risks associated with Your exercise of permissions under this License.\n\n   8. Limitation of Liability. In no event and under no legal theory,\n      whether in tort (including negligence), contract, or otherwise,\n      unless required by applicable law (such as deliberate and grossly\n      negligent acts) or agreed to in writing, shall any Contributor be\n      liable to You for damages, including any direct, indirect, special,\n      incidental, or consequential damages of any character arising as a\n      result of this License or out of the use or inability to use the\n      Work (including but not limited to damages for loss of goodwill,\n      work stoppage, computer failure or malfunction, or any and all\n      other commercial damages or losses), even if such Contributor\n      has been advised of the possibility of such damages.\n\n   9. Accepting Warranty or Additional Liability. While redistributing\n      the Work or Derivative Works thereof, You may choose to offer,\n      and charge a fee for, acceptance of support, warranty, indemnity,\n      or other liability obligations and/or rights consistent with this\n      License. However, in accepting such obligations, You may act only\n      on Your own behalf and on Your sole responsibility, not on behalf\n      of any other Contributor, and only if You agree to indemnify,\n      defend, and hold each Contributor harmless for any liability\n      incurred by, or claims asserted against, such Contributor by reason\n      of your accepting any such warranty or additional liability.\n\n   END OF TERMS AND CONDITIONS\n\n   APPENDIX: How to apply the Apache License to your work.\n\n      To apply the Apache License to your work, attach the following\n      boilerplate notice, with the fields enclosed by brackets \"[]\"\n      replaced with your own identifying information. (Don't include\n      the brackets!)  The text should be enclosed in the appropriate\n      comment syntax for the file format. We also recommend that a\n      file or class name and description of purpose be included on the\n      same \"printed page\" as the copyright notice for easier\n      identification within third-party archives.\n\n   Copyright [yyyy] [name of copyright owner]\n\n   Licensed under the Apache License, Version 2.0 (the \"License\");\n   you may not use this file except in compliance with the License.\n   You may obtain a copy of the License at\n\n       http://www.apache.org/licenses/LICENSE-2.0\n\n   Unless required by applicable law or agreed to in writing, software\n   distributed under the License is distributed on an \"AS IS\" BASIS,\n   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n   See the License for the specific language governing permissions and\n   limitations under the License.\n",
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  "notice": {
+    "path": "NOTICE",
+    "content": "Mika\nCopyright 2026 wangzan101\n",
+    "sha256": "7d49ef5ff477ad1a79db8050c7242498a03874e9ac70e7c8f741baeea6a33f24"
+  },
+  "entries": [
+    {
+      "id": "configure-mika",
+      "title": "設定操作指引",
+      "summary": "說明渥屋助理的設定，由使用者手動確認與修改。",
+      "aliases": [
+        "設定",
+        "設置",
+        "配置",
+        "外觀",
+        "settings"
+      ],
+      "requirements": [
+        "settingsAutomation",
+        "androidControl"
+      ],
+      "adaptationScope": "僅提供設定說明；不提供 settings_list/settings_set，也不會代改模型、金鑰或刪除資料。",
+      "adaptationName": "ios-mika-configure-mika",
+      "adaptationMarkdown": "---\nname: ios-mika-configure-mika\ndisplay: 設定操作指引（iOS 文字版）\ndescription: 說明渥屋助理的設定，由使用者手動確認與修改。\naliases: [\"設定\",\"設置\",\"配置\",\"外觀\",\"settings\"]\norigin: Mika configure-mika @ 0c172724f3f0c96f7345262588072f6e95db1138; Apache-2.0\nadaptation: WOOW iOS text-only adaptation; changed from upstream; not execution parity\n---\n## 入口\n使用者明確要了解或調整渥屋助理設定時，先問清要改哪一項。\n## 步驟\n1. 只根據使用者提供的目前畫面或 App 已顯示的選項說明，不猜測未見的設定鍵。\n2. 指引使用者前往設定或記憶與資料，說明每個選項的影響。\n3. 模型服務、金鑰、登入及清除資料一律由使用者在原生介面自行處理。\n4. 改動後請使用者確認實際顯示的值；沒有讀回證據時只說明步驟，不說已設定成功。\n## 容易出錯的地方\n目前不提供設定自動修改工具；不要沿用 Android 的操作節奏、膠囊、代理或容器選單。不要索取密碼或金鑰。\n## 怎樣算辦成\n提供符合目前畫面的操作指引；只有使用者確認的設定值可描述為已變更。\n## 什麼時候停下交給使用者\n找不到對應設定、需要登入、金鑰、刪除或其他高影響操作時，交由使用者自行確認。\n## 來源與修改聲明\nMika，Copyright 2026 wangzan101，Apache-2.0。WOOW 將此版本改寫為 iOS 文字參考，移除原始自動化及未提供的工具；不是原功能完整對齊。原文、完整授權及 NOTICE 可於內建目錄閱讀。\n",
+      "original": {
+        "path": "core/src/main/resources/skills/configure-mika/SKILL.md",
+        "content": "---\nname: configure-mika\ndisplay: 改 Mika 自己的设置\ndescription: 用户让 Mika 改自己的设置时用它看和改;模型、Key 与删数据不在其中\naliases: [\"设置你自己\", \"改你的设置\", \"调快一点\", \"别静音\", \"换个外观\"]\nterms: [\"设置\", \"配置\", \"快一点\", \"慢一点\", \"静音\", \"外观\", \"深色\", \"浅色\", \"胶囊\"]\n---\n## 先看能改什么\n\n先调 `settings_list`。它会列出此刻能改的每一项:键、给人看的名字、现在的值,以及(如果能选的只有几个)全部可选值。\n\n**只用列表里给出的键和值**,不要自己猜一个词。用户说的和你看到的对不上时(比如用户说「别静音」,列表里叫「mute_apps」),按名字挑出那一项,把 `label` 念给用户听确认是这个。\n\n## 改之前先说一句\n\n用户明确说了要改什么,就用 `settings_set` 直接改,改完告诉用户现在的值。用户的话含糊时(「让它快一点」)先说清你打算改哪一项、改成什么,再改:\n\n> 我把操作节奏改成「快」了,下个任务开始生效。\n\n**不要改用户没提到的东西**。一次改几项时逐项说。\n\n## 改不了的东西\n\n- **模型、API Key、登录**:不在列表里。用户要这些时,告诉他去「设置 › 模型」,你说不了这一步。\n- **删数据**(清工作区、重置运行环境、删对话):也不在列表里,同样请他自己做。\n- **容器的联网与代理**:不在列表里。这两项会让数据离开手机,要用户自己去「设置 › 文件与计算环境」里开或填,你不要替他改。\n\n这几类是故意的:第一类等于让模型换掉自己的脑子、动用户的钱;第二类不可逆;联网那道线得用户自己划。\n\n## 生效时间\n\n大多数改动下一个任务开始生效;外观(深浅色)当场就换。改完顺带说一句,免得用户以为没生效。\n",
+        "sha256": "25560ad126c10263f0c341dd5d25d5e12fe4335a372abe7b8d08895725d97c4f"
+      },
+      "assets": []
+    },
+    {
+      "id": "content-transcribe",
+      "title": "整理文字稿與摘要",
+      "summary": "將使用者提供的文字稿、字幕或可讀網頁文字整理成摘要、章節與引文。",
+      "aliases": [
+        "摘要",
+        "逐字稿",
+        "字幕",
+        "播客",
+        "summary",
+        "transcript"
+      ],
+      "requirements": [
+        "legacyWebTools",
+        "workspaceFiles",
+        "androidControl"
+      ],
+      "adaptationScope": "可處理提供的文字；不會聽音訊、下載字幕、讀其他 App，亦不宣稱完成音訊轉錄。",
+      "adaptationName": "ios-mika-content-transcribe",
+      "adaptationMarkdown": "---\nname: ios-mika-content-transcribe\ndisplay: 整理文字稿與摘要（iOS 文字版）\ndescription: 將使用者提供的文字稿、字幕或可讀網頁文字整理成摘要、章節與引文。\naliases: [\"摘要\",\"逐字稿\",\"字幕\",\"播客\",\"summary\",\"transcript\"]\norigin: Mika content-transcribe @ 0c172724f3f0c96f7345262588072f6e95db1138; Apache-2.0\nadaptation: WOOW iOS text-only adaptation; changed from upstream; not execution parity\n---\n## 入口\n先確認要摘要、章節、引文還是文章改寫。沒有指定時提供五到十句摘要；先確認有可用文字。\n## 步驟\n1. 使用對話中提供的文字或本次實際讀取的公開網頁內容。沒有文字時，請使用者提供文字稿或字幕。\n2. 長文按段整理，保留段落順序，明確標記未提供或尚未讀到的部分。\n3. 摘要先總述，再列三到八個主題；章節沿用原稿的時間；引文逐字引用並標明來源。\n4. 依原文語言或使用者指定語言撰寫，分清原文、翻譯及自己的整理。\n5. 對照原文檢查人名、數字、順序與每條引文。\n## 容易出錯的地方\n文字稿不包含畫面證據。不得推測缺失的語音、圖表或時間；原文沒有時間就不要製造時間軸。\n## 怎樣算辦成\n內容對應已提供的文字，引用能逐字核對，缺失段落明確標示；這不是聲音辨識驗收。\n## 什麼時候停下交給使用者\n僅有音訊、需要登入或付費、內容缺失時，說明限制並請使用者提供可用文字。\n## 來源與修改聲明\nMika，Copyright 2026 wangzan101，Apache-2.0。WOOW 將此版本改寫為 iOS 文字參考，移除原始自動化及未提供的工具；不是原功能完整對齊。原文、完整授權及 NOTICE 可於內建目錄閱讀。\n",
+      "original": {
+        "path": "core/src/main/resources/skills/content-transcribe/SKILL.md",
+        "content": "---\nname: content-transcribe\ndisplay: 把内容整理成文字\ndescription: 把视频、播客、文章整理成文字:摘要、分章节、摘引文或改写成文章\naliases: [\"总结视频\", \"整理播客\", \"文章摘要\", \"提取字幕\"]\napps: [\"bilibili\", \"xiaohongshu\"]\nsites: [\"youtube.com\", \"xiaoyuzhoufm.com\"]\nterms: [\"摘要\", \"总结\", \"转录\", \"字幕\", \"播客\", \"章节\", \"要点\", \"引文\", \"文字稿\"]\n---\n## 入口\n\n先问清要哪种结果:全文文字稿、摘要、章节、引文,还是改写成一篇文章。用户没说时,做一份五到十句的摘要。\n\n文字从内容所在的地方取:文章读网页正文;视频取字幕或简介里的文字稿;播客看节目页有没有文字稿或节目笔记。本机没有语音转文字,只有音频时请用户给文字稿或字幕文件。\n\n## 步骤\n\n1. **取全文**:用 `web_read_page` 读页面正文;用户发来的字幕或文字稿文件在 `/workspace/inbox/`,用 `read_file` 读。\n2. **分段读**:内容长时分几段读,段与段之间留一点重叠,读完去掉重复,确认从头到尾没有漏段。\n3. **按要的形式写**:各种形式的写法和样例见 `references/transcript-output-formats.md`,写之前读一遍。摘要的骨架是:一两句总述;按出现顺序列三到八个主题,每个带大致的开始时间和两三句内容;最后列值得记下的观点、数字和提到的书或作品。\n4. **用原内容的语言写**,用户另有要求时照用户的。\n5. **复读**:写完对照原文看一遍:顺序对不对,有没有漏掉的主题,时间和引文能不能在原文里找到。\n\n## 容易出错的地方\n\n- 字幕只有文字,画面里的图表、演示和屏幕上的字读不到,写的时候不能说成看过画面。\n- 自动生成的字幕常有错字和断句错误,专有名词、人名和数字要结合上下文或简介核对。\n- 时间是根据字幕位置估的,就写「约第 23 分钟」,不写成精确到秒。\n- 听不清、字幕缺失的段落要标出来,不去补写。\n\n## 怎样算办成(核实证据)\n\n结果覆盖原内容的全部段落;每条引文和时间都能在取到的字幕或正文里找到。\n\n## 什么时候停下交给用户\n\n内容要登录或付费才能看,或者只有音频、没有任何文字稿时,告诉用户缺什么,请用户提供。\n",
+        "sha256": "fa46715f63de39a274d877f4cc5ec347fb639d7a5bb9aeb8f8b0f81fcf352326"
+      },
+      "assets": [
+        {
+          "path": "core/src/main/resources/skills/content-transcribe/references/transcript-output-formats.md",
+          "content": "# 几种整理结果的写法\n\n时间一律写成「分:秒」,超过一小时写「时:分:秒」。估出来的时间前面加「约」。\n\n## 摘要\n\n五到十句,第三人称、现在时,讲清这期内容的主题、主要论点和结论。不加评价。\n\n## 章节目录\n\n每行一个时间加一个短标题,标题不超过十五个字:\n\n```\n00:00 开场与话题\n03:40 为什么会有这个问题\n09:15 两种做法的对比\n21:30 实际数据\n35:05 听众提问\n```\n\n## 分章节摘要\n\n章节标题后面括号写这一章大约多长,下面两三句写这一章实际讲了什么:\n\n```\n### 03:40 为什么会有这个问题(约 5 分钟)\n主讲人回顾了这个问题的由来,举了两个常见的例子。\n\n### 09:15 两种做法的对比(约 12 分钟)\n比较了做法甲和做法乙的成本和效果,结论是……\n```\n\n## 引文\n\n原话照录,后面写出现的时间;是字幕原文还是翻译,要注明:\n\n```\n「先把数据弄干净,比换模型更重要。」—— 12:18\n```\n\n## 改写成文章\n\n- 一个标题\n- 一段开头,说这是根据哪一期内容整理的\n- 每个主要话题一个小标题,下面成段叙述\n- 关键原话用引文格式,带时间\n- 结尾一段:要点或可以照着做的建议\n",
+          "sha256": "bbd7bb15518ecf353d1b26ed8c25a24ee471d0bc7a6dc510b8f8a6153d2dc9e8"
+        }
+      ]
+    },
+    {
+      "id": "documents",
+      "title": "整理文件文字",
+      "summary": "根據使用者貼上的文件文字與頁碼，整理摘要、引文及待核對項目。",
+      "aliases": [
+        "PDF",
+        "文件",
+        "文檔",
+        "按頁",
+        "document",
+        "extract"
+      ],
+      "requirements": [
+        "python",
+        "shell",
+        "workspaceFiles",
+        "fileExport"
+      ],
+      "adaptationScope": "僅整理已提供文字；未實作 PDF 抽頁、合併、OCR、密碼解鎖或 Python 執行。原始腳本僅供閱讀。",
+      "adaptationName": "ios-mika-documents",
+      "adaptationMarkdown": "---\nname: ios-mika-documents\ndisplay: 整理文件文字（iOS 文字版）\ndescription: 根據使用者貼上的文件文字與頁碼，整理摘要、引文及待核對項目。\naliases: [\"PDF\",\"文件\",\"文檔\",\"按頁\",\"document\",\"extract\"]\norigin: Mika documents @ 0c172724f3f0c96f7345262588072f6e95db1138; Apache-2.0\nadaptation: WOOW iOS text-only adaptation; changed from upstream; not execution parity\n---\n## 入口\n先確認使用者提供的是文字、頁面摘錄或只有 PDF 檔案。沒有可讀文字時說明目前限制。\n## 步驟\n1. 使用者提供文字時，保留其頁碼與段落標記；沒有頁碼不得自行補上。\n2. 依需求整理摘要、逐頁索引或引文，長文分段並明確列出缺頁。\n3. 表格與多欄資料可能失去順序，數字不能核對時要求原頁摘錄。\n4. 只交付文字結果；對抽頁、合併、OCR、解密及產生檔案需求提供限制說明，請使用者在合適工具自行處理。\n## 容易出錯的地方\n沒有執行附帶的 extract_pdf.py 或安裝 pypdf。不得把模型生成文字說成已抽取 PDF，不得宣稱新檔案已建立或分享。\n## 怎樣算辦成\n每個引文可回指使用者提供的文字及已知頁碼，未提供的內容保持未知。\n## 什麼時候停下交給使用者\n需要讀取未提供的附件、處理掃描圖像、解鎖文件或更動原檔時，交給使用者；不要收集文件密碼。\n## 來源與修改聲明\nMika，Copyright 2026 wangzan101，Apache-2.0。WOOW 將此版本改寫為 iOS 文字參考，移除原始自動化及未提供的工具；不是原功能完整對齊。原文、完整授權及 NOTICE 可於內建目錄閱讀。\n",
+      "original": {
+        "path": "core/src/main/resources/skills/documents/SKILL.md",
+        "content": "---\nname: documents\ndisplay: 处理 PDF 文档\ndescription: 读 PDF 的文字、按页取、看文档信息,拆分合并后把文件交给用户\naliases: [\"读 PDF\", \"PDF 转文字\", \"合并 PDF\"]\nterms: [\"PDF\", \"文档\", \"提取文字\", \"按页\", \"合并\", \"拆分\", \"扫描件\"]\n---\n## 入口\n\n先看文档在哪:\n- 网上的公开链接:用 `web_navigate` 打开,内置浏览器能直接显示的,读页面就够了。\n- 用户发来的附件:在 `/workspace/inbox/`。\n- 网页上下载的文件:在 `/workspace/downloads/`,可以用 `web_downloads` 查下载记录。\n\n## 步骤\n\n1. 文字型 PDF 用 `run_bundled_script` 跑 `scripts/extract_pdf.py`,`source` 填 `skills/documents`,文件路径相对 `/workspace` 写:\n   - 全文:`args: [\"inbox/a.pdf\"]`\n   - 指定页(从 1 数,可写 `3`、`1-5`、`1,4,7-9`):`args: [\"inbox/a.pdf\", \"--pages\", \"1-5\"]`\n   - 标题、作者、页数等信息(JSON):`args: [\"inbox/a.pdf\", \"--metadata\"]`\n   - 长文档先存成文本:`args: [\"inbox/a.pdf\", \"--out\", \"a.txt\"]`,再用 `read_file` 分段读,或用 `search_files` 找关键词。\n   - 有密码的:加 `--password` 和密码。\n2. 输出里每页以 `--- page N ---` 开头,引用时按它写页码。\n3. 拆分、合并、抽页用 `run_command` 写一小段 Python,调用 pypdf;新文件放在 `/workspace` 下。\n4. 做好的文件用 `share_file` 交给用户。\n\n## 容易出错的地方\n\n- 脚本退出码为 3、提示没有可取的文字,说明是扫描出来的图片型 PDF;本机没有文字识别,只能看页面图片或告诉用户这一点。部分页没有文字时,脚本会单独报出这些页。\n- 表格、多栏排版取出来的顺序常常是乱的,引用表格里的数字前要对照原页。\n- 页码范围超出文档页数时脚本直接报错,先用 `--metadata` 看页数。\n\n## 怎样算办成(核实证据)\n\n给出的文字能在脚本输出里对应到原页,并写了页码;交出去的文件 `share_file` 成功,页数和内容与预期一致(可以对新文件再跑一次 `--metadata` 核对页数)。\n\n## 什么时候停下交给用户\n\n文档有密码而用户没给,或者需要用户决定保留哪些页、按什么顺序合并时,先问用户。\n",
+        "sha256": "f5cfa97a04bab6fcbfba4b654c9a59018dd339eea83b260ace47928e3abf230c"
+      },
+      "assets": [
+        {
+          "path": "core/src/main/resources/skills/documents/scripts/extract_pdf.py",
+          "content": "# SPDX-License-Identifier: Apache-2.0\n# Copyright (c) 2026 Mika authors\n\"\"\"Get the text out of a text-based PDF (not scanned images: those need OCR, which this does not do).\n\nUsage:\n  extract_pdf.py FILE.pdf [--pages RANGE] [--metadata] [--out FILE.txt] [--password PASSWORD]\n\n  --pages     1-based pages, e.g. \"3\", \"1-5\" or \"1,4,7-9\" (default: all)\n  --metadata  print title, author, page count etc. as JSON instead of the text\n  --out       write the text to this file and print a one-line JSON summary instead\n  --password  password of an encrypted PDF\n\nEach page starts with a line \"--- page N ---\". A page with no extractable text is reported on\nstderr; if no page has text, the PDF is probably scanned and the exit code is 3.\nNeeds pypdf.\n\"\"\"\nimport argparse\nimport json\nimport logging\nimport os\nimport sys\n\n\ndef fail(msg, code=2):\n    print(f\"extract_pdf.py: {msg}\", file=sys.stderr)\n    sys.exit(code)\n\n\ndef parse_pages(spec, count):\n    \"\"\"'1,4,7-9' -> [0, 3, 6, 7, 8]; raises ValueError for anything outside 1..count.\"\"\"\n    out = []\n    for part in spec.split(\",\"):\n        part = part.strip()\n        if not part:\n            continue\n        lo, _, hi = part.partition(\"-\")\n        a, b = int(lo), int(hi) if hi else int(lo)\n        if a < 1 or b > count or a > b:\n            raise ValueError(f\"page range '{part}' is outside 1-{count}\")\n        out.extend(range(a - 1, b))\n    if not out:\n        raise ValueError(\"no pages selected\")\n    return out\n\n\ndef main(argv):\n    p = argparse.ArgumentParser(prog=\"extract_pdf.py\", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)\n    p.add_argument(\"pdf\")\n    p.add_argument(\"--pages\")\n    p.add_argument(\"--metadata\", action=\"store_true\")\n    p.add_argument(\"--out\")\n    p.add_argument(\"--password\")\n    a = p.parse_args(argv)\n    if not os.path.isfile(a.pdf):\n        fail(f\"file not found: {a.pdf}\")\n    try:\n        from pypdf import PdfReader\n        from pypdf.errors import PdfReadError\n    except ImportError:\n        fail(\"pypdf is not installed\")\n    # pypdf logs repair warnings for damaged files; the one-line reason below is enough\n    logging.getLogger(\"pypdf\").setLevel(logging.CRITICAL)\n    try:\n        reader = PdfReader(a.pdf)\n        if reader.is_encrypted:\n            if not a.password or not reader.decrypt(a.password):\n                fail(\"the PDF is encrypted; pass the right --password\")\n        count = len(reader.pages)\n        if a.metadata:\n            meta = reader.metadata or {}\n            info = {k.lstrip(\"/\").lower(): str(v) for k, v in meta.items()}\n            info[\"pages\"] = count\n            print(json.dumps(info, ensure_ascii=False))\n            return 0\n        indexes = parse_pages(a.pages, count) if a.pages else list(range(count))\n        chunks, empty = [], []\n        for i in indexes:\n            text = (reader.pages[i].extract_text() or \"\").strip()\n            if not text:\n                empty.append(i + 1)\n            chunks.append(f\"--- page {i + 1} ---\\n{text}\\n\")\n    except ValueError as e:\n        fail(str(e))\n    except PdfReadError as e:\n        fail(f\"not a readable PDF: {e}\")\n    except Exception as e:  # damaged files raise many kinds of errors inside pypdf\n        fail(f\"could not read the PDF: {type(e).__name__}: {e}\")\n    if empty:\n        print(f\"extract_pdf.py: no text on page(s) {', '.join(map(str, empty))}\", file=sys.stderr)\n    body = \"\\n\".join(chunks)\n    if a.out:\n        try:\n            with open(a.out, \"w\", encoding=\"utf-8\") as f:\n                f.write(body)\n        except OSError as e:\n            fail(f\"could not write {a.out}: {e}\")\n        print(json.dumps({\"output\": a.out, \"pages\": len(indexes), \"chars\": len(body), \"emptyPages\": empty}))\n    else:\n        sys.stdout.write(body)\n    if len(empty) == len(indexes):\n        fail(\"no extractable text: the PDF is probably scanned images and needs OCR\", 3)\n    return 0\n\n\nif __name__ == \"__main__\":\n    sys.exit(main(sys.argv[1:]))\n",
+          "sha256": "41c2e2b51cd23173e0891084d0cd93d54e300e5fd571876740de36ac5968817c"
+        },
+        {
+          "path": "core/src/main/resources/skills/documents/scripts/manifest.json",
+          "content": "[\n  {\"file\": \"scripts/extract_pdf.py\", \"runnable\": true, \"needs\": [\"apk:py3-pypdf\"]}\n]\n",
+          "sha256": "010bf7bf1102f06e20b29b8b63e0ceedf5b7e6856cb76f67ae8f9e2fa74515cf"
+        }
+      ]
+    },
+    {
+      "id": "info-research",
+      "title": "有來源的研究與比較",
+      "summary": "根據本次實際取得的公開網頁或使用者資料，核對來源、時間與不確定性。",
+      "aliases": [
+        "調研",
+        "研究",
+        "查一下",
+        "比較",
+        "來源",
+        "research",
+        "compare"
+      ],
+      "requirements": [
+        "legacyWebTools",
+        "crossOriginResearch",
+        "androidControl"
+      ],
+      "adaptationScope": "可整理證據；原始跨站搜尋與其他 App 搜尋未對齊。瀏覽器研究須由使用者明確開啟，仍受當前公開網站政策限制。",
+      "adaptationName": "ios-mika-info-research",
+      "adaptationMarkdown": "---\nname: ios-mika-info-research\ndisplay: 有來源的研究與比較（iOS 文字版）\ndescription: 根據本次實際取得的公開網頁或使用者資料，核對來源、時間與不確定性。\naliases: [\"調研\",\"研究\",\"查一下\",\"比較\",\"來源\",\"research\",\"compare\"]\norigin: Mika info-research @ 0c172724f3f0c96f7345262588072f6e95db1138; Apache-2.0\nadaptation: WOOW iOS text-only adaptation; changed from upstream; not execution parity\n---\n## 入口\n確認對象、地區、時間及版本。條件不明先詢問，或明確列出暫採的假設。\n## 步驟\n1. 區分使用者提供的資料與本次實際讀取的網頁。只用已取得的正文支持事實。\n2. 優先找官方或原始來源；頁面不能取得時請使用者提供內容或在瀏覽器另開公開來源。\n3. 整理各來源的發布時間、事件時間及是否相互獨立。搜尋摘要與轉載不等於原文。\n4. 至少有兩個獨立來源時才說完成交叉核對；不足時明確標為單一來源或尚待核對。\n5. 回答附上實際來源與時間，分開原文事實、推論及缺口。\n## 容易出錯的地方\n此文字技能不授予跨站、登入、付款、表單或其他 App 控制。只在使用者啟動的研究中引用實際觀察；不得捏造查詢或成功讀取。\n## 怎樣算辦成\n各結論可回到已取得的來源，不同說法與缺失證據有清楚標註。沒有新網路證據不得聲稱已查到最新資訊。\n## 什麼時候停下交給使用者\n需要登入、付款、私人資料、跨出目前允許的網站或執行外部動作時，先交付既有證據與限制，交由使用者決定。\n## 來源與修改聲明\nMika，Copyright 2026 wangzan101，Apache-2.0。WOOW 將此版本改寫為 iOS 文字參考，移除原始自動化及未提供的工具；不是原功能完整對齊。原文、完整授權及 NOTICE 可於內建目錄閱讀。\n",
+      "original": {
+        "path": "core/src/main/resources/skills/info-research/SKILL.md",
+        "content": "---\nname: info-research\ndisplay: 查清一件事\ndescription: 在网上把一件事查清楚:找方向、读原始出处、多方核对,写明出处和时间\naliases: [\"调研\", \"查一下\", \"帮我了解\"]\napps: [\"xiaohongshu\", \"zhihu\", \"bilibili\", \"weibo\"]\nsites: [\"zhihu.com\", \"tieba.baidu.com\", \"weibo.com\", \"douban.com\"]\nterms: [\"调研\", \"查一下\", \"了解\", \"背景\", \"对比\", \"靠不靠谱\", \"出处\", \"最新\"]\n---\n## 入口\n\n先把要查的对象定下来:全称、地区、时间段、版本或型号。有重名、说法有歧义时问用户一次,等回答的同时先查不受这个问题影响的部分。用户没给的条件(比如时间范围),自己选一组常见的,在结论开头写明用的是哪一组。\n\n起步用 `web_navigate` 打开搜索页(百度、必应),或在相关 App 里用站内搜索。\n\n## 步骤\n\n1. **找方向**:先做两三次宽一些的搜索,看这件事有哪些说法、哪些网站在讲、有没有权威的发布方。站内搜索用两到四个关键词,不用整句提问。\n2. **找原始出处**:用户直接问的那个事实,追到最早发布它的地方:发布方自己的网站、官方公告、原始文件、论文原文、产品或服务本身的页面。新闻和转载只当线索,顺着它们给的链接或名称找原文。\n3. **补体验和反面**:真实使用感受看社区和视频平台(小红书、知乎、贴吧、微博、B 站、豆瓣),问题看投诉平台。专门搜一次反面的词(「问题」「投诉」「缺点」)。\n4. **交叉核对**:关键结论至少在两个互不相干的来源里读到原文。两边说法不一致时,看发布时间、看哪一方离事情更近,并把分歧本身写出来。\n5. **写结论**:每条结论后面写出处(网站或发布方)和那条内容的时间;原文说的和自己推断的分开写;查过但没查到的,写清查了哪些地方、还缺什么。\n\n## 容易出错的地方\n\n- 搜索结果的摘要不是原文,常常截断或过时;要用 `web_read_page` 打开读正文,并看清最终落在哪个网站。\n- 同一篇通稿会被很多网站转载,看起来来源很多,其实只有一个出处。\n- 推广文、带购买链接的测评和匿名爆料可信度低,用到时要标明。\n- 页面上的日期可能是转载或更新的日期,不一定是事情发生的时间。\n- 没搜到、页面打不开、被登录页挡住,都只说明这一次没读到,不能当成「没有这回事」。\n\n## 怎样算办成(核实证据)\n\n每条结论都能指回这次实际读过的某个页面,写着出处和时间;关键结论有两个独立来源;薄弱或互相矛盾的地方说明了原因。\n\n## 什么时候停下交给用户\n\n要看的内容得登录才能看,或者下一步变成预约、购买、报名这类要用户本人决定或付钱的事时,把查到的结果交给用户。\n",
+        "sha256": "75f1bd627136a4e022625f7701fef19f07665b0b52718e0f524997cbf61129c2"
+      },
+      "assets": []
+    },
+    {
+      "id": "messaging",
+      "title": "訊息與郵件擬稿",
+      "summary": "根據使用者提供的對話內容與目的擬稿，不讀取或傳送其他 App 訊息。",
+      "aliases": [
+        "訊息",
+        "消息",
+        "郵件",
+        "回覆",
+        "草稿",
+        "email",
+        "message"
+      ],
+      "requirements": [
+        "androidControl",
+        "accountAccess",
+        "externalSend"
+      ],
+      "adaptationScope": "僅擬稿；未提供收件匣、聯絡人、其他 App 操作或自動傳送。",
+      "adaptationName": "ios-mika-messaging",
+      "adaptationMarkdown": "---\nname: ios-mika-messaging\ndisplay: 訊息與郵件擬稿（iOS 文字版）\ndescription: 根據使用者提供的對話內容與目的擬稿，不讀取或傳送其他 App 訊息。\naliases: [\"訊息\",\"消息\",\"郵件\",\"回覆\",\"草稿\",\"email\",\"message\"]\norigin: Mika messaging @ 0c172724f3f0c96f7345262588072f6e95db1138; Apache-2.0\nadaptation: WOOW iOS text-only adaptation; changed from upstream; not execution parity\n---\n## 入口\n先確認要整理提供的內容、擬回覆或改寫，以及對象、語氣及目的。\n## 步驟\n1. 只閱讀使用者貼上的內容，區分說話者與已知時間；不把預覽或截斷內容當成全文。\n2. 用使用者明確提供的收件人稱呼，不猜測地址、帳號或同名聯絡人。\n3. 寫出可複製的訊息或郵件草稿，未提供的姓名、日期及附件使用明確占位文字。\n4. 請使用者檢查收件人、全文及附件，並在自己的 App 中自行傳送。\n## 容易出錯的地方\n草稿不等於已發送；不要宣稱讀取收件匣、查到未讀、看到送達或發出訊息。此技能不繞過 MCP 或其他服務的授權規則。\n## 怎樣算辦成\n交付符合需求且可核對的草稿；狀態清楚標示為未傳送，不製造送達證據。\n## 什麼時候停下交給使用者\n對象或內容不明、需要登入、驗證、私人紀錄或實際發送時，交由使用者選擇與操作。\n## 來源與修改聲明\nMika，Copyright 2026 wangzan101，Apache-2.0。WOOW 將此版本改寫為 iOS 文字參考，移除原始自動化及未提供的工具；不是原功能完整對齊。原文、完整授權及 NOTICE 可於內建目錄閱讀。\n",
+      "original": {
+        "path": "core/src/main/resources/skills/messaging/SKILL.md",
+        "content": "---\nname: messaging\ndisplay: 消息与邮件\ndescription: 读聊天记录和邮件、拟回复,发给对的人并确认已发出\naliases: [\"发消息\", \"回消息\", \"发邮件\", \"看未读\"]\napps: [\"wechat\", \"feishu\"]\nsites: [\"instagram.com\"]\nterms: [\"发消息\", \"回复\", \"邮件\", \"聊天\", \"群\", \"未读\", \"转告\", \"草稿\"]\n---\n## 入口\n\n先分清用户要读、要拟稿还是要发,以及用哪个 App、哪个账号。用户点名的 App 就用那个 App;它打不开或没登录时,如实告诉用户。\n\n## 步骤\n\n1. **读**:先看会话列表或收件箱,找到对的会话后打开读正文;需要时往上翻更早的记录,留意发件人、时间、群成员和附件。未读以列表里的红点和数字为准。\n2. **找对象**:按备注名、昵称、群名或邮箱找到收件人,遇到同名的联系人、群或公众号,打开资料核对。邮件地址用通讯录或往来邮件里的真实地址。\n3. **拟稿**:按用户的意思写好。用户只要稿子时把稿子给用户,到这里为止;用户要发的,写好就发,不用先问。\n4. **发**:进到正确的会话或写信页,输入正文、加附件,发出前再看一遍收件人和全文。\n5. **核对**:发出后在会话里找到这条消息的气泡,或在邮箱的「已发送」里找到这封信,并看有没有发送失败的标记。\n\n## 容易出错的地方\n\n- 搜索结果里的同名对象很多,头像和备注不一样,点错就发错人。\n- 输入框清空不等于发出去了;网络差时消息可能停在「发送中」或带红色感叹号。没看到发出的消息,先回会话里查状态,再决定要不要重发,免得发两遍。\n- 有的输入法或键盘设置下按回车就直接发送,多行内容要用换行键或分段输入。\n- 会话列表里的预览只有开头一截,不等于全文。\n\n## 怎样算办成(核实证据)\n\n读:给出的要点和时间都来自打开后的会话或邮件正文。发:会话里能看到这条已发出的消息,或「已发送」里有这封信,收件人和内容都对。\n\n## 什么时候停下交给用户\n\n需要登录、输入验证码,或者对象和内容有不止一种可能、要用户来选的时候,交给用户。\n",
+        "sha256": "030ef07f6708cea769889a039ee7fcaf8ec3d036032692b83006dc84d99886c9"
+      },
+      "assets": []
+    },
+    {
+      "id": "skill-authoring",
+      "title": "撰寫待審核 Skill",
+      "summary": "協助寫出符合 iOS 格式的文字技能，交由使用者匯入、確認與試用。",
+      "aliases": [
+        "技能",
+        "流程",
+        "建立技能",
+        "匯入技能",
+        "修改技能",
+        "skill",
+        "workflow"
+      ],
+      "requirements": [
+        "skillMutationTools",
+        "androidControl"
+      ],
+      "adaptationScope": "可撰寫 SKILL.md 文字；不提供模型自行儲存、核准、啟用或修改技能的工具。",
+      "adaptationName": "ios-mika-skill-authoring",
+      "adaptationMarkdown": "---\nname: ios-mika-skill-authoring\ndisplay: 撰寫待審核 Skill（iOS 文字版）\ndescription: 協助寫出符合 iOS 格式的文字技能，交由使用者匯入、確認與試用。\naliases: [\"技能\",\"流程\",\"建立技能\",\"匯入技能\",\"修改技能\",\"skill\",\"workflow\"]\norigin: Mika skill-authoring @ 0c172724f3f0c96f7345262588072f6e95db1138; Apache-2.0\nadaptation: WOOW iOS text-only adaptation; changed from upstream; not execution parity\n---\n## 入口\n只有使用者明確要求建立、匯入或修改技能時才撰寫。偏好與一次性事實屬於記憶，不是可重用技能。\n## 步驟\n1. 先請使用者到記憶與資料的技能清單查看是否已有相同做法；需要修改時以提供的全文為基礎。\n2. 問清目的、輸入、完成證據與何時停下。只寫一般對話能採用的文字步驟，不加入未支援工具。\n3. 使用 front matter：name 為小寫英文、數字及連字號，display 為中文短名，description 說明何時使用，可加 aliases。\n4. 寫齊「入口」「步驟」「容易出錯的地方」「怎樣算辦成」「什麼時候停下交給使用者」五節，全文限制為 4000 UTF-16 單位。\n5. 用參數取代私人資料，刪去金鑰、驗證碼與腳本。交付全文後，請使用者在記憶與資料匯入並審核。\n6. 匯入只會進入待確認；只有使用者明確核准才進入試用，不能把試用稱為驗證成功。\n## 容易出錯的地方\n不得聲稱呼叫 skill_save 或已替使用者保存。原始內容只是參考，不授予 shell、App 操作、外部傳送或自動核准權限。\n## 怎樣算辦成\n交付可供匯入的完整文字與限制說明；僅在 App 真正顯示儲存成功時才說已保存，核准及驗證狀態分開。\n## 什麼時候停下交給使用者\n做法涉及未支援能力、內容不明、需要私人資料或高影響操作時，先說明限制並請使用者確認。\n## 來源與修改聲明\nMika，Copyright 2026 wangzan101，Apache-2.0。WOOW 將此版本改寫為 iOS 文字參考，移除原始自動化及未提供的工具；不是原功能完整對齊。原文、完整授權及 NOTICE 可於內建目錄閱讀。\n",
+      "original": {
+        "path": "core/src/main/resources/skills/skill-authoring/SKILL.md",
+        "content": "---\nname: skill-authoring\ndisplay: 写技能\ndescription: 用户要新建、导入或修改一份技能(做一类事的固定做法)时用:怎么写、怎么查重、怎么存下\naliases: [\"创建技能\", \"新建技能\", \"写个技能\", \"保存技能\", \"导入技能\", \"改技能\", \"skill\"]\nterms: [\"技能\", \"做法\", \"流程\", \"步骤\", \"模板\", \"以后都这样做\", \"存成技能\", \"导入\", \"改写\"]\n---\n## 什么时候写\n\n- 用户明确要「建一个技能」「把这个做法存下来」「把这段导入成技能」「改一下某个技能」时写。只是聊做法、问能不能做,先回答,不要自己存。\n- 技能写的是一类事以后怎么做,不是一次性的事实或偏好。「我不吃香菜」这类是记忆,不是技能。\n- 能写下技能的只有 `skill_save`。手边没有这个工具时,直接告诉用户这次存不了,不要说已经存好。\n\n## 先查有没有\n\n1. 用 `skill_search` 按这类事的说法查一次。\n2. 有一份个人技能(personal)就是这类事:用 `skill_read` 读全文,在它的基础上改,存时沿用它的名字、带上读到的 version。不要为同一类事再起一份。\n3. 只有内置技能对得上:内置的改不了。用户要的是不同做法时,另起一个名字写成自己的技能,并告诉用户以后会按哪份来。\n\n## 先说清再写\n\n用户只给了一句模糊的话(「帮我建个点咖啡的技能」)时,先用 `ask_user` 问清最影响做法的一两点:在哪个 App 或网站、做到哪一步停、有没有固定要求。把要存的要点用几行列给用户确认,再存。用户已经把做法说清楚、或贴来了完整内容,就不用再问。\n\n## 怎么写\n\n整份是一个文档:头部加五个小节,标题照写,全文不超过 4000 字。\n\n```\n---\nname: order-coffee\ndisplay: 点咖啡\ndescription: 用户要点一杯咖啡外送或自取时用\naliases: [\"点咖啡\", \"买杯咖啡\"]\n---\n## 入口\n## 步骤\n## 容易出错的地方\n## 怎样算办成\n## 什么时候停下交给用户\n```\n\n- name 用小写英文、数字和连字符,说清是哪类事;display 是简短中文名。\n- description 一句话写「什么时候用」,把用户可能的说法写进 aliases:以后有没有被用上全靠这两处。\n- 入口写从哪儿开始(哪个 App、网站或搜索);步骤写编号的短句,一步一个动作,写按钮、页面的名字,不写坐标。\n- 每次会变的东西(人名、金额、地址、要发的文字)写成 `<参数>` 或「用户指定的联系人」,不写死。\n- 容易出错的地方写会走偏的点和绕过的办法;怎样算办成写办完后在哪儿能看到结果;什么时候停下写需要用户登录、付款、确认或做选择的时刻。\n- 反引号只用来包工具名,App 名、按钮文字不要用反引号。不写密码、验证码、卡号和别人的私人信息。\n- 宁短勿长:模型自己会的不用写,只写这类事特有的做法和坑。\n\n## 导入用户贴来的内容\n\n用户贴来一段别处写的技能、笔记或流程时,把它改写成上面的格式:保留做法本身,去掉和这里无关的东西(别的软件的命令、手机上用不了的工具、脚本),内容有缺的小节按原意补一两句。原文里的账号、密码这类东西不要带进来。\n\n## 存下和告诉用户\n\n1. 用 `skill_save` 存:markdown 是整份文档,quote 抄用户这次要你建或改技能的原话。\n2. 结果 ok 才算存下。照结果告诉用户:技能叫什么、是新建还是改了已有的,在「设置 › 记忆与技能」里能看到,下次遇到这类事会先试用它。\n3. 结果失败时照原因改了再存一次;还是不行就如实说没存上、为什么,不要说已经建好。\n4. 改名、删除这里做不了:请用户在「设置 › 记忆与技能」里删掉旧的;要换名字就按新名字另存一份,再请用户删掉旧的。\n\n## 怎样算办成\n\n`skill_save` 返回 ok,结果里的名字就是要存的那份;回答里说的名字、新建还是修改,和结果一致。\n",
+        "sha256": "2ca1e847565726ec25b55908e3ecd00d1750664638f8c327d699234ecea37a42"
+      },
+      "assets": []
+    }
+  ]
+}
