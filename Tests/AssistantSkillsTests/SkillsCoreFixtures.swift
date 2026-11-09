@@ -111,6 +111,13 @@ enum SkillsCoreFixtures {
                 _ = try SkillDocument.parse(markdown(detail: value), availableToolNames: [])
             }
         }
+        for value in ["https://example.invalid/api/webhook/not-a-real-secret",
+                      "https://example.invalid/mcp?token=synthetic-value",
+                      "https://dummy:synthetic@example.invalid", "A123456789"] {
+            try c.error(.sensitiveContent, "capability URL or identifier excluded") {
+                _ = try SkillDocument.parse(markdown(detail: value), availableToolNames: [])
+            }
+        }
         try c.expect(try SkillDocument.parse(markdown(detail: "Never ask for a password. Keep pinned notes."),
                                             availableToolNames: []).name == "page-summary", "generic security advice allowed")
         return c.count

@@ -20,6 +20,11 @@ enum SkillSensitiveContent {
             "-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----"
         ]
         if patterns.contains(where: { SkillDocument.matches($0, text) || SkillDocument.matches($0, compact) }) { return true }
+        // A capability URL is a credential even when it has no recognizable key
+        // prefix. It must stay in the MCP Keychain, not in model-facing skill text.
+        if SkillDocument.matches(#"(?i)https?://[^\s]*(?:/webhook(?:/|\b)|[?&](?:key|token|secret|signature|api_key|access_token)=)"#, text)
+            || SkillDocument.matches(#"(?i)https?://[^\s/]+@"#, text)
+            || SkillDocument.matches(#"(?i)\b[A-Z][12][0-9]{8}\b"#, text) { return true }
         for candidate in SkillDocument.captures("(?<![0-9])[0-9](?:[ -]?[0-9]){12,18}(?![0-9])", text) {
             let digits = candidate.compactMap(\.wholeNumberValue)
             let sum = digits.reversed().enumerated().reduce(0) { total, entry in

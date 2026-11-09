@@ -147,7 +147,7 @@ Executed locally:
 
 - Memory core: 91 assertions in five groups, including quote/secret guards,
   capacity, context bounds, undo, atomic operations, cancellation and late-result rejection.
-- Skills core: 175 assertions in six groups, including parser/import/review,
+- Skills core: 179 assertions in six groups, including parser/import/review,
   optimistic revisions, outcome rules, retrieval and trusted learning gates.
 - AES-GCM persistence: round-trip, ciphertext/plaintext separation, key rotation,
   failed-key-write preservation, unreadable-key write guard and explicit reset.
@@ -169,5 +169,10 @@ model reply from starting extraction after memory was cleared/edited, and remove
 previous-conversation notes on new chat/model change. Seven fixture learning UI
 cases cover settings, memory CRUD, procedures, skill review/revisions, clear-all
 isolation and the delayed-reply clear race.
+Matrix [42644351064](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42644351064)
+is testing `d58dd6d` on the three simulator variants. A subsequent security-only
+increment rejects credential-bearing Webhook/query/userinfo URLs and synthetic
+identity data in Skills, with four added native checks; its live simulator workflow
+will run those checks separately rather than retroactively attributing them to this matrix.
 Automatic action-derived skill drafting, website knowledge, browser login/route
 management, native-app knowledge and executable scripts are not implied by these passes.

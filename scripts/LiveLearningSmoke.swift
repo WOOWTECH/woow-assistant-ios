@@ -66,6 +66,15 @@ import Foundation
             Stop after the reply. Never call tools or change external state.
             """
             let draft = try skills.importMarkdown(markdown, availableToolNames: [])
+            for value in ["https://example.invalid/api/webhook/not-a-real-secret",
+                          "https://example.invalid/mcp?token=synthetic-value",
+                          "https://dummy:synthetic@example.invalid", "A123456789"] {
+                do {
+                    _ = try SkillDocument.parse(markdown + "\n" + value, availableToolNames: [])
+                    throw Check.failed
+                } catch SkillsError.sensitiveContent { /* Expected; never a network request. */ }
+            }
+            print("PASS: skill import rejects capability URLs and synthetic identity data")
             guard skills.instructionContext(query: "parity-summary", availableToolNames: []).text.isEmpty else { throw Check.failed }
             _ = try skills.approveDraft(id: draft.id, availableToolNames: [])
             let reference = skills.instructionContext(query: "parity-summary", availableToolNames: [])
