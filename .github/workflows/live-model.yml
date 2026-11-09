@@ -1,0 +1,92 @@
+name: Live model on iOS Simulator
+
+# No push/PR trigger: every run consumes the owner's model quota.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: live-model
+  cancel-in-progress: false
+
+jobs:
+  live-native-model:
+    if: github.ref == 'refs/heads/main'
+    runs-on: macos-15
+    timeout-minutes: 25
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - name: Build native simulator transport test
+        run: |
+          mkdir -p build/live
+          sdk_path="$(xcrun --sdk iphonesimulator --show-sdk-path)"
+          sim_arch="$(uname -m)"
+          sim_target="$sim_arch-apple-ios17.0-simulator"
+          xcrun swiftc -sdk "$sdk_path" -target "$sim_target" \
+            -emit-library -static -emit-module -module-name AssistantModels \
+            Sources/AssistantModels/*.swift \
+            -emit-module-path build/live/AssistantModels.swiftmodule \
+            -o build/live/libAssistantModels.a
+          xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -parse-as-library \
+            -I build/live -L build/live -lAssistantModels scripts/LiveModelSmoke.swift \
+            -o build/live/LiveModelSmoke
+      - name: Boot iOS 18.5 iPhone simulator
+        run: |
+          device_id="$(xcrun simctl list devices available -j | python3 scripts/select_simulator.py --runtime iOS-18-5 --device 'iPhone 16 Pro Max')"
+          echo "WOOW_LIVE_SIMULATOR=$device_id" >> "$GITHUB_ENV"
+          xcrun simctl bootstatus "$device_id" -b
+      - name: Prepare App UI test build
+        run: |
+          tool_dir="$(mktemp -d "$RUNNER_TEMP/woow-xcodegen.XXXXXX")"
+          curl --fail --location --retry 3 --max-time 120 \
+            https://github.com/yonaskolb/XcodeGen/releases/download/2.44.1/xcodegen.artifactbundle.zip \
+            --output "$tool_dir/xcodegen.artifactbundle.zip"
+          (cd "$tool_dir" && echo 'cfa4e1ee82fc4c95bf7bd8f7db1fda6bd073605c76a8d5cbce50c54a81867eb2  xcodegen.artifactbundle.zip' | shasum -a 256 --check)
+          unzip -q "$tool_dir/xcodegen.artifactbundle.zip" -d "$tool_dir"
+          "$tool_dir/xcodegen.artifactbundle/xcodegen-2.44.1-macosx/bin/xcodegen" generate
+          xcodebuild -project WoowAssistant.xcodeproj -scheme WoowAssistant \
+            -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
+            -derivedDataPath build/LiveDerivedData build-for-testing CODE_SIGNING_ALLOWED=NO
+      - name: Make two bounded live requests inside iOS Simulator
+        timeout-minutes: 4
+        env:
+          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
+        run: |
+          test -n "$SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY" || { echo 'Missing model test secret'; exit 1; }
+          xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveModelSmoke"
+      - name: Real model App UI tests
+        timeout-minutes: 12
+        env:
+          WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
+          WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
+        run: |
+          test_runs=(build/LiveDerivedData/Build/Products/*.xctestrun)
+          [ "${#test_runs[@]}" -eq 1 ] || { echo 'Expected one generated test runner'; exit 1; }
+          python3 scripts/prepare_live_xctestrun.py "${test_runs[0]}"
+          xcodebuild -xctestrun "${test_runs[0]}" \
+            -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
+            -only-testing:WoowAssistantUITests/LiveModelUITests \
+            -parallel-testing-enabled NO test-without-building
+      - name: Clear private runner configuration
+        if: always()
+        run: |
+          for test_run in build/LiveDerivedData/Build/Products/*.xctestrun; do
+            [ ! -f "$test_run" ] || python3 scripts/prepare_live_xctestrun.py "$test_run" --clear
+          done
+      - name: Stop test simulator
+        if: always() && env.WOOW_LIVE_SIMULATOR != ''
+        run: xcrun simctl shutdown "$WOOW_LIVE_SIMULATOR"
+      # Deliberately no artifact upload: live process environments contain secrets.

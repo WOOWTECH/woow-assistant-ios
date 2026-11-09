@@ -1,15 +1,22 @@
 import SwiftUI
 
+@MainActor
 struct ContentView: View {
     @State private var selection: AppSection = .chat
-    @State private var draft = ""
+    @StateObject private var session = ChatSession()
+    @StateObject private var mcpSession = MCPSession()
 
     var body: some View {
         NavigationStack {
             Group {
-                if selection == .chat {
-                    ChatPlaceholder(draft: $draft)
-                } else {
+                switch selection {
+                case .chat:
+                    ChatView(session: session)
+                case .settings:
+                    ModelSettingsView(session: session)
+                case .tools:
+                    MCPToolsView(session: mcpSession)
+                default:
                     FeaturePlaceholder(section: selection)
                 }
             }
@@ -41,7 +48,6 @@ struct ContentView: View {
                     }
                     .buttonStyle(.plain)
                     .foregroundStyle(selection == section ? Color.accentColor : Color.secondary)
-                    .accessibilityElement(children: .ignore)
                     .accessibilityLabel(section.title)
                     .accessibilityValue(selection == section ? "已選取" : "未選取")
                     .accessibilityAddTraits(selection == section ? .isSelected : [])
@@ -52,8 +58,6 @@ struct ContentView: View {
             .padding(.vertical, 8)
         }
         .background(.bar)
-        .accessibilityElement(children: .contain)
-        .accessibilityIdentifier("navigation.sections")
     }
 }
 
@@ -97,7 +101,7 @@ private enum AppSection: String, CaseIterable, Identifiable {
     var explanation: String {
         switch self {
         case .chat:
-            return "此版本尚未連接模型，暫時無法傳送訊息。切換分頁時會保留目前的草稿。"
+            return "請先到設定填寫模型服務與 API Key。"
         case .browser:
             return "此版本尚未載入網頁，也未進行網站連線驗證。分頁、登入、上傳、下載與頁面操作仍待實作。"
         case .tools:
@@ -105,53 +109,190 @@ private enum AppSection: String, CaseIterable, Identifiable {
         case .memory:
             return "此版本尚未提供記憶儲存、附件匯入或檔案管理。"
         case .settings:
-            return "此版本尚未提供模型、通知、語言、外觀與隱私設定。"
+            return "設定模型服務；通知、語言與外觀設定仍待實作。"
         }
     }
 }
 
-private struct ChatPlaceholder: View {
-    @Binding var draft: String
+@MainActor
+private struct ChatView: View {
+    @ObservedObject var session: ChatSession
     @FocusState private var isEditingDraft: Bool
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Image(systemName: "message")
-                    .font(.system(size: 48))
-                    .foregroundStyle(.secondary)
-                    .accessibilityHidden(true)
-                Text("對話尚未實作")
-                    .font(.title2.bold())
+        VStack(spacing: 12) {
+            VStack(spacing: 6) {
+                Text(session.chatStatus)
+                    .font(.headline)
                     .accessibilityIdentifier("chat.status")
-                Text(AppSection.chat.explanation)
+                Text("對話紀錄僅保留於本次 App 工作階段，關閉程序後不會保存。")
+                    .font(.caption)
                     .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .accessibilityIdentifier("chat.explanation")
-                TextField("輸入訊息", text: $draft)
-                    .textFieldStyle(.roundedBorder)
-                    .autocorrectionDisabled()
-                    .focused($isEditingDraft)
-                    .submitLabel(.done)
-                    .onSubmit { isEditingDraft = false }
-                    .accessibilityLabel("訊息草稿")
-                    .accessibilityIdentifier("chat.draft")
-                Button("傳送（尚未開放）") {}
-                    .buttonStyle(.borderedProminent)
-                    .disabled(true)
-                    .accessibilityHint("尚未連接模型，無法傳送訊息；草稿會保留。")
-                    .accessibilityIdentifier("chat.send")
+                    .accessibilityIdentifier("chat.historyNotice")
+                if session.isUITestMode {
+                    Text("UI 測試模式：固定回覆，不會呼叫網路。")
+                        .font(.caption)
+                        .accessibilityIdentifier("uitest.banner")
+                }
             }
-            .frame(maxWidth: 520)
-            .frame(maxWidth: .infinity)
-            .padding()
+            .multilineTextAlignment(.center)
+
+            ScrollViewReader { proxy in
+                ScrollView {
+                    LazyVStack(alignment: .leading, spacing: 16) {
+                        if !session.hasStoredKey {
+                            Text(AppSection.chat.explanation)
+                                .foregroundStyle(.secondary)
+                                .accessibilityIdentifier("chat.explanation")
+                        }
+                        ForEach(Array(session.entries.enumerated()), id: \.element.id) { index, entry in
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(entry.role == "user" ? "你" : "助理")
+                                    .font(.caption.bold())
+                                    .foregroundStyle(.secondary)
+                                Text(entry.content)
+                                    .textSelection(.enabled)
+                                    .accessibilityIdentifier("chat.message.\(index).\(entry.role)")
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .id(entry.id)
+                        }
+                    }
+                    .padding(.vertical, 4)
+                }
+                .onChange(of: session.entries.count) { _, _ in
+                    if let id = session.entries.last?.id { proxy.scrollTo(id, anchor: .bottom) }
+                }
+            }
+
+            if let error = session.chatError {
+                Text(error)
+                    .font(.callout)
+                    .foregroundStyle(.red)
+                    .accessibilityIdentifier("chat.error")
+            }
+            if let notice = session.chatNotice {
+                Text(notice)
+                    .font(.callout)
+                    .accessibilityIdentifier("chat.notice")
+            }
+            TextField("輸入訊息", text: $session.draft)
+                .textFieldStyle(.roundedBorder)
+                .autocorrectionDisabled()
+                .focused($isEditingDraft)
+                .submitLabel(.done)
+                .onSubmit { isEditingDraft = false }
+                .disabled(session.isSubmitting)
+                .accessibilityLabel("訊息草稿")
+                .accessibilityIdentifier("chat.draft")
+            HStack {
+                Button("傳送") {
+                    isEditingDraft = false
+                    session.send()
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(!session.canSend)
+                .accessibilityIdentifier("chat.send")
+                if session.isSubmitting {
+                    ProgressView().accessibilityLabel("等待回覆")
+                    Button("取消") { session.cancel() }
+                        .buttonStyle(.bordered)
+                        .accessibilityIdentifier("chat.cancel")
+                }
+            }
+            .frame(minHeight: 44)
         }
-        .scrollDismissesKeyboard(.interactively)
+        .padding()
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
                 Button("完成") { isEditingDraft = false }
                     .accessibilityIdentifier("chat.dismissKeyboard")
+            }
+        }
+    }
+}
+
+@MainActor
+private struct ModelSettingsView: View {
+    @ObservedObject var session: ChatSession
+    @FocusState private var editingField: Field?
+    private enum Field: Hashable { case baseURL, model, key }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("模型設定")
+                    .font(.title2.bold())
+                    .accessibilityIdentifier("settings.status")
+                Text(session.hasStoredKey ? "已儲存金鑰；留空可沿用同一服務的金鑰。" : "尚未儲存金鑰。")
+                    .font(.callout)
+                    .accessibilityIdentifier("settings.keyStatus")
+                HStack {
+                    Text("HTTPS Base URL")
+                    Spacer()
+                    Button("清除網址") {
+                        session.baseURLDraft = ""
+                        editingField = .baseURL
+                    }
+                    .accessibilityIdentifier("settings.clearBaseURL")
+                }
+                TextField("https://api.example.com/v1", text: $session.baseURLDraft)
+                    .keyboardType(.URL)
+                    .focused($editingField, equals: .baseURL)
+                    .accessibilityIdentifier("settings.baseURL")
+                Text("模型名稱")
+                TextField("供應商提供的模型名稱", text: $session.modelDraft)
+                    .focused($editingField, equals: .model)
+                    .accessibilityIdentifier("settings.model")
+                Text("API Key")
+                SecureField("輸入金鑰；已儲存時可留空", text: $session.keyDraft)
+                    .focused($editingField, equals: .key)
+                    .privacySensitive()
+                    .accessibilityIdentifier("settings.apiKey")
+                HStack {
+                    Button("儲存設定") {
+                        editingField = nil
+                        session.saveSettings()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(session.isSubmitting)
+                    .accessibilityIdentifier("settings.save")
+                    Button("移除設定與金鑰", role: .destructive) {
+                        editingField = nil
+                        session.removeSettings()
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(session.isSubmitting)
+                    .accessibilityIdentifier("settings.remove")
+                }
+                if let error = session.settingsError {
+                    Text(error)
+                        .foregroundStyle(.red)
+                        .accessibilityIdentifier("settings.error")
+                }
+                if let notice = session.settingsNotice {
+                    Text(notice)
+                        .accessibilityIdentifier("settings.notice")
+                }
+                Text("金鑰只儲存在此裝置的 Keychain。更換主機或連接埠必須重新輸入金鑰。")
+                Text("更換服務、模型或金鑰會開始新的對話，草稿保留。移除設定會清除本次對話及此 App 的模型金鑰。")
+                Text("儲存只代表設定已保存；首次傳送才會連線至你設定的服務。通知、語言與外觀設定仍待實作。")
+            }
+            .textFieldStyle(.roundedBorder)
+            .textInputAutocapitalization(.never)
+            .autocorrectionDisabled()
+            .submitLabel(.done)
+            .onSubmit { editingField = nil }
+            .padding()
+        }
+        .scrollDismissesKeyboard(.interactively)
+        .onDisappear { session.keyDraft = "" }
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("完成") { editingField = nil }
+                    .accessibilityIdentifier("settings.dismissKeyboard")
             }
         }
     }

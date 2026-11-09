@@ -43,6 +43,26 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant.browser
 
+  AssistantModels:
+    type: framework
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Sources/AssistantModels
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant.models
+
+  AssistantMCP:
+    type: framework
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Sources/AssistantMCP
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant.mcp
+
   WoowAssistant:
     type: application
     platform: iOS
@@ -53,6 +73,8 @@ targets:
       - target: AssistantContracts
       - target: AssistantDomain
       - target: AssistantBrowser
+      - target: AssistantModels
+      - target: AssistantMCP
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant
@@ -72,6 +94,24 @@ targets:
       - target: AssistantDomain
       - target: AssistantBrowser
 
+  AssistantModelsTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Tests/AssistantModelsTests
+    dependencies:
+      - target: AssistantModels
+
+  AssistantMCPTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources:
+      - Tests/AssistantMCPTests
+    dependencies:
+      - target: AssistantMCP
+
   WoowAssistantUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -87,8 +127,12 @@ schemes:
       targets:
         WoowAssistant: all
         AssistantDomainTests: [test]
+        AssistantModelsTests: [test]
+        AssistantMCPTests: [test]
         WoowAssistantUITests: [test]
     test:
       targets:
         - AssistantDomainTests
+        - AssistantModelsTests
+        - AssistantMCPTests
         - WoowAssistantUITests

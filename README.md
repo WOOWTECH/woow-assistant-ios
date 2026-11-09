@@ -4,7 +4,9 @@
 
 ## 目前狀態
 
-這是開發骨架，不是可交付的助理。已有介面導覽、任務狀態機、瀏覽器網址初步檢查、資料合約與測試。模型串流、真正的 WebKit 瀏覽、MCP、Skills、儲存與通知尚未串接；介面會明確標示未實作，不會模擬成功。
+這是開發中的版本，尚非完整助理。已加入可設定服務的實際模型對話、Keychain 金鑰、取消／錯誤後保留草稿，以及 MCP 私密端點設定與目錄探索。原生模型客戶端支援 JSON／SSE；目前對話畫面使用完整回覆，紀錄僅保留於本次程序。
+
+MCP 原生核心可探索工具／資源／提示詞、讀取資源、依明確允許清單呼叫工具；畫面目前只提供連線與目錄，不執行工具。模型自主選用 MCP 工具、Skills、真正的 WebKit 瀏覽、持久記憶／檔案與通知仍待整合。實測狀態見 [驗證紀錄](docs/VERIFICATION.md)，不能把核心測試通過視為全功能完成。
 
 ## 第一版目標範圍（尚未完成）
 
@@ -17,7 +19,7 @@
 
 ## 本機開發
 
-需要完整 Xcode 15+、Python 3 與 XcodeGen 2.44.1。CI 固定使用 Xcode 16.4／iOS 18.5 模擬器；這不取代 iOS 17 真機驗證。
+需要完整 Xcode 15+、Python 3 與 XcodeGen 2.44.1。CI 使用 Xcode 16.4／iOS 18.5 小、大螢幕，以及 Xcode 26.2／iOS 26.2；這不取代 iOS 17 真機驗證。
 
 ```sh
 make project
@@ -26,6 +28,8 @@ make test
 ```
 
 `make test` 自動選擇本機已安裝且可用的 iOS 17+ iPhone 模擬器。只有 Command Line Tools 的主機可做部分 Swift 檢查，但無法建置或執行 iOS UI。CI 會保留測試日誌與 `.xcresult`，失敗時也會上傳。
+
+手動 `Live model on iOS Simulator` 與 `Live HA MCP on iOS Simulator` 工作流程使用 GitHub Secrets 執行真實請求與 App UI 測試，不發布可能含憑證的附件。模型需設定 `WOOW_MODEL_TEST_API_KEY` secret，以及同名前綴的 `BASE_URL`、`MODEL` repository variables；HA 使用 `WOOW_HA_MCP_TEST_URL` secret。完整 Webhook URL 等同憑證，請勿提交到 repository、Issue 或公開日誌。HA 實測只使用明確審核的唯讀案例，不會依伺服器的 `readOnlyHint` 自動放行。
 
 ## 瀏覽器邊界
 

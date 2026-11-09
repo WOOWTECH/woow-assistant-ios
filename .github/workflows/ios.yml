@@ -21,8 +21,26 @@ jobs:
   build-and-test:
     runs-on: macos-15
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - label: ios18-compact
+            xcode: '16.4'
+            runtime: iOS-18-5
+            device: iPhone SE (3rd generation)
+          - label: ios18-large
+            xcode: '16.4'
+            runtime: iOS-18-5
+            device: iPhone 16 Pro Max
+          - label: ios26-current
+            xcode: '26.2'
+            runtime: iOS-26-2
+            device: iPhone 17
     env:
-      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+      DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
+      WOOW_SIM_RUNTIME: ${{ matrix.runtime }}
+      WOOW_SIM_DEVICE: ${{ matrix.device }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
@@ -56,20 +74,32 @@ jobs:
             -derivedDataPath build/DerivedData build CODE_SIGNING_ALLOWED=NO \
             2>&1 | tee build/ios-build.log
       - name: Test
+        timeout-minutes: 18
         run: |
-          device_id="$(xcrun simctl list devices available -j | /usr/bin/python3 scripts/select_simulator.py --runtime iOS-18-5)"
+          device_id="$(xcrun simctl list devices available -j | /usr/bin/python3 scripts/select_simulator.py --runtime "$WOOW_SIM_RUNTIME" --device "$WOOW_SIM_DEVICE")"
+          echo "Testing $WOOW_SIM_DEVICE on $WOOW_SIM_RUNTIME"
+          xcrun simctl bootstatus "$device_id" -b
           xcodebuild -project WoowAssistant.xcodeproj -scheme WoowAssistant \
             -destination "platform=iOS Simulator,id=$device_id" \
             -derivedDataPath build/DerivedData -resultBundlePath build/Tests.xcresult \
             -parallel-testing-enabled NO test CODE_SIGNING_ALLOWED=NO \
             2>&1 | tee build/ios-tests.log
+      - name: Export simulator evidence
+        if: always()
+        run: |
+          if [ -d build/Tests.xcresult ]; then
+            xcrun xcresulttool get test-results summary --path build/Tests.xcresult > build/test-summary.json
+            xcrun xcresulttool export attachments --path build/Tests.xcresult --output-path build/screenshots
+          fi
       - name: Preserve test evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: ios-test-evidence-${{ github.run_id }}
+          name: ios-test-evidence-${{ matrix.label }}-${{ github.run_id }}
           path: |
             build/*.log
             build/*.xcresult
+            build/test-summary.json
+            build/screenshots/
           if-no-files-found: warn
           retention-days: 14
