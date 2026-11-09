@@ -26,7 +26,10 @@ final class MemoryRaceUITests: XCTestCase {
         app.buttons["navigation.memory"].tap()
         let clear = app.buttons["memory.clear"]
         reveal(clear, in: app); clear.tap()
+        XCTAssertTrue(app.staticTexts["memory.clear.stage"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.buttons["memory.clear.continue"].waitForExistence(timeout: 5))
         app.buttons["memory.clear.continue"].tap()
+        XCTAssertTrue(app.buttons["memory.clear.confirm"].waitForExistence(timeout: 5))
         app.buttons["memory.clear.confirm"].tap()
         let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: app.buttons["memory.clear.confirm"])
         XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed)
@@ -60,7 +63,6 @@ final class MemoryRaceUITests: XCTestCase {
         field.tap(); field.typeText(text)
     }
     private func reveal(_ element: XCUIElement, in app: XCUIApplication) {
-        for _ in 0..<8 where !element.isHittable { app.swipeUp() }
-        XCTAssertTrue(element.isHittable)
+        revealLearningElement(element, in: app)
     }
 }

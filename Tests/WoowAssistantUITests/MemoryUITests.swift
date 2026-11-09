@@ -59,6 +59,8 @@ final class MemoryUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["memory.editor.error"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.textViews["memory.editor.content"].value as? String, invalid)
         replaceEditor("memory", text: "Prefer green tea")
+        tap("memory.editor.done")
+        waitForAbsence(app.keyboards.firstMatch)
         reveal(app.textFields["memory.editor.keywords"])
         enter("tea", into: app.textFields["memory.editor.keywords"])
         saveMemoryEditor()
@@ -302,11 +304,7 @@ final class MemoryUITests: XCTestCase {
     }
 
     private func reveal(_ element: XCUIElement) {
-        for _ in 0..<5 where !element.isHittable {
-            if app.collectionViews.firstMatch.exists { app.collectionViews.firstMatch.swipeUp() }
-            else if app.scrollViews.firstMatch.exists { app.scrollViews.firstMatch.swipeUp() }
-            else { app.swipeUp() }
-        }
+        revealLearningElement(element, in: app)
         waitUntilHittable(element)
     }
 
