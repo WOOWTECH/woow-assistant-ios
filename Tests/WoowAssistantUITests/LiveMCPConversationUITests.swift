@@ -56,7 +56,17 @@ final class LiveMCPConversationUITests: XCTestCase {
         var approved = Set<String>()
         for _ in 0..<2 {
             let nameElement = app.staticTexts["mcp.approval.name"]
-            XCTAssertTrue(nameElement.waitForExistence(timeout: 95), "The model did not produce the next approval proposal.")
+            let next = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                nameElement.exists || self.app.staticTexts["chat.error"].exists
+                    || self.app.staticTexts["chat.message.1.assistant"].exists
+            }, object: nil)
+            let waitResult = XCTWaiter.wait(for: [next], timeout: 95)
+            let activity = app.staticTexts["chat.mcpActivity"]
+            // App-owned fixed categories/counters only; never log proposals,
+            // model replies, tool results or the full accessibility tree.
+            print("Live MCP transition: \(activity.value as? String ?? "unavailable"); proposal=\(nameElement.exists); error=\(app.staticTexts["chat.error"].exists); answer=\(app.staticTexts["chat.message.1.assistant"].exists)")
+            XCTAssertEqual(waitResult, .completed)
+            XCTAssertTrue(nameElement.exists, "The model did not produce the next approval proposal; see fixed diagnostics.")
             let name = nameElement.label
             XCTAssertTrue(["ha_eval_template", "ha_list_floors_areas"].contains(name), "Unapproved tool proposal.")
             XCTAssertTrue(approved.insert(name).inserted, "The model repeated a call instead of selecting the other tool.")

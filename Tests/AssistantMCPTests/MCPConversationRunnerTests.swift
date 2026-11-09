@@ -22,6 +22,10 @@ final class MCPConversationRunnerTests: XCTestCase {
         let count = try await MCPConversationChecks.budgetsAndRepeatedCalls()
         XCTAssertGreaterThan(count, 0)
     }
+    func testFixedModelFailureClassificationWithoutRetryOrLostEvents() async throws {
+        let count = try await MCPConversationChecks.modelFailureClassification()
+        XCTAssertGreaterThan(count, 0)
+    }
     func testCancellationAndDeadlineFenceLateApprovalAndResults() async throws {
         let count = try await MCPConversationChecks.cancellationAndDeadline()
         XCTAssertGreaterThan(count, 0)

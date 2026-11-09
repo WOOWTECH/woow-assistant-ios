@@ -169,6 +169,7 @@ private struct ChatView: View {
             if let activity = session.mcpActivity {
                 Text(activity).font(.caption)
                     .accessibilityIdentifier("chat.mcpActivity")
+                    .accessibilityValue(session.mcpDiagnostics ?? "")
             }
             if !session.mcpSteps.isEmpty {
                 Button("檢視工具結果（\(session.mcpSteps.count)）") { showsMCPResults = true }

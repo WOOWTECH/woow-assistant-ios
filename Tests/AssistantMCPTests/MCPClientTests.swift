@@ -13,6 +13,7 @@ struct MCPStandaloneSmoke {
             ("conversationApproval", MCPConversationChecks.refusalAndChangedArguments),
             ("conversationCommands", MCPConversationChecks.strictCommandsAndSelection),
             ("conversationErrors", MCPConversationChecks.errorsAndBounds),
+            ("modelFailureClassification", MCPConversationChecks.modelFailureClassification),
             ("conversationBudgets", MCPConversationChecks.budgetsAndRepeatedCalls),
             ("conversationCancellation", MCPConversationChecks.cancellationAndDeadline),
             ("authorizedTransport", MCPConversationChecks.singleCallTransportAPI)

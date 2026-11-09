@@ -76,6 +76,9 @@ public enum MCPConversationError: String, Error, Sendable, Equatable, LocalizedE
     case invalidInput, invalidCatalog, invalidLimits, invalidCommand, unknownTool, unknownResource
     case inputTooLarge, modelResponseTooLarge, outputTooLarge, invalidExecutionResult
     case modelFailed, approvalFailed, executionFailed, timedOut
+    /// Provider request failures are distinct from the whole-conversation deadline.
+    /// HTTP status numbers, bodies and underlying error descriptions are discarded.
+    case modelTimedOut, modelTransportFailed, modelHTTPRejected, modelInvalidResponse, modelIncompleteResponse
 
     public var errorDescription: String? { "MCP conversation stopped: \(rawValue)." }
 }

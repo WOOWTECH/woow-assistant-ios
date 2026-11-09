@@ -46,6 +46,9 @@ final class ChatSession: ObservableObject {
     @Published private(set) var pendingMCPApproval: MCPApprovalRequest?
     @Published private(set) var mcpActivity: String?
     @Published private(set) var mcpSteps: [MCPConversationStep] = []
+    @Published private(set) var mcpDiagnostics: String?
+    private var mcpPhase = "idle"
+    private var mcpModelCalls = 0
     private var mcpApprovalContinuation: CheckedContinuation<Bool, Never>?
     private var isMCPRun = false
     private var mcpSentCount = 0
@@ -208,6 +211,7 @@ final class ChatSession: ObservableObject {
         mcpActivity = nil
         mcpSteps = []
         mcpSentCount = 0
+        mcpModelCalls = 0; mcpPhase = "starting"; updateMCPDiagnostics()
         chatError = nil
         chatNotice = nil
         let client = client
@@ -222,6 +226,7 @@ final class ChatSession: ObservableObject {
                 }
                 try Task.checkCancellation()
                 guard let self, self.requestID == id else { return }
+                if mcpConnection != nil { self.mcpPhase = "finished"; self.updateMCPDiagnostics() }
                 guard !reply.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
                     self.finish(id: id, error: "模型回傳空白內容，草稿已保留，請重試。")
                     return
@@ -236,6 +241,12 @@ final class ChatSession: ObservableObject {
                     expectedGeneration: learningGeneration, client: client, configuration: configuration, apiKey: key)
             } catch {
                 guard let self, self.requestID == id else { return }
+                if mcpConnection != nil {
+                    let category = (error as? MCPConversationError)?.rawValue
+                        ?? (error as? MCPChatStop)?.reason.rawValue
+                        ?? (error is CancellationError ? "cancelled" : "unknown")
+                    self.updateMCPDiagnostics(failure: category)
+                }
                 // Do not surface provider error bodies/URLs: they may contain secrets.
                 let message = (error as? MCPChatStop)?.message
                     ?? (mcpConnection == nil ? "傳送失敗，草稿已保留。請檢查模型設定或網路後重試。"
@@ -249,6 +260,7 @@ final class ChatSession: ObservableObject {
             catch { return }
             guard let self, self.requestID == id else { return }
             self.request?.cancel()
+            if mcpConnection != nil { self.updateMCPDiagnostics(failure: "hostDeadline") }
             self.finish(id: id, error: "等待超過 \(seconds) 秒，已停止等待；草稿已保留，可重試。")
         }
     }
@@ -256,6 +268,7 @@ final class ChatSession: ObservableObject {
     func cancel() {
         learning.cancelLearning()
         guard let id = requestID else { return }
+        if isMCPRun { updateMCPDiagnostics(failure: "cancelled") }
         request?.cancel()
         finish(id: id)
         chatNotice = "已取消等待，草稿已保留。伺服器可能已收到請求。"
@@ -289,11 +302,22 @@ final class ChatSession: ObservableObject {
     private func receiveMCP(_ event: MCPConversationEvent, requestID: UUID) {
         guard self.requestID == requestID else { return }
         switch event {
-        case .executing: mcpSentCount += 1
-        case .completed(let step): mcpSteps.append(step)
-        default: break
+        case .requestingModel(let count): mcpPhase = "requestingModel"; mcpModelCalls = count
+        case .awaitingApproval: mcpPhase = "awaitingApproval"
+        case .executing: mcpPhase = "executing"; mcpSentCount += 1
+        case .completed(let step): mcpPhase = "receivedResult"; mcpSteps.append(step)
         }
         mcpActivity = "MCP 嘗試呼叫 \(mcpSentCount) 次；已收到 \(mcpSteps.count) 次結果；工具錯誤 \(mcpSteps.filter(\.isError).count) 次。"
+        updateMCPDiagnostics()
+    }
+
+    /// Test-only, fixed enums and counters. Never include proposals, tool
+    /// outputs, model text, endpoint, or underlying error descriptions.
+    private func updateMCPDiagnostics(failure: String = "none") {
+        #if DEBUG
+        guard isUITestMode || ProcessInfo.processInfo.arguments.contains("-LiveMCPConversationUITest") else { return }
+        mcpDiagnostics = "phase=\(mcpPhase);modelCalls=\(mcpModelCalls);attempts=\(mcpSentCount);results=\(mcpSteps.count);toolErrors=\(mcpSteps.filter(\.isError).count);failure=\(failure)"
+        #endif
     }
 
     func resolveMCPApproval(id: UUID, approved: Bool) {
@@ -327,6 +351,7 @@ final class ChatSession: ObservableObject {
         learning.resetConversationPresentation()
         entries = []; conversationID = UUID().uuidString
         mcpActivity = nil; mcpSteps = []; mcpSentCount = 0
+        mcpDiagnostics = nil
         chatError = nil; chatNotice = "已開啟新對話；已確認的記憶與技能保留。"
     }
 

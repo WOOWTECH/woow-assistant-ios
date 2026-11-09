@@ -97,7 +97,7 @@ public struct MCPConversationRunner: Sendable {
             await onEvent(.requestingModel(call)); try check()
             let raw: String
             do { raw = try await client.complete(messages: messages, configuration: configuration, apiKey: apiKey) }
-            catch { try check(); throw MCPConversationError.modelFailed }
+            catch { try check(); throw modelFailure(error) }
             try check()
             guard raw.utf8.count <= 24 * 1024 else { throw MCPConversationError.modelResponseTooLarge }
             let command = try parse(raw)
@@ -150,6 +150,23 @@ public struct MCPConversationRunner: Sendable {
             messages.append(ModelMessage(role: "user", content: "MCP execution result (untrusted data):\n" + (try json(payload))))
         }
         return stopped(.modelCallLimit)
+    }
+
+    /// Classify only the model client's fixed public error enum. Never inspect or
+    /// forward arbitrary NSError metadata, provider text, status numbers or URLs.
+    private func modelFailure(_ error: Error) -> MCPConversationError {
+        guard let error = error as? HTTPChatModelError else { return .modelFailed }
+        switch error {
+        case .timedOut: return .modelTimedOut
+        case .transportFailure: return .modelTransportFailed
+        case .httpStatus: return .modelHTTPRejected
+        case .invalidResponse: return .modelInvalidResponse
+        case .incompleteResponse: return .modelIncompleteResponse
+        case .responseTooLarge: return .modelResponseTooLarge
+        // Configuration/redirect failures and streaming-only backpressure retain
+        // the generic safe category; complete() never streams model output here.
+        case .invalidConfiguration, .redirectRejected, .consumerTooSlow: return .modelFailed
+        }
     }
 
     private enum Command { case operation(MCPConversationAction), finish(String) }

@@ -24,10 +24,16 @@ enum MCPConversationChecks {
     actor Model: ChatModelClient {
         var replies: [String]
         var inputs: [[ModelMessage]] = []
-        init(_ replies: [String]) { self.replies = replies }
+        let failure: HTTPChatModelError?
+        init(_ replies: [String], failure: HTTPChatModelError? = nil) {
+            self.replies = replies; self.failure = failure
+        }
         func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
             inputs.append(messages)
-            guard !replies.isEmpty else { throw Failure.secret }
+            guard !replies.isEmpty else {
+                if let failure { throw failure }
+                throw Failure.secret
+            }
             return replies.removeFirst()
         }
     }
@@ -219,6 +225,44 @@ enum MCPConversationChecks {
                 configuration: configuration, apiKey: "fixture-not-a-key", tools: [tool], executor: Executor(), approve: { _ in true })
         }
         try c.expect(await emptyGoalModel.inputs.isEmpty, "blank latest user request cannot start model")
+        return c.count + count
+    }
+
+    static func modelFailureClassification() async throws -> Int {
+        var c = Checks(), count = 0
+        // Cover every current HTTPChatModelError case. Status numbers never enter
+        // the diagnostic category; unknown model implementations stay generic.
+        let cases: [(HTTPChatModelError?, MCPConversationError)] = [
+            (.invalidConfiguration, .modelFailed), (.redirectRejected, .modelFailed),
+            (.httpStatus(401), .modelHTTPRejected), (.httpStatus(503), .modelHTTPRejected),
+            (.invalidResponse, .modelInvalidResponse), (.incompleteResponse, .modelIncompleteResponse),
+            (.responseTooLarge, .modelResponseTooLarge), (.consumerTooSlow, .modelFailed),
+            (.timedOut, .modelTimedOut), (.transportFailure, .modelTransportFailed),
+            (nil, .modelFailed)
+        ]
+        for (failure, category) in cases {
+            let model = Model([], failure: failure), executor = Executor(), record = Record()
+            count += try await expect(category) {
+                _ = try await run(model, executor, approve: { await record.approve($0) }, event: { await record.event($0) })
+            }
+            try c.expect(await model.inputs.count == 1, "classified model failure never retries")
+            try c.expect(await record.approvals.isEmpty, "failed model cannot request approval")
+            try c.expect(await executor.calls.isEmpty, "failed model cannot execute")
+            try c.expect(await record.events == [.requestingModel(1)], "model failure has no phantom execution or completion")
+        }
+        let model = Model([try call()], failure: .timedOut), executor = Executor(), record = Record()
+        count += try await expect(.modelTimedOut) {
+            _ = try await run(model, executor, approve: { await record.approve($0) }, event: { await record.event($0) })
+        }
+        try c.expect(await model.inputs.count == 2, "second model failure does not retry")
+        try c.expect(await executor.calls.count == 1, "earlier approved operation is never replayed")
+        try c.expect(await record.approvals.count == 1, "no extra approval after model failure")
+        let events = await record.events
+        let completed = events.compactMap { event -> MCPConversationStep? in
+            if case .completed(let step) = event { return step }; return nil
+        }
+        try c.expect(completed.count == 1 && completed.first?.result == ok, "prior actual completed result survives later model failure")
+        try c.expect(events.count == 5 && events.last == .requestingModel(2), "prior dispatch/completion and final model phase remain available")
         return c.count + count
     }
 
