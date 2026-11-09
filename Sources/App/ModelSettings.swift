@@ -15,6 +15,7 @@ struct SavedModelSettings: Codable {
 
 enum ModelSettingsError: Error, LocalizedError {
     case invalidURL, missingModel, missingKey, changedOrigin, invalidKey, unavailableKeychain
+    case keychainStatus(OSStatus)
 
     var errorDescription: String? {
         switch self {
@@ -30,6 +31,8 @@ enum ModelSettingsError: Error, LocalizedError {
             return "API Key 不可包含空白或控制字元。"
         case .unavailableKeychain:
             return "無法存取 Keychain，設定未變更。請解鎖裝置後再試。"
+        case .keychainStatus(let status):
+            return "Keychain 存取失敗（系統代碼 \(status)），設定未變更。"
         }
     }
 }
@@ -58,6 +61,7 @@ struct KeychainModelCredentials: ModelCredentialStoring {
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
         if status == errSecItemNotFound { return nil }
+        guard status == errSecSuccess else { throw ModelSettingsError.keychainStatus(status) }
         guard status == errSecSuccess, let data = item as? Data,
               let key = String(data: data, encoding: .utf8) else {
             throw ModelSettingsError.unavailableKeychain
@@ -70,9 +74,8 @@ struct KeychainModelCredentials: ModelCredentialStoring {
         query[kSecAttrAccount as String] = account
         query[kSecValueData as String] = Data(key.utf8)
         query[kSecAttrAccessible as String] = kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-        guard SecItemAdd(query as CFDictionary, nil) == errSecSuccess else {
-            throw ModelSettingsError.unavailableKeychain
-        }
+        let status = SecItemAdd(query as CFDictionary, nil)
+        guard status == errSecSuccess else { throw ModelSettingsError.keychainStatus(status) }
     }
 
     func remove(account: String) throws {
@@ -89,7 +92,7 @@ struct KeychainModelCredentials: ModelCredentialStoring {
     private func delete(_ query: [String: Any]) throws {
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
-            throw ModelSettingsError.unavailableKeychain
+            throw ModelSettingsError.keychainStatus(status)
         }
     }
 }

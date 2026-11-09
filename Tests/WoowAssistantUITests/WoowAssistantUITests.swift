@@ -170,6 +170,77 @@ final class WoowAssistantUITests: XCTestCase {
         XCTAssertEqual(relaunched.staticTexts["chat.status"].label, "尚未設定模型")
     }
 
+    func testMCPEndpointValidationAndKeychainPersistenceWithoutNetworking() {
+        let app = launchApp()
+        openSection("tools", in: app)
+        let endpoint = app.secureTextFields["mcp.endpoint"]
+        revealMCP(endpoint, in: app)
+        enter("http://mcp.example.invalid/private", into: endpoint)
+        revealMCP(app.buttons["mcp.save"], in: app)
+        app.buttons["mcp.save"].tap()
+        XCTAssertEqual(app.staticTexts["mcp.status"].label, "尚未設定 MCP")
+        revealMCP(app.staticTexts["mcp.error"], in: app)
+        XCTAssertTrue(app.staticTexts["mcp.error"].label.contains("HTTPS"))
+        revealMCP(app.buttons["mcp.clearDraft"], in: app, upward: false)
+        app.buttons["mcp.clearDraft"].tap()
+        revealMCP(endpoint, in: app, upward: false)
+        enter("https://mcp.example.invalid/fixture-private", into: endpoint)
+        revealMCP(app.buttons["mcp.save"], in: app)
+        app.buttons["mcp.save"].tap()
+        XCTAssertEqual(app.staticTexts["mcp.status"].label, "端點已儲存，尚未驗證連線")
+        XCTAssertFalse(app.buttons["mcp.clearDraft"].isEnabled)
+        app.terminate()
+        let relaunched = launchApp(resetStorage: false)
+        openSection("tools", in: relaunched)
+        XCTAssertEqual(relaunched.staticTexts["mcp.status"].label, "端點已儲存，尚未驗證連線")
+        XCTAssertTrue(relaunched.staticTexts["mcp.testIsolation"].exists)
+        revealMCP(relaunched.buttons["mcp.connect"], in: relaunched)
+        XCTAssertFalse(relaunched.buttons["mcp.connect"].isEnabled)
+    }
+
+    func testMCPKeychainWriteFailureIsNotReportedAsSaved() {
+        let app = launchApp(keychainWriteFails: true)
+        openSection("tools", in: app)
+        let endpoint = app.secureTextFields["mcp.endpoint"]
+        revealMCP(endpoint, in: app)
+        enter("https://mcp.example.invalid/fixture-private", into: endpoint)
+        revealMCP(app.buttons["mcp.save"], in: app)
+        app.buttons["mcp.save"].tap()
+        XCTAssertEqual(app.staticTexts["mcp.status"].label, "尚未設定 MCP")
+        revealMCP(app.staticTexts["mcp.error"], in: app)
+        XCTAssertTrue(app.staticTexts["mcp.error"].label.contains("Keychain"))
+    }
+
+    func testMCPRemovalClearsOnlyItsSavedEndpoint() {
+        let app = launchApp()
+        configure(in: app)
+        openSection("tools", in: app)
+        let endpoint = app.secureTextFields["mcp.endpoint"]
+        revealMCP(endpoint, in: app)
+        enter("https://mcp.example.invalid/fixture-private", into: endpoint)
+        revealMCP(app.buttons["mcp.save"], in: app)
+        app.buttons["mcp.save"].tap()
+        XCTAssertEqual(app.staticTexts["mcp.status"].label, "端點已儲存，尚未驗證連線")
+        revealMCP(app.buttons["mcp.remove"], in: app)
+        app.buttons["mcp.remove"].tap()
+        let confirm = app.buttons["mcp.confirmRemove"]
+        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+        confirm.tap()
+        XCTAssertEqual(app.staticTexts["mcp.status"].label, "尚未設定 MCP")
+        app.terminate()
+        let relaunched = launchApp(resetStorage: false)
+        XCTAssertEqual(relaunched.staticTexts["chat.status"].label, "模型已設定")
+        openSection("tools", in: relaunched)
+        XCTAssertEqual(relaunched.staticTexts["mcp.status"].label, "尚未設定 MCP")
+    }
+
+    private func revealMCP(_ element: XCUIElement, in app: XCUIApplication, upward: Bool = true) {
+        for _ in 0..<5 where !element.isHittable {
+            if upward { app.swipeUp() } else { app.swipeDown() }
+        }
+        waitUntilHittable(element)
+    }
+
     private func launchApp(resetStorage: Bool = true, keychainWriteFails: Bool = false) -> XCUIApplication {
         let app = XCUIApplication()
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW", "-UITestMode", "-UITestNamespace", namespace]

@@ -5,7 +5,7 @@
 - [x] Create the iOS 17 XcodeGen project definition.
 - [x] Establish contracts, domain run state, browser URL policy and CI skeleton.
 - [x] Generate the Xcode project and validate its plist structure.
-- [ ] Push the public repository (user-approved) and run the first macOS CI build.
+- [x] Push the user-approved public repository and run the first macOS CI build (baseline UI failed; see verification log).
 - [x] Add explicit run state events and regression tests for cancellation, waiting, terminal states and concurrency.
 - [x] Make scaffold navigation reachable on iPhone and preserve drafts without pretending to send.
 - [x] Pin CI tooling and preserve logs / xcresult on failure.
@@ -14,7 +14,9 @@
 ## M1 — Conversation core and browser shell
 
 - [ ] SwiftData storage for conversations, messages, run events and outbox records.
-- [ ] Streaming `ModelClient` protocol plus deterministic SSE fixture client.
+- [x] Native JSON/SSE model transport with bounded requests and fixture coverage.
+- [x] Configurable actual model conversation, cancellation and retained drafts.
+- [ ] Stream partial model output into the chat UI.
 - [ ] `WKWebView` tab manager: navigation, history, bookmarks, site mode and process recovery.
 - [ ] Decide explicit opt-in local-network browsing policy; the starter URL filter defaults to public destinations and does not yet satisfy full Mika parity.
 - [ ] Files import, attachment metadata and safe download vault.
@@ -22,9 +24,12 @@
 
 ## M2 — Controlled connections
 
-- [ ] HTTPS Streamable HTTP MCP client, session recovery and OAuth PKCE.
-- [ ] Keychain-backed credential references; no tokens in logs or persistence.
-- [ ] User-configurable MCP endpoint trust and explicit approval cards; catalogue support must not remove endpoint configuration.
+- [x] HTTPS Streamable HTTP MCP client, explicit tool allowlist, bounded requests and discovery.
+- [x] Keychain-backed model keys and whole MCP endpoints; no plaintext credentials in preferences or logs.
+- [x] User-configurable MCP endpoint with discovery/cancel/disconnect UI.
+- [ ] App-level tool invocation and model-to-MCP orchestration with explicit approval cards.
+- [ ] OAuth PKCE, explicit session reinitialization UI and other required transport modes.
+- [ ] Authorized real-device HA control tests (target and allowed actions pending).
 - [ ] Declarative Skills registry and remote compute job contracts.
 
 ## M3 — Browser parity and notifications

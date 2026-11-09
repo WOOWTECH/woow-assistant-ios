@@ -71,7 +71,7 @@ jobs:
         run: |
           xcodebuild -project WoowAssistant.xcodeproj -scheme WoowAssistant \
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
-            -derivedDataPath build/DerivedData build CODE_SIGNING_ALLOWED=NO \
+            -derivedDataPath build/DerivedData build CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
             2>&1 | tee build/ios-build.log
       - name: Test
         timeout-minutes: 18
@@ -82,7 +82,7 @@ jobs:
           xcodebuild -project WoowAssistant.xcodeproj -scheme WoowAssistant \
             -destination "platform=iOS Simulator,id=$device_id" \
             -derivedDataPath build/DerivedData -resultBundlePath build/Tests.xcresult \
-            -parallel-testing-enabled NO test CODE_SIGNING_ALLOWED=NO \
+            -parallel-testing-enabled NO test CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
             2>&1 | tee build/ios-tests.log
       - name: Export simulator evidence
         if: always()

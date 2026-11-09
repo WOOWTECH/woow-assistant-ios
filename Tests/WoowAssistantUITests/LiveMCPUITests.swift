@@ -41,7 +41,7 @@ final class LiveMCPUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["mcp.status"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["mcp.status"].label, "端點已儲存，尚未驗證連線")
         XCTAssertFalse(app.staticTexts["mcp.testIsolation"].exists)
-        for _ in 0..<2 {
+        for attempt in 0..<2 {
             reveal(app.buttons["mcp.connect"], in: app)
             app.buttons["mcp.connect"].tap()
             let completed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
@@ -54,8 +54,13 @@ final class LiveMCPUITests: XCTestCase {
             XCTAssertTrue(app.staticTexts["mcp.toolCount"].label.contains("個"))
             XCTAssertFalse(app.staticTexts["mcp.toolCount"].label.contains("：0 個"))
             XCTAssertTrue(app.staticTexts["mcp.resourceCount"].exists)
-            reveal(app.buttons["mcp.disconnect"], in: app)
-            app.buttons["mcp.disconnect"].tap()
+            if attempt == 0 {
+                XCUIDevice.shared.press(.home)
+                app.activate()
+            } else {
+                reveal(app.buttons["mcp.disconnect"], in: app)
+                app.buttons["mcp.disconnect"].tap()
+            }
             XCTAssertEqual(app.staticTexts["mcp.status"].label, "已中斷本機連線")
         }
     }

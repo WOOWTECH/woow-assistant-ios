@@ -68,7 +68,16 @@ Max, iOS 26.2 iPhone 17. Normal CI retains fixture-only logs, screenshots and xc
 Manual live model and live HA workflows test native networking plus App UI; they never
 upload live xcresult/xctestrun/process environments, which may contain credentials.
 
-Latest expanded matrix/native/live-UI runs: pending execution at this commit.
+Expanded matrix run [42630794706](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42630794706)
+is executing; iOS 26.2 portable core and App build passed, UI results pending.
+Live model run [42630881158](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42630881158)
+passed both native JSON and SSE requests inside the iOS 18.5 simulator, but all three
+App UI cases failed before chat because bootstrap did not establish saved settings.
+Simulator builds had explicitly disabled code signing; the next revision enables
+ad-hoc signing and adds sanitized Keychain OSStatus diagnostics to test the suspected
+credential-store failure. This is not yet a confirmed root cause or passing UI result.
+Live HA run [42630886024](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42630886024)
+is queued; no native iOS MCP pass is claimed yet.
 
 ## Remaining acceptance gaps
 

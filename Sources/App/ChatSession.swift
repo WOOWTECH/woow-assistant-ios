@@ -31,7 +31,7 @@ final class ChatSession: ObservableObject {
     private var requestID: UUID?
 
     init() {
-        var bootstrapFailed = false
+        var bootstrapFailure: String?
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         precondition(!(arguments.contains("-UITestMode") && arguments.contains("-LiveModelUITest")), "Choose one UI test mode")
@@ -46,7 +46,7 @@ final class ChatSession: ObservableObject {
                     try LiveModelUITestSupport.bootstrap(repository, environment: ProcessInfo.processInfo.environment)
                 }
             }
-            catch { bootstrapFailed = true }
+            catch { bootstrapFailure = Self.settingsMessage(error) }
         } else if arguments.contains("-UITestMode") {
             repository = UITestModelFixture.repository(arguments: arguments)
             client = UITestChatModelClient()
@@ -72,7 +72,7 @@ final class ChatSession: ObservableObject {
         } catch {
             settingsError = Self.settingsMessage(error)
         }
-        if bootstrapFailed { settingsError = "Live UI 測試設定未完成。請檢查測試執行環境。" }
+        if let bootstrapFailure { settingsError = "Live UI 測試設定未完成。\(bootstrapFailure)" }
     }
 
     var canSend: Bool {

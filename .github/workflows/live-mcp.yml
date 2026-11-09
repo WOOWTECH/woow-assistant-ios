@@ -62,7 +62,9 @@ jobs:
           "$tool_dir/xcodegen.artifactbundle/xcodegen-2.44.1-macosx/bin/xcodegen" generate
           xcodebuild -project WoowAssistant.xcodeproj -scheme WoowAssistant \
             -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
-            -derivedDataPath build/LiveDerivedData build-for-testing CODE_SIGNING_ALLOWED=NO
+            -derivedDataPath build/LiveDerivedData build-for-testing CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES
+          codesign --verify --strict build/LiveDerivedData/Build/Products/Debug-iphonesimulator/WoowAssistant.app
+          codesign -d --entitlements :- build/LiveDerivedData/Build/Products/Debug-iphonesimulator/WoowAssistant.app
       - name: Real MCP App discovery and reconnection
         timeout-minutes: 8
         env:

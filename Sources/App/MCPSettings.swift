@@ -2,10 +2,13 @@ import Foundation
 import Security
 
 enum MCPSettingsError: Error, LocalizedError {
+    case keychainStatus(OSStatus)
     case invalidEndpoint, unavailableKeychain, invalidTestNamespace, missingLiveTestEndpoint
 
     var errorDescription: String? {
         switch self {
+        case .keychainStatus(let status):
+            return "MCP Keychain 存取失敗（系統代碼 \(status)）。"
         case .invalidEndpoint:
             return "請輸入完整 HTTPS MCP 端點，不可含帳密、片段或空白。查詢參數會與整個端點一起安全儲存。"
         case .unavailableKeychain:
@@ -57,6 +60,7 @@ struct MCPSettingsStore: MCPEndpointStoring {
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
         if status == errSecItemNotFound { return nil }
+        guard status == errSecSuccess else { throw MCPSettingsError.keychainStatus(status) }
         guard status == errSecSuccess, let data = item as? Data,
               let value = String(data: data, encoding: .utf8) else {
             throw MCPSettingsError.unavailableKeychain
@@ -74,17 +78,16 @@ struct MCPSettingsStore: MCPEndpointStoring {
         // Update the existing item atomically; never delete the old credential first.
         let update = SecItemUpdate(query as CFDictionary, attributes as CFDictionary)
         if update == errSecSuccess { return }
-        guard update == errSecItemNotFound else { throw MCPSettingsError.unavailableKeychain }
+        guard update == errSecItemNotFound else { throw MCPSettingsError.keychainStatus(update) }
         let item = query.merging(attributes) { _, new in new }
-        guard SecItemAdd(item as CFDictionary, nil) == errSecSuccess else {
-            throw MCPSettingsError.unavailableKeychain
-        }
+        let status = SecItemAdd(item as CFDictionary, nil)
+        guard status == errSecSuccess else { throw MCPSettingsError.keychainStatus(status) }
     }
 
     func remove() throws {
         let status = SecItemDelete(query as CFDictionary)
         guard status == errSecSuccess || status == errSecItemNotFound else {
-            throw MCPSettingsError.unavailableKeychain
+            throw MCPSettingsError.keychainStatus(status)
         }
     }
 

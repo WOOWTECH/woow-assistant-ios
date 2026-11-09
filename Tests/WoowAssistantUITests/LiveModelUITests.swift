@@ -97,6 +97,13 @@ final class LiveModelUITests: XCTestCase {
         launched = true
         app.launch()
         XCTAssertTrue(app.staticTexts["chat.status"].waitForExistence(timeout: 10))
+        if app.staticTexts["chat.status"].label != "模型已設定" {
+            navigate(to: "settings", in: app)
+            // App-owned fixed category/OSStatus only, never provider data or credentials.
+            let diagnosis = app.staticTexts["settings.error"].exists ? app.staticTexts["settings.error"].label : "No bootstrap diagnostic"
+            XCTFail("Live bootstrap did not finish: " + diagnosis)
+            throw LiveTestSetupError.missingConfiguration
+        }
         XCTAssertEqual(app.staticTexts["chat.status"].label, "模型已設定", "Live bootstrap did not finish.")
         return app
     }
