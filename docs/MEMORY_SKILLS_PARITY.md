@@ -61,8 +61,9 @@ complete locations rather than treating shortened table paths as filesystem path
   Drafting/promotion must be accepted with separate core, App UI and live evidence.
 - Model-controlled memory/skill tools, profile consolidation and complete bundled
   catalog remain unimplemented. Event-driven browser draft production and website
-  lifecycle now have passing fixture App tests. Real-model multi-page learning is
-  a separate acceptance case; a lifecycle unit test does not prove that integration.
+  lifecycle have passing fixture App tests on all three simulators. Real-model
+  multi-page learning through approval/relaunch also passed separately (evidence
+  below); lifecycle unit results are not substituted for that integration.
 
 The 2026-11-10 browser increment deliberately restricts URLs to public HTTPS without
 queries/fragments, same-origin research links, ephemeral website data and read-only
@@ -102,6 +103,23 @@ invalidates late results. This cannot retract requests already sent to a service
 App restart preserves approved/pending learning records and routes, but not the
 ephemeral browser's cookies or session. UI fixtures exercise the real WebKit/store
 with local HTML; they do not prove live service behavior.
+
+## Real browser learning evidence — 2026-11-10
+
+The [live simulator run](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42711916423)
+passed all six App UI cases with zero skips, alongside seven native model calls.
+The actual IANA five-page case completed in 157.434 seconds: five full-URL answer
+citations, exactly six real reads (initial inspect plus five unique navigations),
+independent done judgment, one saved pending skill, fulltext review, explicit UI
+approval into trial, and byte-identical Markdown/provenance after termination and
+relaunch. A single-page explanation was independently judged done without inventing
+a skill. Automatic memory/relaunch, disabled-memory recall, cancellation, transport
+failure and multi-turn context also passed. The latest test revision `fbe4669` only
+changes navigation readiness; App source is unchanged from `2654965`.
+
+This evidence validates the implemented read-only website-learning flow on a
+simulator with a real model and real website. It does not establish full Mika browser
+or bundled-catalog parity, physical-device behavior, or native-app knowledge/control.
 
 ## Acceptance matrix
 

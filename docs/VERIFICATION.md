@@ -1,19 +1,47 @@
 # Verification — 2026-11-10
 
-This is an in-progress implementation, not full-feature acceptance. Tests distinguish
-fixtures, real network calls, iOS UI, and unimplemented functionality.
+The implemented browser/learning increment has passed the full simulator matrix and
+real-model App flow described below. The broader App remains in development; this
+is not full Mika feature parity. Fixture, native-network and live UI evidence are
+reported separately.
 
 ## Current acceptance checkpoint
 
 Application source `2654965` includes the browser/learning integration, the native
 modal container, exact reviewed provenance, trusted UUID validation, bounded
 model-command correction and measured cold-start allowances. The latest full matrix
-and live run use this same revision. Earlier evidence remains
+uses this revision; live test revision `fbe4669` changes only its navigation wait,
+with identical App production source. Earlier evidence remains
 listed by source revision and must not be confused with current acceptance:
 
 | Execution / revision | Evidence | Current result |
 |---|---|---|
-| Full App regression, `2654965`: SE / iPhone 16 Pro Max / iPhone 17 | [42708706919](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42708706919) | Running; no pass claimed |
+| Full App regression, `2654965`: SE / iPhone 16 Pro Max / iPhone 17 | [42708706919](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42708706919) | All three jobs succeeded; each passed 65 portable, 65 iOS native and 22 fixture UI tests; 7 opt-in live cases skipped in normal CI |
+| Native model probes and six real App UI cases, test revision `fbe4669`, App source `2654965` | [42711916423](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42711916423) | Seven native probes and all six UI cases passed, zero skips; complete multi-page approval/relaunch passed in 157.434 seconds |
+| Local skill assertions | 643 checks; strict-concurrency build, three consecutive passes | Passed; not iOS UI evidence |
+| Local research assertions | 238 checks; strict-concurrency build | Passed; no live model/network |
+| UI visibility geometry | 24 standalone checks | Passed; not iOS UI evidence |
+
+All three final simulator jobs have zero test failures. The normal matrix skips six
+opt-in model UI cases and one HA case; the six model cases were separately executed
+against the real service with **zero skips**. The previously documented HA read-only
+acceptance is separate evidence and was not silently counted as part of this run.
+
+The full fixture matrix includes actual WebKit research, pending-skill review,
+explicit approval, exact relaunch persistence, website knowledge/revisions and
+confirmed six-step route replay. It also verifies real DOM exclusion while research
+is presented and restoration after dismissal. The live five-page case covers real
+IANA/model research through explicit approval and byte-identical relaunch; it does
+not substitute for a live route-replay test or a complete Mika catalog/browser audit.
+Physical iPhones, iOS 17 runtime, signing/distribution and full browser interaction
+remain outside this completed simulator increment. Phone/native-app control stays
+excluded by the agreed scope.
+
+<details>
+<summary>Earlier checkpoints (revision-specific, superseded where stated)</summary>
+
+| Execution / revision | Evidence | Current result |
+|---|---|---|
 | Native model probes and six real App UI cases, `2654965` | [42708715736](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42708715736) | Seven native probes and 5/6 UI cases passed. Multi-page passed real sources/actions/done/pending checks, then native navigation readiness failed; approval/relaunch not reached |
 | Full App regression, `daf0152`: SE / iPhone 16 Pro Max / iPhone 17 | [42707028819](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42707028819) | Superseded after the inherited modal-boundary failure was confirmed |
 | Native model probes and six real App UI cases, `daf0152` | [42707038595](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42707038595) | Superseded while queued; no result claimed |
@@ -21,14 +49,13 @@ listed by source revision and must not be confused with current acceptance:
 | Browser regression, `67e1d4e`: same three devices | [42701757230](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42701757230) | All three failed the new whole-WebView absence assertion; large also failed initial page readiness |
 | Native model probes and six real App UI cases, `67e1d4e` | [42701765437](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42701765437) | Seven native probes and 5/6 UI cases passed. Multi-page stopped after one inspection with invalid_command_json; no learning pass claimed |
 | Earlier live attempt, `896e447` | [42697453900](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42697453900) | Seven native probes and five UI cases passed; multi-page UI exceeded 300 seconds after research finished. Approval/relaunch unverified |
-| Local skill assertions | 643 checks; strict-concurrency build, three consecutive passes | Passed; not iOS UI evidence |
-| Local research assertions | 238 checks; strict-concurrency build | Passed; no live model/network |
-| UI visibility geometry | 24 standalone checks | Passed; not iOS UI evidence |
+
+</details>
 
 Earlier successes and failures below are revision-specific history. Fixture passes
 do not substitute for real model, website, or App interaction evidence.
 
-## Modal WebKit accessibility correction (pending iOS verification)
+## First modal accessibility attempt (later superseded)
 
 The `896e447` live multi-page case reached the fixed App status “研究已結束”,
 but subsequent accessibility queries took roughly 5–10 seconds each; its first
@@ -36,10 +63,10 @@ result-scroll gesture occurred near the 300-second case limit. This does not pro
 that the answer, learning verdict or pending skill satisfied acceptance. The earlier
 short research failure at `5f58196` did not recur; its precise cause remains unknown.
 
-While the research sheet is presented, the underlying retained WKWebView now excludes
-its subtree from accessibility traversal and restores it on dismissal/dismantling.
-The renderer and DOM continue running. Large underlying page trees are a suspected
-contributor to the slow queries; the next simulator run must verify the effect.
+The first attempt set hiding flags on the retained WKWebView while research was
+presented and restored them on dismissal/dismantling, leaving its renderer and DOM
+running. Subsequent fixture runs showed those flags alone did not exclude the actual
+DOM. The native-container correction below replaced this insufficient boundary.
 The UI helper reuses its scroll container and allows partially visible **static text**
 to be read, while controls must remain fully visible before tapping. Twenty-four
 standalone geometry assertions passed. The 300-second limit and all six-action,
@@ -68,7 +95,7 @@ all five actual navigations and the complete learning/relaunch flow. Failure art
 now include the fixture-only AX tree. Large also failed 45-second initial loading:
 the PNG shows the correct full URL, dismissed keyboard and blank loading WebKit.
 The runtime cause remains under investigation; no timeout was increased for this
-failure. The next learning matrix must verify these test corrections.
+failure. Subsequent learning/full results are recorded below and at the current checkpoint.
 
 ## Reproduced runtime failures and bounded corrections
 
@@ -105,8 +132,8 @@ export and revision restoration are covered. **643 skill assertions passed three
 consecutive runs**, including 40 additions. The failing fixture now checks the
 proposal and reports its outcome/skip category instead of force-unwrapping it.
 
-These corrections require the next full simulator matrix and real-model run; local
-checks alone do not establish iOS or live acceptance.
+The final full simulator matrix and real-model run at the current checkpoint
+provide the subsequent acceptance; local checks alone were insufficient.
 
 The completed `0e1d415` learning matrix recorded 65 portable and 28 native passes
 on each iOS 18 device, with **9/10 UI cases passed** each and no skips. All seven
@@ -135,8 +162,9 @@ undo a replacement wrapper's policy. This is the production modal behavior, not 
 UI-test-only branch. Apple's [WWDC23 accessibility session](https://developer.apple.com/videos/play/wwdc2023/10035/)
 explains the distinct accessibility and automation lists; the
 [`automationElements` API](https://developer.apple.com/documentation/objectivec/nsobject-swift.class/automationelements)
-is available from iOS 17. These APIs do not establish runtime acceptance: the next
-three-device and live runs must demonstrate the real DOM boundary and complete flow.
+is available from iOS 17. The final three-device fixture runs subsequently passed
+the actual DOM boundary assertions, and the live run completed the full review flow.
+This is automated UI evidence, not a physical-device VoiceOver usability audit.
 
 ## Real multi-page learning reaches review handoff
 
@@ -607,5 +635,6 @@ and actual completed-action count. Replay uses the same diagnostics. Raw respons
 URLs, credentials and underlying error descriptions are excluded. **202 standalone
 research assertions** pass, including non-execution of rejected commands, accurate
 completed-action counts and error-content redaction. No additional command format,
-automatic retry or navigation permission was enabled. The next live run must
-establish the actual multi-page failure category or complete the strict flow.
+automatic retry or navigation permission was enabled in that diagnostic increment.
+Later evidence identified invalid command JSON; the bounded format correction and
+final successful strict live flow are recorded above.
