@@ -91,8 +91,15 @@ final class LiveModelUITests: XCTestCase {
         for _ in 0..<8 where !toggle.isHittable { app.swipeUp() }
         waitUntilHittable(toggle)
         XCTAssertEqual(toggle.value as? String, "1")
-        toggle.tap()
-        XCTAssertEqual(toggle.value as? String, "0")
+        // SwiftUI can expose a row-wide switch wrapper with a nested UISwitch.
+        // Target the actual control and wait for persisted state publication.
+        let nativeSwitch = toggle.switches.firstMatch
+        let target = nativeSwitch.exists ? nativeSwitch : toggle
+        waitUntilHittable(target)
+        target.tap()
+        let disabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "0"), object: toggle)
+        XCTAssertEqual(XCTWaiter.wait(for: [disabled], timeout: 5), .completed)
+        XCTAssertFalse(app.staticTexts["memory.error"].exists, "The App reported a memory settings write error.")
         navigate(to: "chat", in: app)
         app.buttons["chat.newConversation"].tap()
         enterDraft("What is my favorite color? If no preference is provided in this conversation, reply with exactly UNKNOWN and nothing else.", in: app)

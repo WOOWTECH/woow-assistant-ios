@@ -36,8 +36,7 @@ final class MemoryUITests: XCTestCase {
             let toggle = app.switches["memory.toggle.\(name)"]
             reveal(toggle)
             XCTAssertEqual(toggle.value as? String, "1")
-            toggle.tap()
-            XCTAssertEqual(toggle.value as? String, "0")
+            setSwitch(toggle, value: "0")
         }
         launch(reset: false)
         openMemory()
@@ -123,10 +122,9 @@ final class MemoryUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["skills.item.notes-test"].exists)
         let enabled = app.switches["skills.enabled.notes-test"]
         reveal(enabled)
-        enabled.tap()
+        setSwitch(enabled, value: "0")
         XCTAssertEqual(app.staticTexts["skills.state.notes-test"].label, "已停用")
-        enabled.tap()
-        XCTAssertEqual(enabled.value as? String, "1")
+        setSwitch(enabled, value: "1")
         XCTAssertTrue(app.buttons["skills.share.notes-test"].exists)
         launch(reset: false)
         openMemory()
@@ -315,6 +313,16 @@ final class MemoryUITests: XCTestCase {
     private func waitUntilHittable(_ element: XCUIElement) {
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true"), object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
+    }
+
+    private func setSwitch(_ element: XCUIElement, value: String) {
+        let native = element.switches.firstMatch
+        let target = native.exists ? native : element
+        waitUntilHittable(target)
+        target.tap()
+        let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", value), object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 5), .completed)
+        XCTAssertFalse(app.staticTexts["memory.error"].exists, "Memory settings could not be persisted.")
     }
 
     private func waitForAbsence(_ element: XCUIElement) {

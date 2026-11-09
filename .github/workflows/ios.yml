@@ -10,6 +10,11 @@ on:
         description: Run only the current iOS 26.2 regression variant
         type: boolean
         default: false
+      test_scope:
+        description: Focused validation without cancelling the full regression matrix
+        type: choice
+        options: [all, learning, core]
+        default: all
 
 permissions:
   contents: read
@@ -19,7 +24,7 @@ defaults:
     shell: bash
 
 concurrency:
-  group: ios-${{ github.workflow }}-${{ github.ref }}
+  group: ios-${{ github.workflow }}-${{ github.ref }}-${{ inputs.test_scope || 'all' }}
   cancel-in-progress: true
 
 jobs:
@@ -72,10 +77,19 @@ jobs:
           device_id="$(xcrun simctl list devices available -j | /usr/bin/python3 scripts/select_simulator.py --runtime "$WOOW_SIM_RUNTIME" --device "$WOOW_SIM_DEVICE")"
           echo "Testing $WOOW_SIM_DEVICE on $WOOW_SIM_RUNTIME"
           xcrun simctl bootstatus "$device_id" -b
+          test_filters=()
+          case '${{ inputs.test_scope }}' in
+            learning)
+              test_filters=(-only-testing:AssistantMemoryTests -only-testing:AssistantSkillsTests -only-testing:AssistantPersistenceTests -only-testing:WoowAssistantUITests/MemoryUITests -only-testing:WoowAssistantUITests/MemoryRaceUITests)
+              ;;
+            core)
+              test_filters=(-only-testing:AssistantMemoryTests -only-testing:AssistantSkillsTests -only-testing:AssistantPersistenceTests)
+              ;;
+          esac
           xcodebuild -project WoowAssistant.xcodeproj -scheme WoowAssistant \
             -destination "platform=iOS Simulator,id=$device_id" \
             -derivedDataPath build/DerivedData -resultBundlePath build/Tests.xcresult \
-            -parallel-testing-enabled NO test CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
+            -parallel-testing-enabled NO "${test_filters[@]}" test CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
             2>&1 | tee build/ios-tests.log
       - name: Export simulator evidence
         if: always()
