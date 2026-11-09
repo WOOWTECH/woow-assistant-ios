@@ -2,9 +2,17 @@ import XCTest
 
 final class WoowAssistantUITests: XCTestCase {
     private let sections = ["chat", "browser", "tools", "memory", "settings"]
+    private var capturedSections = Set<String>()
 
     override func setUpWithError() throws {
         continueAfterFailure = false
+        capturedSections.removeAll()
+    }
+
+    override func tearDownWithError() throws {
+        if let testRun = testRun, testRun.failureCount > 0 {
+            attachScreenshot("failure", in: XCUIApplication())
+        }
     }
 
     func testEverySectionIsReachableOnIPhone() {
@@ -50,6 +58,7 @@ final class WoowAssistantUITests: XCTestCase {
         send.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         assertDraft("Keep this draft 42", in: app)
         XCTAssertFalse(send.isEnabled)
+        attachScreenshot("disabled-send-draft-retained", in: app)
     }
 
     func testDraftSurvivesEverySectionAndKeyboardNavigation() {
@@ -104,6 +113,7 @@ final class WoowAssistantUITests: XCTestCase {
         app.launchArguments += ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW"]
         app.launch()
         XCTAssertTrue(app.staticTexts["chat.status"].waitForExistence(timeout: 10))
+        attachScreenshot("launch", in: app)
         return app
     }
 
@@ -112,6 +122,16 @@ final class WoowAssistantUITests: XCTestCase {
         waitUntilHittable(button, file: file, line: line)
         button.tap()
         XCTAssertTrue(app.staticTexts["\(section).status"].waitForExistence(timeout: 5), file: file, line: line)
+        if capturedSections.insert(section).inserted {
+            attachScreenshot("section-\(section)", in: app)
+        }
+    }
+
+    private func attachScreenshot(_ name: String, in app: XCUIApplication) {
+        let attachment = XCTAttachment(screenshot: app.screenshot())
+        attachment.name = name
+        attachment.lifetime = .keepAlways
+        add(attachment)
     }
 
     private func waitUntilHittable(_ element: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {

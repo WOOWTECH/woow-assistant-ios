@@ -5,7 +5,7 @@
 - [x] Create the iOS 17 XcodeGen project definition.
 - [x] Establish contracts, domain run state, browser URL policy and CI skeleton.
 - [x] Generate the Xcode project and validate its plist structure.
-- [ ] Push the private repository and run the first macOS CI build.
+- [ ] Push the public repository (user-approved) and run the first macOS CI build.
 - [x] Add explicit run state events and regression tests for cancellation, waiting, terminal states and concurrency.
 - [x] Make scaffold navigation reachable on iPhone and preserve drafts without pretending to send.
 - [x] Pin CI tooling and preserve logs / xcresult on failure.
