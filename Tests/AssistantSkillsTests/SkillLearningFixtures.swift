@@ -76,8 +76,80 @@ enum SkillLearningFixtures {
         try c.expect(state == before, "replay atomic")
         let approved = try state.approveDraft(id: staged!.id, availableToolNames: tools)
         try c.expect(approved.status == .trial, "learning never auto-activates")
+        let runID = assessment.proposal!.runID.uuidString
+        try c.expect(Data(approved.markdown.utf8) == Data(staged!.markdown.utf8),
+                     "normal learned approval preserves exact pending Markdown bytes")
+        try c.expect(approved.source == .learned && approved.document.frontMatter["learned_from"]?.stringValue == runID,
+                     "approved provenance remains the trusted runtime run UUID")
+        let restored = try JSONDecoder().decode(SkillsState.self, from: JSONEncoder().encode(state))
+        try c.expect(restored == state, "approved learned state survives Codable roundtrip")
+        try c.expect(restored.installed.count == 1 && restored.pending.isEmpty, "roundtrip keeps approval lifecycle")
+        try c.expect(Data(restored.installed[0].markdown.utf8) == Data(staged!.markdown.utf8),
+                     "reloaded approved Markdown exactly matches original pending fulltext")
+        try c.expect(restored.installed[0].document.frontMatter["learned_from"]?.stringValue == runID,
+                     "reloaded approved provenance remains original")
         let exported = try state.exportMarkdown(name: approved.name)
         try c.expect(!exported.contains("learned_from") && !exported.contains("source:"), "learned export strips provenance")
+        try c.expect(!exported.contains(runID), "export never includes the runtime run UUID")
+        try c.expect(try restored.exportMarkdown(name: approved.name) == exported, "reloaded export strips the same local fields")
+
+        // Exercise both review entry points. Neither a forged UUID nor deleting
+        // the metadata in the editor can replace the original draft's provenance.
+        let forgedID = "AABBCCDD-EEFF-4ABB-8CDD-EEFFAABBCCDD"
+        let revisedBody = "Open the relevant pages with `browser_open_link`, then compare their headings."
+        let revised = staged!.markdown.replacingOccurrences(
+            of: "Open the relevant pages with `browser_open_link`.", with: revisedBody)
+        let editedInputs = [
+            revised.replacingOccurrences(of: runID, with: forgedID)
+                .replacingOccurrences(of: "source: learned", with: "source: imported"),
+            revised.replacingOccurrences(of: "learned_from: \(runID)\n", with: "")
+        ]
+        for raw in editedInputs {
+            var editState = before
+            let edited = try editState.editDraft(id: staged!.id, markdown: raw, availableToolNames: tools)
+            try c.expect(edited.source == .learned && edited.document.frontMatter["source"]?.stringValue == "learned",
+                         "editor cannot replace trusted source")
+            try c.expect(edited.document.frontMatter["learned_from"]?.stringValue == runID && !edited.markdown.contains(forgedID),
+                         "edit preserves only original provenance even if replaced or removed")
+            try c.expect(edited.markdown.contains(revisedBody), "review edits to actual skill instructions remain effective")
+            let editedApproval = try editState.approveDraft(id: edited.id, availableToolNames: tools)
+            try c.expect(Data(editedApproval.markdown.utf8) == Data(edited.markdown.utf8),
+                         "approval of an edited pending draft also preserves exact Markdown")
+            try c.expect(editedApproval.document.frontMatter["learned_from"]?.stringValue == runID,
+                         "edit followed by approval retains original run UUID")
+
+            var directState = before
+            let directApproval = try directState.approveDraft(id: staged!.id, editedMarkdown: raw, availableToolNames: tools)
+            try c.expect(directApproval.document.frontMatter["learned_from"]?.stringValue == runID && !directApproval.markdown.contains(forgedID),
+                         "direct edited approval cannot forge or erase provenance")
+            try c.expect(Data(directApproval.markdown.utf8) == Data(editedApproval.markdown.utf8),
+                         "direct approval and edit-then-approval have identical fulltext")
+            let editedExport = try directState.exportMarkdown(name: directApproval.name)
+            try c.expect(!editedExport.contains("learned_from") && !editedExport.contains("source:") &&
+                         !editedExport.contains(runID) && !editedExport.contains(forgedID) && editedExport.contains(revisedBody),
+                         "edited export retains instructions but no local provenance")
+        }
+
+        var importedState = SkillsState()
+        let forgedImport = SkillsCoreFixtures.markdown("import-provenance",
+            extra: "source: learned\nlearned_from: \(forgedID)")
+        let imported = try importedState.importMarkdown(forgedImport, availableToolNames: tools)
+        try c.expect(imported.source == .imported && imported.document.frontMatter["source"]?.stringValue == "imported",
+                     "imported source cannot impersonate a runtime learned draft")
+        try c.expect(imported.document.frontMatter["learned_from"] == nil && !imported.markdown.contains(forgedID),
+                     "import discards a syntactically valid but untrusted provenance UUID")
+        let editedImport = try importedState.editDraft(id: imported.id, markdown: forgedImport, availableToolNames: tools)
+        try c.expect(editedImport.source == .imported && editedImport.document.frontMatter["learned_from"] == nil,
+                     "editing imported draft cannot reintroduce learned provenance")
+        let approvedImport = try importedState.approveDraft(id: imported.id, editedMarkdown: forgedImport, availableToolNames: tools)
+        try c.expect(approvedImport.source == .imported && approvedImport.document.frontMatter["learned_from"] == nil &&
+                     !approvedImport.markdown.contains(forgedID), "edited imported approval still excludes forged provenance")
+        let restoredImport = try JSONDecoder().decode(SkillsState.self, from: JSONEncoder().encode(importedState))
+        try c.expect(restoredImport == importedState && restoredImport.installed[0].document.frontMatter["learned_from"] == nil,
+                     "imported provenance stays absent after Codable roundtrip")
+        let importedExport = try restoredImport.exportMarkdown(name: approvedImport.name)
+        try c.expect(!importedExport.contains("learned_from") && !importedExport.contains("source:") && !importedExport.contains(forgedID),
+                     "imported export also excludes all forged local metadata")
         let privacy = Client([.text(done), .text(draft(detail: "Use `browser_open_link` to look up AliceExample and compare 987654 entries."))])
         let privateAssessment = try await assess(privacy, goal: "Research \"AliceExample\" using the documentation.")
         try c.expect(privateAssessment.proposal?.markdown.contains("AliceExample") == false, "quoted task value generalized")

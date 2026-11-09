@@ -129,7 +129,16 @@ final class LiveModelUITests: XCTestCase {
         let app = try launchLiveApp()
         navigate(to: "browser", in: app)
         let address = app.textFields["browser.address"]
-        waitUntilHittable(address); address.tap(); address.typeText("https://www.iana.org/\n")
+        // The first WebKit accessibility snapshot can itself take longer than
+        // five seconds on a cold hosted simulator. Keep functional assertions
+        // strict and record only geometry/timing, never page/configuration text.
+        let addressStart = Date()
+        let addressReady = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND hittable == true"), object: address)
+        let readiness = XCTWaiter.wait(for: [addressReady], timeout: 15)
+        print("Live browser address readiness seconds: \(Date().timeIntervalSince(addressStart)); exists: \(address.exists); hittable: \(address.isHittable); frame: \(address.frame)")
+        XCTAssertEqual(readiness, .completed, "The real browser address must be interactable.")
+        address.tap(); address.typeText("https://www.iana.org/\n")
         let loaded = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", "頁面已載入"), object: app.staticTexts["browser.status"])
         XCTAssertEqual(XCTWaiter.wait(for: [loaded], timeout: 40), .completed)
         app.buttons["browser.research"].tap()

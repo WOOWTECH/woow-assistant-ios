@@ -224,7 +224,14 @@ public struct SkillsState: Codable, Equatable, Sendable {
 
     private func reviewedDocument(_ raw: String, draft: SkillDraft,
                                   availableToolNames: Set<String>) throws -> SkillDocument {
-        let text = try SkillDocument.importText(raw, source: draft.source)
+        var text = try SkillDocument.importText(raw, source: draft.source)
+        // Review/edit must not erase runtime provenance or accept a replacement
+        // supplied in edited Markdown. Only the stored learned draft owns this ID.
+        if draft.source == .learned,
+           let provenance = draft.document.frontMatter["learned_from"]?.stringValue,
+           UUID(uuidString: provenance) != nil {
+            text = try SkillDocument.replacingField(text, key: "learned_from", value: provenance)
+        }
         let document = try SkillDocument.parse(text, availableToolNames: availableToolNames)
         guard document.name == draft.name else { throw SkillsError.nameMismatch }
         return document
