@@ -13,8 +13,8 @@ struct MemoryDataView: View {
     @State private var sheet: LearningSheet?
     @FocusState private var searchFocused: Bool
 
-    // This UI manages text instructions. Neither imported text nor approval grants
-    // capabilities; no executable model tools are available in this milestone.
+    // Approval stores guidance; it does not start a task or grant capabilities.
+    // Browser references are usable only in the explicitly started research mode.
     private let toolNames = BrowserSession.toolNames
 
     private var pendingCount: Int {

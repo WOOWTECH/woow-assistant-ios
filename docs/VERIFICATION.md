@@ -1,4 +1,4 @@
-# Verification — 2026-11-09
+# Verification — 2026-11-10
 
 This is an in-progress implementation, not full-feature acceptance. Tests distinguish
 fixtures, real network calls, iOS UI, and unimplemented functionality.
@@ -14,8 +14,8 @@ fixtures, real network calls, iOS UI, and unimplemented functionality.
   truncation, total deadline, cancellation, bounds, no retries, redirect rejection.
 - MCP native fixture executable: 234 checks in five groups, including negotiation,
   session headers, large SSE, tool allowlist, pagination, errors, deadline and cancellation.
-- Python scripts: 36 unit tests for simulator selection, private runner configuration,
-  and MCP probe read-only boundaries/redaction.
+- Python scripts: 41 unit tests for simulator selection/runtime setup, private runner
+  configuration, and MCP probe read-only boundaries/redaction.
 - Full local `swift test` remains unavailable: this host has Command Line Tools,
   not full Xcode/XCTest. GitHub-hosted Xcode is used for actual XCTest and iOS.
 
@@ -74,7 +74,7 @@ Manual live model and live HA workflows test native networking plus App UI; they
 upload live xcresult/xctestrun/process environments, which may contain credentials.
 
 Expanded matrix run [42630794706](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42630794706)
-is executing; iOS 26.2 portable core and App build passed, UI results pending.
+was an intermediate checkpoint; later revision-specific results below supersede it.
 Live model run [42630881158](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42630881158)
 passed both native JSON and SSE requests inside the iOS 18.5 simulator, but all three
 App UI cases failed before chat because bootstrap did not establish saved settings.
@@ -126,9 +126,11 @@ confirmation regression, not acceptance of the subsequent memory/Skills incremen
   not prove runtime compatibility.
 - MCP App UI tool invocation and model-to-MCP orchestration; UI currently discovers
   catalogs only. Native tool authorization is caller-reviewed, not model-controlled.
-- WebKit browser, automatic task-to-skill learning and outcome judging, complete
-  built-in skill catalog, profile consolidation, persistent conversation/files, notifications,
-  language/appearance, signed distribution and App Store review.
+- Complete built-in skill catalog, profile consolidation, persistent conversation/files,
+  notifications, language/appearance, signed distribution and App Store review.
+- Full Mika browser capabilities, including login, forms, tabs, history, downloads,
+  uploads and the remote gateway. Read-only WebKit research, automatic skill drafts,
+  website knowledge and route replay are a separate increment with evidence below.
 - UserDefaults required-reason entry added for app-owned preferences; the manifest
   is not a substitute for a final privacy/distribution audit.
 
@@ -260,8 +262,8 @@ Local evidence before CI:
   and real judge/drafter on explicitly labelled synthetic executor evidence. The
   synthetic trace probe is not an end-to-end live browsing/automatic-learning pass.
 
-New iOS build, UI and live results are pending at this checkpoint. No new feature
-above is represented as fully accepted until its run completes.
+At this initial checkpoint the iOS build, UI and live results were still pending.
+The revision-specific results and corrections follow below.
 
 Checkpoint `798af0b`: matrix [42675608518](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42675608518)
 passed 62 portable XCTest cases on each runner, but all App builds failed on a
@@ -277,3 +279,121 @@ fixture UI regression for removing model credentials during research. Skill serv
 fixtures now total 350 assertions after verifier-failure attribution, conflicting
 duplicate references and pre-hash input-bound checks were corrected. These new
 changes await their own iOS checkpoint rather than inheriting the old run's result.
+
+### Integration failures and corrections
+
+Checkpoint `17ce4d3` built on all three simulators and passed all 65 portable core
+tests. Full current-iOS run [42677218137](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42677218137)
+also passed 65 native iOS tests and 19 fixture UI cases (seven memory/skills and
+12 existing chat/navigation/MCP cases). The three new browser UI cases failed:
+the research sheet's Done button received a valid tap, but the keyboard remained
+visible. Six opt-in live cases were skipped, not counted as passes. The sheet now
+owns its focus binding in a separate view; the original keyboard assertion remains.
+
+The compact iOS 18.5 focused job in
+[42676613926](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42676613926)
+passed zero of ten UI cases: the App terminated at launch before their feature
+steps. Live run [42676619376](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42676619376)
+passed native JSON/SSE, three real memory/skill requests, and two real judge/drafter
+requests over synthetic executor traces, but its UI step timed out during repeated
+launch failures. These are **not** end-to-end browser or automatic-learning passes.
+
+Exported fixture crash reports in
+[42680808120](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42680808120)
+identified a pre-main DYLD termination: `libswiftWebKit.dylib` was missing from the
+iOS 18.5 simulator's search path. This matches
+[Apple's documented simulator defect](https://developer.apple.com/forums/thread/785964)
+and [WebKit bug 293831](https://bugs.webkit.org/show_bug.cgi?id=293831).
+The CI helper exposes the **selected runtime's own** Cryptex overlay through a
+build-products symlink, a directory already present in the failing dyld lookup.
+It does not copy a library into the App or raise the iOS 17 deployment target.
+Five new helper tests pass, bringing local Python checks to 41. Separately, WebKit
+creation is deferred until its screen is requested; that isolation alone cannot
+fix a missing library before main, and is not reported as the launch root cause.
+
+`d2d7aa3` also tightens live browser acceptance to the exact judged-done message:
+the former substring `完成` could match a partial or failed result. Its queued
+focused live run [42678843137](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42678843137)
+was cancelled once the startup defect was established. No pass is claimed for it.
+The initial lazy-WebKit startup run at `9aa129d` was superseded by the runtime-path
+correction at `22e5906`. Checkpoint `cf0300c` includes both runtime setup and the
+sheet focus fix; its new matrix/live evidence must be evaluated separately.
+
+At `22e5906`, startup run [42682325627](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42682325627)
+completed its SE job: 65 portable tests and the actual App all-section navigation
+case passed (28.201 seconds for UI). The runtime overlay fix therefore has an
+actual launch pass. Remaining queued startup variants were cancelled in favor of
+the more complete learning/browser suites; the whole startup matrix is not a pass.
+
+At `cf0300c`, the SE and large jobs of
+[42682474716](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42682474716)
+each passed all seven memory/skills UI cases plus two browser cases (cancellation
+after removing model settings, and manual website knowledge across relaunch).
+Each failed the remaining browser skill/replay case: approval stripped the
+runtime-owned `learned_from` UUID from the reviewed Markdown. The seven memory
+passes also supersede the prior large-device animation stall for these cases.
+The queued iOS 26 job was cancelled only after both iOS 18 jobs had finished.
+
+Live run [42682483793](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42682483793)
+passed all seven native real-model requests and four existing real App UI cases.
+Its fifth case stopped before website loading: the first WebKit address-field
+accessibility query exceeded the five-second readiness check. No live website
+research pass is inferred. The browser-only rerun now allows a bounded 15-second
+initial readiness check and records only elapsed time, existence/hit-test booleans
+and geometry. Goal, answer and exact judged-done assertions remain unchanged.
+
+`39d853a` separately fixes route reuse: a new `originalGoal` preserves exact case,
+whitespace and Unicode spelling for display, model input and judgment; normalized
+`intent` is only a lookup key. Older records remain readable but cannot recover
+case/whitespace already lost by the prior format. Website/route offline checks
+now total 185. Its SE/large browser jobs in
+[42684081657](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42684081657)
+also passed two of three browser UI cases, then stopped at the same provenance
+assertion before route replay. The current-iOS variant was superseded by the next
+browser checkpoint, not counted as passed.
+
+`23a20ab` retains only the **original stored learned draft's valid UUID** across
+approval/editing, after stripping untrusted edited metadata. Imported/forged IDs
+remain excluded and export still removes local provenance. All 380 skills fixture
+assertions pass, including 30 new checks for exact Markdown, provenance forgery,
+serialization and export. The unchanged UI equality assertion now requires this
+fix to succeed before continuing to actual route replay.
+
+At `23a20ab`, browser matrix
+[42688005093](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42688005093)
+passed on all three devices: **65 portable tests, 19 focused native tests and all
+three browser UI cases on each device**. This includes the entire learned-draft
+review/approval/relaunch flow and actual persisted-route replay, with exact answer
+and judged-success assertions. These UI cases use local HTML and fixture models.
+The independent full iOS 26 run at the same revision encountered a page-load wait
+failure in the manual-website case; the passing focused run does not erase it.
+
+Live browser run
+[42688015027](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42688015027)
+passed seven native real-model requests. The actual address was hittable after
+1.428 seconds and the public page loaded, but its UI test timed out waiting for the
+answer accessibility row. It did **not** pass browser acceptance. The next test
+waits for task completion at the visible start control, then scrolls the Form to
+the answer and verdict, retaining both assertions. Fixed App-owned phase messages
+provide diagnostics without model content or secrets. This is a test correction
+for lazy rows, not evidence that the earlier run delivered a successful answer.
+
+Further source review found that host-only URL masking could collapse distinct
+requested/answered paths before outcome judging. Judge input now uses a shared,
+request-local URL identity map; case, query and UTF-8 differences remain distinct.
+Raw URLs are still masked. URL identities cannot become grounded source quotes;
+only unchanged original text outside masked URLs may support the verdict. Unknown
+or planted identities fail closed. Draft generalization remains unchanged. The
+mapping covers extracted URLs; unquoted trailing prose punctuation is ambiguous,
+while quoted literals retain it. Strict-concurrency/warnings-as-errors compilation
+and **501 standalone skill assertions** pass, including 121 new identity/citation
+checks. New iOS/live evidence is required for this correction.
+
+A new opt-in live UI case performs five actual public IANA navigations, requires
+exact judged completion and a validated pending skill, then approves and reloads
+the exact reviewed Markdown. No injected trajectory or model fixture is used.
+A local macOS WebKit preflight confirmed all five visible-link transitions and
+that all six observations pass existing evidence hygiene. That preflight is not
+an iOS or real-model end-to-end acceptance result. The one-off startup-diagnostics
+workflow was removed after identifying the runtime defect; normal fixture CI now
+exports those diagnostics itself.

@@ -6,6 +6,84 @@ import CryptoKit
 /// prompt-injection defense: no calls execute, success needs grounded citations,
 /// and all generated content must remain pending for user review.
 enum SkillLearningSafety {
+    struct JudgeMaskedText {
+        let text: String
+        /// Only unchanged source spans. Never export aliases as grounded quotations.
+        let citationSegments: [String]
+    }
+
+    /// Request-local, injective URL identities. Keys use exact UTF-8 bytes, not
+    /// Swift String's canonical-equivalence comparison or URL normalization.
+    /// The random namespace prevents predictable aliases from being planted in
+    /// page text; reserved markers in input are rejected before any model call.
+    struct JudgeURLAliases {
+        static let marker = "⟦WOOW_URL_"
+        private let prefix = Self.marker + UUID().uuidString.replacingOccurrences(of: "-", with: "") + "_"
+        private var byURL: [Data: String] = [:]
+        private var issued: Set<String> = []
+
+        init?(inputs: [String]) {
+            guard !inputs.contains(where: { $0.contains(Self.marker) }) else { return nil }
+        }
+
+        mutating func mask(_ text: String) -> JudgeMaskedText {
+            var result = "", segments: [String] = []
+            var cursor = text.startIndex
+            for range in Self.urlRanges(text) {
+                let unchanged = String(text[cursor..<range.lowerBound])
+                result += unchanged; segments.append(unchanged)
+                let bytes = Data(text[range].utf8)
+                let alias: String
+                if let existing = byURL[bytes] { alias = existing }
+                else {
+                    alias = prefix + String(byURL.count + 1) + "⟧"
+                    byURL[bytes] = alias; issued.insert(alias)
+                }
+                result += alias; cursor = range.upperBound
+            }
+            let tail = String(text[cursor...]); result += tail; segments.append(tail)
+            return JudgeMaskedText(text: result, citationSegments: segments)
+        }
+
+        /// A response may discuss an issued alias, but cannot invent a URL identity.
+        func containsOnlyIssuedAliases(_ text: String) -> Bool {
+            var remaining = text[...]
+            while let marker = remaining.range(of: Self.marker) {
+                guard let end = remaining[marker.upperBound...].firstIndex(of: "⟧") else { return false }
+                let after = remaining.index(after: end)
+                guard issued.contains(String(remaining[marker.lowerBound..<after])) else { return false }
+                remaining = remaining[after...]
+            }
+            return true
+        }
+
+        private static func urlRanges(_ text: String) -> [Range<String.Index>] {
+            // Preserve quote/Markdown delimiters outside the URL. An explicitly
+            // quoted URL keeps its literal final punctuation. For bare prose URLs,
+            // leave trailing sentence punctuation and unmatched brackets unchanged.
+            let regex = try! NSRegularExpression(pattern: #"https?://[^\s<>\"'`“”‘’「」『』]+"#, options: .caseInsensitive)
+            return regex.matches(in: text, range: NSRange(text.startIndex..., in: text)).compactMap { match in
+                guard let range = Range(match.range, in: text) else { return nil }
+                let before = range.lowerBound == text.startIndex ? nil : text[text.index(before: range.lowerBound)]
+                let explicitlyQuoted = before.map { "\"'`<“‘「『".contains($0) } ?? false
+                var end = range.upperBound
+                if !explicitlyQuoted {
+                    var candidate = String(text[range])
+                    while let last = candidate.last {
+                        let isPunctuation = ".,;:!?，。；：！？、".contains(last)
+                        let opening: Character? = last == ")" ? "(" : last == "]" ? "[" : last == "}" ? "{" : nil
+                        let unmatched = opening.map { open in
+                            candidate.filter { $0 == last }.count > candidate.filter { $0 == open }.count
+                        } ?? false
+                        guard isPunctuation || unmatched else { break }
+                        candidate.removeLast(); end = text.index(before: end)
+                    }
+                }
+                return range.lowerBound..<end
+            }
+        }
+    }
+
     static func unsafe(_ text: String, apiKey: String) -> Bool {
         if !apiKey.isEmpty && text.contains(apiKey) { return true }
         if SkillSensitiveContent.containsSensitiveValue(text) { return true }

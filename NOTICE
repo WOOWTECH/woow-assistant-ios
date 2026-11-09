@@ -1,7 +1,7 @@
 Mika
 Copyright 2026 wangzan101
 
-The memory and personal-skill behavior in this project is adapted in Swift from
+The memory, personal-skill, website-knowledge and route behavior is adapted in Swift from
 Mika, https://github.com/wangzan101/Mika, revision
 0c172724f3f0c96f7345262588072f6e95db1138 (Apache License 2.0).
 These are modified iOS implementations, not the original Android files.

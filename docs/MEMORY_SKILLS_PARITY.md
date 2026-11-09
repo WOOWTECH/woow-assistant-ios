@@ -51,7 +51,8 @@ complete locations rather than treating shortened table paths as filesystem path
   records, not screenshot counts or invented records. They are not stored in memory.
 - The screenshot's LINE native-app knowledge is outside the agreed iOS scope.
   Website knowledge/revisions and observed read-only web routes now have a native
-  implementation; their new App integration is awaiting CI. It does not operate LINE.
+  implementation, with fixture App flows passing on three simulators. Live-service
+  acceptance is tracked separately. It does not operate LINE.
 - No local shell, downloaded executable scripts, or phone-control tools are exposed.
   Unsupported tool references must be rejected or explicitly unavailable.
 - Plain chat completion is not proof that a skill was followed successfully.
@@ -60,8 +61,8 @@ complete locations rather than treating shortened table paths as filesystem path
   Drafting/promotion must be accepted with separate core, App UI and live evidence.
 - Model-controlled memory/skill tools, profile consolidation and complete bundled
   catalog remain unimplemented. Event-driven browser draft production and website
-  lifecycle now have integration tests prepared, not yet passing evidence. A lifecycle
-  unit test does not prove these integrations.
+  lifecycle now have passing fixture App tests. Real-model multi-page learning is
+  a separate acceptance case; a lifecycle unit test does not prove that integration.
 
 The 2026-11-10 browser increment deliberately restricts URLs to public HTTPS without
 queries/fragments, same-origin research links, ephemeral website data and read-only
@@ -69,6 +70,38 @@ actions. It is not full Mika browser parity. Outcome assessment adds exact obser
 citations, and deduplicates executed actions before the five-action drafting gate.
 Website quotes are references, not user memory; approval remains separate. Tests
 must distinguish real models over synthetic traces from actual browser execution.
+
+### Website adaptation and review flow
+
+Mika's `AppKnowledgeLearning.kt` drafts facts for `Surface.Android` only and uses
+Draft → Trial → Verified/Archived stages. Those native-app facts remain excluded
+from this iOS scope. The website records added here are a source-grounded adaptation,
+not a claim that this Android lifecycle has been copied unchanged: website lessons
+currently have Pending/Approved states plus revision history. Personal **skills**
+retain their separate trial/outcome lifecycle.
+
+The implemented website flow can be reviewed from Browser → open a public page →
+Research. A single-page answer may be judged done without producing a skill.
+Five distinct successful qualifying navigation actions are required before a new
+skill is eligible for drafting; repeated reads and text searches cannot pad that
+count. The model may still decide there is no reusable draft. An accepted draft
+appears in Memory → Pending, with its full Markdown available before approval.
+Approval creates a trial skill, not a verified one.
+
+Memory → Website knowledge and routes shows the separately saved page quote,
+source URL and route. Pending website lessons are excluded from saved context.
+Approved context is scoped to the exact scheme/host/port. A route is derived from
+actual navigation/inspection, and requires an explicit replay action. Replay reads
+the page again, checks each URL/quote, then answers and judges the original task;
+matching page text alone is insufficient for success. Two consecutive mismatches
+at the same step disable that route. These are read-only web routes, with no form
+submission, credential input or native-app selectors.
+
+Changing model settings or learning data cancels outstanding browser work and
+invalidates late results. This cannot retract requests already sent to a service.
+App restart preserves approved/pending learning records and routes, but not the
+ephemeral browser's cookies or session. UI fixtures exercise the real WebKit/store
+with local HTML; they do not prove live service behavior.
 
 ## Acceptance matrix
 
@@ -97,6 +130,23 @@ must distinguish real models over synthetic traces from actual browser execution
 19. Two-stage clear cancellation retains data; confirmed clear rotates the learning
     key while preserving model/MCP settings.
 20. Small/large iPhones and current iOS can reach keyboard/editor/confirmation actions.
+21. Website research records actual WebKit reads/navigation; fabricated, arbitrary
+    script/URL commands and repeated actions cannot manufacture learning eligibility.
+22. Successful judged research can create a pending skill, with unchanged reviewed
+    Markdown surviving approval and App relaunch; approval alone leaves it in trial.
+23. One-page real-network research can be judged done without inventing five steps
+    or a new skill. Exact success status is required, not the substring “completed”.
+24. Website facts preserve their URL, capture time and source quote independently
+    of personal memory. Manual saving works without model credentials.
+25. Website approval/revisions and route state persist; pending or other-origin
+    website records are excluded from context.
+26. Replaying a persisted route after App relaunch opens the real browser, rereads
+    each step and judges the answer before recording success; replay produces no
+    duplicate skill. Divergence disables only after the specified failure window.
+27. Removing model settings during research cancels work, preserves the goal and
+    leaves no late answer, memory, skill, website fact or route from that run.
+28. Interrupted assessment, invalid verdicts, stale fingerprints and conflicting
+    duplicate skill references cannot partially publish outcome/draft state.
 
 Evidence and remaining failures are recorded in [VERIFICATION.md](VERIFICATION.md).
 Do not substitute fixture-only UI counts for real-service behavior or missing
