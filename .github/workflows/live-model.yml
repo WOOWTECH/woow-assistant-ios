@@ -79,6 +79,8 @@ jobs:
             -derivedDataPath build/LiveDerivedData build-for-testing CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES
           codesign --verify --strict build/LiveDerivedData/Build/Products/Debug-iphonesimulator/WoowAssistant.app
           codesign -d --entitlements :- build/LiveDerivedData/Build/Products/Debug-iphonesimulator/WoowAssistant.app
+          xcrun simctl list runtimes -j | python3 scripts/prepare_simulator_webkit.py \
+            --runtime iOS-18-5 --products build/LiveDerivedData/Build/Products/Debug-iphonesimulator
       - name: Make two bounded live requests inside iOS Simulator
         timeout-minutes: 4
         env:

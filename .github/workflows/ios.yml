@@ -77,6 +77,8 @@ jobs:
           device_id="$(xcrun simctl list devices available -j | /usr/bin/python3 scripts/select_simulator.py --runtime "$WOOW_SIM_RUNTIME" --device "$WOOW_SIM_DEVICE")"
           echo "Testing $WOOW_SIM_DEVICE on $WOOW_SIM_RUNTIME"
           xcrun simctl bootstatus "$device_id" -b
+          xcrun simctl list runtimes -j | python3 scripts/prepare_simulator_webkit.py \
+            --runtime "$WOOW_SIM_RUNTIME" --products build/DerivedData/Build/Products/Debug-iphonesimulator
           test_filters=()
           case '${{ inputs.test_scope }}' in
             startup)
