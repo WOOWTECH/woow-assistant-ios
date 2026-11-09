@@ -63,6 +63,35 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant.mcp
 
+  AssistantMemory:
+    type: framework
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [Sources/AssistantMemory]
+    dependencies:
+      - target: AssistantModels
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant.memory
+
+  AssistantSkills:
+    type: framework
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [Sources/AssistantSkills]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant.skills
+
+  AssistantPersistence:
+    type: framework
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [Sources/AssistantPersistence]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant.persistence
+
   WoowAssistant:
     type: application
     platform: iOS
@@ -75,6 +104,9 @@ targets:
       - target: AssistantBrowser
       - target: AssistantModels
       - target: AssistantMCP
+      - target: AssistantMemory
+      - target: AssistantSkills
+      - target: AssistantPersistence
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: io.woowtech.assistant
@@ -112,6 +144,30 @@ targets:
     dependencies:
       - target: AssistantMCP
 
+  AssistantMemoryTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [Tests/AssistantMemoryTests]
+    dependencies:
+      - target: AssistantMemory
+
+  AssistantSkillsTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [Tests/AssistantSkillsTests]
+    dependencies:
+      - target: AssistantSkills
+
+  AssistantPersistenceTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "17.0"
+    sources: [Tests/AssistantPersistenceTests]
+    dependencies:
+      - target: AssistantPersistence
+
   WoowAssistantUITests:
     type: bundle.ui-testing
     platform: iOS
@@ -129,10 +185,16 @@ schemes:
         AssistantDomainTests: [test]
         AssistantModelsTests: [test]
         AssistantMCPTests: [test]
+        AssistantMemoryTests: [test]
+        AssistantSkillsTests: [test]
+        AssistantPersistenceTests: [test]
         WoowAssistantUITests: [test]
     test:
       targets:
         - AssistantDomainTests
         - AssistantModelsTests
         - AssistantMCPTests
+        - AssistantMemoryTests
+        - AssistantSkillsTests
+        - AssistantPersistenceTests
         - WoowAssistantUITests

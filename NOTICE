@@ -1,0 +1,11 @@
+Mika
+Copyright 2026 wangzan101
+
+The memory and personal-skill behavior in this project is adapted in Swift from
+Mika, https://github.com/wangzan101/Mika, revision
+0c172724f3f0c96f7345262588072f6e95db1138 (Apache License 2.0).
+These are modified iOS implementations, not the original Android files.
+The upstream license is included at licenses/Mika-Apache-2.0.txt.
+
+WOOWTECH iOS adaptations: encrypted transactional persistence, SwiftUI review,
+platform capability boundaries, and native tests. No endorsement is implied.

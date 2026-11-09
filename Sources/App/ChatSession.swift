@@ -10,6 +10,8 @@ struct ChatEntry: Identifiable {
 
 @MainActor
 final class ChatSession: ObservableObject {
+    let learning = LearningStore()
+    private var conversationID = UUID().uuidString
     @Published var draft = ""
     @Published var baseURLDraft = ""
     @Published var modelDraft = ""
@@ -87,6 +89,7 @@ final class ChatSession: ObservableObject {
 
     func saveSettings() {
         guard !isSubmitting else { return }
+        learning.cancelLearning()
         settingsError = nil
         settingsNotice = nil
         do {
@@ -112,6 +115,7 @@ final class ChatSession: ObservableObject {
 
     func removeSettings() {
         guard !isSubmitting else { return }
+        learning.cancelLearning()
         settingsError = nil
         settingsNotice = nil
         do {
@@ -132,6 +136,7 @@ final class ChatSession: ObservableObject {
 
     func send() {
         guard canSend, let savedSettings else { return }
+        learning.cancelLearning()
         let key: String
         do { key = try repository.key(for: savedSettings) }
         catch {
@@ -141,6 +146,7 @@ final class ChatSession: ObservableObject {
         }
         let prompt = draft
         let messages = entries.map { ModelMessage(role: $0.role, content: $0.content) }
+            + learning.contextMessages(for: prompt)
             + [ModelMessage(role: "user", content: prompt)]
         let configuration = savedSettings.configuration
         let id = UUID()
@@ -162,6 +168,10 @@ final class ChatSession: ObservableObject {
                 self.entries.append(ChatEntry(role: "assistant", content: reply))
                 if self.draft == prompt { self.draft = "" }
                 self.finish(id: id)
+                // Deliver first. A separate, bounded extraction call receives only
+                // the user's own utterance, never the model reply or MCP/web content.
+                self.learning.rememberAfterReply(utterance: prompt, conversationID: self.conversationID,
+                    client: client, configuration: configuration, apiKey: key)
             } catch {
                 guard let self, self.requestID == id else { return }
                 // Do not surface provider error bodies/URLs: they may contain secrets.
@@ -178,10 +188,18 @@ final class ChatSession: ObservableObject {
     }
 
     func cancel() {
+        learning.cancelLearning()
         guard let id = requestID else { return }
         request?.cancel()
         finish(id: id)
         chatNotice = "已取消等待，草稿已保留。伺服器可能已收到請求。"
+    }
+
+    func newConversation() {
+        guard !isSubmitting else { return }
+        learning.cancelLearning()
+        entries = []; conversationID = UUID().uuidString
+        chatError = nil; chatNotice = "已開啟新對話；已確認的記憶與技能保留。"
     }
 
     private func finish(id: UUID, error: String? = nil) {

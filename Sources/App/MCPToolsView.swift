@@ -120,9 +120,9 @@ struct MCPToolsView: View {
             }
 
             Section("Skills") {
-                Text("尚未實作")
+                Text("請到「資料 → 技能」管理")
                     .accessibilityIdentifier("mcp.skillsStatus")
-                Text("尚不支援匯入、安裝或執行 Skills；MCP 目錄探索不代表 Skills 已可使用。")
+                Text("可匯入並審核文字技能，已啟用且相關的內容會提供給對話模型。工具執行與自動學習任務技能仍待整合；MCP 目錄探索不代表模型已能操作工具。")
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }

@@ -16,6 +16,8 @@ struct ContentView: View {
                     ModelSettingsView(session: session)
                 case .tools:
                     MCPToolsView(session: mcpSession)
+                case .memory:
+                    MemoryDataView(store: session.learning)
                 default:
                     FeaturePlaceholder(section: selection)
                 }
@@ -75,7 +77,7 @@ private enum AppSection: String, CaseIterable, Identifiable {
         case .chat: return "對話"
         case .browser: return "瀏覽器"
         case .tools: return "Skills 與 MCP"
-        case .memory: return "記憶與檔案"
+        case .memory: return "記憶與資料"
         case .settings: return "設定"
         }
     }
@@ -107,7 +109,7 @@ private enum AppSection: String, CaseIterable, Identifiable {
         case .tools:
             return "此版本尚未載入或執行 Skills，也未連接 MCP 伺服器；目前沒有可呼叫的工具。"
         case .memory:
-            return "此版本尚未提供記憶儲存、附件匯入或檔案管理。"
+            return "記憶、個人技能與待確認草稿；附件與網站資料另行管理。"
         case .settings:
             return "設定模型服務；通知、語言與外觀設定仍待實作。"
         }
@@ -136,6 +138,8 @@ private struct ChatView: View {
                 }
             }
             .multilineTextAlignment(.center)
+
+            LearningChatNotes(store: session.learning)
 
             ScrollViewReader { proxy in
                 ScrollView {
@@ -186,6 +190,9 @@ private struct ChatView: View {
                 .accessibilityLabel("訊息草稿")
                 .accessibilityIdentifier("chat.draft")
             HStack {
+                Button("新對話") { session.newConversation() }
+                    .disabled(session.isSubmitting)
+                    .accessibilityIdentifier("chat.newConversation")
                 Button("傳送") {
                     isEditingDraft = false
                     session.send()
@@ -208,6 +215,36 @@ private struct ChatView: View {
                 Spacer()
                 Button("完成") { isEditingDraft = false }
                     .accessibilityIdentifier("chat.dismissKeyboard")
+            }
+        }
+    }
+}
+
+@MainActor
+private struct LearningChatNotes: View {
+    @ObservedObject var store: LearningStore
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            if store.isLearning {
+                Text("正在整理你說過的事…")
+                    .font(.caption).accessibilityIdentifier("chat.learning")
+            }
+            if let notice = store.notice {
+                Text(notice).font(.caption).accessibilityIdentifier("chat.learningNotice")
+            }
+            if let error = store.error {
+                Text(error).font(.caption).foregroundStyle(.orange)
+                    .accessibilityIdentifier("chat.learningError")
+            }
+            ForEach(Array(store.notes.enumerated()), id: \.element.memoryID) { index, note in
+                HStack {
+                    Text(store.noteText(note)).font(.caption)
+                        .accessibilityIdentifier("chat.memoryNote.\(index)")
+                    if note.undoToken != nil {
+                        Button("撤銷") { store.undo(note) }
+                            .font(.caption).accessibilityIdentifier("chat.undoMemory.\(index)")
+                    }
+                }
             }
         }
     }

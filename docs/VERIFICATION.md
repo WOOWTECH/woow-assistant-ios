@@ -122,9 +122,40 @@ the relaunch-persistence and model-setting-isolation assertions. It is not yet a
   not prove runtime compatibility.
 - MCP App UI tool invocation and model-to-MCP orchestration; UI currently discovers
   catalogs only. Native tool authorization is caller-reviewed, not model-controlled.
-- WebKit browser, Skills, persistent conversation/memory/files, notifications,
+- WebKit browser, automatic task-to-skill learning and outcome judging, complete
+  built-in skill catalog, profile consolidation, persistent conversation/files, notifications,
   language/appearance, signed distribution and App Store review.
 - UserDefaults required-reason entry added for app-owned preferences; the manifest
   is not a substitute for a final privacy/distribution audit.
 
 Reference: [Apple TN3183](https://developer.apple.com/documentation/technotes/tn3183-adding-required-reason-api-entries-to-your-privacy-manifest).
+
+## Memory / Skills implementation increment
+
+Pinned source and scope are in [MEMORY_SKILLS_PARITY.md](MEMORY_SKILLS_PARITY.md).
+The implementation now includes encrypted memory/skill snapshots, memory CRUD,
+pending procedures, bounded contextual retrieval, separate quote-validated model
+extraction, cancellation/revision guards, import/review/trial/disable/revision/export
+of personal text skills, and independent memory/skill preferences. Clear-all is
+twice-confirmed, rotates the learning key and does not delete model/MCP settings.
+
+Executed locally:
+
+- Memory core: 91 assertions in five groups, including quote/secret guards,
+  capacity, context bounds, undo, atomic operations, cancellation and late-result rejection.
+- Skills core: 175 assertions in six groups, including parser/import/review,
+  optimistic revisions, outcome rules, retrieval and trusted learning gates.
+- AES-GCM persistence: round-trip, ciphertext/plaintext separation, key rotation,
+  failed-key-write preservation, unreadable-key write guard and explicit reset.
+- App learning store, Keychain adapter and chat integration typechecked with the
+  actual native modules; SwiftUI syntax parsed. This is not an iOS build.
+- Three actual owner-authorized model requests using the production Swift clients
+  on macOS: automatic Traditional Chinese preference extraction, fresh-conversation
+  recall via memory context, and an approved text skill changing the actual reply.
+  Pending/disabled skills were excluded; no skill was promoted merely for a reply.
+  The memory-off path produced neither memory context nor an extraction request.
+  No real household data or response bodies were logged.
+
+New iOS simulator XCTest/UI/live-memory acceptance remains pending for this increment.
+Automatic action-derived skill drafting, website knowledge, browser login/route
+management, native-app knowledge and executable scripts are not implied by these passes.

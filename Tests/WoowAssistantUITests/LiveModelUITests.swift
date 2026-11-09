@@ -66,6 +66,45 @@ final class LiveModelUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["chat.message.1.assistant"].exists)
     }
 
+    func testRealAutomaticMemorySurvivesRelaunchAndMasterSwitchBlocksRecall() throws {
+        var app = try launchLiveApp()
+        enterDraft("我最喜歡的顏色是琥珀色，這是我的長期喜好，請記住。簡短回覆即可。", in: app)
+        app.buttons["chat.send"].tap()
+        XCTAssertTrue(app.staticTexts["chat.message.1.assistant"].waitForExistence(timeout: 95))
+        XCTAssertTrue(app.staticTexts["chat.memoryNote.0"].waitForExistence(timeout: 95),
+                      "The real post-answer extraction did not publish a validated memory.")
+        navigate(to: "memory", in: app)
+        let remembered = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND label CONTAINS %@",
+                                                              "memory.item.", "琥珀")).firstMatch
+        XCTAssertTrue(remembered.waitForExistence(timeout: 5))
+        app.terminate()
+        app = try launchLiveApp() // Same isolated namespace, fresh chat history.
+        XCTAssertFalse(app.staticTexts["chat.message.1.assistant"].exists)
+        enterDraft("我最喜歡什麼顏色？只回答顏色，使用繁體中文。", in: app)
+        app.buttons["chat.send"].tap()
+        let answer = app.staticTexts["chat.message.1.assistant"]
+        XCTAssertTrue(answer.waitForExistence(timeout: 95))
+        XCTAssertTrue(answer.label.contains("琥珀"), "Persisted memory was not used in the fresh conversation.")
+
+        navigate(to: "memory", in: app)
+        let toggle = app.switches["memory.toggle.useMemory"]
+        for _ in 0..<8 where !toggle.isHittable { app.swipeUp() }
+        waitUntilHittable(toggle)
+        XCTAssertEqual(toggle.value as? String, "1")
+        toggle.tap()
+        XCTAssertEqual(toggle.value as? String, "0")
+        navigate(to: "chat", in: app)
+        app.buttons["chat.newConversation"].tap()
+        enterDraft("What is my favorite color? If no preference is provided in this conversation, reply with exactly UNKNOWN and nothing else.", in: app)
+        app.buttons["chat.send"].tap()
+        assertReply("UNKNOWN", messageIndex: 1, in: app)
+        XCTAssertFalse(app.staticTexts["chat.learning"].exists)
+        navigate(to: "memory", in: app)
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND label CONTAINS %@",
+                                                          "memory.item.", "琥珀")).firstMatch.exists,
+                      "Turning memory off must not erase stored records.")
+    }
+
     func testRealHTTPTransportFailureKeepsDraft() throws {
         // Exercise the actual HTTP client against a reserved invalid domain with a dummy
         // credential. Never send a real key to a different service just to provoke failure.

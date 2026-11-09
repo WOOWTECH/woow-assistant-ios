@@ -19,7 +19,7 @@ jobs:
   live-native-model:
     if: github.ref == 'refs/heads/main'
     runs-on: macos-15
-    timeout-minutes: 25
+    timeout-minutes: 35
     env:
       DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
     steps:
@@ -40,6 +40,17 @@ jobs:
           xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -parse-as-library \
             -I build/live -L build/live -lAssistantModels scripts/LiveModelSmoke.swift \
             -o build/live/LiveModelSmoke
+          xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -I build/live \
+            -emit-library -static -emit-module -module-name AssistantMemory \
+            Sources/AssistantMemory/*.swift -emit-module-path build/live/AssistantMemory.swiftmodule \
+            -o build/live/libAssistantMemory.a
+          xcrun swiftc -sdk "$sdk_path" -target "$sim_target" \
+            -emit-library -static -emit-module -module-name AssistantSkills \
+            Sources/AssistantSkills/*.swift -emit-module-path build/live/AssistantSkills.swiftmodule \
+            -o build/live/libAssistantSkills.a
+          xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -parse-as-library \
+            -I build/live -L build/live -lAssistantModels -lAssistantMemory -lAssistantSkills \
+            scripts/LiveLearningSmoke.swift -o build/live/LiveLearningSmoke
       - name: Boot iOS 18.5 iPhone simulator
         run: |
           device_id="$(xcrun simctl list devices available -j | python3 scripts/select_simulator.py --runtime iOS-18-5 --device 'iPhone 16 Pro Max')"
@@ -68,8 +79,15 @@ jobs:
         run: |
           test -n "$SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY" || { echo 'Missing model test secret'; exit 1; }
           xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveModelSmoke"
+      - name: Real memory and approved skill behavior inside iOS Simulator
+        timeout-minutes: 6
+        env:
+          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
+        run: xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveLearningSmoke"
       - name: Real model App UI tests
-        timeout-minutes: 12
+        timeout-minutes: 15
         env:
           WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
           WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}

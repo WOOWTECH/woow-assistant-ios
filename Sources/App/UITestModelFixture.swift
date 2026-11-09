@@ -44,6 +44,9 @@ actor UITestChatModelClient: ChatModelClient {
     private var failedOnce = false
 
     func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
+        // Extraction is a separate system-instructed call; ordinary UI fixtures
+        // intentionally create no learned records. Real behavior has a live suite.
+        if messages.first?.role == "system" { return "{\"ops\":[]}" }
         let prompt = messages.last?.content ?? ""
         if prompt == "[fixture:wait]" {
             try await Task.sleep(nanoseconds: 60_000_000_000)
