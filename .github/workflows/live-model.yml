@@ -66,6 +66,7 @@ jobs:
           echo "WOOW_LIVE_SIMULATOR=$device_id" >> "$GITHUB_ENV"
           xcrun simctl bootstatus "$device_id" -b
       - name: Prepare App UI test build
+        id: app-build
         run: |
           tool_dir="$(mktemp -d "$RUNNER_TEMP/woow-xcodegen.XXXXXX")"
           curl --fail --location --retry 3 --max-time 120 \
@@ -105,6 +106,7 @@ jobs:
           SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveSkillLearningSmoke"
       - name: Real model App UI tests
+        if: ${{ !cancelled() && steps.app-build.outcome == 'success' }}
         timeout-minutes: 20
         env:
           WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}

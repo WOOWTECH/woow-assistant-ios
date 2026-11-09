@@ -36,7 +36,8 @@ struct LiveSkillLearningSmoke {
             let actions = pages.enumerated().map { index, result in
                 SkillExecutedAction(id: "synthetic-\(index)", toolName: "browser_open_link", kind: .navigation,
                     arguments: ["url": "https://handbook.example.invalid/phase/\(index)"],
-                    result: result, succeeded: true)
+                    result: result, succeeded: true,
+                    observedURL: URL(string: "https://handbook.example.invalid/phase/\(index)"))
             }
             let goal = "Read all five linked handbook phases and report their names and purpose in order."
             let answer = pages.joined(separator: "\n")
@@ -45,6 +46,9 @@ struct LiveSkillLearningSmoke {
             let assessment = try await SkillLearningService(client: client).assess(
                 goal: goal, answer: answer, actions: actions, state: state,
                 availableToolNames: toolNames, configuration: configuration, apiKey: key)
+            // Only bounded enum/count diagnostics. No generated reason, response,
+            // configuration, credential or source text is written to the log.
+            print("Assessment diagnostics: outcome=\(assessment.judgment.outcome.rawValue); citations=\(assessment.judgment.citations.count); uniqueActions=\(assessment.evidence.successfulActionCount); observedURLs=\(actions.filter { $0.observedURL != nil }.count); modelCalls=\(await client.count)")
             guard assessment.judgment.outcome == .done, !assessment.judgment.citations.isEmpty,
                   assessment.evidence.successfulActionCount == 5, assessment.proposal != nil else {
                 // Skip reasons are fixed enum codes, not provider/user content.
