@@ -1,0 +1,11 @@
+.DS_Store
+.build/
+.swiftpm/
+WoowAssistant.xcodeproj/
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+.env
+.env.*
+__pycache__/

@@ -1,0 +1,75 @@
+name: iOS
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: ios-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    timeout-minutes: 30
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: Show toolchain
+        run: |
+          mkdir -p build
+          xcodebuild -version
+          swift --version
+      - name: Test portable core
+        run: swift test 2>&1 | tee build/core-tests.log
+      - name: Test simulator selection
+        run: python3 -m unittest discover -s scripts -p 'test_*.py' -v 2>&1 | tee build/scripts-tests.log
+      - name: Install XcodeGen
+        run: |
+          tool_dir="$(mktemp -d "$RUNNER_TEMP/woow-xcodegen.XXXXXX")"
+          curl --fail --location --retry 3 --max-time 120 \
+            https://github.com/yonaskolb/XcodeGen/releases/download/2.44.1/xcodegen.artifactbundle.zip \
+            --output "$tool_dir/xcodegen.artifactbundle.zip"
+          (cd "$tool_dir" && echo 'cfa4e1ee82fc4c95bf7bd8f7db1fda6bd073605c76a8d5cbce50c54a81867eb2  xcodegen.artifactbundle.zip' | shasum -a 256 --check)
+          unzip -q "$tool_dir/xcodegen.artifactbundle.zip" -d "$tool_dir"
+          echo "$tool_dir/xcodegen.artifactbundle/xcodegen-2.44.1-macosx/bin" >> "$GITHUB_PATH"
+      - name: Generate project
+        run: xcodegen generate
+      - name: Show destinations
+        run: xcodebuild -project WoowAssistant.xcodeproj -scheme WoowAssistant -showdestinations
+      - name: Build
+        run: |
+          xcodebuild -project WoowAssistant.xcodeproj -scheme WoowAssistant \
+            -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath build/DerivedData build CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee build/ios-build.log
+      - name: Test
+        run: |
+          device_id="$(xcrun simctl list devices available -j | /usr/bin/python3 scripts/select_simulator.py --runtime iOS-18-5)"
+          xcodebuild -project WoowAssistant.xcodeproj -scheme WoowAssistant \
+            -destination "platform=iOS Simulator,id=$device_id" \
+            -derivedDataPath build/DerivedData -resultBundlePath build/Tests.xcresult \
+            -parallel-testing-enabled NO test CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee build/ios-tests.log
+      - name: Preserve test evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ios-test-evidence-${{ github.run_id }}
+          path: |
+            build/*.log
+            build/*.xcresult
+          if-no-files-found: warn
+          retention-days: 14
