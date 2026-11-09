@@ -144,7 +144,8 @@ final class LiveModelUITests: XCTestCase {
         XCTAssertTrue(answer.label.localizedCaseInsensitiveContains("IANA"))
         let learning = app.staticTexts["browser.learning"]
         XCTAssertTrue(learning.waitForExistence(timeout: 65), "The actual outcome judge did not finish.")
-        XCTAssertTrue(learning.label.contains("完成"), "The website outcome was not judged completed.")
+        XCTAssertEqual(learning.label, "已判定任務完成；未新增技能草稿。",
+                       "Require judged done: partial results and failed learning also contain 完成.")
         // A one-page explanation must not fabricate five navigations to create a skill.
         XCTAssertFalse(learning.label.contains("技能草稿已加入"))
     }

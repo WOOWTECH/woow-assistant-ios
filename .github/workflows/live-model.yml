@@ -3,6 +3,12 @@ name: Live model on iOS Simulator
 # No push/PR trigger: every run consumes the owner's model quota.
 on:
   workflow_dispatch:
+    inputs:
+      ui_scope:
+        description: Live App UI coverage (native probes always run)
+        type: choice
+        options: [all, browser]
+        default: all
 
 permissions:
   contents: read
@@ -106,9 +112,13 @@ jobs:
           test_runs=(build/LiveDerivedData/Build/Products/*.xctestrun)
           [ "${#test_runs[@]}" -eq 1 ] || { echo 'Expected one generated test runner'; exit 1; }
           python3 scripts/prepare_live_xctestrun.py "${test_runs[0]}"
+          ui_filter='-only-testing:WoowAssistantUITests/LiveModelUITests'
+          if [ '${{ inputs.ui_scope }}' = 'browser' ]; then
+            ui_filter='-only-testing:WoowAssistantUITests/LiveModelUITests/testRealWebKitResearchUsesPublicWebsiteAndJudgesOutcome'
+          fi
           xcodebuild -xctestrun "${test_runs[0]}" \
             -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
-            -only-testing:WoowAssistantUITests/LiveModelUITests \
+            "$ui_filter" \
             -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 300 test-without-building
       - name: Clear private runner configuration
         if: always()
