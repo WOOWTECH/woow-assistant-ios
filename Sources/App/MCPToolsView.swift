@@ -4,6 +4,7 @@ import SwiftUI
 struct MCPToolsView: View {
     @StateObject private var session: MCPSession
     @FocusState private var isEditingEndpoint: Bool
+    @FocusState private var isSearchingTools: Bool
     @Environment(\.scenePhase) private var scenePhase
     @State private var confirmRemoval = false
 
@@ -108,6 +109,8 @@ struct MCPToolsView: View {
                         .accessibilityIdentifier("mcp.selectionCount")
                     TextField("搜尋工具名稱", text: $session.toolSearch)
                         .autocorrectionDisabled().textInputAutocapitalization(.never)
+                        .focused($isSearchingTools).submitLabel(.done)
+                        .onSubmit { isSearchingTools = false }
                         .accessibilityIdentifier("mcp.toolSearch")
                     ForEach(session.visibleTools, id: \.name) { tool in
                         Toggle(isOn: Binding(get: { session.selectedToolNames.contains(tool.name) },
@@ -140,7 +143,7 @@ struct MCPToolsView: View {
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
-                Button("完成") { isEditingEndpoint = false }
+                Button("完成") { isEditingEndpoint = false; isSearchingTools = false }
                     .accessibilityIdentifier("mcp.dismissKeyboard")
             }
         }

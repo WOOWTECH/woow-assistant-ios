@@ -57,6 +57,7 @@ jobs:
           test -n "$SIMCTL_CHILD_WOOW_HA_MCP_TEST_URL" || { echo 'Missing private MCP test configuration'; exit 1; }
           xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveMCPSmoke"
       - name: Build App for live MCP UI tests
+        id: app-build
         run: |
           tool_dir="$(mktemp -d "$RUNNER_TEMP/woow-xcodegen.XXXXXX")"
           curl --fail --location --retry 3 --max-time 120 \
@@ -85,6 +86,7 @@ jobs:
             -only-testing:WoowAssistantUITests/LiveMCPUITests \
             -parallel-testing-enabled NO test-without-building
       - name: Real model selects and invokes approved HA tools in App
+        if: ${{ !cancelled() && steps.app-build.outcome == 'success' }}
         timeout-minutes: 12
         env:
           WOOW_HA_MCP_TEST_URL: ${{ secrets.WOOW_HA_MCP_TEST_URL }}

@@ -140,14 +140,30 @@ final class BrowserInteractionUITests: XCTestCase {
     }
     private func tap(_ id: String) {
         let element = app.buttons[id]
-        revealLearningElement(element, in: app)
+        // These controls are outside the Form: bottom app navigation, the
+        // browser toolbar, the sheet's navigation bar and keyboard accessory.
+        // The Form helper intentionally excludes those regions from its
+        // content viewport, so scrolling a Form can never reveal them.
+        let fixedChrome: Set<String> = ["navigation.browser", "browser.interactions",
+                                        "browser.interaction.close", "browser.interaction.done"]
+        if fixedChrome.contains(id) { waitForFixedChrome(element) }
+        else { revealLearningElement(element, in: app) }
         element.tap()
     }
     private func enter(_ value: String, into field: XCUIElement) {
-        revealLearningElement(field, in: app)
+        if field.identifier == "browser.address" { waitForFixedChrome(field) }
+        else { revealLearningElement(field, in: app) }
         field.tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
         field.typeText(value)
+    }
+    private func waitForFixedChrome(_ element: XCUIElement) {
+        wait(element, "exists == true AND hittable == true AND enabled == true")
+        // Do not weaken Form checks or use blind coordinates. Fixed chrome
+        // must be fully inside the app window and genuinely hittable itself.
+        let frame = element.frame
+        XCTAssertFalse(frame.isEmpty)
+        XCTAssertTrue(app.frame.contains(frame), "Fixed chrome must fit inside the app window: \(element.identifier)")
     }
     private func wait(_ element: XCUIElement, _ format: String, _ value: String? = nil, timeout: TimeInterval = 15) {
         let predicate = value.map { NSPredicate(format: format, $0) } ?? NSPredicate(format: format)

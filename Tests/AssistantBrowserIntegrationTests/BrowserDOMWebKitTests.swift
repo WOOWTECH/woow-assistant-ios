@@ -4,6 +4,8 @@ import WebKit
 import AssistantBrowser
 #if os(macOS)
 import AppKit
+#elseif os(iOS)
+import UIKit
 #endif
 
 @MainActor
@@ -17,6 +19,17 @@ enum BrowserDOMFixtures {
         let window = NSWindow(contentRect: web.frame, styleMask: [.borderless], backing: .buffered, defer: false)
         window.contentView = web
         defer { window.orderOut(nil) }
+        #elseif os(iOS)
+        guard let scene = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene }).first else {
+            throw Failure(message: "The integration fixture requires an App window scene")
+        }
+        let previousKeyWindow = scene.windows.first(where: \.isKeyWindow)
+        let window = UIWindow(windowScene: scene)
+        let controller = UIViewController()
+        controller.view = web
+        window.rootViewController = controller
+        window.makeKeyAndVisible()
+        defer { window.isHidden = true; previousKeyWindow?.makeKey() }
         #endif
         let executor = BrowserDOMExecutor(webView: web)
         var assertions = 0
@@ -131,6 +144,8 @@ enum BrowserDOMFixtures {
 import XCTest
 final class BrowserDOMWebKitTests: XCTestCase {
     @MainActor func testActualDOMAndStaleIdentity() async throws {
+        XCTAssertTrue(UIApplication.shared.applicationState != .background,
+                      "DOM integration must run in the foreground App host.")
         let count = try await BrowserDOMFixtures.run()
         XCTAssertGreaterThan(count, 25)
     }

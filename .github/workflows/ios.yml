@@ -30,7 +30,7 @@ concurrency:
 jobs:
   build-and-test:
     runs-on: macos-15
-    timeout-minutes: 60
+    timeout-minutes: 70
     strategy:
       fail-fast: false
       matrix:
@@ -76,9 +76,10 @@ jobs:
             -derivedDataPath build/DerivedData build CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
             2>&1 | tee build/ios-build.log
       - name: Test
-        # Native and 22 fixture UI cases completed in the prior full run, but
-        # its 30-minute step limit interrupted xcresult finalization.
-        timeout-minutes: 40
+        # The previous 22-case full UI matrix took 31m34s for this step.
+        # Eleven additional UI cases and hosted DOM integration need their own
+        # time plus xcresult export; individual case limits remain unchanged.
+        timeout-minutes: 55
         run: |
           device_id="$(xcrun simctl list devices available -j | /usr/bin/python3 scripts/select_simulator.py --runtime "$WOOW_SIM_RUNTIME" --device "$WOOW_SIM_DEVICE")"
           echo "Testing $WOOW_SIM_DEVICE on $WOOW_SIM_RUNTIME"
@@ -88,7 +89,7 @@ jobs:
           test_filters=()
           case '${{ inputs.test_scope }}' in
             parity)
-              test_filters=(-only-testing:AssistantMCPTests -only-testing:AssistantSkillsTests -only-testing:AssistantDomainTests -only-testing:WoowAssistantUITests/MCPConversationUITests -only-testing:WoowAssistantUITests/BrowserInteractionUITests -only-testing:WoowAssistantUITests/SkillCatalogUITests)
+              test_filters=(-only-testing:AssistantMCPTests -only-testing:AssistantSkillsTests -only-testing:AssistantDomainTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/MCPConversationUITests -only-testing:WoowAssistantUITests/BrowserInteractionUITests -only-testing:WoowAssistantUITests/SkillCatalogUITests)
               ;;
             startup)
               test_filters=(-only-testing:WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded)
