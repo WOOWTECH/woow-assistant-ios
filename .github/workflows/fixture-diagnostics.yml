@@ -1,0 +1,46 @@
+name: Inspect fixture startup diagnostics
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  inspect:
+    runs-on: macos-15
+    timeout-minutes: 10
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+    steps:
+      - name: Download failed fixture evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Fixed fixture-only artifact. Never point this job at live test data.
+          gh run download 42676613926 --repo WOOWTECH/woow-assistant-ios \
+            --name ios-test-evidence-ios18-compact-42676613926 --dir evidence
+      - name: Export startup diagnostics
+        run: |
+          xcrun xcresulttool export diagnostics --path evidence/Tests.xcresult --output-path diagnostics
+          python3 - <<'PY'
+          import pathlib
+          roots = [pathlib.Path('diagnostics')]
+          matches = []
+          for root in roots:
+              for path in root.rglob('*'):
+                  if path.is_file() and path.suffix in ('.ips', '.crash') and 'WoowAssistant' in path.name:
+                      matches.append(path)
+          print('App crash reports:', len(matches))
+          for path in matches[:3]:
+              print(path)
+              print(path.read_text(errors='replace')[:24000])
+          PY
+      - name: Preserve fixture diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fixture-startup-diagnostics
+          path: diagnostics/
+          retention-days: 7
