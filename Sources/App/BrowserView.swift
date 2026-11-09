@@ -7,7 +7,6 @@ struct BrowserView: View {
     @ObservedObject var chat: ChatSession
     @State private var showResearch = false
     @FocusState private var addressFocused: Bool
-    @FocusState private var goalFocused: Bool
     var body: some View {
         VStack(spacing: 8) {
             HStack {
@@ -35,7 +34,23 @@ struct BrowserView: View {
                 .accessibilityIdentifier("browser.explanation")
         }
         .sheet(isPresented: $showResearch) {
-            NavigationStack {
+            BrowserResearchView(browser: browser, chat: chat)
+        }
+    }
+    private func open() { addressFocused = false; browser.openAddress() }
+}
+
+// A presented sheet owns its focus binding. Sharing a FocusState from the
+// presenting browser leaves the multiline editor focused on iOS 26.
+@MainActor
+private struct BrowserResearchView: View {
+    @ObservedObject var browser: BrowserSession
+    @ObservedObject var chat: ChatSession
+    @Environment(\.dismiss) private var dismiss
+    @FocusState private var goalFocused: Bool
+
+    var body: some View {
+        NavigationStack {
                 Form {
                     Section("網站研究") {
                         Text("頁面文字會傳送到你設定的模型服務。研究只讀取網頁與開啟同站連結。")
@@ -67,16 +82,14 @@ struct BrowserView: View {
                 }
                 .navigationTitle("網站研究")
                 .toolbar {
-                    ToolbarItem(placement: .confirmationAction) { Button("完成") { showResearch = false }.accessibilityIdentifier("browser.research.close") }
+                    ToolbarItem(placement: .confirmationAction) { Button("完成") { dismiss() }.accessibilityIdentifier("browser.research.close") }
                     ToolbarItemGroup(placement: .keyboard) {
                         Spacer()
                         Button("完成輸入") { goalFocused = false }.accessibilityIdentifier("browser.goal.done")
                     }
                 }
-            }
         }
     }
-    private func open() { addressFocused = false; browser.openAddress() }
 }
 
 private struct BrowserWebView: UIViewRepresentable {
