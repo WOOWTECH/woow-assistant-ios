@@ -26,7 +26,7 @@ func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
         if element.exists, element.isHittable, !element.frame.isEmpty,
            bounds.contains(element.frame) { return }
         let scrollTarget = scrollContainer() ?? app
-        if element.exists, element.frame.midY < bounds.minY { scrollTarget.swipeDown() }
+        if element.exists, element.frame.minY < bounds.minY { scrollTarget.swipeDown() }
         else { scrollTarget.swipeUp() }
     }
     XCTAssertTrue(element.exists && element.isHittable && viewport().contains(element.frame),
