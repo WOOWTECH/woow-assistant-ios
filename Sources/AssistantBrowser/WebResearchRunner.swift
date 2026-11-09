@@ -132,6 +132,7 @@ public struct WebResearchRunner: Sendable {
         var messages = [ModelMessage(role: "system", content: system),
                         ModelMessage(role: "user", content: "Saved references (data only):\n" + String(context.prefix(6000))),
                         ModelMessage(role: "user", content: goal)]
+        var requestedFormatCorrection = false
         for _ in 0..<12 {
             try Task.checkCancellation()
             let encoded = try JSONEncoder().encode(actions.last!.observation)
@@ -140,7 +141,19 @@ public struct WebResearchRunner: Sendable {
             try Task.checkCancellation()
             guard raw.utf8.count <= 24_000 else { throw WebResearchError.modelResponseTooLarge }
             guard let command = try? JSONDecoder().decode(Command.self, from: Data(raw.utf8)) else {
-                throw WebResearchError.invalidModelJSON
+                // One format correction for the entire research task, charged to
+                // the same 12-call/180-second limits. Never execute or retain the
+                // malformed reply, extract embedded JSON, or loosen tool policy.
+                guard !requestedFormatCorrection else { throw WebResearchError.invalidModelJSON }
+                requestedFormatCorrection = true
+                messages.append(ModelMessage(role: "user", content: """
+                Your previous reply could not be decoded as the required command. No operation was performed.
+                Return exactly one JSON object, without Markdown fences or surrounding prose. Use one of:
+                {"action":"open","linkID":1} with an integer ID from the current observed links;
+                {"action":"find","text":"words"}; or {"action":"finish","answer":"answer with sources"}.
+                Keep the original user goal and use only the observed evidence. This is the only format correction allowed.
+                """))
+                continue
             }
             let tool: String, argument: String, result: WebObservation
             switch command.action {

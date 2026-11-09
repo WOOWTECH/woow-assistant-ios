@@ -134,7 +134,8 @@ public struct SkillLearningService: Sendable {
             generalized = try SkillDocument.replacingField(generalized, key: "name", value: target)
             generalized = try SkillDocument.importText(generalized, source: .learned)
             generalized = try SkillDocument.replacingField(generalized, key: "learned_from", value: context.runID.uuidString)
-            let document = try SkillDocument.parse(generalized, availableToolNames: availableToolNames)
+            let document = try SkillDocument.parse(generalized, availableToolNames: availableToolNames,
+                                                   trustedProvenance: context.runID)
             // No invented, merely available executable tools in a learned recipe.
             guard document.referencedToolNames.isSubset(of: Set(actions.filter(\.succeeded).map(\.toolName))) else {
                 return assessment(judgment, .invalidDraft)

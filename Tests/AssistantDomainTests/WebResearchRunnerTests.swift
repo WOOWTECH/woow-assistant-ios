@@ -81,7 +81,9 @@ private enum ResearchDiagnosticChecks {
             (String(repeating: "x", count: 24001), .modelResponseTooLarge, "command_too_large")
         ]
         for (command, expected, code) in invalid {
-            let model = ResearchModel([command]), browser = ResearchBrowser(), completed = ResearchCompleted()
+            let correctable = expected == .invalidModelJSON
+            let model = ResearchModel(correctable ? [command, command] : [command])
+            let browser = ResearchBrowser(), completed = ResearchCompleted()
             do {
                 _ = try await WebResearchRunner(client: model).run(goal: "Read", browser: browser, configuration: configuration,
                     apiKey: "fixture", onAction: { await completed.append($0) })
@@ -93,8 +95,65 @@ private enum ResearchDiagnosticChecks {
             try checks.expect(await browser.opens == 0, "invalid command never opens a page")
             try checks.expect(await browser.finds == 0, "invalid command never searches a page")
             try checks.expect(await completed.count() == 1, "only real initial inspection is completed")
-            try checks.expect(await model.inputs.count == 1, "invalid command is not silently retried")
+            try checks.expect(await model.inputs.count == (correctable ? 2 : 1), "only malformed format gets one bounded correction")
         }
+        // A malformed response is neither an executed action nor a permission to
+        // run arbitrary JSON embedded in prose. Only a new valid command can act.
+        for malformed in ["REJECTED_REPLY_MARKER", "```json\n" + open + "\n```", open + finish,
+                          #"{"linkID":1}"#, #"{"action":"open","linkID":"1"}"#] {
+            let model = ResearchModel([malformed, open, finish]), browser = ResearchBrowser()
+            let result = try await WebResearchRunner(client: model).run(goal: "Read", browser: browser,
+                configuration: configuration, apiKey: "fixture")
+            try checks.expect(!result.reachedLimit && result.actions.count == 2, "corrected command preserves actual action count")
+            let opens = await browser.opens, finds = await browser.finds
+            try checks.expect(opens == 1 && finds == 0, "only the newly valid open executes")
+            let inputs = await model.inputs
+            try checks.expect(inputs.count == 3, "correction consumes one model call")
+            try checks.expect(inputs[1].contains { $0.content.contains("No operation was performed.") }, "model receives explicit format correction")
+            try checks.expect(!inputs[1].contains { $0.role == "assistant" }, "malformed raw reply is not retained as assistant context")
+        }
+        // A successful action does not reset the task-wide correction allowance.
+        let twice = ResearchModel(["bad first", open, "bad second", finish])
+        let twiceBrowser = ResearchBrowser(), twiceActions = ResearchCompleted()
+        do {
+            _ = try await WebResearchRunner(client: twice).run(goal: "Read", browser: twiceBrowser,
+                configuration: configuration, apiKey: "fixture", onAction: { await twiceActions.append($0) })
+            throw Failure(label: "second malformed reply accepted")
+        } catch let error as WebResearchError { try checks.expect(error == .invalidModelJSON, "second malformed reply stops") }
+        try checks.expect(await twice.inputs.count == 3, "no second correction after a successful action")
+        try checks.expect(await twiceActions.count() == 2, "stopped task retains only two real actions")
+        let finds = (1...11).map { "{\"action\":\"find\",\"text\":\"needle\($0)\"}" }
+        let budgetModel = ResearchModel(["bad format"] + finds + [finish])
+        let budgetBrowser = ResearchBrowser()
+        let bounded = try await WebResearchRunner(client: budgetModel).run(goal: "Read", browser: budgetBrowser,
+            configuration: configuration, apiKey: "fixture")
+        try checks.expect(bounded.reachedLimit && bounded.actions.count == 12, "correction never raises the total decision budget")
+        try checks.expect(await budgetModel.inputs.count == 12, "thirteenth response is not requested")
+        try checks.expect(await budgetBrowser.finds == 11, "repair does not become fabricated progress")
+        let failedRepair = ResearchModel(["bad format"], failureAfterReplies: .timedOut)
+        do {
+            _ = try await WebResearchRunner(client: failedRepair).run(goal: "Read", browser: ResearchBrowser(),
+                configuration: configuration, apiKey: "fixture")
+            throw Failure(label: "repair HTTP timeout accepted")
+        } catch let error as HTTPChatModelError { try checks.expect(error == .timedOut, "repair preserves transport failure") }
+        try checks.expect(await failedRepair.inputs.count == 2, "no retry after corrective request fails")
+        let waitingRepair = ResearchModel(["bad format"], waitAfterReplies: true)
+        let cancelTask = Task {
+            try await WebResearchRunner(client: waitingRepair).run(goal: "Read", browser: ResearchBrowser(),
+                configuration: configuration, apiKey: "fixture")
+        }
+        defer { cancelTask.cancel() }
+        for _ in 0..<1000 {
+            if await waitingRepair.inputs.count == 2 { break }
+            try await Task.sleep(nanoseconds: 1_000_000)
+        }
+        try checks.expect(await waitingRepair.inputs.count == 2, "cancellation fixture reached corrective request")
+        cancelTask.cancel()
+        do {
+            _ = try await cancelTask.value
+            throw Failure(label: "cancelled repair accepted")
+        } catch is CancellationError { try checks.expect(true, "cancellation interrupts corrective request") }
+        try checks.expect(await waitingRepair.inputs.count == 2, "cancellation does not request another correction")
         // Still accept only the original supported commands and actual executor results.
         let model = ResearchModel([open, finish]), browser = ResearchBrowser()
         let result = try await WebResearchRunner(client: model).run(goal: "Read", browser: browser, configuration: configuration, apiKey: "fixture")
@@ -191,12 +250,22 @@ private actor ResearchCompleted {
 private actor ResearchModel: ChatModelClient {
     var replies: [String]
     let failure: HTTPChatModelError?
+    let failureAfterReplies: HTTPChatModelError?
+    let waitAfterReplies: Bool
     private(set) var inputs: [[ModelMessage]] = []
-    init(_ replies: [String], failure: HTTPChatModelError? = nil) { self.replies = replies; self.failure = failure }
+    init(_ replies: [String], failure: HTTPChatModelError? = nil,
+         failureAfterReplies: HTTPChatModelError? = nil, waitAfterReplies: Bool = false) {
+        self.replies = replies; self.failure = failure
+        self.failureAfterReplies = failureAfterReplies; self.waitAfterReplies = waitAfterReplies
+    }
     func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
         inputs.append(messages)
         if let failure { throw failure }
-        guard !replies.isEmpty else { throw WebResearchError.invalidCommand }
+        guard !replies.isEmpty else {
+            if let failureAfterReplies { throw failureAfterReplies }
+            if waitAfterReplies { try await Task.sleep(nanoseconds: 5_000_000_000) }
+            throw WebResearchError.invalidCommand
+        }
         return replies.removeFirst()
     }
 }

@@ -13,11 +13,11 @@ long-answer UI correction described below. Results are tied to their source revi
 | Execution / revision | Evidence | Current result |
 |---|---|---|
 | Full App regression, `896e447`: SE / iPhone 16 Pro Max / iPhone 17 | [42697447884](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42697447884) | SE and iPhone 17: 65 portable + 65 native + 22 fixture UI passed each, 7 opt-in skips. Large: 21/22 UI; invalid-input test received 199 rather than 201 characters |
-| Browser regression, `67e1d4e`: same three devices | [42701757230](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42701757230) | Large and SE failed the new whole-WebView absence assertion; large also failed initial page readiness. Current device pending |
-| Native model probes and six real App UI cases, `67e1d4e` | [42701765437](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42701765437) | Running; multi-page learning remains unaccepted |
+| Browser regression, `67e1d4e`: same three devices | [42701757230](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42701757230) | All three failed the new whole-WebView absence assertion; large also failed initial page readiness |
+| Native model probes and six real App UI cases, `67e1d4e` | [42701765437](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42701765437) | Seven native probes and 5/6 UI cases passed. Multi-page stopped after one inspection with invalid_command_json; no learning pass claimed |
 | Earlier live attempt, `896e447` | [42697453900](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42697453900) | Seven native probes and five UI cases passed; multi-page UI exceeded 300 seconds after research finished. Approval/relaunch unverified |
-| Local skill assertions | 603 checks; strict-concurrency build | Passed; not iOS UI evidence |
-| Local research assertions | 202 checks; strict-concurrency build | Passed; no live model/network |
+| Local skill assertions | 643 checks; strict-concurrency build, three consecutive passes | Passed; not iOS UI evidence |
+| Local research assertions | 238 checks; strict-concurrency build | Passed; no live model/network |
 | UI visibility geometry | 24 standalone checks | Passed; not iOS UI evidence |
 
 Earlier successes and failures below are revision-specific history. Fixture passes
@@ -64,6 +64,44 @@ now include the fixture-only AX tree. Large also failed 45-second initial loadin
 the PNG shows the correct full URL, dismissed keyboard and blank loading WebKit.
 The runtime cause remains under investigation; no timeout was increased for this
 failure. The next learning matrix must verify these test corrections.
+
+## Reproduced runtime failures and bounded corrections
+
+Real run `67e1d4e` completed seven native requests and 5/6 UI cases. The multi-page
+case stopped after its initial real inspection with `invalid_command_json`; no
+navigation, answer or skill was invented. The single-page IANA case passed again.
+The browser now permits **one format correction per entire task** after a command
+fails strict JSON decoding. It asks for a new valid command, without retaining or
+executing the rejected reply. This consumes the existing 12-call/180-second budget;
+second format failure, unsupported actions, bad arguments, unknown links, HTTP
+failure and cancellation still stop. No fenced-JSON extraction or action alias was
+added. **238 standalone assertions** pass, including bounded corrective calls,
+non-execution, exact action counts and cancellation while correcting.
+
+The large-device cold-start failure has direct runtime evidence: WebContent took
+**57.480968 seconds** and GPU startup 57.590726 seconds for the same App PID. The
+45-second readiness wait began at 21:30:16.590 UTC and expired at 21:31:01.605;
+WebContent started only at 21:31:08.682. Cold navigation with no prior observation
+now permits 75 seconds; warmed navigation remains 25 seconds and the overall task
+budget remains 180 seconds. Fixture/live initial readiness waits 75 seconds and
+fixture route completion 105 seconds. Case limits and functional checks are unchanged.
+This explains the missed startup deadline, not the underlying hosted-runtime latency.
+
+Learning run [42705232922](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42705232922)
+at `0e1d415` exposed a separate portable-test crash on the current device's runner,
+before iOS native/UI testing. A runtime UUID's numeric segments could pass the Luhn
+check and be mistaken for a card number in trusted `learned_from` metadata. The
+result was a rejected draft and a test force-unwrap crash. A fixed collision UUID
+now reproduces this path deterministically. Parsing exempts only the single canonical
+UUID metadata line matching the trusted runtime/stored identity; raw model/import
+text, duplicate metadata, mismatched identities, body text and descriptions retain
+the original privacy checks. Approval, encrypted snapshot decode, context retrieval,
+export and revision restoration are covered. **643 skill assertions passed three
+consecutive runs**, including 40 additions. The failing fixture now checks the
+proposal and reports its outcome/skip category instead of force-unwrapping it.
+
+These corrections require the next full simulator matrix and real-model run; local
+checks alone do not establish iOS or live acceptance.
 
 ## Executed locally
 

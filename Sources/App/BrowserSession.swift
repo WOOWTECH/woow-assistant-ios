@@ -229,10 +229,10 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
 
     private func navigate(to url: URL) async throws -> WebObservation {
         guard permitted(url), origin == nil || Self.origin(url) == origin else { throw WebResearchError.unsafeNavigation }
-        // Hosted WebContent cold startup was measured above 25s. Only the
+        // Hosted WebContent cold startup was measured at 57.481s. Only the
         // first navigation without an observation gets this bounded allowance;
         // warmed navigation and the enclosing 180s task deadline are unchanged.
-        let navigationTimeout: TimeInterval = current == nil ? 45 : 25
+        let navigationTimeout: TimeInterval = current == nil ? 75 : 25
         navigationFinished = nil
         if fixtureMode { loadFixture(url: url) }
         else { expectedNavigation = webView.load(URLRequest(url: url)) }

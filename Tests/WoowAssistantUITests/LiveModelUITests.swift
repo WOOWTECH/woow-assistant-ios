@@ -280,7 +280,7 @@ final class LiveModelUITests: XCTestCase {
         XCTAssertEqual(readiness, .completed, "The real browser address must be interactable.")
         address.tap(); address.typeText("https://www.iana.org/\n")
         let loaded = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", "頁面已載入"), object: app.staticTexts["browser.status"])
-        XCTAssertEqual(XCTWaiter.wait(for: [loaded], timeout: 40), .completed)
+        XCTAssertEqual(XCTWaiter.wait(for: [loaded], timeout: 75), .completed)
     }
 
     private func selectLearningSegment(_ segment: String, in app: XCUIApplication) {

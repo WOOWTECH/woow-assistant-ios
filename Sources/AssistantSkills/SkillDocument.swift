@@ -39,6 +39,12 @@ public struct SkillDocument: Codable, Equatable, Sendable {
     ]
 
     public static func parse(_ markdown: String, availableToolNames: Set<String>) throws -> SkillDocument {
+        try parse(markdown, availableToolNames: availableToolNames, trustedProvenance: nil)
+    }
+
+    /// Only runtime-generated or already-stored provenance may use this path.
+    /// Public/import/model parsing continues to scan all raw text unchanged.
+    static func parse(_ markdown: String, availableToolNames: Set<String>, trustedProvenance: UUID?) throws -> SkillDocument {
         let normalized = normalize(markdown)
         guard normalized.utf16.count <= maxUTF16Count else { throw SkillsError.tooLong }
         let (fields, body) = try parseFrontMatter(normalized)
@@ -55,7 +61,24 @@ public struct SkillDocument: Codable, Equatable, Sendable {
         }) else { throw SkillsError.missingSection }
         let references = toolReferences(normalized)
         guard references.isSubset(of: availableToolNames) else { throw SkillsError.unknownTool }
-        guard !SkillSensitiveContent.containsSensitiveValue(normalized) else { throw SkillsError.sensitiveContent }
+        var privacyText = normalized
+        if let trustedProvenance {
+            // Exempt exactly one canonical metadata line, not all UUID-shaped
+            // text. Duplicates, extra values, body text and other fields still
+            // cannot hide credentials behind a supposedly trusted provenance.
+            let lines = normalized.components(separatedBy: "\n")
+            guard let end = closingDelimiter(lines), fields["source"]?.stringValue == "learned",
+                  fields["learned_from"] == .string(trustedProvenance.uuidString) else { throw SkillsError.invalidState }
+            let indices = lines.indices.filter { index in
+                guard index > 0, index < end, let colon = lines[index].firstIndex(of: ":") else { return false }
+                return lines[index][..<colon].trimmingCharacters(in: .whitespaces) == "learned_from"
+            }
+            guard indices.count == 1, let index = indices.first,
+                  lines[index] == "learned_from: \(trustedProvenance.uuidString)" else { throw SkillsError.invalidState }
+            var filtered = lines; filtered[index] = "learned_from: <local-run-id>"
+            privacyText = filtered.joined(separator: "\n")
+        }
+        guard !SkillSensitiveContent.containsSensitiveValue(privacyText) else { throw SkillsError.sensitiveContent }
         return SkillDocument(markdown: normalized, frontMatter: fields, body: body, referencedToolNames: references)
     }
 
@@ -76,7 +99,27 @@ public struct SkillDocument: Codable, Equatable, Sendable {
         // Capabilities are runtime state, not persisted grants. Decode the document
         // structurally, then revalidate against actual tools on approval/context use.
         guard markdown.utf16.count <= Self.maxUTF16Count else { throw SkillsError.tooLong }
-        self = try Self.parse(markdown, availableToolNames: Self.toolReferences(markdown))
+        // Codable restores the encrypted local snapshot, not a Markdown import.
+        // This validates provenance syntax; it grants no source/approval authority.
+        let (fields, _) = try Self.parseFrontMatter(Self.normalize(markdown))
+        if fields["source"]?.stringValue == "learned", fields["learned_from"] != nil,
+           Self.localProvenance(fields) == nil { throw SkillsError.invalidState }
+        self = try Self.parse(markdown, availableToolNames: Self.toolReferences(markdown),
+                              trustedProvenance: Self.localProvenance(fields))
+    }
+
+    var localProvenance: UUID? { Self.localProvenance(frontMatter) }
+
+    private static func localProvenance(_ fields: [String: SkillFrontMatterValue]) -> UUID? {
+        guard fields["source"]?.stringValue == "learned",
+              let value = fields["learned_from"]?.stringValue else { return nil }
+        return UUID(uuidString: value)
+    }
+
+    /// Revalidate an existing local document when capabilities change, without
+    /// interpreting a trusted run identifier as user payment/identity data.
+    func validated(availableToolNames: Set<String>) throws -> SkillDocument {
+        try Self.parse(markdown, availableToolNames: availableToolNames, trustedProvenance: localProvenance)
     }
 
     static func normalize(_ value: String) -> String {

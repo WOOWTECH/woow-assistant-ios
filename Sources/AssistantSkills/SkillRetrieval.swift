@@ -33,7 +33,7 @@ extension SkillsState {
         for skill in candidates {
             guard entries.count < countLimit else { omitted = true; continue }
             // Recheck runtime capabilities: persisted tool references are not grants.
-            guard (try? SkillDocument.parse(skill.markdown, availableToolNames: availableToolNames)) != nil,
+            guard (try? skill.document.validated(availableToolNames: availableToolNames)) != nil,
                   let shared = try? SkillDocument.shareable(skill.markdown) else { omitted = true; continue }
             let entry = ContextEntry(name: skill.name, status: skill.status.rawValue, markdown: shared)
             guard let data = try? encoder.encode(entries + [entry]),

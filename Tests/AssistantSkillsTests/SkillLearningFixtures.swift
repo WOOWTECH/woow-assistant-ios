@@ -514,12 +514,24 @@ enum SkillLearningFixtures {
         let beforeCancel = state
         _ = try state.apply(cancelled, availableToolNames: tools)
         try c.expect(state == beforeCancel, "cancelled run records no result")
-        let update = try await assess(Client([.text(done), .text(draft("new-name", updates: skill.name))]), state: state)
-        let pending = try state.apply(update, availableToolNames: tools)!
+        // This valid v4 UUID's first sixteen digits pass Luhn. Previously trusted
+        // runtime metadata was randomly rejected as a card number (CI SIGTRAP).
+        let collisionID = UUID(uuidString: "41111111-1111-4115-8111-111111111111")!
+        let update = try await assess(Client([.text(done), .text(draft("new-name", updates: skill.name))]),
+                                      context: .init(runID: collisionID), state: state)
+        try c.expect(update.proposal != nil,
+                     "update requires proposal: outcome=\(update.judgment.outcome), skip=\(String(describing: update.skipReason))")
+        guard let pending = try state.apply(update, availableToolNames: tools) else {
+            throw SkillsCoreFixtures.Failure(description: "valid update assessment applied without staging its proposal")
+        }
         try c.expect(pending.name == skill.name && pending.baseHash == skill.fingerprint, "model update targets canonical existing name and hash")
         let replacement = try await assess(Client([.text(done), .text(draft("another-name", updates: skill.name,
             detail: "Follow visible links with `browser_open_link`, then summarize."))]), state: state)
-        let replaced = try state.apply(replacement, availableToolNames: tools)!
+        try c.expect(replacement.proposal != nil,
+                     "replacement requires proposal: outcome=\(replacement.judgment.outcome), skip=\(String(describing: replacement.skipReason))")
+        guard let replaced = try state.apply(replacement, availableToolNames: tools) else {
+            throw SkillsCoreFixtures.Failure(description: "valid replacement assessment applied without staging its proposal")
+        }
         try c.expect(replaced.id == pending.id && state.pending.count == 1 && replaced.baseHash == pending.baseHash,
                      "pending replacement preserves ID and optimistic ancestry")
         let stale = try await assess(Client([.text(done), .text(draft("distinct-new"))]), state: state)
@@ -539,6 +551,73 @@ enum SkillLearningFixtures {
         let original = atomic
         try c.error(.changedSinceRead, "second reference stale") { _ = try atomic.apply(rejected, availableToolNames: tools) }
         try c.expect(atomic == original, "no partial promotion of earlier reference")
+        let provenanceChecks = try await trustedNumericProvenance()
+        return c.count + provenanceChecks
+    }
+
+    static func trustedNumericProvenance() async throws -> Int {
+        var c = SkillsCoreFixtures.Checks()
+        for rawID in ["41111111-1111-1111-8111-111111111111", "41111111-1111-4115-8111-111111111111"] {
+            let runID = UUID(uuidString: rawID)!
+            let annotated = try SkillDocument.replacingField(
+                SkillDocument.importText(draft(), source: .learned), key: "learned_from", value: rawID)
+            try c.expect(SkillSensitiveContent.containsSensitiveValue(annotated), "deterministic UUID really collides with unchanged raw privacy filter")
+            try c.error(.sensitiveContent, "public parse never exempts untrusted UUID metadata") {
+                _ = try SkillDocument.parse(annotated, availableToolNames: tools)
+            }
+            let injected = try await assess(Client([.text(done), .text(annotated)]), context: .init(runID: runID))
+            try c.expect(injected.skipReason == .invalidDraft && injected.proposal == nil,
+                         "raw model response still receives full privacy scan before runtime provenance is added")
+            let generated = try await assess(Client([.text(done), .text(draft())]), context: .init(runID: runID))
+            try c.expect(generated.judgment.outcome == .done && generated.skipReason == nil && generated.proposal != nil,
+                         "runtime numeric UUID cannot randomly suppress a valid generated proposal")
+            var state = SkillsState()
+            guard let pending = try state.apply(generated, availableToolNames: tools) else {
+                throw SkillsCoreFixtures.Failure(description: "numeric-provenance proposal failed staging")
+            }
+            try c.expect(pending.document.frontMatter["learned_from"]?.stringValue == rawID, "exact trusted provenance remains stored")
+            try c.expect(state.instructionContext(query: "", availableToolNames: tools).skillNames.isEmpty,
+                         "provenance exception does not expose pending skill")
+            state = try JSONDecoder().decode(SkillsState.self, from: JSONEncoder().encode(state))
+            try c.expect(state.pending.first?.document == pending.document, "pending numeric provenance survives snapshot decode")
+            let edited = try state.editDraft(id: pending.id, markdown: pending.markdown, availableToolNames: tools)
+            try c.expect(edited.document == pending.document, "review retains exact UUID-bearing document")
+            let approved = try state.approveDraft(id: pending.id, availableToolNames: tools)
+            try c.expect(approved.document == pending.document && approved.status == .trial, "approval preserves provenance without auto activation")
+            state = try JSONDecoder().decode(SkillsState.self, from: JSONEncoder().encode(state))
+            let context = state.instructionContext(query: "", availableToolNames: tools)
+            try c.expect(context.skillNames == [approved.name] && !context.text.contains(rawID), "reviewed skill is retrievable and context omits local UUID")
+            try c.expect(state.instructionContext(query: "", availableToolNames: []).skillNames.isEmpty,
+                         "local provenance never bypasses available-tool checks")
+            let exported = try state.exportMarkdown(name: approved.name)
+            try c.expect(!exported.contains(rawID) && !exported.contains("learned_from"), "export still strips trusted metadata")
+            try state.remove(name: approved.name)
+            guard let revision = state.revisions.last else { throw SkillsCoreFixtures.Failure(description: "missing removal revision") }
+            let restored = try state.restoreRevision(id: revision.id, expectedCurrentHash: nil, availableToolNames: tools)
+            try c.expect(restored.document == approved.document, "revision restore accepts trusted numeric UUID")
+
+            for untrusted in [annotated + "\n" + rawID,
+                              annotated.replacingOccurrences(of: "Research a website using its visible links", with: rawID),
+                              annotated + "\npassword: synthetic1234"] {
+                try c.error(.sensitiveContent, "trusted metadata does not hide sensitive body or description") {
+                    _ = try SkillDocument.parse(untrusted, availableToolNames: tools, trustedProvenance: runID)
+                }
+            }
+            let duplicate = annotated.replacingOccurrences(of: "learned_from: \(rawID)",
+                with: "learned_from: password: synthetic1234\nlearned_from: \(rawID)")
+            try c.error(.invalidState, "duplicate provenance is not silently removed from privacy scan") {
+                _ = try SkillDocument.parse(duplicate, availableToolNames: tools, trustedProvenance: runID)
+            }
+            try c.error(.invalidState, "trusted metadata must match exact expected run UUID") {
+                _ = try SkillDocument.parse(annotated, availableToolNames: tools,
+                    trustedProvenance: UUID(uuidString: "AABBCCDD-EEFF-4ABB-8CDD-EEFFAABBCCDD")!)
+            }
+            let invalidUUID = annotated.replacingOccurrences(of: rawID, with: "not-a-uuid")
+            let invalidData = try JSONSerialization.data(withJSONObject: ["markdown": invalidUUID])
+            try c.error(.invalidState, "stored learned provenance must be a valid UUID") {
+                _ = try JSONDecoder().decode(SkillDocument.self, from: invalidData)
+            }
+        }
         return c.count
     }
 

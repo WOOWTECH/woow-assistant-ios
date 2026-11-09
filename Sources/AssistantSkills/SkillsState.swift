@@ -117,7 +117,7 @@ public struct SkillsState: Codable, Equatable, Sendable {
         let current = installed.first { $0.name == revision.name }
         guard current?.fingerprint == expectedCurrentHash else { throw SkillsError.changedSinceRead }
         guard current != nil || installed.count < Self.maxInstalled else { throw SkillsError.capacityReached }
-        _ = try SkillDocument.parse(previous.markdown, availableToolNames: availableToolNames)
+        _ = try previous.document.validated(availableToolNames: availableToolNames)
         try archive(name: revision.name, operation: .restore, previous: current, now: now)
         installed.removeAll { $0.name == revision.name }
         installed.append(previous)
@@ -162,7 +162,8 @@ public struct SkillsState: Codable, Equatable, Sendable {
                                builtinNames: Set<String> = [], now: Date = Date()) throws -> SkillDraft {
         guard try learningFingerprint() == proposal.baseStateFingerprint else { throw SkillsError.changedSinceRead }
         guard SkillLearningGate.canAutoDraft(proposal.evidence) else { throw SkillsError.insufficientEvidence }
-        let document = try SkillDocument.parse(proposal.markdown, availableToolNames: availableToolNames)
+        let document = try SkillDocument.parse(proposal.markdown, availableToolNames: availableToolNames,
+                                               trustedProvenance: proposal.runID)
         guard !builtinNames.contains(document.name) else { throw SkillsError.builtinName }
         let draft: SkillDraft
         if let id = proposal.replacesPendingID {
@@ -232,7 +233,8 @@ public struct SkillsState: Codable, Equatable, Sendable {
            UUID(uuidString: provenance) != nil {
             text = try SkillDocument.replacingField(text, key: "learned_from", value: provenance)
         }
-        let document = try SkillDocument.parse(text, availableToolNames: availableToolNames)
+        let document = try SkillDocument.parse(text, availableToolNames: availableToolNames,
+                                               trustedProvenance: draft.source == .learned ? draft.document.localProvenance : nil)
         guard document.name == draft.name else { throw SkillsError.nameMismatch }
         return document
     }
