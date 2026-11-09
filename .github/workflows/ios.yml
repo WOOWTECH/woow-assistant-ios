@@ -13,7 +13,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, parity, learning, browser, core, startup]
+        options: [all, interaction, parity, learning, browser, core, startup]
         default: all
 
 permissions:
@@ -88,6 +88,9 @@ jobs:
             --runtime "$WOOW_SIM_RUNTIME" --products build/DerivedData/Build/Products/Debug-iphonesimulator
           test_filters=()
           case '${{ inputs.test_scope }}' in
+            interaction)
+              test_filters=(-only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/BrowserInteractionUITests)
+              ;;
             parity)
               test_filters=(-only-testing:AssistantMCPTests -only-testing:AssistantSkillsTests -only-testing:AssistantDomainTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/MCPConversationUITests -only-testing:WoowAssistantUITests/BrowserInteractionUITests -only-testing:WoowAssistantUITests/SkillCatalogUITests)
               ;;
