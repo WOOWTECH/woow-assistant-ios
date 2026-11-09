@@ -354,8 +354,22 @@ final class LiveModelUITests: XCTestCase {
     }
 
     private func navigate(to section: String, in app: XCUIApplication) {
-        let button = app.buttons["navigation.\(section)"]
-        waitUntilHittable(button)
+        let identifier = "navigation.\(section)"
+        let button = app.buttons.matching(identifier: identifier).firstMatch
+        // After dismissing research, the restored WebKit accessibility tree can
+        // make a native-button query itself exceed five seconds. Keep the actual
+        // exists/hittable requirement; allow the same bounded 15s as address readiness.
+        let startedAt = Date()
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true"), object: button)
+        let readiness = XCTWaiter.wait(for: [ready], timeout: 15)
+        if readiness != .completed {
+            let exists = button.exists
+            let hittable = exists && button.isHittable
+            let frame = exists ? button.frame : .zero
+            // Native identifier and geometry only; never labels, DOM or model text.
+            print("Live native navigation readiness \(identifier): seconds=\(Date().timeIntervalSince(startedAt)); exists=\(exists); hittable=\(hittable); frame=\(frame)")
+        }
+        XCTAssertEqual(readiness, .completed, "The native navigation button must be interactable.")
         button.tap()
         XCTAssertTrue(app.staticTexts["\(section).status"].waitForExistence(timeout: 5))
     }

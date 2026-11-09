@@ -5,14 +5,16 @@ fixtures, real network calls, iOS UI, and unimplemented functionality.
 
 ## Current acceptance checkpoint
 
-Application source `daf0152` includes the browser/learning integration and the
-reproduced fixes below: modal accessibility, exact reviewed provenance, trusted UUID
-validation, bounded model-command correction and measured cold-start allowances.
-The latest full matrix and live run use this same revision. Earlier evidence remains
+Application source `2654965` includes the browser/learning integration, the native
+modal container, exact reviewed provenance, trusted UUID validation, bounded
+model-command correction and measured cold-start allowances. The latest full matrix
+and live run use this same revision. Earlier evidence remains
 listed by source revision and must not be confused with current acceptance:
 
 | Execution / revision | Evidence | Current result |
 |---|---|---|
+| Full App regression, `2654965`: SE / iPhone 16 Pro Max / iPhone 17 | [42708706919](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42708706919) | Running; no pass claimed |
+| Native model probes and six real App UI cases, `2654965` | [42708715736](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42708715736) | Seven native probes and 5/6 UI cases passed. Multi-page passed real sources/actions/done/pending checks, then native navigation readiness failed; approval/relaunch not reached |
 | Full App regression, `daf0152`: SE / iPhone 16 Pro Max / iPhone 17 | [42707028819](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42707028819) | Superseded after the inherited modal-boundary failure was confirmed |
 | Native model probes and six real App UI cases, `daf0152` | [42707038595](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42707038595) | Superseded while queued; no result claimed |
 | Full App regression, `896e447`: SE / iPhone 16 Pro Max / iPhone 17 | [42697447884](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42697447884) | SE and iPhone 17: 65 portable + 65 native + 22 fixture UI passed each, 7 opt-in skips. Large: 21/22 UI; invalid-input test received 199 rather than 201 characters |
@@ -106,6 +108,16 @@ proposal and reports its outcome/skip category instead of force-unwrapping it.
 These corrections require the next full simulator matrix and real-model run; local
 checks alone do not establish iOS or live acceptance.
 
+The completed `0e1d415` learning matrix recorded 65 portable and 28 native passes
+on each iOS 18 device, with **9/10 UI cases passed** each and no skips. All seven
+memory/skills cases passed, including the corrected exact-201-character validation
+flow. Large failed the modal DOM-heading absence check. SE failed the five-second
+keyboard-absence wait before that check; its later screenshot and AX tree showed
+the keyboard closed. The record cannot distinguish delayed dismissal from delayed
+AX queries, and no additional wait was added for that failure. The current-device
+runner passed 46 portable methods before the UUID-related fixture crash; no iOS
+native/UI tests ran there. These are historical failures, not current passes.
+
 ## Native modal container correction
 
 The `0e1d415` learning matrix's large-device case found the actual fixture DOM
@@ -125,6 +137,26 @@ explains the distinct accessibility and automation lists; the
 [`automationElements` API](https://developer.apple.com/documentation/objectivec/nsobject-swift.class/automationelements)
 is available from iOS 17. These APIs do not establish runtime acceptance: the next
 three-device and live runs must demonstrate the real DOM boundary and complete flow.
+
+## Real multi-page learning reaches review handoff
+
+Live `2654965` run [42708715736](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42708715736)
+passed seven native calls and 5/6 UI cases. The multi-page case completed actual
+IANA navigation, all five full-URL answer citations, exactly six completed reads
+(initial inspect plus five unique navigations), and the exact independent done plus
+saved-pending-draft status. Modal state queries now took fractions of a second.
+This establishes progress through draft creation, not approval/relaunch acceptance.
+
+After closing research, the full Protocol Registries accessibility tree was restored.
+The test's address query took roughly ten seconds; the subsequent native
+`navigation.memory` readiness predicate expired at five seconds before a successful
+navigation. No model/answer/provenance assertion failed. The test helper now uses
+`firstMatch` for the known native navigation identifier and a bounded 15-second
+exists-and-hittable wait, then still requires the destination's real status. On
+failure it records only that fixed native identifier, booleans, geometry and elapsed
+time. The 300-second case limit and every source, action, verdict, explicit approval,
+trial-state and byte-identical relaunch assertion remain. This is a test-only change;
+App production code remains `2654965`, and its full simulator matrix is preserved.
 
 ## Executed locally
 
