@@ -25,7 +25,7 @@ concurrency:
 jobs:
   build-and-test:
     runs-on: macos-15
-    timeout-minutes: 30
+    timeout-minutes: 50
     strategy:
       fail-fast: false
       matrix:
@@ -67,7 +67,7 @@ jobs:
             -derivedDataPath build/DerivedData build CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
             2>&1 | tee build/ios-build.log
       - name: Test
-        timeout-minutes: 18
+        timeout-minutes: 30
         run: |
           device_id="$(xcrun simctl list devices available -j | /usr/bin/python3 scripts/select_simulator.py --runtime "$WOOW_SIM_RUNTIME" --device "$WOOW_SIM_DEVICE")"
           echo "Testing $WOOW_SIM_DEVICE on $WOOW_SIM_RUNTIME"

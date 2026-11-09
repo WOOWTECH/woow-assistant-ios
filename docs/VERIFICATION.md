@@ -116,6 +116,10 @@ an ineffective wrapper tap from a stale UI snapshot. The next test revision choo
 the last exact action match and waits for the actual state transition, while keeping
 the relaunch-persistence and model-setting-isolation assertions. It is not yet a pass.
 
+Follow-up [42640697815](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42640697815)
+at `b8da579` completed successfully on iOS 26.2. This closes the pre-learning
+confirmation regression, not acceptance of the subsequent memory/Skills increment.
+
 ## Remaining acceptance gaps
 
 - Actual iOS 17 runtime and physical iPhone testing; build deployment target 17 does
@@ -157,5 +161,13 @@ Executed locally:
   No real household data or response bodies were logged.
 
 New iOS simulator XCTest/UI/live-memory acceptance remains pending for this increment.
+Live native/model UI workflow
+[42643616002](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42643616002)
+tests checkpoint `20f2eab`; the later generation-race fix has separate fixture UI
+coverage and must be verified at its own revision. That fix prevents an old main
+model reply from starting extraction after memory was cleared/edited, and removes
+previous-conversation notes on new chat/model change. Seven fixture learning UI
+cases cover settings, memory CRUD, procedures, skill review/revisions, clear-all
+isolation and the delayed-reply clear race.
 Automatic action-derived skill drafting, website knowledge, browser login/route
 management, native-app knowledge and executable scripts are not implied by these passes.

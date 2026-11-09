@@ -102,7 +102,11 @@ final class ChatSession: ObservableObject {
             baseURLDraft = result.record.baseURL.absoluteString
             modelDraft = result.record.model
             keyDraft = ""
-            if changed { entries = [] }
+            if changed {
+                entries = []
+                conversationID = UUID().uuidString
+                learning.resetConversationPresentation()
+            }
             chatError = nil
             chatNotice = nil
             settingsNotice = result.cleanupFailed
@@ -126,6 +130,8 @@ final class ChatSession: ObservableObject {
             modelDraft = ""
             keyDraft = ""
             entries = []
+            conversationID = UUID().uuidString
+            learning.resetConversationPresentation()
             chatError = nil
             chatNotice = nil
             settingsNotice = "已移除此 App 的模型設定與金鑰；訊息草稿保留。"
@@ -148,6 +154,7 @@ final class ChatSession: ObservableObject {
         let messages = entries.map { ModelMessage(role: $0.role, content: $0.content) }
             + learning.contextMessages(for: prompt)
             + [ModelMessage(role: "user", content: prompt)]
+        let learningGeneration = learning.generation
         let configuration = savedSettings.configuration
         let id = UUID()
         requestID = id
@@ -171,7 +178,7 @@ final class ChatSession: ObservableObject {
                 // Deliver first. A separate, bounded extraction call receives only
                 // the user's own utterance, never the model reply or MCP/web content.
                 self.learning.rememberAfterReply(utterance: prompt, conversationID: self.conversationID,
-                    client: client, configuration: configuration, apiKey: key)
+                    expectedGeneration: learningGeneration, client: client, configuration: configuration, apiKey: key)
             } catch {
                 guard let self, self.requestID == id else { return }
                 // Do not surface provider error bodies/URLs: they may contain secrets.
@@ -197,7 +204,7 @@ final class ChatSession: ObservableObject {
 
     func newConversation() {
         guard !isSubmitting else { return }
-        learning.cancelLearning()
+        learning.resetConversationPresentation()
         entries = []; conversationID = UUID().uuidString
         chatError = nil; chatNotice = "已開啟新對話；已確認的記憶與技能保留。"
     }

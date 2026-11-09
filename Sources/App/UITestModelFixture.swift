@@ -46,9 +46,16 @@ actor UITestChatModelClient: ChatModelClient {
     func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
         // Extraction is a separate system-instructed call; ordinary UI fixtures
         // intentionally create no learned records. Real behavior has a live suite.
-        if messages.first?.role == "system" { return "{\"ops\":[]}" }
+        if messages.first?.role == "system" {
+            if messages.last?.content.contains("[fixture:remember") == true {
+                return "{\"ops\":[{\"op\":\"add\",\"kind\":\"preference\",\"content\":\"用戶喜歡喝茶\",\"quote\":\"我喜歡喝茶\"}]}"
+            }
+            return "{\"ops\":[]}"
+        }
         let prompt = messages.last?.content ?? ""
-        if prompt == "[fixture:wait]" {
+        if prompt.hasPrefix("[fixture:remember-after-delay]") {
+            try await Task.sleep(nanoseconds: 45_000_000_000)
+        } else if prompt == "[fixture:wait]" {
             try await Task.sleep(nanoseconds: 60_000_000_000)
         } else {
             try await Task.sleep(nanoseconds: 250_000_000)

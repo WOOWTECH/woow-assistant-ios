@@ -26,6 +26,7 @@ final class LearningStore: ObservableObject {
     private var vault: EncryptedLearningFile?
     private var extraction: Task<Void, Never>?
     private var extractionID: UUID?
+    private(set) var generation = UUID()
 
     init() {
         do {
@@ -152,7 +153,11 @@ final class LearningStore: ObservableObject {
     }
 
     func rememberAfterReply(utterance: String, conversationID: String,
-                            client: any ChatModelClient, configuration: ModelConfiguration, apiKey: String) {
+                            expectedGeneration: UUID, client: any ChatModelClient,
+                            configuration: ModelConfiguration, apiKey: String) {
+        // A user may clear/edit data while the MAIN reply is still in flight,
+        // before extraction even exists. Its old utterance cannot repopulate data.
+        guard generation == expectedGeneration else { return }
         cancelLearning()
         guard available, memory.preferences.useMemory, memory.preferences.autoRemember else { return }
         let snapshot = memory
@@ -183,8 +188,14 @@ final class LearningStore: ObservableObject {
     }
 
     func cancelLearning() {
+        generation = UUID()
         extractionID = nil
         extraction?.cancel(); extraction = nil; isLearning = false
+    }
+
+    func resetConversationPresentation() {
+        cancelLearning()
+        notes = []; notice = nil
     }
 
     private func persist(memory: MemoryState, skills: SkillsState) throws {
