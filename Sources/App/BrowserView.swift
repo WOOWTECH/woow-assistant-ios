@@ -163,6 +163,14 @@ private struct BrowserInteractionView: View {
                 }
             }
             .task { if browser.controlSnapshot == nil && browser.interactionProposal == nil { browser.refreshControls() } }
+            .onChange(of: browser.controlSnapshot?.snapshotID) { _, snapshotID in
+                if snapshotID == nil {
+                    // Background/settings cancellation or navigation can
+                    // invalidate the selected editor without dismissing the
+                    // sheet. Return to refresh instead of leaving dead fields.
+                    selected = nil; editing = false; localError = nil
+                }
+            }
         }
     }
     private func propose(_ kind: BrowserInteractionKind, controlID: String? = nil, text: String? = nil,

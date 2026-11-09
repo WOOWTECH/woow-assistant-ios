@@ -356,11 +356,15 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     // automatically counted as successful skill execution.
     func snapshotControls() async throws -> BrowserDOMSnapshot {
         guard !isRunning else { throw BrowserInteractionError.busy }
-        guard let url = webView.url, permitted(url) else { throw BrowserInteractionError.noSnapshot }
+        guard !webView.isLoading, let url = webView.url, permitted(url), current?.url == url else {
+            throw BrowserInteractionError.noSnapshot
+        }
         interactionGate.reject(); interactionProposal = nil
         let snapshot = try await domExecutor.snapshot()
         try Task.checkCancellation()
-        guard snapshot.url == webView.url, snapshot.url == url else { throw BrowserInteractionError.staleSnapshot }
+        guard !webView.isLoading, snapshot.url == webView.url, snapshot.url == url, current?.url == url else {
+            throw BrowserInteractionError.staleSnapshot
+        }
         controlSnapshot = snapshot
         return snapshot
     }
@@ -369,6 +373,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     func proposeInteraction(_ request: BrowserInteractionRequest) throws -> BrowserInteractionProposal {
         guard !isRunning, let snapshot = controlSnapshot else { throw BrowserInteractionError.noSnapshot }
         guard snapshot.url == webView.url else { throw BrowserInteractionError.staleSnapshot }
+        interactionProposal = nil
         let proposal = try interactionGate.propose(request, snapshot: snapshot)
         interactionProposal = proposal; interactionError = nil
         interactionStatus = "等待單次核准；尚未操作網頁。"
@@ -439,7 +444,12 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
                 } catch { self.reportInteraction(error, id: id) }
                 self.finishInteraction(id)
             }
-        } catch { interactionError = (error as? BrowserInteractionError)?.message ?? BrowserInteractionError.executionFailed.message }
+        } catch {
+            // Expiry consumes the gate even though it dispatches nothing. Do
+            // not leave a live-looking approval card which can never execute.
+            invalidateControls()
+            interactionError = (error as? BrowserInteractionError)?.message ?? BrowserInteractionError.executionFailed.message
+        }
     }
 
     func rejectInteraction() {
@@ -459,7 +469,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     func reloadPage() {
         guard !isRunning, !isInteracting, let url = webView.url else { return }
         interactionStatus = "頁面已重新整理；先前的提案已取消。"
-        if fixtureMode { invalidateControls(); status = "正在載入…"; loadFixture(url: url) }
+        if fixtureMode { invalidateControls(); current = nil; status = "正在載入…"; loadFixture(url: url) }
         else { manualNavigation { webView.reload() } }
     }
     private func manualNavigation(_ operation: () -> WKNavigation?) {
@@ -502,6 +512,10 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         invalidateControls()
+        // A normal click/reload changes the displayed document too. Do not
+        // offer research/interaction against the preceding page while loading.
+        // Readonly runner navigation keeps its observation for warm deadlines.
+        if !isRunning { current = nil; status = "正在載入…" }
     }
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
