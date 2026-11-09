@@ -205,8 +205,11 @@ keyboard before changing fields. It does not bypass either clear confirmation or
 retry a destructive tap. Underlying layout correctness remains subject to rerun.
 
 Focused matrix
-[42649315791](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42649315791)
-tests `93acfa7` on all three simulators; **results pending** at this checkpoint. It
+[42649999149](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42649999149)
+tests `d2615fe` on all three simulators; **results pending** at this checkpoint.
+It includes a final review correction: scroll downward when a target's top edge,
+not only its midpoint, is above the viewport. It replaces the queued `93acfa7` run
+[42649315791](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42649315791) and
 supersedes the partially executed `17e750f` focused matrix
 [42646588669](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42646588669),
 not the completed full-regression evidence above. A superseded/cancelled run is not
