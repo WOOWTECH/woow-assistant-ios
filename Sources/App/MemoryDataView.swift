@@ -7,6 +7,7 @@ struct MemoryDataView: View {
     @ObservedObject var store: LearningStore
     @ObservedObject var browser: BrowserSession
     let modelAccess: () throws -> ModelAccess
+    let onOpenBrowser: () -> Void
     @State private var segment: LearningSegment = .memories
     @State private var query = ""
     @State private var sheet: LearningSheet?
@@ -121,7 +122,7 @@ struct MemoryDataView: View {
                 case .clear:
                     LearningClearView(store: store)
                 case .websites:
-                    WebsiteDataView(store: store, browser: browser, modelAccess: modelAccess)
+                    WebsiteDataView(store: store, browser: browser, modelAccess: modelAccess, onOpenBrowser: onOpenBrowser)
                 }
             }
         }

@@ -144,9 +144,9 @@ public struct SkillsState: Codable, Equatable, Sendable {
     public mutating func apply(_ assessment: SkillLearningAssessment, availableToolNames: Set<String>,
                                builtinNames: Set<String> = [], now: Date = Date()) throws -> SkillDraft? {
         guard try learningFingerprint() == assessment.baseStateFingerprint else { throw SkillsError.changedSinceRead }
+        let references = try validatedLearningReferences(assessment.usedSkills)
         var next = self
-        var seen: Set<String> = []
-        for reference in assessment.usedSkills where seen.insert(reference.name).inserted {
+        for reference in references {
             try next.recordOutcome(reference: reference, evidence: assessment.evidence)
         }
         let draft: SkillDraft?
@@ -200,6 +200,26 @@ public struct SkillsState: Codable, Equatable, Sendable {
     func learningFingerprint() throws -> String {
         let encoder = JSONEncoder(); encoder.outputFormatting = [.sortedKeys]
         return SHA256.hash(data: try encoder.encode(self)).map { String(format: "%02x", $0) }.joined()
+    }
+
+    /// Validate every version before deduplicating or recording any outcome.
+    /// Identical repeated reads count once. Conflicting versions or attribution
+    /// flags are rejected, so input order cannot change which evidence is used.
+    func validatedLearningReferences(_ references: [SkillUsedReference]) throws -> [SkillUsedReference] {
+        guard references.count <= 32 else { throw SkillsError.invalidState }
+        var unique: [SkillUsedReference] = []
+        var byName: [String: SkillUsedReference] = [:]
+        for reference in references {
+            guard let skill = installed.first(where: { $0.name == reference.name }) else { throw SkillsError.notFound }
+            guard skill.fingerprint == reference.fingerprint else { throw SkillsError.changedSinceRead }
+            if let previous = byName[reference.name] {
+                guard previous == reference else { throw SkillsError.invalidState }
+            } else {
+                byName[reference.name] = reference
+                unique.append(reference)
+            }
+        }
+        return unique
     }
 
     private func reviewedDocument(_ raw: String, draft: SkillDraft,

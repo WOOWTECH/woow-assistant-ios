@@ -102,7 +102,7 @@ enum SkillLearningFixtures {
         try c.expect(failedAction.evidence.successfulActionCount == 4 && failedAction.proposal == nil, "failed action not counted")
         let blocked: [SkillTaskContext] = [
             .init(end: .failed, failureKind: .stepLimit), .init(end: .failed, failureKind: .tokenLimit),
-            .init(end: .cancelled), .init(hasUnconfirmedClaims: true), .init(verifierReviewed: true)
+            .init(end: .cancelled), .init(hasUnconfirmedClaims: true)
         ]
         for context in blocked {
             let client = Client([])
@@ -233,6 +233,133 @@ enum SkillLearningFixtures {
         task.cancel()
         do { _ = try await task.value; throw SkillsCoreFixtures.Failure(description: "cancellation swallowed") }
         catch is CancellationError { try c.expect(true, "caller cancellation propagated") }
+        return c.count
+    }
+
+    static func failedVerifierOutcomes() async throws -> Int {
+        var c = SkillsCoreFixtures.Checks()
+        let cases: [(String, SkillResult, SkillStatus)] = [
+            (done, .unverified, .trial),
+            ("{\"outcome\":\"partial\"}", .failed, .suspended),
+            ("{\"outcome\":\"not_possible\"}", .failed, .suspended),
+            ("{\"outcome\":\"unknown\"}", .unreviewed, .trial)
+        ]
+        for (reply, expected, status) in cases {
+            var state = SkillsState()
+            let skill = try SkillsCoreFixtures.install(draft(), into: &state, tools: tools)
+            let reference = SkillUsedReference(name: skill.name, fingerprint: skill.fingerprint)
+            let client = Client([.text(reply)])
+            let result = try await assess(client, context: .init(verifierReviewed: true, usedSkills: [reference]), state: state)
+            try c.expect(await client.calls() == 1, "failed verifier still runs outcome judge only")
+            try c.expect(result.proposal == nil, "failed verifier never drafts")
+            try c.expect(SkillLearningGate.result(for: result.evidence) == expected, "judgment retains Mika failure classification")
+            _ = try state.apply(result, availableToolNames: tools)
+            try c.expect(state.installed[0].status == status && state.installed[0].outcomes == [expected],
+                         "failed verifier classification is persisted")
+        }
+        let noReferences = Client([.text(done)])
+        let blockedDraft = try await assess(noReferences, context: .init(verifierReviewed: true))
+        try c.expect(blockedDraft.judgment.outcome == .done && blockedDraft.evidence.successfulActionCount == 5,
+                     "judge done and sufficient actions survive failed review")
+        try c.expect(blockedDraft.proposal == nil && blockedDraft.skipReason == .ineligible,
+                     "review itself blocks drafting even without a followed skill")
+        try c.expect(await noReferences.calls() == 1, "failed review never calls drafter")
+
+        var active = SkillsState()
+        let skill = try SkillsCoreFixtures.install(draft(), into: &active, tools: tools)
+        _ = try active.recordOutcome(name: skill.name, evidence: .init(outcome: .done, wasRead: true))
+        let reference = SkillUsedReference(name: skill.name, fingerprint: skill.fingerprint)
+        for expectedStatus: SkillStatus in [.active, .suspended] {
+            let result = try await assess(Client([.text(done)]),
+                context: .init(verifierReviewed: true, usedSkills: [reference]), state: active)
+            _ = try active.apply(result, availableToolNames: tools)
+            try c.expect(active.installed[0].status == expectedStatus, "unverified results participate in bad-outcome window")
+        }
+        try c.expect(active.installed[0].outcomes == [.verified, .unverified, .unverified], "two reviewed failures suspend active skill")
+        let passed = Client([.text(done), .text(draft())])
+        let control = try await assess(passed, context: .init(verifierReviewed: true, verifierPassed: true))
+        try c.expect(control.proposal != nil, "passed final verifier still permits drafting")
+        try c.expect(await passed.calls() == 2, "passed review judge and draft both execute")
+        return c.count
+    }
+
+    static func inputBoundsBeforeCounting() async throws -> Int {
+        var c = SkillsCoreFixtures.Checks()
+        func action(arguments: [String: String] = ["url": "https://example.test/one"],
+                    result: String = "The source contains a relevant result.", id: String = "step-1") -> SkillExecutedAction {
+            .init(id: id, toolName: "browser_open_link", kind: .navigation,
+                  arguments: arguments, result: result, succeeded: true)
+        }
+        let aggregate: [SkillExecutedAction] = (0..<7).map { index in
+            action(arguments: ["url": "https://example.test/\(index)",
+                "a": String(repeating: "a", count: 4000), "b": String(repeating: "b", count: 4000),
+                "c": String(repeating: "c", count: 4000), "d": String(repeating: "d", count: 4000)],
+                id: "step-\(index)")
+        }
+        let oversized: [[SkillExecutedAction]] = [
+            [action(arguments: ["value": String(repeating: "x", count: 4001)])],
+            [action(arguments: ["value": String(repeating: "😀", count: 2001)])],
+            [action(arguments: [String(repeating: "k", count: 81): "value"])],
+            [action(arguments: Dictionary(uniqueKeysWithValues: (0..<17).map { ("arg-\($0)", "value") }))],
+            [action(result: String(repeating: "x", count: 16001))],
+            [action(id: String(repeating: "x", count: 81))],
+            aggregate, actions(61)
+        ]
+        for trace in oversized {
+            let client = Client([])
+            let result = try await assess(client, actions: trace)
+            try c.expect(result.skipReason == .invalidTrajectory, "individual or aggregate input limit rejected")
+            try c.expect(result.evidence.successfulActionCount == 0, "invalid input never reaches action counting")
+            try c.expect(result.proposal == nil && result.judgment.outcome == .unknown, "invalid input cannot establish success")
+            try c.expect(await client.calls() == 0, "invalid input never invokes model")
+        }
+        let terminalClient = Client([])
+        let terminal = try await assess(terminalClient, actions: oversized[0],
+                                       context: .init(end: .failed, failureKind: .stepLimit))
+        try c.expect(terminal.evidence.successfulActionCount == 0, "terminal trajectory skips all argument hashing")
+        try c.expect(SkillLearningGate.result(for: terminal.evidence) == .failed, "terminal failure mapping still intact")
+        try c.expect(await terminalClient.calls() == 0, "terminal oversized input has no request")
+        let nearLimitClient = Client([.text("{\"outcome\":\"partial\"}")])
+        let nearLimit = try await assess(nearLimitClient, actions: [action(arguments: ["value": String(repeating: "x", count: 4000)])])
+        try c.expect(nearLimit.evidence.successfulActionCount == 1 && nearLimit.judgment.outcome == .partial,
+                     "valid boundary input is counted and judged")
+        try c.expect(await nearLimitClient.calls() == 1, "valid boundary is not rejected")
+        return c.count
+    }
+
+    static func duplicateReferenceConflicts() async throws -> Int {
+        var c = SkillsCoreFixtures.Checks(); var original = SkillsState()
+        let first = try SkillsCoreFixtures.install(draft("first"), into: &original, tools: tools)
+        let second = try SkillsCoreFixtures.install(draft("second"), into: &original, tools: tools)
+        let good = SkillUsedReference(name: first.name, fingerprint: first.fingerprint)
+        let bad = SkillUsedReference(name: first.name, fingerprint: String(repeating: "0", count: 64))
+        let other = SkillUsedReference(name: second.name, fingerprint: second.fingerprint)
+        let conflictingAttribution = SkillUsedReference(name: first.name, fingerprint: first.fingerprint, followed: true)
+        let cases: [([SkillUsedReference], SkillsError)] = [
+            ([good, bad], .changedSinceRead), ([bad, good], .changedSinceRead),
+            ([other, good, bad], .changedSinceRead),
+            ([good, conflictingAttribution], .invalidState), ([conflictingAttribution, good], .invalidState)
+        ]
+        for (references, error) in cases {
+            var state = original
+            let client = Client([])
+            let result = try await assess(client, context: .init(usedSkills: references), state: state)
+            try c.expect(result.skipReason == .invalidTrajectory, "conflicting references fail preflight")
+            try c.expect(await client.calls() == 0, "no model spend for invalid attribution")
+            try c.error(error, "every duplicate reference validated before outcomes") {
+                _ = try state.apply(result, availableToolNames: tools)
+            }
+            try c.expect(state == original, "conflicting reference cannot partially mutate outcomes")
+        }
+        var deduplicated = original
+        let client = Client([.text(done)])
+        let result = try await assess(client, context: .init(usedSkills: [good, good, good]), state: deduplicated)
+        _ = try deduplicated.apply(result, availableToolNames: tools)
+        let stored = deduplicated.installed.first { $0.name == first.name }!
+        try c.expect(stored.status == .active && stored.outcomes == [.verified], "identical repeats produce exactly one outcome")
+        try c.expect(deduplicated.installed.first { $0.name == second.name }?.outcomes.isEmpty == true,
+                     "unreferenced skill untouched")
+        try c.expect(await client.calls() == 1, "valid duplicate reads judge once and never draft")
         return c.count
     }
 }

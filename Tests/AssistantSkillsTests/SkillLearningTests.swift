@@ -13,7 +13,10 @@ struct SkillLearningStandalone {
             ("gatesAndNoPadding", SkillLearningFixtures.gatesAndNoPadding),
             ("untrustedAndMalformed", SkillLearningFixtures.untrustedAndMalformed),
             ("outcomeAttributionAndUpdates", SkillLearningFixtures.outcomeAttributionAndUpdates),
-            ("deadlinesAndCancellation", SkillLearningFixtures.deadlinesAndCancellation)
+            ("deadlinesAndCancellation", SkillLearningFixtures.deadlinesAndCancellation),
+            ("failedVerifierOutcomes", SkillLearningFixtures.failedVerifierOutcomes),
+            ("inputBoundsBeforeCounting", SkillLearningFixtures.inputBoundsBeforeCounting),
+            ("duplicateReferenceConflicts", SkillLearningFixtures.duplicateReferenceConflicts)
         ]
         var total = 0
         for (name, check) in groups {
@@ -41,6 +44,15 @@ final class SkillLearningTests: XCTestCase {
     }
     func testModelFailuresDeadlinesAndCancellation() async throws {
         let count = try await SkillLearningFixtures.deadlinesAndCancellation(); XCTAssertGreaterThan(count, 0)
+    }
+    func testFailedVerifierKeepsMikaOutcomeSemantics() async throws {
+        let count = try await SkillLearningFixtures.failedVerifierOutcomes(); XCTAssertGreaterThan(count, 0)
+    }
+    func testInputBoundsPrecedeActionCounting() async throws {
+        let count = try await SkillLearningFixtures.inputBoundsBeforeCounting(); XCTAssertGreaterThan(count, 0)
+    }
+    func testConflictingDuplicateReferencesAreAtomic() async throws {
+        let count = try await SkillLearningFixtures.duplicateReferenceConflicts(); XCTAssertGreaterThan(count, 0)
     }
 }
 #endif

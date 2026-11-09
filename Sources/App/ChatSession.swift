@@ -101,6 +101,7 @@ final class ChatSession: ObservableObject {
 
     func saveSettings() {
         guard !isSubmitting else { return }
+        learning.onUserChange?()
         learning.cancelLearning()
         settingsError = nil
         settingsNotice = nil
@@ -131,6 +132,7 @@ final class ChatSession: ObservableObject {
 
     func removeSettings() {
         guard !isSubmitting else { return }
+        learning.onUserChange?()
         learning.cancelLearning()
         settingsError = nil
         settingsNotice = nil

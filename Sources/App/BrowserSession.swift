@@ -23,6 +23,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     private var expectedNavigation: WKNavigation?
     private var navigationFinished: Bool?
     private var lastLinks: [WebResearchLink] = []
+    private var evaluations: [UUID: CheckedContinuation<String, Error>] = [:]
     let fixtureMode: Bool
 
     override init() {
@@ -58,6 +59,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     func cancel() {
         runID = nil; work?.cancel(); work = nil; origin = nil
         webView.stopLoading(); isRunning = false
+        for id in Array(evaluations.keys) { finishEvaluation(id, result: .failure(CancellationError())) }
         status = "已停止；已取得的內容與草稿保留"
     }
 
@@ -154,15 +156,29 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
         try Task.checkCancellation()
         guard let url = webView.url, permitted(url) else { throw WebResearchError.noPage }
         guard origin == nil || Self.origin(url) == origin else { throw WebResearchError.unsafeNavigation }
-        let value: String = try await withCheckedThrowingContinuation { continuation in
-            webView.evaluateJavaScript(Self.observationScript, in: nil, in: .defaultClient) { result in
-                switch result {
-                case .success(let value):
-                    guard let text = value as? String else { continuation.resume(throwing: WebResearchError.noPage); return }
-                    continuation.resume(returning: text)
-                case .failure: continuation.resume(throwing: WebResearchError.noPage)
+        let evaluationID = UUID()
+        let value: String = try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { continuation in
+                registerEvaluation(evaluationID, continuation: continuation)
+                if Task.isCancelled { finishEvaluation(evaluationID, result: .failure(CancellationError())); return }
+                let deadline = Task { [weak self] in
+                    do { try await Task.sleep(nanoseconds: 10_000_000_000) } catch { return }
+                    self?.finishEvaluation(evaluationID, result: .failure(WebResearchError.deadline))
+                }
+                webView.evaluateJavaScript(Self.observationScript, in: nil, in: .defaultClient) { [weak self] result in
+                    deadline.cancel()
+                    switch result {
+                    case .success(let value):
+                        guard let text = value as? String else {
+                            self?.finishEvaluation(evaluationID, result: .failure(WebResearchError.noPage)); return
+                        }
+                        self?.finishEvaluation(evaluationID, result: .success(text))
+                    case .failure: self?.finishEvaluation(evaluationID, result: .failure(WebResearchError.noPage))
+                    }
                 }
             }
+        } onCancel: {
+            Task { @MainActor [weak self] in self?.finishEvaluation(evaluationID, result: .failure(CancellationError())) }
         }
         try Task.checkCancellation()
         guard webView.url == url, let data = value.data(using: .utf8),
@@ -178,9 +194,17 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
         return result
     }
 
+    private func finishEvaluation(_ id: UUID, result: Result<String, Error>) {
+        evaluations.removeValue(forKey: id)?.resume(with: result)
+    }
+
+    private func registerEvaluation(_ id: UUID, continuation: CheckedContinuation<String, Error>) {
+        evaluations[id] = continuation
+    }
+
     func openLink(id: Int) async throws -> WebObservation {
         guard let target = lastLinks.first(where: { $0.id == id }), let url = webView.url,
-              Self.origin(target.url) == Self.origin(url), permitted(target.url) else { throw WebResearchError.unsafeNavigation }
+              current?.url == url, Self.origin(target.url) == Self.origin(url), permitted(target.url) else { throw WebResearchError.unsafeNavigation }
         return try await navigate(to: target.url)
     }
 
@@ -208,6 +232,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
             guard plan.steps.count <= 13 else { throw WebResearchError.invalidCommand }
             let id = UUID(), generation = store.generation
             runID = id; isRunning = true; origin = Self.origin(route.origin.url)
+            goal = route.intent
             actions = []; answer = nil; error = nil; learningStatus = nil; status = "正在逐步核對網頁路線…"
             work = Task { [weak self, weak store] in
                 guard let self, let store else { return }
@@ -228,7 +253,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
                         try Task.checkCancellation()
                         guard self.runID == id, store.generation == generation else { throw CancellationError() }
                         guard page.url == step.url, page.text.contains(step.evidence.quote) else {
-                            _ = store.mutateWeb { _, routes in try routes.recordReplayResult(id: route.id,
+                            _ = store.mutateWeb(cancelResearch: false) { _, routes in try routes.recordReplayResult(id: route.id,
                                 expectedContentHash: plan.contentHash, result: .diverged(stepIndex: index, at: Date())) }
                             throw WebResearchError.pageChanged
                         }
@@ -245,7 +270,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
                         ModelMessage(role: "user", content: String(decoding: input, as: UTF8.self))],
                         configuration: access.configuration, apiKey: access.key)
                     try Task.checkCancellation()
-                    guard self.runID == id else { return }
+                    guard self.runID == id, store.generation == generation else { throw CancellationError() }
                     self.answer = reply
                     let assessment = try await SkillLearningService(client: access.client).assess(goal: route.intent, answer: reply,
                         actions: Self.executedActions(self.actions), context: SkillTaskContext(runID: id, replayMatched: true),
@@ -255,7 +280,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
                     guard self.runID == id, store.generation == generation else { throw CancellationError() }
                     if assessment.judgment.outcome == .done {
                         let result = try WebTaskEvidence(outcome: .succeeded, confirmed: true, summary: "重走路線並由成果判定核對回答。")
-                        let saved = store.mutateWeb { _, routes in try routes.recordReplayResult(id: route.id,
+                        let saved = store.mutateWeb(cancelResearch: false) { _, routes in try routes.recordReplayResult(id: route.id,
                             expectedContentHash: plan.contentHash, result: .succeeded(observedSteps: observedSteps, task: result)) }
                         self.learningStatus = saved ? "路線核對與成果判定完成；未重複產生技能。" : "成果已交付；路線結果未儲存。"
                     } else { self.learningStatus = "頁面已核對，但原任務尚未確認完成；未增加成功次數。" }

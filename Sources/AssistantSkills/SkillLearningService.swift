@@ -28,7 +28,9 @@ public struct SkillLearningService: Sendable {
                        configuration: ModelConfiguration, apiKey: String) async throws -> SkillLearningAssessment {
         try Task.checkCancellation()
         let snapshotFingerprint = try state.learningFingerprint()
-        let actionCount = actions.count <= 60 ? SkillLearningSafety.uniqueActionCount(actions) : 0
+        // Invalid/terminal trajectories do no argument normalization, JSON
+        // serialization or action hashing. Count only after all input bounds pass.
+        var actionCount = 0
         func assessment(_ judgment: SkillJudgment = .unknown, _ reason: SkillLearningSkipReason?,
                         proposal: SkillLearningProposal? = nil) -> SkillLearningAssessment {
             SkillLearningAssessment(judgment: judgment,
@@ -36,10 +38,12 @@ public struct SkillLearningService: Sendable {
                                     proposal: proposal, skipReason: reason, usedSkills: context.usedSkills,
                                     baseStateFingerprint: snapshotFingerprint)
         }
-        guard context.end == .succeeded, !context.hasUnconfirmedClaims,
-              !context.verifierReviewed || context.verifierPassed else { return assessment(.unknown, .ineligible) }
+        guard context.end == .succeeded, !context.hasUnconfirmedClaims else { return assessment(.unknown, .ineligible) }
         guard Self.validInput(goal: goal, answer: answer, actions: actions, context: context,
                               availableToolNames: availableToolNames) else { return assessment(.unknown, .invalidTrajectory) }
+        do { _ = try state.validatedLearningReferences(context.usedSkills) }
+        catch { return assessment(.unknown, .invalidTrajectory) }
+        actionCount = SkillLearningSafety.uniqueActionCount(actions)
         let allText = [goal, answer] + actions.flatMap { [$0.result] + Array($0.arguments.keys) + Array($0.arguments.values) }
         guard !allText.contains(where: { SkillLearningSafety.unsafe($0, apiKey: apiKey) }) else {
             return assessment(.unknown, .unsafeEvidence)
@@ -63,11 +67,14 @@ public struct SkillLearningService: Sendable {
         guard let judgment = Self.parseJudgment(judgeReply, observations: observations, apiKey: apiKey) else {
             return assessment(.unknown, .invalidJudgment)
         }
+        // A failed final verifier blocks drafting, not the outcome judge. Mika
+        // records judged done + failed review as unverified (not unreviewed).
         let evidence = context.evidence(outcome: judgment.outcome, actionCount: actionCount)
         guard allowDraft else { return assessment(judgment, .draftDisabled) }
         guard SkillLearningGate.canAutoDraft(evidence) else {
             let onlyCount = judgment.outcome == .done && !context.userInterrupted && !context.explicitSkillSave &&
-                !context.replayMatched && context.usedSkills.isEmpty && actionCount < 5
+                !context.replayMatched && context.usedSkills.isEmpty && actionCount < 5 &&
+                (!context.verifierReviewed || context.verifierPassed)
             return assessment(judgment, onlyCount ? .tooFewActions : .ineligible)
         }
         let catalog = Self.catalog(state: state, apiKey: apiKey)
@@ -182,24 +189,28 @@ public struct SkillLearningService: Sendable {
 
     private static func validInput(goal: String, answer: String, actions: [SkillExecutedAction],
                                    context: SkillTaskContext, availableToolNames: Set<String>) -> Bool {
-        guard !goal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-              !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-              goal.utf16.count <= 4000, answer.utf16.count <= 12000, actions.count <= 60,
+        guard goal.utf16.count <= 4000, answer.utf16.count <= 12000, actions.count <= 60,
               availableToolNames.count <= 128, context.usedSkills.count <= 32,
-              Set(actions.map(\.id)).count == actions.count else { return false }
+              !goal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+              !answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return false }
         var bytes = goal.utf8.count + answer.utf8.count
         for name in availableToolNames {
-            guard SkillDocument.matches("^[a-z][a-z0-9_]{0,79}$", name) else { return false }
+            guard name.utf8.count <= 80, SkillDocument.matches("^[a-z][a-z0-9_]{0,79}$", name) else { return false }
         }
+        var seenIDs: Set<String> = []
         for action in actions {
-            guard SkillDocument.matches("^[a-zA-Z0-9_-]{1,80}$", action.id),
+            guard action.id.utf8.count <= 80, action.toolName.utf8.count <= 80,
+                  SkillDocument.matches("^[a-zA-Z0-9_-]{1,80}$", action.id),
+                  seenIDs.insert(action.id).inserted,
                   availableToolNames.contains(action.toolName), action.arguments.count <= 16,
                   action.result.utf16.count <= 16000 else { return false }
             for (key, value) in action.arguments {
                 guard key.utf16.count <= 80, value.utf16.count <= 4000 else { return false }
                 bytes += key.utf8.count + value.utf8.count
+                guard bytes <= 96 * 1024 else { return false }
             }
             bytes += action.result.utf8.count
+            guard bytes <= 96 * 1024 else { return false }
         }
         return bytes <= 96 * 1024
     }

@@ -6,6 +6,7 @@ struct WebsiteDataView: View {
     @ObservedObject var store: LearningStore
     @ObservedObject var browser: BrowserSession
     let modelAccess: () throws -> ModelAccess
+    let onOpenBrowser: () -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var note = ""
     @State private var edit: WebsiteLesson?
@@ -88,7 +89,8 @@ struct WebsiteDataView: View {
             Button("取消", role: .cancel) { replay = nil }
             Button("開啟並逐步核對") {
                 guard let route = replay else { return }
-                browser.replay(route: route, store: store, modelAccess: modelAccess); replay = nil; dismiss()
+                browser.replay(route: route, store: store, modelAccess: modelAccess)
+                replay = nil; dismiss(); onOpenBrowser()
             }
         } message: {
             Text("將開啟 \(replay?.origin.url.host ?? "") 的 \(replay?.steps.count ?? 0) 個已記錄步驟。只讀取網頁；內容不符便停止，不會提交表單。")

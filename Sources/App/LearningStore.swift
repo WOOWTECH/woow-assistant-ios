@@ -34,6 +34,7 @@ final class LearningStore: ObservableObject {
     private var extraction: Task<Void, Never>?
     private var extractionID: UUID?
     private(set) var generation = UUID()
+    var onUserChange: (() -> Void)?
 
     init() {
         do {
@@ -51,6 +52,7 @@ final class LearningStore: ObservableObject {
     }
 
     func reload() {
+        onUserChange?()
         cancelLearning()
         do {
             guard let vault else { throw LearningFileError.unavailable }
@@ -76,6 +78,7 @@ final class LearningStore: ObservableObject {
 
     @discardableResult
     func mutateMemory(_ change: (inout MemoryState) throws -> Void) -> Bool {
+        onUserChange?()
         cancelLearning()
         do {
             var next = memory
@@ -90,6 +93,7 @@ final class LearningStore: ObservableObject {
 
     @discardableResult
     func mutateSkills(_ change: (inout SkillsState) throws -> Void) -> Bool {
+        onUserChange?()
         cancelLearning()
         do {
             var next = skills
@@ -103,6 +107,7 @@ final class LearningStore: ObservableObject {
     /// Call only after the view has obtained BOTH clear-all confirmations.
     @discardableResult
     func clearAll() -> Bool {
+        onUserChange?()
         cancelLearning()
         do {
             guard let vault else { throw LearningFileError.unavailable }
@@ -203,12 +208,14 @@ final class LearningStore: ObservableObject {
     }
 
     func resetConversationPresentation() {
+        onUserChange?()
         cancelLearning()
         notes = []; notice = nil
     }
 
     @discardableResult
-    func mutateWeb(_ change: (inout WebsiteKnowledgeState, inout WebRouteState) throws -> Void) -> Bool {
+    func mutateWeb(cancelResearch: Bool = true, _ change: (inout WebsiteKnowledgeState, inout WebRouteState) throws -> Void) -> Bool {
+        if cancelResearch { onUserChange?() }
         cancelLearning()
         do {
             guard available, let vault else { throw LearningFileError.notLoaded }
@@ -271,7 +278,7 @@ final class LearningStore: ObservableObject {
             for reference in usedSkills { _ = try next.recordOutcome(reference: reference, evidence: evidence) }
             try persist(memory: memory, skills: next)
             skills = next
-        } catch { error = "任務已停止；技能結果紀錄未能儲存，既有資料保留。" }
+        } catch { self.error = "任務已停止；技能結果紀錄未能儲存，既有資料保留。" }
     }
 
     private func persist(memory: MemoryState, skills: SkillsState) throws {

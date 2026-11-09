@@ -11,7 +11,7 @@ final class BrowserLearningUITests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false
-        executionTimeAllowance = 180
+        executionTimeAllowance = 240
     }
 
     override func tearDownWithError() throws {
@@ -97,8 +97,36 @@ final class BrowserLearningUITests: XCTestCase {
         let route = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@", "website.route.")).firstMatch
         reveal(route)
         XCTAssertEqual(route.label, goal.lowercased())
+        let routeID = String(route.identifier.dropFirst("website.route.".count))
         reveal(app.staticTexts["6 步 · research.example.invalid"])
         XCTAssertFalse(app.staticTexts["website.error"].exists)
+
+        // This app was relaunched above: replay must mount the real WKWebView
+        // from Memory, not depend on a browser left visible by the first run.
+        tap("website.replay.\(routeID)", scroll: true)
+        let confirmations = app.alerts.buttons.matching(NSPredicate(format: "label == %@", "開啟並逐步核對"))
+        XCTAssertTrue(confirmations.firstMatch.waitForExistence(timeout: 5))
+        // iOS 26 can expose both a wrapper and its nested action; tap the leaf.
+        guard let confirmation = confirmations.allElementsBoundByIndex.last else {
+            XCTFail("The persisted route requires explicit replay confirmation.")
+            return
+        }
+        waitFor(confirmation, predicate: "exists == true AND hittable == true")
+        confirmation.tap()
+        waitFor(app.buttons["navigation.browser"], predicate: "exists == true AND value == '已選取'")
+        waitForLabel(app.staticTexts["browser.status"], "路線重走已結束", timeout: 45)
+        XCTAssertTrue(app.webViews.firstMatch.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["browser.error"].exists)
+        tap("browser.research")
+        XCTAssertTrue(app.buttons["browser.start"].waitForExistence(timeout: 5))
+        XCTAssertEqual(goalField.value as? String, goal.lowercased())
+        let replayAnswer = app.staticTexts["browser.answer"]
+        reveal(replayAnswer)
+        XCTAssertEqual(replayAnswer.label, "WOOW_WEB_GUIDE: five sections reviewed.")
+        let replayLearning = app.staticTexts["browser.learning"]
+        reveal(replayLearning)
+        XCTAssertEqual(replayLearning.label, "路線核對與成果判定完成；未重複產生技能。")
+        tap("browser.research.close")
     }
 
     func testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch() {
@@ -167,6 +195,66 @@ final class BrowserLearningUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["website.error"].exists)
     }
 
+    func testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning() {
+        launch()
+        configureModel()
+        openFixture()
+        let waitingGoal = "[fixture:wait] Review WOOW_WEB_GUIDE before answering."
+        enterGoal(waitingGoal)
+        XCTAssertTrue(app.buttons["browser.start"].isEnabled)
+        tap("browser.start")
+        waitForLabel(app.staticTexts["browser.task.status"], "正在研究網站…")
+        XCTAssertTrue(app.buttons["browser.task.cancel"].waitForExistence(timeout: 5))
+        XCTAssertFalse(app.buttons["browser.start"].isEnabled)
+        // A source URL appears only after the real WK inspection was recorded.
+        // The fixture then waits cancellably; do not wait for its 60-second delay.
+        XCTAssertTrue(app.staticTexts[fixtureURL].waitForExistence(timeout: 10))
+        tap("browser.research.close")
+        tap("navigation.settings")
+        tap("settings.remove", scroll: true)
+        waitForLabel(app.staticTexts["settings.keyStatus"], "尚未儲存金鑰。")
+        XCTAssertTrue(app.staticTexts["settings.notice"].label.contains("已移除"))
+        XCTAssertFalse(app.staticTexts["settings.error"].exists)
+
+        let stopped = "已停止；已取得的內容與草稿保留"
+        tap("navigation.browser")
+        waitForLabel(app.staticTexts["browser.status"], stopped)
+        XCTAssertFalse(app.buttons["browser.cancel"].exists)
+        XCTAssertEqual(app.textFields["browser.address"].value as? String, fixtureURL)
+        tap("browser.research")
+        waitForLabel(app.staticTexts["browser.task.status"], stopped)
+        XCTAssertEqual(goalField.value as? String, waitingGoal)
+        XCTAssertTrue(goalField.isEnabled)
+        XCTAssertFalse(app.buttons["browser.start"].isEnabled)
+        XCTAssertFalse(app.buttons["browser.task.cancel"].exists)
+        XCTAssertFalse(app.staticTexts["browser.answer"].exists)
+        XCTAssertFalse(app.staticTexts["browser.learning"].exists)
+        tap("browser.research.close")
+
+        openMemory()
+        XCTAssertTrue(app.staticTexts["memory.empty"].exists)
+        select("skills")
+        XCTAssertTrue(app.staticTexts["skills.empty"].waitForExistence(timeout: 5))
+        select("pending")
+        XCTAssertTrue(app.staticTexts["memory.pending.empty"].waitForExistence(timeout: 5))
+        let websites = app.buttons["memory.websites"]
+        reveal(websites)
+        XCTAssertEqual(websites.label, "網站知識與路線（0／0）")
+        XCTAssertFalse(app.staticTexts["memory.error"].exists)
+
+        // Recheck after navigation gives cancellation completion a chance to
+        // publish; neither a stale reply nor a learning result may appear.
+        tap("navigation.browser")
+        waitForLabel(app.staticTexts["browser.status"], stopped)
+        tap("browser.research")
+        waitForLabel(app.staticTexts["browser.task.status"], stopped)
+        XCTAssertEqual(goalField.value as? String, waitingGoal)
+        XCTAssertFalse(app.buttons["browser.start"].isEnabled)
+        XCTAssertFalse(app.staticTexts["browser.answer"].exists)
+        XCTAssertFalse(app.staticTexts["browser.learning"].exists)
+        tap("browser.research.close")
+    }
+
     private func launch(reset: Bool = true) {
         app.terminate()
         app = XCUIApplication()
@@ -210,14 +298,15 @@ final class BrowserLearningUITests: XCTestCase {
         return textView.exists ? textView : app.textFields["browser.goal"]
     }
 
-    private func enterGoal() {
+    private func enterGoal(_ value: String? = nil) {
+        let text = value ?? goal
         tap("browser.research")
         XCTAssertTrue(app.buttons["browser.start"].waitForExistence(timeout: 5))
-        enter(goal, into: goalField)
+        enter(text, into: goalField)
         tap("browser.goal.done")
         waitFor(app.keyboards.firstMatch, predicate: "exists == false")
         reveal(app.buttons["browser.start"])
-        XCTAssertEqual(goalField.value as? String, goal)
+        XCTAssertEqual(goalField.value as? String, text)
     }
 
     private func openMemory() {

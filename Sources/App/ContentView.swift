@@ -18,7 +18,8 @@ struct ContentView: View {
                 case .tools:
                     MCPToolsView(session: mcpSession)
                 case .memory:
-                    MemoryDataView(store: session.learning, browser: browser, modelAccess: session.modelAccess)
+                    MemoryDataView(store: session.learning, browser: browser, modelAccess: session.modelAccess,
+                                   onOpenBrowser: { selection = .browser })
                 case .browser:
                     BrowserView(browser: browser, chat: session)
                 }
@@ -27,6 +28,11 @@ struct ContentView: View {
             .navigationBarTitleDisplayMode(.inline)
             .safeAreaInset(edge: .bottom, spacing: 0) {
                 sectionNavigation
+            }
+        }
+        .onAppear {
+            session.learning.onUserChange = { [weak browser] in
+                if browser?.isRunning == true { browser?.cancel() }
             }
         }
     }

@@ -262,3 +262,18 @@ Local evidence before CI:
 
 New iOS build, UI and live results are pending at this checkpoint. No new feature
 above is represented as fully accepted until its run completes.
+
+Checkpoint `798af0b`: matrix [42675608518](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42675608518)
+passed 62 portable XCTest cases on each runner, but all App builds failed on a
+new error-reporting branch assigning to the implicit immutable `catch error`.
+The live workflow [42675616357](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42675616357)
+also failed App build; this is not new live-service acceptance. The branch now
+uses `self.error`, and native App integration typechecks again.
+
+Cross-review also added immediate browser cancellation when credentials/settings or
+learning data change, generation checks before later outbound model calls, bounded
+cancellable WebKit observation, visible browser navigation on route replay, and a
+fixture UI regression for removing model credentials during research. Skill service
+fixtures now total 350 assertions after verifier-failure attribution, conflicting
+duplicate references and pre-hash input-bound checks were corrected. These new
+changes await their own iOS checkpoint rather than inheriting the old run's result.
