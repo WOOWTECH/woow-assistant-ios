@@ -223,13 +223,25 @@ final class WoowAssistantUITests: XCTestCase {
         XCTAssertEqual(app.staticTexts["mcp.status"].label, "端點已儲存，尚未驗證連線")
         revealMCP(app.buttons["mcp.remove"], in: app)
         app.buttons["mcp.remove"].tap()
-        // iOS 26 exposes both the confirmation row and its nested button. Match
-        // the intended action by identifier AND label, then verify persistence below.
-        let confirm = app.buttons.matching(identifier: "mcp.confirmRemove")
-            .matching(NSPredicate(format: "label == %@", "移除端點")).firstMatch
-        XCTAssertTrue(confirm.waitForExistence(timeout: 5))
+        // iOS 26 exposes the confirmation row before its nested action button.
+        // firstMatch can tap the wrapper; use the last exact identifier/label
+        // match (the single action on older iOS), without coordinate taps.
+        let confirmations = app.buttons.matching(identifier: "mcp.confirmRemove")
+            .matching(NSPredicate(format: "label == %@", "移除端點"))
+        XCTAssertTrue(confirmations.firstMatch.waitForExistence(timeout: 5))
+        guard let confirm = confirmations.allElementsBoundByIndex.last else {
+            XCTFail("The MCP endpoint removal confirmation is missing.")
+            return
+        }
+        waitUntilHittable(confirm)
         confirm.tap()
-        XCTAssertEqual(app.staticTexts["mcp.status"].label, "尚未設定 MCP")
+        let status = app.staticTexts["mcp.status"]
+        let removed = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND label == %@", "尚未設定 MCP"),
+            object: status
+        )
+        XCTAssertEqual(XCTWaiter.wait(for: [removed], timeout: 5), .completed)
+        XCTAssertEqual(status.label, "尚未設定 MCP")
         app.terminate()
         let relaunched = launchApp(resetStorage: false)
         XCTAssertEqual(relaunched.staticTexts["chat.status"].label, "模型已設定")

@@ -95,8 +95,26 @@ Live HA/model retries
 [42633367501](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42633367501) and
 [42633373248](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42633373248)
 first failed before executing any step because GitHub could not allocate hosted
-arm64 runners. Their second attempts are executing. No live HA iOS/App UI pass is
-claimed yet. This infrastructure failure is separate from App test failures.
+arm64 runners. On the second attempt, the actual iOS 18.5 native HA acceptance
+passed: initialization, ping, catalogs, eight read-only tools, documentation read,
+business-error handling and local rejection of an unapproved control tool.
+The live model second attempt passed both native requests and all three actual
+App UI tests (zero skips): multi-turn reply/context and draft-preserving navigation,
+live cancellation, and actual HTTP failure with a dummy credential at an invalid
+domain. Isolated test credentials were cleared during teardown. The live HA second
+attempt also passed the complete actual App UI case (zero skips): bootstrap into
+isolated Keychain, explicit connection/discovery, background disconnect, reconnect,
+manual disconnect and credential cleanup. There were two actual discovery cycles.
+Both manual workflows finished successfully. Infrastructure allocation failures
+are separate from App test failures.
+
+Focused iOS 26.2 regression after the confirmation-locator fix:
+[42636866904](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42636866904),
+failed the same deletion case: 37 unit and 11 UI tests passed; the status remained
+saved immediately after tapping the duplicate wrapper. The log cannot distinguish
+an ineffective wrapper tap from a stale UI snapshot. The next test revision chooses
+the last exact action match and waits for the actual state transition, while keeping
+the relaunch-persistence and model-setting-isolation assertions. It is not yet a pass.
 
 ## Remaining acceptance gaps
 
