@@ -48,3 +48,26 @@ workflow 的 `ios17_host_arch`、`startup-smoke` 與精確 runtime 比對保持�
 人工彙整時，必須核對同一 revision、精確 runtime／build、host architecture、inventory hash 的 `core` 與全部 11 片，各自沒有失敗／略過／遺漏，才可陳述「此版本與架構的全部非 Live 測試通過」。這不代表 Live、真機或完整產品驗收通過。單次 smoke 成功只證明那一個案例；此腳本不會自動把不同執行或不同版本合併成全面通過。
 
 本機驗證使用真實來源檔案與合成 XCTest command／summary fixtures；不代表本機有執行 iOS 或 Xcode。現有原生 artifact、尚未完成的分片及原始失敗應繼續分開保留。
+
+## 單次預編譯／冷啟動比較
+
+`bbbb514` 的 exact17 assembly 作業成功啟動 Simulator，但 XCTest runner 在
+`_prepareTestConfigurationAndIDESession → XCTFuture` 等待，零方法開始；這不是
+PDF 操作斷言失敗。原流程先 boot／prelaunch，再讓 `xcodebuild test` 編譯，前兩次
+watchdog 取樣仍落在編譯期間。[原始結果](evidence/pdf-assembly-bbbb514-final.json)。
+
+新的 `ios17_build_before_boot`／`--build-before-boot` 預設關閉，目前只接受
+GitHub hosted 的 `startup-smoke`，並要求原有 prelaunch 和 sampling 開關。
+它先以指定主機架構 `build-for-testing`，成功且產生唯一可讀取的本次 `.xctestrun`
+後，才建立／啟動專用裝置，最後以該產物執行一次 `test-without-building`。
+這兩個命令是 [Apple 公開支援的建置／測試分離方式](https://developer.apple.com/library/archive/technotes/tn2339/_index.html)。
+
+預編譯耗時會從原有共同 build＋test 額度扣除；不重設時間、不重試，案例時限、
+精確 runtime、完成次數與零略過門檻不變。編譯失敗、逾時或產物缺漏／不唯一均
+在建立裝置前失敗。report 保存編譯結果、耗時、剩餘額度及 xctestrun SHA-256；
+watchdog 僅從 test-only 階段取樣。只有這一個 smoke 實際通過才能證明該流程
+可執行，不能由建置成功推定握手、PDF 功能或整體 iOS17 驗收通過。
+
+這是在測試「編譯負載／啟動時序可能干擾握手」的假說；目前沒有資源飽和或
+根因已確定的證據。合成命令測試檢查先後順序、失敗清理及共享預算，不代替
+GitHub 上的原生執行結果。

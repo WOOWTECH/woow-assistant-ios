@@ -10,6 +10,7 @@ import hashlib
 import json
 import os
 import platform
+import plistlib
 from pathlib import Path
 import re
 import subprocess
@@ -435,14 +436,57 @@ def observed_ui_events(log_path, expected):
             "all_expected_completed_once": complete, "methods": methods}
 
 
+def build_before_simulator(common, output, report):
+    """One build, before creating the owned simulator; debit the existing budget."""
+    budget = report["build_test_timeout_seconds"]
+    began = time.monotonic()
+    try:
+        with (output / "build-for-testing.log").open("wb") as log:
+            result = subprocess.run(common + ["-destination", "generic/platform=iOS Simulator",
+                "build-for-testing", "ARCHS=" + report["host_architecture"],
+                "CODE_SIGN_IDENTITY=-", "CODE_SIGNING_ALLOWED=YES"],
+                stdout=log, stderr=subprocess.STDOUT, timeout=budget)
+        report["prebuild_exit_code"] = result.returncode
+        if result.returncode:
+            raise ReleaseError("iOS 17 預編譯失敗；尚未建立 Simulator，請查看 build-for-testing.log。")
+    except subprocess.TimeoutExpired:
+        report["prebuild_timed_out"] = True
+        raise ReleaseError("iOS 17 預編譯耗盡原有編譯／測試額度；尚未建立 Simulator。") from None
+    finally:
+        elapsed = max(0, time.monotonic() - began)
+        report["prebuild_elapsed_seconds"] = round(elapsed, 3)
+        report["remaining_test_timeout_seconds"] = max(0, budget - elapsed)
+    if report["remaining_test_timeout_seconds"] <= 0:
+        raise ReleaseError("iOS 17 預編譯耗盡原有編譯／測試額度；尚未建立 Simulator。")
+    products = output / "DerivedData" / "Build" / "Products"
+    manifests = list(products.glob("*.xctestrun"))
+    if len(manifests) != 1 or manifests[0].is_symlink():
+        raise ReleaseError("預編譯未產生唯一的本次 xctestrun；尚未建立 Simulator。")
+    manifest = manifests[0]
+    if not 0 < manifest.stat().st_size <= 1024 * 1024:
+        raise ReleaseError("預編譯 xctestrun 大小不符；尚未建立 Simulator。")
+    data = manifest.read_bytes()
+    try:
+        value = plistlib.loads(data)
+        if not isinstance(value, dict) or not value:
+            raise ValueError()
+    except (ValueError, plistlib.InvalidFileException):
+        raise ReleaseError("預編譯 xctestrun 格式不符；尚未建立 Simulator。") from None
+    report["prebuilt_xctestrun"] = {"path": str(manifest.relative_to(output)),
+                                    "sha256": hashlib.sha256(data).hexdigest()}
+    return manifest
+
+
 def execute(output, requested, download, test_scope="all", expected_host_arch=None, prelaunch_daemon=False,
-            *, sample_bootstrap=False, bounded_test_diagnostics=False):
+            *, sample_bootstrap=False, bounded_test_diagnostics=False, build_before_boot=False):
     if version(requested)[0] != 17:
         raise ReleaseError("只接受 iOS 17.x。")
     if test_scope not in TEST_SCOPES:
         raise ReleaseError("未知的 iOS 17 測試範圍。")
     if expected_host_arch not in (None, "arm64", "x86_64"):
         raise ReleaseError("未知的主機架構。")
+    if build_before_boot and (test_scope != "startup-smoke" or not sample_bootstrap or not prelaunch_daemon):
+        raise ReleaseError("預編譯啟動比較目前只允許明確預啟動及取樣的 hosted startup-smoke；未執行測試。")
     if bounded_test_diagnostics and not sample_bootstrap:
         raise ReleaseError("限制失敗後系統診斷只允許已啟用 bootstrap 取樣的 hosted 非 Live fixture 比較。")
     if sample_bootstrap:
@@ -459,6 +503,7 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
               "experimental_prelaunch_test_daemon": prelaunch_daemon,
               "experimental_sample_bootstrap": sample_bootstrap,
               "experimental_bounded_test_diagnostics": bounded_test_diagnostics,
+              "experimental_build_before_boot": build_before_boot,
               "phase_history": [], "test_scope": test_scope,
               "selected_tests_succeeded": False,
               "full_acceptance_succeeded": False,
@@ -509,6 +554,13 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
         settings = json.loads(run(common + ["-destination", "generic/platform=iOS Simulator",
                                   "-showBuildSettings", "-json"], "檢查最低系統設定"))
         verify_settings(settings)
+        report["maximum_case_seconds"] = 420 if test_scope in ("all", "workspace", "ui-workspace") else 300
+        report["build_test_timeout_seconds"] = 1800 if test_scope in UI_SHARDS or test_scope in DOCUMENT_SCOPES else 4800
+        manifest = None
+        if build_before_boot:
+            checkpoint("building_before_boot")
+            manifest = build_before_simulator(common, output, report)
+            checkpoint("prebuilt_tests_ready")
         checkpoint("creating_simulator")
         simulator = run(["xcrun", "simctl", "create", "Woow-iOS17-" + uuid.uuid4().hex,
                          "com.apple.CoreSimulator.SimDeviceType.iPhone-15", runtime["identifier"]],
@@ -552,10 +604,8 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
                 daemon_receipt = prelaunch_test_daemon(simulator, report)
             finally:
                 save_report()
-        report["maximum_case_seconds"] = 420 if test_scope in ("all", "workspace", "ui-workspace") else 300
         # New class shards aim for 10–20 minutes of testing, with a bounded
         # 30-minute build+test budget. Existing repair scopes keep their bounds.
-        report["build_test_timeout_seconds"] = 1800 if test_scope in UI_SHARDS or test_scope in DOCUMENT_SCOPES else 4800
         checkpoint("testing")
         with (output / "tests.log").open("wb") as log:
             watcher = None
@@ -576,21 +626,24 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
             report["verbose_failure_diagnostics"] = (
                 "disabled_with_bounded_sampling" if suppress_verbose_diagnostics else "xcode_default")
             try:
-                arguments = (common + ["-destination", "platform=iOS Simulator,id=" + simulator,
+                test_common = ["xcodebuild", "-xctestrun", str(manifest)] if manifest else common
+                test_action = "test-without-building" if manifest else "test"
+                test_budget = report.get("remaining_test_timeout_seconds", report["build_test_timeout_seconds"])
+                arguments = (test_common + ["-destination", "platform=iOS Simulator,id=" + simulator,
                     "-resultBundlePath", str(output / "Tests.xcresult"), "-parallel-testing-enabled", "NO",
                     "-test-timeouts-enabled", "YES", "-default-test-execution-time-allowance", "240",
                     "-maximum-test-execution-time-allowance", str(report["maximum_case_seconds"])] +
                     (["-collect-test-diagnostics", "never"] if suppress_verbose_diagnostics else []) +
                     ["-only-testing:" + target for target in TEST_SCOPES[test_scope]] +
-                    ["test", "CODE_SIGN_IDENTITY=-",
+                    [test_action, "CODE_SIGN_IDENTITY=-",
                     "CODE_SIGNING_ALLOWED=YES"])
                 if watcher is not None:
                     from ios17_bootstrap_watchdog import run_observed
-                    result = run_observed(arguments, log, report["build_test_timeout_seconds"], watcher)
+                    result = run_observed(arguments, log, test_budget, watcher)
                     report["bootstrap_sampling_status"] = "stopped"
                 else:
                     result = subprocess.run(arguments, stdout=log, stderr=subprocess.STDOUT,
-                                            timeout=report["build_test_timeout_seconds"])
+                                            timeout=test_budget)
             except subprocess.TimeoutExpired:
                 report["test_timed_out"] = True
                 raise ReleaseError("iOS 17 編譯／所選測試超過 %d 分鐘；保留已執行結果，不視為通過。" %
@@ -669,6 +722,8 @@ def main():
                         help="Experimental bounded hosted fixture process stacks; requires prelaunch (default off)")
     parser.add_argument("--bounded-test-diagnostics", action="store_true",
                         help="Experimental suppression of verbose failure system logs; requires hosted fixture sampling (default off)")
+    parser.add_argument("--build-before-boot", action="store_true",
+                        help="Experimental build-for-testing before cold simulator boot; sampled hosted startup-smoke only (default off)")
     parser.add_argument("--check-ui-inventory", action="store_true",
                         help="Validate and print the UI class partition without invoking Xcode")
     parser.add_argument("--output", type=Path, default=Path("build/ios17"))
@@ -679,7 +734,7 @@ def main():
             return 0
         execute(args.output.resolve(), args.os, args.download, args.test_scope, args.expected_host_arch,
                 args.prelaunch_test_daemon, sample_bootstrap=args.sample_test_bootstrap,
-                bounded_test_diagnostics=args.bounded_test_diagnostics)
+                bounded_test_diagnostics=args.bounded_test_diagnostics, build_before_boot=args.build_before_boot)
     except (ReleaseError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
         print(str(error) if isinstance(error, ReleaseError) else "iOS 17 驗證未完成；請檢查輸出證據。", file=sys.stderr)
         return 1
