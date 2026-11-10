@@ -125,7 +125,7 @@ private actor ReferenceBrowser: WebResearchExecuting {
         f.store.onUserChange={normalChanges += 1;if !f.store.referenceEditInProgress {broadCancellations += 1}}
         let id=f.store.memory.memories[0].id
         try expect(f.store.mutateMemory{_ = try $0.edit(id:id,content:"Edited reference preference")},"normal memory edit")
-        try expect(f.store.mutateProfile{_ = try $0.replace(segment:"Traditional Chinese",replacement:"Japanese")},"normal profile replacement")
+        try expect(f.store.replaceProfileReference(segment:"Traditional Chinese",replacement:"Japanese"),"normal profile replacement")
         f.store.cancelLearning()
         try snapshot.check()
         try expect(snapshot.references.message == old && !snapshot.revoked,"snapshot frozen across edits and unrelated learning cancellation")
@@ -167,22 +167,78 @@ private actor ReferenceBrowser: WebResearchExecuting {
     }
     static func profileReplacementThenUnrelatedDelete() throws {
         group="profileReplacementThenUnrelatedDelete"
-        for viaTool in [false,true] {
+        let scenarios: [(tools: [Bool], languages: [String])] = [
+            ([false], ["Japanese"]), ([true], ["Japanese"]),
+            ([false,false], ["Japanese","Korean"]), ([true,true], ["Japanese","Korean"]),
+            ([false,true,false], ["Japanese","Korean","French"]),
+            ([false], ["Traditional Chinese"]), ([true], ["Traditional Chinese"])
+        ]
+        for scenario in scenarios { for deleteViaTool in [false,true] {
             let f=try fixture();defer{try? FileManager.default.removeItem(at:f.root)}
             let snapshot=try capture(f),original=snapshot.references.message
-            try expect(f.store.mutateProfile{_ = try $0.replace(segment:"Traditional Chinese",replacement:"Japanese")},"replace captured A without changing this run")
+            var current="Profile speaks Traditional Chinese", revocations=0
+            snapshot.onRevoke={revocations += 1}
+            for (viaTool,language) in zip(scenario.tools,scenario.languages) {
+                let replacement="Profile speaks " + language
+                let previousID=f.store.profile.snapshot().entries[0].id
+                if viaTool { try profileTool(f.store,op:"replace",match:current,text:replacement) }
+                else {try expect(f.store.replaceProfileReference(segment:current,replacement:replacement,
+                    expectedRevision:f.store.profile.revision),"explicit manual replacement persisted")}
+                try expect(f.store.profile.snapshot().entries[0].id != previousID,"replace including no-op keeps Mika new-ID semantics")
+                try snapshot.check()
+                try expect(!snapshot.revoked && snapshot.references.message == original,"replacement keeps ancestor text immutable for this run")
+                current=replacement
+            }
             try expect(f.store.mutateProfile{_ = try $0.add(text:"Unrelated sentence B")},"add unrelated B after capture")
-            if viaTool {
-                let request=try UserProfileToolRequest.parse(#"{"op":"delete","match":"Unrelated sentence B","quote":"Delete Unrelated sentence B"}"#)
-                let review=try request.prepare(state:f.store.profile,utterances:["Delete Unrelated sentence B"])
-                _ = try f.store.commitProfileTool(review,expectedGeneration:f.store.generation)
-            } else {try expect(f.store.deleteProfileReference(segment:"Unrelated sentence B"),"UI deletes unrelated B")}
+            if deleteViaTool {try profileTool(f.store,op:"delete",match:"Unrelated sentence B")}
+            else {try expect(f.store.deleteProfileReference(segment:"Unrelated sentence B"),"UI deletes unrelated B")}
             try expect(!snapshot.revoked && snapshot.references.message == original,"deleting B must not revoke previously superseded captured A")
             try snapshot.check()
             let fresh=try capture(f)
-            try expect(f.store.deleteProfileReference(segment:"Profile speaks Japanese"),"delete actually captured replacement")
+            if deleteViaTool {try profileTool(f.store,op:"delete",match:current)}
+            else {try expect(f.store.deleteProfileReference(segment:current),"delete actually captured replacement")}
             try expect(fresh.revoked,"a run that captured replacement is revoked by its deletion")
+            try expect(snapshot.revoked,"deleting replacement must revoke the run that captured its ancestor")
+            try expect(revocations == 1 && snapshot.references.message == original,"lineage revokes once without rewriting frozen text")
+        }}
+        for viaTool in [false,true] {
+            let f=try fixture();defer{try? FileManager.default.removeItem(at:f.root)}
+            let snapshot=try capture(f),original=f.store.profile,bytes=try Data(contentsOf:f.url)
+            f.keys.unavailable=true
+            if viaTool {
+                do {try profileTool(f.store,op:"replace",match:"Traditional Chinese",text:"Japanese");throw Failure(label:"failed tool replacement published")}
+                catch is LearningFileError {}
+            } else {try expect(!f.store.replaceProfileReference(segment:"Traditional Chinese",replacement:"Japanese"),"failed manual replacement rejected")}
+            try expect(f.store.profile == original && !snapshot.revoked && (try Data(contentsOf:f.url)) == bytes,"failed replacement preserves state, disk and ancestor identity")
+            f.keys.unavailable=false
+            // Deleting the original after a failed replacement must still revoke.
+            try expect(f.store.deleteProfileReference(segment:"Traditional Chinese"),"delete original after failed replacement")
+            try expect(snapshot.revoked,"failed write never moves lineage to an unpublished ID")
+
+            try expect(f.store.mutateProfile{_ = try $0.add(text:"Prefer tea")},"fresh profile after failure")
+            let second=try capture(f),revision=f.store.profile.revision
+            try expect(f.store.replaceProfileReference(segment:"tea",replacement:"coffee",expectedRevision:revision),"replace before failed deletion")
+            try expect(!f.store.replaceProfileReference(segment:"coffee",replacement:"cocoa",expectedRevision:revision),"stale manual editor rejected")
+            let persisted=try Data(contentsOf:f.url)
+            f.keys.unavailable=true
+            if viaTool {
+                do {try profileTool(f.store,op:"delete",match:"Prefer coffee");throw Failure(label:"failed tool deletion published")}
+                catch is LearningFileError {}
+            } else {try expect(!f.store.deleteProfileReference(segment:"Prefer coffee"),"failed manual deletion rejected")}
+            try expect(!second.revoked && (try Data(contentsOf:f.url)) == persisted,"failed deletion never revokes a valid frozen ancestor")
+            f.keys.unavailable=false
+            if viaTool {try profileTool(f.store,op:"delete",match:"Prefer coffee")}
+            else {try expect(f.store.deleteProfileReference(segment:"Prefer coffee"),"retry as new explicit manual deletion")}
+            try expect(second.revoked,"successful later deletion revokes tracked ancestor")
         }
+    }
+    private static func profileTool(_ store: LearningStore, op: String, match: String, text: String? = nil) throws {
+        let quote = op == "replace" ? "Replace \(match) with \(text!)" : "Delete \(match)"
+        var args=["op":op,"match":match,"quote":quote]
+        if let text {args["text"]=text}
+        let raw=String(decoding:try JSONSerialization.data(withJSONObject:args),as:UTF8.self)
+        let review=try UserProfileToolRequest.parse(raw).prepare(state:store.profile,utterances:[quote])
+        _ = try store.commitProfileTool(review,expectedGeneration:store.generation)
     }
     static func reloadClearAndFailedWrite() throws {
         group="reloadClearAndFailedWrite";let f=try fixture();defer{try? FileManager.default.removeItem(at:f.root)}

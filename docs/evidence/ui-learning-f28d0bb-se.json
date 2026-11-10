@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-10T20:33:13.555720+00:00",
+  "source_commit": "f28d0bb3cf336e4d36bb232b5b5d7142f4417dfd",
+  "run_id": 42890996168,
+  "job_id": 130091785728,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42890996168/job/130091785728",
+  "job_conclusion": "success",
+  "scope": "ui-learning on iOS18 compact at f28d0bb: three BrowserLearning and two MultiSourceResearch native fixture methods.",
+  "runtime": {
+    "device_name": "iPhone SE (3rd generation)",
+    "runtime_build": "22F77",
+    "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-5",
+    "runtime_version": "18.5"
+  },
+  "portable": {
+    "total": 203,
+    "unique": 203,
+    "passed": 203,
+    "failed": 0,
+    "skipped": 0
+  },
+  "ui": {
+    "source_expected": 5,
+    "started": 5,
+    "unique_started": 5,
+    "completed": 5,
+    "unique_completed": 5,
+    "passed": 5,
+    "failed": 0,
+    "skipped": 0,
+    "each_source_method_started_and_completed_once": true,
+    "runner_restart_messages": 0,
+    "method_completion_columns": [
+      "qualified_method",
+      "outcome",
+      "seconds"
+    ],
+    "method_completions": [
+      [
+        "WoowAssistantUITests/BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+        "passed",
+        129.367
+      ],
+      [
+        "WoowAssistantUITests/BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+        "passed",
+        113.577
+      ],
+      [
+        "WoowAssistantUITests/BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch",
+        "passed",
+        134.907
+      ],
+      [
+        "WoowAssistantUITests/MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+        "passed",
+        95.324
+      ],
+      [
+        "WoowAssistantUITests/MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads",
+        "passed",
+        36.376
+      ]
+    ]
+  },
+  "xcresult_summary_counts": {
+    "totalTestCount": 5,
+    "passedTests": 5,
+    "failedTests": 0,
+    "skippedTests": 0
+  },
+  "completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 5,
+      "passedTests": 5,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 5,
+    "completed_ui_count": 5,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/BrowserLearningUITests.swift": "8d6bad8e401fc8b94cf94015ef2029a151eea29f78876fb28420f4f7f2236a8f",
+    "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift": "e1eb35d7e3156c38cb035a6315221ba19003169e2776e0814455129bdf6493c7",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+    "Sources/App/BrowserSession.swift": "501789d7994ab8a74732a3c3d623bfbd4a5e49277a0566bfe57d94d7b682d8d1",
+    "Sources/App/LearningStore.swift": "a370fdb4472902433ef204791e7c4665390faaa400a79fc8bf19e389423cbe25",
+    "Sources/App/MultiSourceResearchSession.swift": "5c38d10c1f50e3bd40b5800d00b049cf75ac5a1477f2f91576eec3c47cdf8ab2",
+    "Sources/AssistantBrowser/MultiSourceResearchRunner.swift": "045082fa9d6704854efdf44f26d57c176ab87806cb23092ec4ecb0d8bd9a967a",
+    "scripts/release_ios17.py": "2ade032244f5f9ecb9e40c0dc0fd0332821c8efa34f9b143dfeca4e0f71efbcb",
+    "project.yml": "8b9d7f3cca0b08f3271d50558d1d0aa7949be40544f0c170ee95117193157bc2"
+  },
+  "test_method_sha256": {
+    "BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch": "1adc32e6ec4b3f9004d8168fd20516a32abea6952023db36198dae24f1c47b46",
+    "BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch": "a03edf541eda2c76fa1015e19a3944a6e95b026282fbcdf54e2fa99fb228a42d",
+    "BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning": "65073faaa1d26bb29fa57b894fee5775624bb8d414a1e3ec10dccf47abdc68f9",
+    "MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits": "1bf6b23d85987ce07fa34166b4ab969a17bafbbd15c7bd4d6783f4103a655bf0",
+    "MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads": "622122977b5dd4ccf2517dd70650e42ba1508ffa7ce5deea7775957f6a1448bf"
+  },
+  "test_method_hash_definition": "Exact source text from the test function declaration to before the next function declaration, with trailing whitespace stripped.",
+  "artifact": {
+    "id": 13800921001,
+    "size_bytes": 13864521,
+    "digest": "sha256:ffbe1133be4e68ba9f3e71dd72bc5aeac8ddeaf03ba66d44d2412336990c7cf4",
+    "inspected_metadata": [
+      "test-summary.json",
+      "test-simulator.json",
+      "ui-shard-completion.json"
+    ]
+  },
+  "limits": [
+    "Native UI fixture evidence with actual app interaction and controlled browser/model fixtures; not external model, real website or Home Assistant acceptance.",
+    "203 portable tests are separate from five native UI methods; neither count implies full native-suite execution in this job.",
+    "Counts and hashes apply only to committed f28d0bb bytes, not later multi-source task-reference changes.",
+    "No test retry was requested by this agent, and the log contains five unique starts with no Xcode runner restart messages.",
+    "No private environment, credentials, raw logs, live AX trees or signed artifact URLs included."
+  ]
+}

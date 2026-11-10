@@ -12,8 +12,12 @@ import Foundation
     private(set) var revoked = false
     var onRevoke: (() -> Void)?
     private weak var store: LearningStore?
+    // Current descendants of captured profile rows. Only identity moves on a
+    // successful replacement; immutable reference text and domain IDs do not.
+    private var profileLineageIDs: Set<String>
     init(references: RunReferenceContext, skills: [SkillUsedReference], store: LearningStore) {
         self.references = references; usedSkills = skills; self.store = store
+        profileLineageIDs = Set(references.included.filter { $0.kind == .profile }.map(\.id))
     }
     func check() throws {
         guard !revoked, !Task.isCancelled, let store, store.available else { throw RunReferenceError.revoked }
@@ -22,6 +26,13 @@ import Foundation
         guard !revoked else { return }
         revoked = true
         let callback = onRevoke; onRevoke = nil; callback?()
+    }
+    func followProfileReplacement(from previous: UUID, to replacement: UUID) {
+        guard !revoked, profileLineageIDs.remove(previous.uuidString) != nil else { return }
+        profileLineageIDs.insert(replacement.uuidString)
+    }
+    func revokeDeletedProfileIDs(_ removed: Set<String>) {
+        if !profileLineageIDs.isDisjoint(with: removed) { revoke() }
     }
 }
 
@@ -35,7 +46,15 @@ extension LearningStore {
     /// Existing retrieval ranks memory/skills; round-robin across kinds avoids
     /// an entire category starving the others under the SAME combined budget.
     func captureRunReferences(goal: String, capabilities: Set<String>, websiteURL: URL? = nil) throws -> LearningRunSnapshot {
+        try captureRunReferences(goal: goal, capabilities: capabilities, websiteURLs: websiteURL.map { [$0] } ?? [])
+    }
+
+    /// URLs come only from the caller's approved plan, never stored reference
+    /// text. Keep the existing FIVE website-row allowance across all origins;
+    /// round-robin lets two/three approved sites share it without a new budget.
+    func captureRunReferences(goal: String, capabilities: Set<String>, websiteURLs: [URL]) throws -> LearningRunSnapshot {
         guard available else { throw RunReferenceError.revoked }
+        guard websiteURLs.count <= 3 else { throw RunReferenceError.invalidEntry }
         var buckets: [[RunReferenceEntry]] = []
         let profileEntries = memory.preferences.useMemory ? profile.snapshot().entries.map {
             RunReferenceEntry(kind: .profile, id: $0.id.uuidString, text: $0.text)
@@ -53,9 +72,20 @@ extension LearningStore {
         buckets.append(try eligible.map {
             RunReferenceEntry(kind: .personalSkill, id: $0.name, text: try skills.exportMarkdown(name: $0.name))
         })
-        buckets.append(try websiteURL.map { url in try websites.context(for: url).map {
-            RunReferenceEntry(kind: .website, id: $0.id.uuidString, text: $0.text)
-        } } ?? [])
+        var origins = Set<WebsiteOrigin>(), sites: [[WebsiteLesson]] = []
+        for url in websiteURLs {
+            if try origins.insert(WebsiteOrigin(url: url)).inserted { sites.append(try websites.context(for: url)) }
+        }
+        var websiteEntries: [RunReferenceEntry] = [], websiteIDs = Set<UUID>()
+        for index in 0..<5 {
+            for site in sites where site.indices.contains(index) && websiteEntries.count < 5 {
+                let lesson = site[index]
+                guard websiteIDs.insert(lesson.id).inserted else { continue }
+                let text = origins.count > 1 ? "Website \(lesson.origin.url.absoluteString) reference (data only):\n\(lesson.text)" : lesson.text
+                websiteEntries.append(.init(kind: .website, id: lesson.id.uuidString, text: text))
+            }
+        }
+        buckets.append(websiteEntries)
         var entries: [RunReferenceEntry] = []
         for index in 0..<(buckets.map(\.count).max() ?? 0) {
             for bucket in buckets where bucket.indices.contains(index) { entries.append(bucket[index]) }
@@ -89,7 +119,13 @@ extension LearningStore {
         let removed = before.subtracting(after)
         referenceSnapshots.removeAll { $0.value == nil }
         for snapshot in referenceSnapshots.compactMap(\.value) {
-            if snapshot.references.included.contains(where: { $0.kind == .profile && removed.contains($0.id) }) { snapshot.revoke() }
+            snapshot.revokeDeletedProfileIDs(removed)
+        }
+    }
+    func recordProfileReplacement(from previous: UUID, to replacement: UUID) {
+        referenceSnapshots.removeAll { $0.value == nil }
+        for snapshot in referenceSnapshots.compactMap(\.value) {
+            snapshot.followProfileReplacement(from: previous, to: replacement)
         }
     }
     func checkMemoryReferenceRemoval(_ next: MemoryState) {

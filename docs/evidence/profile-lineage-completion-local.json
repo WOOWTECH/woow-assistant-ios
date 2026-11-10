@@ -1,0 +1,200 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-10T20:57:04.830321+00:00",
+  "scope": "Profile replacement lineage and actual multisource run completion; synthetic local checks against actual App sources.",
+  "source_sha256": {
+    "Sources/App/LearningRunContext.swift": "3f481ed8a03fb60bf5a25d3a0f963f6589d1b928ea0520b087680fcf5345a636",
+    "Sources/App/LearningStore.swift": "0a72d0516f0086daa4da0a1c28149a199253551709bba74d0a2d88157d67de97",
+    "Sources/App/MultiSourceResearchSession.swift": "64e8b3188cca65a50eeeb7b4baac4b552acab0111bd7e974d7627432ffecaa89",
+    "Sources/App/UserProfileView.swift": "cdfa8d5cf38911925ab62687ff54543e27b28df3337334b7e6c59ead1d26c88a",
+    "scripts/CheckLearningRunContextApp.swift": "f43a4276accae132db973dd2fa64481f960b068b052126170ab26fca5b0e4e3e",
+    "scripts/CheckMultiSourceReferenceApp.swift": "ef69800bbac820069cb5277dd89bf131adaa379753fc0c438e7002f745fd5a14"
+  },
+  "validation_source_boundary": {
+    "kind": "isolated copy of shared working-tree bytes",
+    "exact_parent_50d_review_checkout_validated": false,
+    "production_source_substitutions": false,
+    "captured_app_pdf_pair_session_or_support": false,
+    "pending_action": "Parent validates the exact intended publication checkout; this report does not claim that checkout was executed."
+  },
+  "profile_lineage": {
+    "before": {
+      "build_exit_code": 0,
+      "run_exit_code": 1,
+      "fixed_failure": "deleting replacement must revoke the run that captured its ancestor",
+      "binary_sha256": "8efe773c9a7a9260d4484c43b8e689b787bd8e7462404f3e3375e9b6d62cb231",
+      "regression_test_sha256": "2694aa4a760f991408779b39035088c682f24921b4aff239a871e60351aa803b",
+      "production_source_sha256": {
+        "Sources/App/LearningStore.swift": "a370fdb4472902433ef204791e7c4665390faaa400a79fc8bf19e389423cbe25",
+        "Sources/App/LearningRunContext.swift": "7a4687870e7d04344c2957adb802fe43eeff2deee1865fb7974d3a6f4c7d732e",
+        "Sources/App/MultiSourceResearchSession.swift": "b7f190ecbe50b68f31232c253d65c3d540cbd489e8bcf1a4f95fb809cad7c1dd"
+      }
+    },
+    "after_focused": {
+      "build_exit_code": 0,
+      "run_exit_code": 0,
+      "fixed_result": "PROFILE_DELETION_PASS",
+      "binary_sha256": "afcfd2c83a6253ce42bbcbbda189fcfa0d593b17f87f77a6b5c4edf2b415356c",
+      "reused_framework_sources_hash_verified": true
+    },
+    "final_shared_checks": {
+      "Debug_lineage_group": 223,
+      "Release_lineage_group": 223
+    },
+    "coverage": [
+      "manual and reviewed tool replacement/deletion combinations",
+      "manual, tool and mixed replacement chains",
+      "no-op replacement still mints a new domain ID",
+      "A to A-prime then deletion of newly added unrelated B does not revoke",
+      "deleting the current descendant revokes both old ancestor and fresh snapshots exactly once",
+      "frozen reference text remains byte-identical across replacements and after revocation",
+      "failed manual/tool persistence does not move lineage or revoke",
+      "stale manual editor does not publish or move lineage"
+    ],
+    "implementation": "Each snapshot keeps only current descendant IDs of included profile rows in memory. Explicit manual replacement and reviewed tool replacement update those IDs after successful encrypted persistence and before profile publication. No persisted schema/domain ID changes."
+  },
+  "late_completion": {
+    "prior_gap_reproduction": "A second controlled provider gate keeps complete from returning after responses becomes one. The previous no-result/no-navigation observations are already true while returnedResponses remains zero; provider count is not task completion.",
+    "fix": "Capture DEBUG read-only Task handle before cancellation clears the Session task, release both synthetic gates, then await capturedTask.value before final assertions.",
+    "scenarios": {
+      "revocation_cancel": {
+        "actual_run_completion_awaited": true,
+        "late_responses": 1,
+        "model_calls": 1,
+        "new_navigation_starts": 0,
+        "provider_counter_before_return": 1,
+        "provider_returns_at_legacy_observation": 0,
+        "published_result": false,
+        "retained_receipts": 2
+      },
+      "revocation_clear": {
+        "actual_run_completion_awaited": true,
+        "late_responses": 1,
+        "model_calls": 1,
+        "new_navigation_starts": 0,
+        "provider_counter_before_return": 1,
+        "provider_returns_at_legacy_observation": 0,
+        "published_result": false,
+        "retained_receipts": 2
+      },
+      "revocation_masterOff": {
+        "actual_run_completion_awaited": true,
+        "late_responses": 1,
+        "model_calls": 1,
+        "new_navigation_starts": 0,
+        "provider_counter_before_return": 1,
+        "provider_returns_at_legacy_observation": 0,
+        "published_result": false,
+        "retained_receipts": 2
+      },
+      "revocation_memoryDelete": {
+        "actual_run_completion_awaited": true,
+        "late_responses": 1,
+        "model_calls": 1,
+        "new_navigation_starts": 0,
+        "provider_counter_before_return": 1,
+        "provider_returns_at_legacy_observation": 0,
+        "published_result": false,
+        "retained_receipts": 2
+      },
+      "revocation_profileDelete": {
+        "actual_run_completion_awaited": true,
+        "late_responses": 1,
+        "model_calls": 1,
+        "new_navigation_starts": 0,
+        "provider_counter_before_return": 1,
+        "provider_returns_at_legacy_observation": 0,
+        "published_result": false,
+        "retained_receipts": 2
+      },
+      "revocation_profileReplaceDelete": {
+        "actual_run_completion_awaited": true,
+        "late_responses": 1,
+        "model_calls": 1,
+        "new_navigation_starts": 0,
+        "provider_counter_before_return": 1,
+        "provider_returns_at_legacy_observation": 0,
+        "published_result": false,
+        "retained_receipts": 2
+      },
+      "revocation_profileToolChainDelete": {
+        "actual_run_completion_awaited": true,
+        "late_responses": 1,
+        "model_calls": 1,
+        "new_navigation_starts": 0,
+        "provider_counter_before_return": 1,
+        "provider_returns_at_legacy_observation": 0,
+        "published_result": false,
+        "retained_receipts": 2
+      },
+      "revocation_reload": {
+        "actual_run_completion_awaited": true,
+        "late_responses": 1,
+        "model_calls": 1,
+        "new_navigation_starts": 0,
+        "provider_counter_before_return": 1,
+        "provider_returns_at_legacy_observation": 0,
+        "published_result": false,
+        "retained_receipts": 2
+      },
+      "revocation_settings": {
+        "actual_run_completion_awaited": true,
+        "late_responses": 1,
+        "model_calls": 1,
+        "new_navigation_starts": 0,
+        "provider_counter_before_return": 1,
+        "provider_returns_at_legacy_observation": 0,
+        "published_result": false,
+        "retained_receipts": 2
+      },
+      "revocation_skillDisable": {
+        "actual_run_completion_awaited": true,
+        "late_responses": 1,
+        "model_calls": 1,
+        "new_navigation_starts": 0,
+        "provider_counter_before_return": 1,
+        "provider_returns_at_legacy_observation": 0,
+        "published_result": false,
+        "retained_receipts": 2
+      },
+      "revocation_websiteDelete": {
+        "actual_run_completion_awaited": true,
+        "late_responses": 1,
+        "model_calls": 1,
+        "new_navigation_starts": 0,
+        "provider_counter_before_return": 1,
+        "provider_returns_at_legacy_observation": 0,
+        "published_result": false,
+        "retained_receipts": 2
+      }
+    },
+    "timing_sleeps_or_retries_added": 0,
+    "runtime_deadline_or_call_limit_changes": false
+  },
+  "validation": {
+    "multi_new_core": 36,
+    "multi_existing_core": 74,
+    "multi_Debug_App": 197,
+    "multi_Release_App": 31,
+    "single_existing_core": 238,
+    "single_Debug_App": 378,
+    "single_Release_App": 378,
+    "Chat_Debug": 573,
+    "Chat_Release": 492,
+    "ios17_source_syntax_parse": "passed; CLT MacOSX sysroot warning, not native UIKit typecheck",
+    "diff_check": "passed",
+    "native_hosted_method_inventory": {
+      "LearningRunAppIntegrationTests": 10,
+      "MultiSourceReferenceAppIntegrationTests": 5
+    }
+  },
+  "limits": [
+    "Counts are assertion counts from separate executables/configurations, not unique native test methods.",
+    "UserProfileView actual manual replacement is wired and syntax parsed; native UI execution of this new adapter is pending.",
+    "Before experiment compiled the new failing assertion against previously captured production App source; final expanded scenario body is separately hashed.",
+    "DEBUG completion handle is read-only and does not change product lifecycle. Controlled provider gates exist only in the checker.",
+    "No real model, public website, private keychain or persisted lineage schema used.",
+    "7b profile CI tests earlier committed App bytes and cannot validate this later lineage patch.",
+    "Exact parent 50d publication checkout validation is pending; these reports retain the actual shared-source snapshot boundary."
+  ]
+}

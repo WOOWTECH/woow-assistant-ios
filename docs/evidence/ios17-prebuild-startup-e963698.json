@@ -1,0 +1,250 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "bounded_artifact_report_actual_commands_and_xctest_events",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42893709163",
+  "run_id": 42893709163,
+  "job_id": 130101168418,
+  "job_conclusion": "success",
+  "artifact_id": 13800517692,
+  "artifact_archive_bytes": 3523573,
+  "artifact_archive_digest_from_github_metadata": "sha256:97c832795753f1f9b01a94c7e0dd650c17013fd2135fb9b116ae28dd30c5caac",
+  "artifact_retrieval": {
+    "method": "HTTP Range fixed selected files only",
+    "whole_archive_downloaded": false,
+    "transferred_bytes": 63171,
+    "selected_files": [
+      {
+        "file": "bootstrap-samples/report.json",
+        "bytes": 563,
+        "sha256": "49058b26d007eddaa2eab867ff7c14d77684b9c25c5bc7d5f2e5b5aacde3e4a6"
+      },
+      {
+        "file": "build-for-testing.log",
+        "bytes": 1118388,
+        "sha256": "fe500d1ee0c8b410f8e8651dd5a8ef156eead7540082d1a8c028287ba6957296"
+      },
+      {
+        "file": "report.json",
+        "bytes": 7593,
+        "sha256": "035c77fa453921a2079a9c4124e4c134dd0d42160958ae7ccbcdbf40303d998c"
+      },
+      {
+        "file": "test-summary.json",
+        "bytes": 1007,
+        "sha256": "1dfb09050cab07902936b25e1c798421201ccf680b61fd052a4eaf8b8a7a4a2a"
+      },
+      {
+        "file": "tests.log",
+        "bytes": 11322,
+        "sha256": "dcfc3cc6e311b8403b9d874cd02cef45c20e8a20965248baa603df516a47f4eb"
+      },
+      {
+        "file": "ui-test-inventory.json",
+        "bytes": 14944,
+        "sha256": "d88835d917f651bd4b55a2584711866f8bfd403f666160abdecac6f04217b5b1"
+      }
+    ]
+  },
+  "source_revision": "e9636980fe835e76c26d0c04b23d1936cf1a30bb",
+  "source_sha256": {
+    "scripts/release_ios17.py": "9768cc17c85c6dc69a31921b20ebae20202eb9235ff057af599a0fe4afe10117",
+    "scripts/ios17_bootstrap_watchdog.py": "60f7b207ea667f87673b292448a1a8100c5f61f999104e96d8bd966e3f79b614",
+    ".github/workflows/release-ios.yml": "9c4642fed271f369bfffc579991e454a3cb94c37d2e6ffd0f4511d8179dd9c1b",
+    "Tests/WoowAssistantUITests/WoowAssistantUITests.swift": "4f9ac46d00c9e1cb50349127b063422b51de8a02e115fa060604598bab4de1d1"
+  },
+  "scope": "startup-smoke",
+  "host": {
+    "architecture": "arm64",
+    "macos": "15.8.2",
+    "xcode": "Xcode 16.4\nBuild version 16F6"
+  },
+  "requested_runtime": "17.0.1",
+  "selected_runtime": {
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "version": "17.0.1",
+    "buildversion": "21A342"
+  },
+  "actual_test_device": {
+    "modelName": "iPhone 15",
+    "osVersion": "17.0.1",
+    "osBuildNumber": "21A342",
+    "architecture": "arm64",
+    "platform": "iOS Simulator"
+  },
+  "deployment_target": "17.0",
+  "physical_devices_used": false,
+  "opt_in_flags": {
+    "experimental_prelaunch_test_daemon": true,
+    "experimental_sample_bootstrap": true,
+    "experimental_bounded_test_diagnostics": true,
+    "experimental_build_before_boot": true
+  },
+  "phase_timing": [
+    {
+      "phase": "building_before_boot",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T20:20:23.825343+00:00",
+      "elapsed_seconds": 201.5
+    },
+    {
+      "phase": "prebuilt_tests_ready",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T20:23:24.107808+00:00",
+      "elapsed_seconds": 381.8
+    },
+    {
+      "phase": "creating_simulator",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T20:23:24.112383+00:00",
+      "elapsed_seconds": 381.8
+    },
+    {
+      "phase": "booting",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T20:23:26.137721+00:00",
+      "elapsed_seconds": 383.8
+    },
+    {
+      "phase": "prelaunching_test_daemon",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T20:25:11.891416+00:00",
+      "elapsed_seconds": 489.5
+    },
+    {
+      "phase": "testing",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T20:25:45.856250+00:00",
+      "elapsed_seconds": 523.5
+    },
+    {
+      "phase": "verifying_test_completion",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T20:29:23.005137+00:00",
+      "elapsed_seconds": 740.7
+    },
+    {
+      "phase": "passed",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T20:29:28.192056+00:00",
+      "elapsed_seconds": 745.8
+    }
+  ],
+  "prebuild": {
+    "action": "build-for-testing",
+    "destination": "generic/platform=iOS Simulator",
+    "architecture": "arm64",
+    "exit_code": 0,
+    "elapsed_seconds": 180.24,
+    "completed_before_owned_simulator_creation": true,
+    "xctestrun": {
+      "path": "DerivedData/Build/Products/WoowAssistant_iphonesimulator18.5-arm64.xctestrun",
+      "sha256": "9978e367f9653f556eb13135435df6a6257e0d78a60f4fcc7482c857ec8b63e2",
+      "hash_basis": "runner report computed from generated manifest bytes before simulator creation",
+      "manifest_archived": false,
+      "independently_rehashed_from_artifact": false,
+      "same_path_in_test_command": true
+    }
+  },
+  "execution": {
+    "action": "test-without-building",
+    "selected_method": "WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded",
+    "xctestrun_path": "DerivedData/Build/Products/WoowAssistant_iphonesimulator18.5-arm64.xctestrun",
+    "one_prebuild_command_one_test_command": true,
+    "retry_observed": false,
+    "test_exit_code": 0,
+    "build_test_budget_seconds": 4800,
+    "remaining_test_budget_seconds": 4619.760349666,
+    "default_case_seconds": 240,
+    "maximum_case_seconds": 300,
+    "budgets_increased": false
+  },
+  "boot_succeeded": true,
+  "simulator_state_unavailable": true,
+  "test_daemon_prelaunch": {
+    "budget_seconds": 120,
+    "attempts": 1,
+    "status": "process_started_handshake_unverified",
+    "handshake_verified": false,
+    "process_alive": true,
+    "elapsed_seconds": 33.543
+  },
+  "bootstrap_sampling": {
+    "status": "stopped",
+    "handshake_verified": false,
+    "max_samples": 3,
+    "sample_seconds": 3,
+    "sample_command_seconds": 15,
+    "sample_byte_limit": 2097152,
+    "attempts": [
+      {
+        "role": "daemon_early",
+        "elapsed_seconds": 15.0,
+        "image": "xpcproxy_sim",
+        "status": "captured",
+        "frames": 1,
+        "bytes": 42
+      },
+      {
+        "role": "daemon_later",
+        "elapsed_seconds": 75.136,
+        "image": "xpcproxy_sim",
+        "status": "captured",
+        "frames": 6,
+        "bytes": 611
+      }
+    ],
+    "actual_test_case_started": true
+  },
+  "method_counts_from_tests_log": {
+    "expected": 1,
+    "started": 1,
+    "completed": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "completed_methods": [
+    {
+      "selector": "WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded",
+      "outcome": "passed",
+      "duration_seconds": 28.527,
+      "start_log_line": 19,
+      "completion_log_line": 131
+    }
+  ],
+  "test_summary_counts": {
+    "totalTestCount": 1,
+    "passedTests": 1,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "verified_completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 1,
+      "passedTests": 1,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 1,
+    "completed_ui_count": 1,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "selected_tests_succeeded": true,
+  "runtime_tested_full_scheme": false,
+  "full_acceptance_succeeded": false,
+  "simulator_deleted": true,
+  "limitations": [
+    "One focused startup-smoke method passed on actual iOS17.0.1; this does not establish full iOS17 acceptance or document/assembly acceptance.",
+    "This is a successful opt-in build-before-boot experiment, not proof that compilation load or startup ordering caused previous bootstrap failures.",
+    "Prelaunch reported a live process but handshake_verified remained false. Watchdog sampling likewise does not prove testmanagerd readiness.",
+    "Generated manifest filename contains iphonesimulator18.5 because of the Xcode16.4 SDK; actual destination and xcresult device independently report runtime17.0.1 build21A342.",
+    "The generated .xctestrun was not retained in the artifact. Its SHA256 is runner-recorded; the retrieved actual test command confirms the same relative manifest path, not an independent byte rehash.",
+    "Optional simulator inventory was unavailable; actual boot, XCTest events and xcresult device supplied execution evidence. Existing historical failed runs remain failed."
+  ]
+}

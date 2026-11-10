@@ -1,0 +1,562 @@
+{
+  "schema_version": 1,
+  "source_revision": "aa676a39d5c3df20c59bc68102c764a66442e8e0",
+  "selected_pdf_product_and_single_file_test_sources_unchanged_from": "f28d0bb",
+  "source_sha256": {
+    "Sources/App/PDFNativePicker.swift": "099292a4c461be8cb34c6258b806cb78897e895e6d6fe7b3d4e7ce15f6be0f47",
+    "Sources/App/SkillExecutionUITestSupport.swift": "f136192e7e3f1e4ba269b1094608d11e382ce937f7308f4b73f8440342581f6b",
+    "Sources/App/SkillPDFAssemblySession.swift": "e0465a3e1a54fd3d11cdb13f9e889088401c30e84f517a51ac1564edcec78119",
+    "Sources/App/SkillPDFAssemblyView.swift": "883b7ad14d5bee91e2c90049e990760f070d8265bca07043cacb2ab60cf7aa92",
+    "Tests/WoowAssistantUITests/SkillExecutionUITests.swift": "4c66d63ea52a361273db6d14bf3711023e30545226802f66306e8cb87fdb4aa2"
+  },
+  "collection_complete": true,
+  "cases": [
+    {
+      "variant": "original",
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42897576797",
+      "job_id": 130114676794,
+      "job_conclusion": "success",
+      "artifact_id": 13801564001,
+      "artifact_archive_bytes": 9109470,
+      "scope": "pdf-assembly",
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "counts": {
+        "totalTestCount": 1,
+        "passedTests": 1,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "actual_starts": 1,
+      "actual_completions": 1,
+      "duration_seconds": 167.713,
+      "verified_completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 1,
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 1,
+        "completed_ui_count": 1,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "actual_device": {
+        "modelName": "iPhone 15",
+        "architecture": "arm64",
+        "osVersion": "17.0.1",
+        "osBuildNumber": "21A342",
+        "platform": "iOS Simulator"
+      },
+      "host": {
+        "architecture": "arm64",
+        "macos": "15.8.2",
+        "xcode": "Xcode 16.4\nBuild version 16F6"
+      },
+      "prebuild": {
+        "exit_code": 0,
+        "elapsed_seconds": 158.903,
+        "xctestrun": {
+          "path": "DerivedData/Build/Products/WoowAssistant_iphonesimulator18.5-arm64.xctestrun",
+          "sha256": "9978e367f9653f556eb13135435df6a6257e0d78a60f4fcc7482c857ec8b63e2"
+        },
+        "manifest_hash_basis": "runner-computed; manifest not archived for independent rehash",
+        "test_without_building_same_path": true,
+        "generic_simulator_architecture": "arm64"
+      },
+      "budgets": {
+        "build_plus_test_seconds": 4800,
+        "remaining_after_prebuild_seconds": 4641.096544292,
+        "maximum_case_seconds": 300,
+        "actual_test_class_allowance_seconds": 240
+      },
+      "opt_in_flags": {
+        "experimental_build_before_boot": true,
+        "experimental_prelaunch_test_daemon": true,
+        "experimental_sample_bootstrap": true,
+        "experimental_bounded_test_diagnostics": true
+      },
+      "phase_timing": [
+        {
+          "phase": "building_before_boot",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:43:42.125789+00:00",
+          "elapsed_seconds": 184.7
+        },
+        {
+          "phase": "prebuilt_tests_ready",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:46:21.052196+00:00",
+          "elapsed_seconds": 343.6
+        },
+        {
+          "phase": "creating_simulator",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:46:21.055153+00:00",
+          "elapsed_seconds": 343.6
+        },
+        {
+          "phase": "booting",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:46:22.101019+00:00",
+          "elapsed_seconds": 344.7
+        },
+        {
+          "phase": "prelaunching_test_daemon",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:47:42.699930+00:00",
+          "elapsed_seconds": 425.3
+        },
+        {
+          "phase": "testing",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:47:57.643746+00:00",
+          "elapsed_seconds": 440.2
+        },
+        {
+          "phase": "verifying_test_completion",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:55:42.594106+00:00",
+          "elapsed_seconds": 905.2
+        },
+        {
+          "phase": "passed",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:55:48.675258+00:00",
+          "elapsed_seconds": 911.2
+        }
+      ],
+      "boot_succeeded": true,
+      "simulator_deleted": true,
+      "test_daemon_prelaunch": {
+        "budget_seconds": 120,
+        "attempts": 1,
+        "status": "process_started_handshake_unverified",
+        "handshake_verified": false,
+        "process_alive": true,
+        "elapsed_seconds": 14.934
+      },
+      "bootstrap_sampling": {
+        "status": "stopped",
+        "handshake_verified": false,
+        "max_samples": 3,
+        "sample_seconds": 3,
+        "sample_command_seconds": 15,
+        "sample_byte_limit": 2097152,
+        "attempts": [
+          {
+            "role": "daemon_early",
+            "elapsed_seconds": 15.131,
+            "image": "xpcproxy_sim",
+            "status": "captured",
+            "frames": 1,
+            "bytes": 42
+          },
+          {
+            "role": "daemon_later",
+            "elapsed_seconds": 75.053,
+            "image": "xpcproxy_sim",
+            "status": "captured",
+            "frames": 10,
+            "bytes": 924
+          },
+          {
+            "role": "runner_bootstrap",
+            "elapsed_seconds": 245.529,
+            "image": "WoowAssistantUITests-Runner",
+            "status": "cancelled"
+          }
+        ],
+        "actual_test_case_started": true
+      },
+      "native_picker": {
+        "source": "swiftui",
+        "mode": "open",
+        "allows_multiple_selection": true,
+        "actual_selected_files": 1,
+        "pages_in_selected_file": 2,
+        "callback_count": 1,
+        "outcome": "one"
+      },
+      "native_stages": {
+        "open_picker": {
+          "log_line": 183,
+          "elapsed_seconds": 40.21
+        },
+        "read_approval": {
+          "log_line": 285,
+          "elapsed_seconds": 71.11
+        },
+        "select_all": {
+          "log_line": 399,
+          "elapsed_seconds": 102.72
+        },
+        "empty_field_assertion": {
+          "log_line": 411,
+          "elapsed_seconds": 106.97
+        },
+        "exact_reversed_order_assertion": {
+          "log_line": 419,
+          "elapsed_seconds": 110.33
+        },
+        "separate_assembly_approval": {
+          "log_line": 547,
+          "elapsed_seconds": 133.2
+        },
+        "native_export": {
+          "log_line": 592,
+          "elapsed_seconds": 139.71
+        },
+        "cancel_status_assertion": {
+          "log_line": 659,
+          "elapsed_seconds": 160.32
+        }
+      },
+      "two_review_rows_and_real_two_page_output_assertions": "passed",
+      "cancel_preserves_identical_result_and_export_enabled_assertions": "passed",
+      "fixed_picker_events": [
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=C2BAF1FB-E335-4C38-865A-1907FCC873C4 event=bindingChanged ordinal=1 presented=true callbacks=0 sampledAt=1794344013.357789",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=C2BAF1FB-E335-4C38-865A-1907FCC873C4 source=swiftui event=bindingChanged presented=true callbacks=0 sampledAt=1794344013.357888",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=C2BAF1FB-E335-4C38-865A-1907FCC873C4 source=swiftui mode=open allowsMultipleSelection=true sampledAt=1794344013.484133",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=C2BAF1FB-E335-4C38-865A-1907FCC873C4 source=swiftui event=observed mode=open allowsMultipleSelection=true delegatePresent=true inWindow=true dismissing=false sampledAt=1794344013.48418",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=C2BAF1FB-E335-4C38-865A-1907FCC873C4 event=completion source=swiftui callbacks=1 outcome=one sampledAt=1794344040.126845",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=C2BAF1FB-E335-4C38-865A-1907FCC873C4 source=swiftui event=completion outcome=one callbacks=1 sampledAt=1794344040.127289",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=C2BAF1FB-E335-4C38-865A-1907FCC873C4 event=bindingChanged ordinal=1 presented=false callbacks=1 sampledAt=1794344040.172594",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=C2BAF1FB-E335-4C38-865A-1907FCC873C4 source=swiftui event=bindingChanged presented=false callbacks=1 sampledAt=1794344040.172689"
+      ],
+      "fixed_picker_event_source": {
+        "source": "runner-diagnostics/0_Test_Woow-iOS17-8fb6625d199b4efd9a87f61e8762e845_Diagnostics/WoowAssistantUITests-EB74829B-368D-40DD-A12B-9706CCAECF2D-Configuration-Test Scheme Action-Iteration-1/WoowAssistantUITests-4FCF2833-0483-469B-B291-8AC716809ED9/StandardOutputAndStandardError-io.woowtech.assistant.txt",
+        "source_bytes": 60642890,
+        "source_sha256": "2947cd6dcd70566ea5f3b9fac708ce455ae7e8c5978c0cf896b50be06399c000",
+        "transferred_bytes": 4963276,
+        "whole_archive_downloaded": false
+      },
+      "bounded_retrieval": {
+        "whole_archive_downloaded": false,
+        "summary_and_log_transferred_bytes": 64798,
+        "files": [
+          {
+            "file": "bootstrap-samples/report.json",
+            "bytes": 721,
+            "sha256": "e85f850e71e586892dbd1a65c3debcc1a9105967941668ebed85dc4243b289e0"
+          },
+          {
+            "file": "build-for-testing.log",
+            "bytes": 1118389,
+            "sha256": "d752e413340ca9f4ceaabfbc1d0f62afb42d88255789bf710682fbe86b8f24bd"
+          },
+          {
+            "file": "report.json",
+            "bytes": 7645,
+            "sha256": "64d288ca82b1c7d28682353300eabdbcd79b9c298a120b9d6d8524fa6806ae79"
+          },
+          {
+            "file": "test-summary.json",
+            "bytes": 1005,
+            "sha256": "396fb10916fc4d3483ae14d6f578ad1b16183a477897f9ccc23fbbef00137c40"
+          },
+          {
+            "file": "tests.log",
+            "bytes": 52216,
+            "sha256": "7b36510142614412983d8ffb72f3067f0b648586f462912fa19f42e52528e3b4"
+          },
+          {
+            "file": "ui-test-inventory.json",
+            "bytes": 14944,
+            "sha256": "d88835d917f651bd4b55a2584711866f8bfd403f666160abdecac6f04217b5b1"
+          }
+        ]
+      }
+    },
+    {
+      "variant": "copy",
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42897582946",
+      "job_id": 130114694323,
+      "job_conclusion": "success",
+      "artifact_id": 13801682955,
+      "artifact_archive_bytes": 9179449,
+      "scope": "pdf-assembly-copy",
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "counts": {
+        "totalTestCount": 1,
+        "passedTests": 1,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "actual_starts": 1,
+      "actual_completions": 1,
+      "duration_seconds": 152.902,
+      "verified_completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 1,
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 1,
+        "completed_ui_count": 1,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "actual_device": {
+        "modelName": "iPhone 15",
+        "architecture": "arm64",
+        "osVersion": "17.0.1",
+        "osBuildNumber": "21A342",
+        "platform": "iOS Simulator"
+      },
+      "host": {
+        "architecture": "arm64",
+        "macos": "15.8.2",
+        "xcode": "Xcode 16.4\nBuild version 16F6"
+      },
+      "prebuild": {
+        "exit_code": 0,
+        "elapsed_seconds": 162.481,
+        "xctestrun": {
+          "path": "DerivedData/Build/Products/WoowAssistant_iphonesimulator18.5-arm64.xctestrun",
+          "sha256": "9978e367f9653f556eb13135435df6a6257e0d78a60f4fcc7482c857ec8b63e2"
+        },
+        "manifest_hash_basis": "runner-computed; manifest not archived for independent rehash",
+        "test_without_building_same_path": true,
+        "generic_simulator_architecture": "arm64"
+      },
+      "budgets": {
+        "build_plus_test_seconds": 4800,
+        "remaining_after_prebuild_seconds": 4637.518801792,
+        "maximum_case_seconds": 300,
+        "actual_test_class_allowance_seconds": 240
+      },
+      "opt_in_flags": {
+        "experimental_build_before_boot": true,
+        "experimental_prelaunch_test_daemon": true,
+        "experimental_sample_bootstrap": true,
+        "experimental_bounded_test_diagnostics": true
+      },
+      "phase_timing": [
+        {
+          "phase": "building_before_boot",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:44:33.542418+00:00",
+          "elapsed_seconds": 201.3
+        },
+        {
+          "phase": "prebuilt_tests_ready",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:47:16.054282+00:00",
+          "elapsed_seconds": 363.8
+        },
+        {
+          "phase": "creating_simulator",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:47:16.058768+00:00",
+          "elapsed_seconds": 363.8
+        },
+        {
+          "phase": "booting",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:47:18.122443+00:00",
+          "elapsed_seconds": 365.9
+        },
+        {
+          "phase": "prelaunching_test_daemon",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:48:53.315324+00:00",
+          "elapsed_seconds": 461.1
+        },
+        {
+          "phase": "testing",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:49:09.737799+00:00",
+          "elapsed_seconds": 477.5
+        },
+        {
+          "phase": "verifying_test_completion",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:54:46.795003+00:00",
+          "elapsed_seconds": 814.6
+        },
+        {
+          "phase": "passed",
+          "requested_runtime": "17.0.1",
+          "at": "2026-11-10T20:54:52.339451+00:00",
+          "elapsed_seconds": 820.1
+        }
+      ],
+      "boot_succeeded": true,
+      "simulator_deleted": true,
+      "test_daemon_prelaunch": {
+        "budget_seconds": 120,
+        "attempts": 1,
+        "status": "process_started_handshake_unverified",
+        "handshake_verified": false,
+        "process_alive": true,
+        "elapsed_seconds": 16.172
+      },
+      "bootstrap_sampling": {
+        "status": "stopped",
+        "handshake_verified": false,
+        "max_samples": 3,
+        "sample_seconds": 3,
+        "sample_command_seconds": 15,
+        "sample_byte_limit": 2097152,
+        "attempts": [
+          {
+            "role": "daemon_early",
+            "elapsed_seconds": 15.139,
+            "image": "xpcproxy_sim",
+            "status": "captured",
+            "frames": 8,
+            "bytes": 786
+          },
+          {
+            "role": "daemon_later",
+            "elapsed_seconds": 75.068,
+            "image": "xpcproxy_sim",
+            "status": "captured",
+            "frames": 8,
+            "bytes": 1127
+          }
+        ],
+        "actual_test_case_started": true
+      },
+      "native_picker": {
+        "source": "user-copy",
+        "mode": "import",
+        "allows_multiple_selection": true,
+        "actual_selected_files": 1,
+        "pages_in_selected_file": 2,
+        "callback_count": 1,
+        "outcome": "one"
+      },
+      "native_stages": {
+        "open_picker": {
+          "log_line": 200,
+          "elapsed_seconds": 34.39
+        },
+        "read_approval": {
+          "log_line": 302,
+          "elapsed_seconds": 59.55
+        },
+        "select_all": {
+          "log_line": 416,
+          "elapsed_seconds": 89.12
+        },
+        "empty_field_assertion": {
+          "log_line": 428,
+          "elapsed_seconds": 92.73
+        },
+        "exact_reversed_order_assertion": {
+          "log_line": 436,
+          "elapsed_seconds": 95.38
+        },
+        "separate_assembly_approval": {
+          "log_line": 564,
+          "elapsed_seconds": 114.97
+        },
+        "native_export": {
+          "log_line": 609,
+          "elapsed_seconds": 120.87
+        },
+        "cancel_status_assertion": {
+          "log_line": 676,
+          "elapsed_seconds": 139.69
+        }
+      },
+      "two_review_rows_and_real_two_page_output_assertions": "passed",
+      "cancel_preserves_identical_result_and_export_enabled_assertions": "passed",
+      "fixed_picker_events": [
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=581B01F9-4213-4C11-8F82-566559691A3B event=bindingChanged ordinal=1 presented=true callbacks=0 sampledAt=1794343966.7321892",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=581B01F9-4213-4C11-8F82-566559691A3B source=user-copy event=bindingChanged presented=true callbacks=0 sampledAt=1794343966.732301",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=581B01F9-4213-4C11-8F82-566559691A3B source=user-copy mode=unobserved sampledAt=1794343966.733032",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=581B01F9-4213-4C11-8F82-566559691A3B event=nativeCreated mode=import allowsMultipleSelection=true delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=0 sampledAt=1794343966.744965",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=581B01F9-4213-4C11-8F82-566559691A3B source=user-copy mode=import allowsMultipleSelection=true sampledAt=1794343967.047754",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=581B01F9-4213-4C11-8F82-566559691A3B source=user-copy event=observed mode=import allowsMultipleSelection=true delegatePresent=true inWindow=true dismissing=false sampledAt=1794343967.047771",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=581B01F9-4213-4C11-8F82-566559691A3B event=nativePicked mode=import allowsMultipleSelection=true delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=1 sampledAt=1794343987.787242",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=581B01F9-4213-4C11-8F82-566559691A3B event=completion source=uikit callbacks=1 outcome=one sampledAt=1794343987.787568",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=581B01F9-4213-4C11-8F82-566559691A3B source=user-copy event=completion outcome=one callbacks=1 sampledAt=1794343987.7878752",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=581B01F9-4213-4C11-8F82-566559691A3B event=nativeDismantled mode=import allowsMultipleSelection=true delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=1 sampledAt=1794343987.807585",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=581B01F9-4213-4C11-8F82-566559691A3B event=bindingChanged ordinal=1 presented=false callbacks=1 sampledAt=1794343987.815289",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=581B01F9-4213-4C11-8F82-566559691A3B source=user-copy event=bindingChanged presented=false callbacks=1 sampledAt=1794343987.838262"
+      ],
+      "fixed_picker_event_source": {
+        "source": "runner-diagnostics/0_Test_Woow-iOS17-29924258dfc24ad995264626d9e430d3_Diagnostics/WoowAssistantUITests-939550DE-53D8-4170-AC2F-BF8C19415204-Configuration-Test Scheme Action-Iteration-1/WoowAssistantUITests-5BCB7BF1-3856-4C21-A188-00EB70FF8E9E/StandardOutputAndStandardError-io.woowtech.assistant.txt",
+        "source_bytes": 61196627,
+        "source_sha256": "28493c2aa4b2661036f86c8693e833f36170a62bc5077e8fe5db785066f0d740",
+        "transferred_bytes": 5027717,
+        "whole_archive_downloaded": false
+      },
+      "bounded_retrieval": {
+        "whole_archive_downloaded": false,
+        "summary_and_log_transferred_bytes": 66870,
+        "files": [
+          {
+            "file": "bootstrap-samples/report.json",
+            "bytes": 567,
+            "sha256": "93f5d56ace62a5d25d75d71fc9ab3fe12f3710dd87e1c554af86d898e7700feb"
+          },
+          {
+            "file": "build-for-testing.log",
+            "bytes": 1118381,
+            "sha256": "c2a60d3ed8bc342e2528615a018d8df2322c00d4410bb37abe3691951391dd5b"
+          },
+          {
+            "file": "report.json",
+            "bytes": 7678,
+            "sha256": "c8aea5122d39b2f4f28b00f0ec481753d52be2eee670dadf45dd60ae37f6a71c"
+          },
+          {
+            "file": "test-summary.json",
+            "bytes": 1007,
+            "sha256": "66d22602a31fe5bcb8b52e19cdb8cf44d27747f35a5e4d2eeff98b7cd168d375"
+          },
+          {
+            "file": "tests.log",
+            "bytes": 53552,
+            "sha256": "afe65c0f32768ed3af49f2d7eb3fc8cdcc17739ce95ebcd8a15dea27e223a326"
+          },
+          {
+            "file": "ui-test-inventory.json",
+            "bytes": 14944,
+            "sha256": "d88835d917f651bd4b55a2584711866f8bfd403f666160abdecac6f04217b5b1"
+          }
+        ]
+      }
+    }
+  ],
+  "focused_totals": {
+    "expected": 2,
+    "started": 2,
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "expectedFailures": 0
+  },
+  "limitations": [
+    "Both cases enable multi-selection but actually select one two-page PDF. These passes do not validate the newly added two-distinct-PDF case.",
+    "Actual runtime17.0.1/21A342 is confirmed by both runtime selection and xcresult device. The xctestrun filename18.5 denotes the Xcode16.4 SDK, not a substituted test runtime.",
+    "Build-before-boot succeeded in these two focused cases. This does not prove the cause of earlier bootstrap failures or whole-suite iOS17 reliability.",
+    "Prelaunch handshakes remain independently unverified. Manifest hashes were recorded by the runner, with matching test command paths; raw .xctestrun files were not archived.",
+    "Old failures remain recorded. No test assertions were removed, no retries were added and the original 240-second class allowance remains unchanged."
+  ]
+}

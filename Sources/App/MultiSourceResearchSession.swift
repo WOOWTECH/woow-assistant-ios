@@ -15,6 +15,16 @@ import WebKit
     private var task: Task<Void, Never>?
     private var operationID: UUID?
     private var settingsChanges: AnyCancellable?
+    private var references: LearningRunSnapshot?
+    #if DEBUG
+    private let useLocalFixtures: Bool
+    /// Capture before cancellation clears `task`; awaiting this handle observes
+    /// the actual run's completion without changing its lifecycle or result.
+    var capturedRunCompletion: Task<Void, Never>? { task }
+    /// Hosted checks select only the existing closed synthetic root set.
+    /// Production/UI construction keeps the default executor and transport.
+    init(useLocalFixtures: Bool = false) { self.useLocalFixtures = useLocalFixtures }
+    #endif
 
     func start(plan: MultiSourceResearchPlan, using chat: ChatSession) {
         cancel(showNotice: false)
@@ -22,24 +32,38 @@ import WebKit
         diagnostic = "phase=starting;failure=none;pages=0"
         do {
             let access = try chat.modelAccess()
+            let snapshot = try chat.learning.captureRunReferences(goal: plan.goal,
+                capabilities: MultiSourceResearchRunner.referenceCapabilities, websiteURLs: plan.sources.map(\.rootURL))
             let executor = MultiSourceResearchWebKitExecutor(sources: plan.sources)
+            #if DEBUG
+            executor.useLocalFixtures = useLocalFixtures
+            #endif
             browsers = plan.sources.compactMap { executor.browsers[$0.id] }
             let id = UUID()
             operationID = id; running = true; status = "正在讀取已確認的來源…"
+            references = snapshot
+            snapshot.onRevoke = { [weak self] in self?.cancel() }
             settingsChanges = chat.$savedSettings.dropFirst().sink { [weak self] _ in self?.cancel() }
             var client = access.client
             #if DEBUG
-            if MultiSourceResearchFixture.enabled { client = MultiSourceResearchFixtureModel() }
+            if MultiSourceResearchFixture.enabled && chat.isUITestMode { client = MultiSourceResearchFixtureModel() }
             #endif
             let model = client
             task = Task { [weak self] in
                 do {
                     let result = try await MultiSourceResearchRunner(client: model).run(plan: plan, browser: executor,
-                        configuration: access.configuration, apiKey: access.key, onEvent: { [weak self] event in
+                        configuration: access.configuration, apiKey: access.key,
+                        references: snapshot.references, validateContext: { [weak self, weak chat] in
+                            guard let owner = self, let currentChat = chat else { throw CancellationError() }
+                            try await MainActor.run {
+                                try owner.validate(snapshot: snapshot, id: id, chat: currentChat, access: access)
+                            }
+                        }, onEvent: { [weak self] event in
                             await self?.record(event, for: id)
                         })
                     try Task.checkCancellation()
                     guard let self, self.operationID == id else { return }
+                    try self.validate(snapshot: snapshot, id: id, chat: chat, access: access)
                     self.result = result
                     self.diagnostic = "phase=finished;failure=none;pages=\(self.receipts.count)"
                     self.status = result.partial ? "已交付部分結果；仍有來源或證據不足。" : "已整理多來源引用；來源獨立性與內容仍需判讀。"
@@ -47,6 +71,7 @@ import WebKit
                 } catch {
                     guard let self, self.operationID == id else { return }
                     self.error = (error as? MultiSourceResearchError)?.errorDescription
+                        ?? (error as? MultiSourceResearchContextError)?.errorDescription
                         ?? WebResearchRunner.failureDescription(for: error).message
                     let code = Self.failureCode(error)
                     self.diagnostic = "phase=failed;failure=\(code);pages=\(self.receipts.count)"
@@ -54,11 +79,24 @@ import WebKit
                     self.finish()
                 }
             }
+        } catch let failure as RunReferenceError {
+            diagnostic = "phase=failed;failure=reference_revoked;pages=0"
+            error = failure.errorDescription; status = "尚未開始研究。"
         } catch {
             diagnostic = "phase=failed;failure=model_configuration;pages=0"
             self.error = "請先在設定完成模型服務與金鑰設定。"
             status = "尚未開始研究。"
         }
+    }
+
+    private func validate(snapshot: LearningRunSnapshot, id: UUID, chat: ChatSession, access: ModelAccess) throws {
+        try snapshot.check()
+        guard operationID == id else { throw CancellationError() }
+        let current = try chat.modelAccess()
+        guard current.configuration.baseURL == access.configuration.baseURL,
+              current.configuration.model == access.configuration.model,
+              current.configuration.maxOutputTokens == access.configuration.maxOutputTokens,
+              current.key == access.key else { throw RunReferenceError.revoked }
     }
 
     func reportInvalidPlan(_ failure: Error) {
@@ -68,6 +106,7 @@ import WebKit
     /// Closed enum mapping: diagnostic values never contain page/model content
     /// or arbitrary error descriptions.
     private static func failureCode(_ error: Error) -> String {
+        if error is MultiSourceResearchContextError { return "context_too_large" }
         guard let error = error as? MultiSourceResearchError else {
             return WebResearchRunner.failureDescription(for: error).code
         }
@@ -95,6 +134,7 @@ import WebKit
     func cancel(showNotice: Bool = true) {
         let wasRunning = running
         operationID = nil; task?.cancel(); task = nil
+        releaseReferences()
         settingsChanges = nil
         browsers.forEach { $0.cancel() }; browsers = []
         running = false
@@ -103,14 +143,22 @@ import WebKit
     }
 
     private func finish() {
+        releaseReferences()
         operationID = nil; task = nil; settingsChanges = nil; running = false
         browsers.forEach { $0.cancel() }; browsers = []
+    }
+    private func releaseReferences() {
+        let snapshot = references; references = nil
+        snapshot?.onRevoke = nil; snapshot?.revoke()
     }
 }
 
 @MainActor final class MultiSourceResearchWebKitExecutor: MultiSourceResearchExecuting {
     let browsers: [String: BrowserSession]
     private let sources: [MultiSourceResearchSource]
+    #if DEBUG
+    var useLocalFixtures = false
+    #endif
     init(sources: [MultiSourceResearchSource]) {
         self.sources = sources
         browsers = Dictionary(uniqueKeysWithValues: sources.map { source in
@@ -129,6 +177,9 @@ import WebKit
         }
         try Task.checkCancellation()
         guard browser.webView.window != nil else { throw WebResearchError.noPage }
+        #if DEBUG
+        if useLocalFixtures { return try await browser.loadResearchFixtureRoot(approvedSource: source) }
+        #endif
         return try await browser.loadResearchRoot(approvedSource: source)
     }
     func openLink(sourceID: String, id: Int) async throws -> WebObservation {

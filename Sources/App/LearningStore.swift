@@ -111,8 +111,9 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
         } catch { self.error = Self.message(error); return false }
     }
 
-    /// Manual profile edits become reference data for the next run. Existing
-    /// contexts are values; do not cancel/rewrite the currently running task.
+    /// Add/delete profile data without inferring replacement ancestry. Manual
+    /// replacements must use replaceProfileReference so a later deletion can
+    /// revoke the old frozen version without changing its text during this run.
     @discardableResult
     func mutateProfile(revokingRemovedEntries: Bool = false, _ change: (inout UserProfileState) throws -> Void) -> Bool {
         notice = nil
@@ -139,8 +140,13 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
         guard generation == expectedGeneration else { throw UserProfileToolError.staleRevision }
         var next = profile
         let receipt = try review.apply(to: &next, now: Date())
+        let replacedID = review.op == .replace ? try replacedProfileID(in: next) : nil
+        if replacedID != nil, receipt.id == nil { throw UserProfileError.invalidState }
         do { try persist(memory: memory, skills: skills, profile: next) }
         catch { self.error = Self.message(error); throw error }
+        if let previous = replacedID, let replacement = receipt.id {
+            recordProfileReplacement(from: previous, to: replacement)
+        }
         if review.op == .delete {
             revokeDeletedProfileReferences(in: next)
         }
@@ -148,6 +154,35 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
         error = nil
         notice = "個人檔案已儲存，下一次對話任務開始時生效。"
         return receipt
+    }
+
+    /// Explicit manual replacement preserves frozen text while tracking which
+    /// current row's later deletion must revoke it. Publish lineage only after
+    /// the encrypted write succeeds, before publishing the changed profile.
+    @discardableResult
+    func replaceProfileReference(segment: String, replacement: String, expectedRevision: UUID? = nil) -> Bool {
+        notice = nil
+        do {
+            guard available else { throw LearningFileError.notLoaded }
+            if let expectedRevision, profile.revision != expectedRevision { throw MemoryError.stalePlan }
+            var next = profile
+            let entry = try next.replace(segment: segment, replacement: replacement)
+            let previous = try replacedProfileID(in: next)
+            try persist(memory: memory, skills: skills, profile: next)
+            recordProfileReplacement(from: previous, to: entry.id)
+            profile = next; error = nil
+            notice = "個人檔案已儲存，下一次對話任務開始時生效。"
+            return true
+        } catch { self.error = Self.message(error); return false }
+    }
+
+    /// Called only after one explicit state.replace or reviewed replace, never
+    /// to infer lineage from an arbitrary add/delete mutation closure.
+    private func replacedProfileID(in next: UserProfileState) throws -> UUID {
+        let removed = Set(profile.snapshot().entries.map(\.id))
+            .subtracting(next.snapshot().entries.map(\.id))
+        guard removed.count == 1, let previous = removed.first else { throw UserProfileError.invalidState }
+        return previous
     }
 
     func commitMemoryTool(_ review: MemoryToolReview, expectedGeneration: UUID,

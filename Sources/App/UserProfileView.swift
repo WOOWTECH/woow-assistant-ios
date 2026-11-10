@@ -156,10 +156,15 @@ private struct UserProfileEditor: View {
             }
             ToolbarItem(placement: .confirmationAction) {
                 Button("儲存") {
-                    let saved = store.mutateProfile { state in
-                        guard state.revision == baseRevision else { throw MemoryError.stalePlan }
-                        if let entry { try state.replace(segment: entry.text, replacement: text) }
-                        else { try state.add(text: text) }
+                    let saved: Bool
+                    if let entry {
+                        saved = store.replaceProfileReference(segment: entry.text, replacement: text,
+                                                              expectedRevision: baseRevision)
+                    } else {
+                        saved = store.mutateProfile { state in
+                            guard state.revision == baseRevision else { throw MemoryError.stalePlan }
+                            try state.add(text: text)
+                        }
                     }
                     if saved { dismiss() }
                 }

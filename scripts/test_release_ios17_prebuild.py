@@ -21,9 +21,9 @@ METHOD = "WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableA
 class PrebuildTests(unittest.TestCase):
     def exercise(self, *, enabled=True, build_exit=0, manifest_kind="valid", test_exit=0, summary_pass=True,
                  scope="startup-smoke"):
-        method = ios17.TEST_SCOPES[scope][0]
+        methods = ios17.TEST_SCOPES[scope]
         events, commands = [], []
-        summary = {"result": "Passed" if summary_pass else "Failed", "totalTestCount": 1, "passedTests": int(summary_pass),
+        summary = {"result": "Passed" if summary_pass else "Failed", "totalTestCount": len(methods), "passedTests": len(methods) - int(not summary_pass),
                    "failedTests": int(not summary_pass), "skippedTests": 0, "expectedFailures": 0}
 
         def command(args, *unused, **kwargs):
@@ -68,10 +68,11 @@ class PrebuildTests(unittest.TestCase):
         def test(args, log, budget, observer):
             events.append("test")
             commands.append((args, budget))
-            _, cls, name = method.split("/")
-            log.write(("Test Case '-[WoowAssistantUITests.%s %s]' started.\n"
-                       "Test Case '-[WoowAssistantUITests.%s %s]' passed (1.000 seconds).\n"
-                       % (cls, name, cls, name)).encode())
+            for method in methods:
+                _, cls, name = method.split("/")
+                log.write(("Test Case '-[WoowAssistantUITests.%s %s]' started.\n"
+                           "Test Case '-[WoowAssistantUITests.%s %s]' passed (1.000 seconds).\n"
+                           % (cls, name, cls, name)).encode())
             return subprocess.CompletedProcess(args, test_exit)
 
         class Observer:
@@ -88,7 +89,7 @@ class PrebuildTests(unittest.TestCase):
                 (ios17, "generate_project", {"return_value": output / "Project.xcodeproj"}),
                 (ios17, "verify_settings", {}),
                 (ios17, "ui_inventory", {"return_value": {"inventory_sha256": "synthetic", "live_tests_excluded": []}}),
-                (ios17, "selected_ui_tests", {"return_value": [method]}),
+                (ios17, "selected_ui_tests", {"return_value": methods}),
                 (ios17.subprocess, "run", {"side_effect": child}),
                 (watchdog, "validate_gate", {}), (watchdog, "runtime_root", {}),
                 (watchdog, "PublicProcessIdentity", {}), (watchdog, "OwnedProcesses", {}),
@@ -165,13 +166,16 @@ class PrebuildTests(unittest.TestCase):
             self.assertEqual(report["prebuild_exit_code"], 0)
 
     def test_pdf_followups_keep_exact_selection_and_result_gates(self):
-        for scope in ("pdf-assembly", "pdf-assembly-copy"):
+        for scope in ("pdf-assembly", "pdf-assembly-copy", "documents-read", "documents-output"):
             with self.subTest(scope=scope):
                 events, commands, report = self.exercise(scope=scope)
                 self.assertLess(events.index("build"), events.index("boot"))
                 command = next(args for args, _ in commands if "test-without-building" in args)
                 self.assertEqual([x for x in command if x.startswith("-only-testing:")],
-                                 ["-only-testing:" + ios17.TEST_SCOPES[scope][0]])
+                                 ["-only-testing:" + method for method in ios17.TEST_SCOPES[scope]])
+                expected_budget = 1800 if scope in ios17.DOCUMENT_SCOPES else 4800
+                self.assertEqual(report["build_test_timeout_seconds"], expected_budget)
+                self.assertLess(report["remaining_test_timeout_seconds"], expected_budget)
                 self.assertTrue(report["selected_tests_succeeded"])
                 self.assertFalse(report["full_acceptance_succeeded"])
                 self.exercise(scope=scope, summary_pass=False)
@@ -180,7 +184,8 @@ class PrebuildTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as folder, patch.dict(ios17.os.environ, {}, clear=True):
             output = Path(folder) / "result"
             for scope, sample in [("all", True), ("ui-documents", True), ("startup-smoke", False), ("startup-smoke", True),
-                                  ("pdf-assembly", True), ("pdf-assembly-copy", True)]:
+                                  ("pdf-assembly", True), ("pdf-assembly-copy", True),
+                                  ("documents-read", True), ("documents-output", True)]:
                 with self.subTest(scope=scope, sample=sample), self.assertRaises(ReleaseError):
                     ios17.execute(output, "17.0.1", False, scope, prelaunch_daemon=True,
                                   sample_bootstrap=sample, build_before_boot=True)

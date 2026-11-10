@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "run_id": 42895974099,
+  "job_id": 130109093098,
+  "artifact_id": 13801216802,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42895974099",
+  "commit": "7b0b89ab9c4d6c37b82eabececec9c71fb3998fe",
+  "conclusion": "success",
+  "artifact_sha256": "f7b72f5463bc0123ced2a5508290f312c8d94b7f607e79b8fe1b5e3d56afa82f",
+  "test_source_sha256": "f749a606e2a53ab3898163e5225664b7f23c60a612f1719729839913203e3cfa",
+  "test_summary": {
+    "devicesAndConfigurations": [
+      {
+        "device": {
+          "architecture": "arm64",
+          "deviceId": "DBB1C515-9D2C-4D3A-81CF-F8A39D0D3215",
+          "deviceName": "Woow-CI-1abd81dbeaec4cf5b9866319de2aa23e",
+          "modelName": "iPhone SE (3rd generation)",
+          "osBuildNumber": "22F77",
+          "osVersion": "18.5",
+          "platform": "iOS Simulator"
+        },
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "passedTests": 1,
+        "skippedTests": 0,
+        "testPlanConfiguration": {
+          "configurationId": "1",
+          "configurationName": "Test Scheme Action"
+        }
+      }
+    ],
+    "environmentDescription": "WoowAssistant · Built with macOS 15.8.2",
+    "expectedFailures": 0,
+    "failedTests": 0,
+    "finishTime": 1794343314.887,
+    "passedTests": 1,
+    "result": "Passed",
+    "skippedTests": 0,
+    "startTime": 1794343066.702,
+    "statistics": [],
+    "testFailures": [],
+    "title": "Test - WoowAssistant",
+    "topInsights": [],
+    "totalTestCount": 1
+  },
+  "completion_gate": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 1,
+      "passedTests": 1,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 1,
+    "completed_ui_count": 1,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "stages": {
+    "native_app_build": "success",
+    "test_target_compilation": "success",
+    "explicit_public_permission_prompt": "observed",
+    "system_authorization": "authorized",
+    "actual_springboard_banner": "observed",
+    "actual_banner_tap_attribution": "this App runningForeground, root Chat selected and notification settings absent",
+    "enabled_relaunch_persistence": "passed",
+    "disable_relaunch_persistence": "passed",
+    "system_permission_after_disable": "retained",
+    "audible_sound": "not_verified"
+  },
+  "banner_evidence": {
+    "attachment": "DF855766-6970-4643-8FBC-0C36DA4EB5CD.png",
+    "screenshot_file": "task-notifications-native-42895974099-banner.png",
+    "screenshot_sha256": "18787e371ebfda72895d4cb42b0248ce6ee6390ac3f23bfb72336f37f09fd630",
+    "matching_subtree_attachment": "FE674610-779B-4E6E-8173-BFFDE8B6FE07.txt",
+    "matching_subtree_labels": [
+      "通知測試",
+      "這是渥屋助理的測試通知。"
+    ],
+    "app_icon_visible": true,
+    "separate_appname_text_visible": false
+  },
+  "original_failure_preserved": "task-notifications-native-42890969758.json",
+  "new_approval_case_included": false,
+  "scope": "Original settings/test-notification case only; no pending MCP approval, no audible-sound claim."
+}

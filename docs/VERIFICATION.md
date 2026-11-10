@@ -1,5 +1,72 @@
 # Verification — 2026-11-11
 
+
+## Exact iOS 17 startup completed after prebuild
+
+At `e963698`, [42893709163](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42893709163)
+passed the single startup method on exact iOS 17.0.1 / 21A342, iPhone 15 / arm64,
+with zero skips. A successful 180.240-second `build-for-testing` preceded creation
+and cold boot; one `test-without-building` used the same generated manifest path.
+The method completed in 28.527 seconds. The shared budget and completion gates
+were unchanged. This does not establish the original bootstrap stall's root cause,
+a separately verified daemon handshake, PDF flow or full iOS 17 acceptance.
+[Bounded original commands, events and manifest-hash limits](evidence/ios17-prebuild-startup-e963698.json).
+
+## iOS 17 PDF and two notification variants completed
+
+At `aa676a3`, exact iOS 17.0.1 / 21A342 completed both PDF assembly flows:
+[original](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42897576797)
+1/1 in 167.713 seconds and [explicit copy](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42897582946)
+1/1 in 152.902 seconds, zero skips. Both selected one two-page PDF and completed
+reordering, separate output approval and native export cancellation with the result
+preserved. [Exact runtime and method evidence](evidence/ios17-pdf-assembly-aa676a3.json).
+
+At `7b0b89a`, the original notification UI case passed on both
+[SE / iOS 18.5](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42895974099)
+and [current / iOS 26.2](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42895981647),
+each 1/1 with zero skips. Actual permission, system banner, tap-to-root Chat and
+persisted opt-in/opt-out all completed. Audible sound and the added pending-approval
+case are separate. [SE evidence](evidence/task-notifications-native-42895974099.json),
+[current evidence](evidence/task-notifications-native-42895981647.json).
+
+The real-model PDF question case at `7b0b89a` failed before the Done tap: its new
+wait helper rejected an already-ready native control after a slow synchronous AX
+read. No model request occurred. `ae381fc` repairs that readiness handling while
+retaining the full 300-second case and 285-second cleanup boundary, original
+question, native operations and exact citations. Sixteen local wait regressions
+pass; the old helper fails the reproduced scenario. [Original native failure](evidence/live-document-query-7b0b89a-ios18.json),
+[local correction](evidence/document-query-wait-regression-local.json).
+
+The new two-distinct-PDF native case at `92a9ef4` is pending. Local checks pass
+48 Debug / 24 Release with real PDFKit, separate read grants, actual interleaved
+output and negative output/original-file checks. It never injects a picker selection
+or grants authorization through fixture data. [Scope and hashes](evidence/pdf-assembly-two-source-local.json).
+
+## Multi-source references integrated; new native acceptance pending
+
+Multi-source research now reads immutable profile, memory, approved skills and
+knowledge for the explicitly approved roots. The same snapshot is checked around
+model and browser awaits; removing captured data cancels the pending run. Local
+checks pass 36 new core, 74 existing core, 197 Debug / 31 Release App assertions,
+plus single-site App 378/378 and unchanged Chat regressions. A captured profile
+replacement followed by deleting that replacement now revokes its ancestor;
+late-reply checks wait for actual run completion before testing side effects. The new explicit combined context
+ceiling retains actual receipts and never promotes saved text into citations.
+[Exact scope and local reports](RUN_REFERENCES.md). Nine added native methods
+(four core, five hosted App) are registered; local macOS execution is not iOS acceptance.
+
+At `f28d0bb`, SE / iOS 18.5 [42890996168](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42890996168)
+passed all five browser-learning and multi-source UI methods, zero skips. It proves
+those source-pinned flows and predates this multi-source reference integration.
+[Methods and exact source](evidence/ui-learning-f28d0bb-se.json).
+
+The additional notification case is explicitly registered: a real system approval
+banner must reopen the same pending proposal UUID, leave it unexecuted, and execute
+exactly once only after the native approval tap. The UUID observation is restricted
+to the strict isolated DEBUG fixture; fourteen parser/gate checks and syntax checks
+pass locally. OS delivery and this complete native flow remain pending.
+[Case scope](TASK_NOTIFICATION_APPROVAL_NATIVE_PLAN.md).
+
 ## Integrated references and notifications passed native logic checks
 
 At `f28d0bb`, [42890964046](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42890964046)
@@ -16,7 +83,7 @@ matcher required that extra name label. The candidate now matches exact fixed
 fields inside a bounded SpringBoard subtree; attribution still requires tapping
 that actual banner and reaching this App in the foreground, with root Chat visible
 and the pushed notification settings gone. Failed observations retain a bounded
-transient AX candidate and screenshots. It has not yet passed native retesting.
+transient AX candidate and screenshots. Both SE and current native retests passed at `7b0b89a`, as recorded above.
 [Original failure and recording observation](evidence/task-notifications-native-42890969758.json).
 
 The older `4f26118` profile matrix completed **6/9 by xcresult, zero skips**;
@@ -28,7 +95,7 @@ method bodies, data checks and 240-second limits remain unchanged. Launch failur
 is not claimed fixed. [Original method-specific evidence](evidence/ui-profile-4f26118.json).
 
 
-## PDF assembly: SE original and current user-copy completed
+## PDF assembly: SE, Large original and current user-copy completed
 
 At `f28d0bb`, the ordinary SE / iOS 18.5 case
 [42890982515](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42890982515)
@@ -40,7 +107,9 @@ entered the exact reversed page order, produced a two-page PDF, and received a
 native export-cancel callback while retaining the identical exportable result.
 [Per-device stages and source hashes](evidence/pdf-assembly-f28d0bb.json).
 These cases select one two-page PDF in a picker allowing multiple selection;
-this does not accept cross-file merging. Large-device collection remains separate.
+this does not accept cross-file merging. The Large / iOS 18.5 original case
+[42890989077](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42890989077)
+also passed 1/1, zero skips. [Final three-case evidence](evidence/pdf-assembly-f28d0bb-final.json).
 
 ## Actual PDF question: retained result reached, whole-case deadline still failed
 

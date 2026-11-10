@@ -210,6 +210,7 @@ targets:
       - Tests/AssistantBrowserIntegrationTests
       - scripts/CheckResearchSourceDiscoveryApp.swift
       - scripts/CheckLearningRunContextApp.swift
+      - scripts/CheckMultiSourceReferenceApp.swift
       - scripts/CheckTaskNotificationApp.swift
       - Tests/AssistantDomainTests/TaskNotificationChecks.swift
     dependencies:
