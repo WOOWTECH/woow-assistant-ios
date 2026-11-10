@@ -1,0 +1,71 @@
+name: Inspect preserved iOS 17 runner failures
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  export-preserved-diagnostics:
+    runs-on: macos-15-intel
+    timeout-minutes: 15
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
+    steps:
+      # Fixed synthetic test runs only. No rebuild, simulator boot, user files,
+      # live-service credentials, or replacement of the original failed result.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42797738681
+          name: ios17-17.0.1-42797738681
+          path: preserved/startup
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42797769776
+          name: ios17-17.0.1-42797769776
+          path: preserved/skills
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42797754152
+          name: ios17-17.0.1-42797754152
+          path: preserved/learning
+      - name: Export existing XCTest diagnostics without rerunning tests
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, subprocess
+          output = pathlib.Path('diagnostics')
+          output.mkdir()
+          results = []
+          for scope in ('startup', 'skills', 'learning'):
+              matches = list(pathlib.Path('preserved', scope).rglob('Tests.xcresult'))
+              result = {'scope': scope, 'bundle_count': len(matches), 'tests_rerun': False}
+              if len(matches) != 1:
+                  result['status'] = 'bundle_missing_or_ambiguous'
+              else:
+                  try:
+                      with (output / (scope + '-export.log')).open('wb') as log:
+                          process = subprocess.run(['xcrun', 'xcresulttool', 'export', 'diagnostics',
+                              '--path', str(matches[0]), '--output-path', str(output / scope)],
+                              stdout=log, stderr=subprocess.STDOUT, timeout=120)
+                      result.update(status='exported' if process.returncode == 0 else 'export_failed',
+                                    exit_code=process.returncode)
+                  except subprocess.TimeoutExpired:
+                      result['status'] = 'export_timed_out'
+              results.append(result)
+              (output / 'report.json').write_text(json.dumps(results, indent=2) + '\n')
+          print(json.dumps(results))
+          if any(item.get('status') != 'exported' for item in results): raise SystemExit(1)
+          PY
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: preserved-ios17-runner-diagnostics-${{ github.run_id }}
+          path: diagnostics/
+          retention-days: 14
+          if-no-files-found: error

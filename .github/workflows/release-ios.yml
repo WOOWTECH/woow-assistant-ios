@@ -175,6 +175,13 @@ jobs:
           if [ -d build/ios17/Tests.xcresult ]; then
             xcrun xcresulttool export attachments --path build/ios17/Tests.xcresult --output-path build/ios17/screenshots
           fi
+      - name: 匯出 hosted XCTest runner 診斷
+        if: always() && inputs.mode == 'ios17-hosted'
+        timeout-minutes: 2
+        run: |
+          if [ -d build/ios17/Tests.xcresult ]; then
+            xcrun xcresulttool export diagnostics --path build/ios17/Tests.xcresult --output-path build/ios17/runner-diagnostics
+          fi
       - name: 保留實際 runtime 與測試證據
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -186,6 +193,7 @@ jobs:
             build/ios17/*.xcresult
             build/ios17/screenshots/
             build/ios17/boot-diagnostics/
+            build/ios17/runner-diagnostics/
           if-no-files-found: warn
           retention-days: 14
       - name: 清理此次驗證的建置資料
