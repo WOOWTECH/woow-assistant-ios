@@ -193,25 +193,85 @@ final class BrowserWorkspace: ObservableObject {
     }
     func removeWebsiteData(_ records: [WKWebsiteDataRecord]) {
         guard !isClearingWebsiteData else { return }
+        #if DEBUG
+        let started = ProcessInfo.processInfo.systemUptime
+        let selectedNames = Set(records.map(\.displayName))
+        var removalEvents: [[String: String]] = []
+        // Only the strictly gated synthetic login fixture persists diagnostics.
+        // Hosted tests receive the same bounded, value-free phases in stdout.
+        let diagnosticURL = BrowserLoginFixture.enabled == nil ? nil : FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?
+            .appendingPathComponent("BrowserWebsiteRemovalDiagnostics.json")
+        func trace(_ phase: String, _ counts: [String: Int] = [:]) {
+            guard removalEvents.count < 64 else { return }
+            let elapsed = Int((ProcessInfo.processInfo.systemUptime - started) * 1_000)
+            var event = counts.mapValues(String.init)
+            event["phase"] = phase; event["elapsedMs"] = String(elapsed)
+            removalEvents.append(event)
+            print("BROWSER_WEBSITE_REMOVAL " + event.keys.sorted().map { "\($0)=\(event[$0]!)" }.joined(separator: " "))
+            if let diagnosticURL,
+               let data = try? JSONSerialization.data(withJSONObject: removalEvents, options: [.sortedKeys]),
+               data.count <= 16_384 {
+                do { try data.write(to: diagnosticURL, options: .atomic) }
+                catch { print("BROWSER_WEBSITE_REMOVAL diagnosticWriteFailed=1") }
+            }
+        }
+        trace("begin", ["records": records.count, "sessions": sessions.count,
+                        "persistent": websiteDataStore.isPersistent ? 1 : 0])
+        #endif
         isClearingWebsiteData = true
         for item in downloads.items where item.status.isActive { downloads.cancel(id: item.id) }
         let oldSessions = Array(sessions.values)
         for session in oldSessions { session.cancel() }
         Task { [weak self] in
             var ready = true
-            for session in oldSessions {
-                if await !session.discardPageForDataRemoval() { ready = false }
+            for (index, session) in oldSessions.enumerated() {
+                #if DEBUG
+                trace("pageBegin", ["index": index])
+                #endif
+                let stopped = await session.discardPageForDataRemoval()
+                if !stopped { ready = false }
+                #if DEBUG
+                trace("pageFinished", ["index": index, "stopped": stopped ? 1 : 0])
+                #endif
             }
             guard let self else { return }
             self.sessions.removeAll()
             self.selected = self.makeSession(id: self.library.selectedID)
+            #if DEBUG
+            trace("sessionsReplaced", ["ready": ready ? 1 : 0])
+            #endif
             guard ready else {
                 self.error = "網頁尚未完全停止，網站資料未清除；請重試。"
                 self.isClearingWebsiteData = false; return
             }
+            #if DEBUG
+            trace("removeRequested")
+            #endif
             self.websiteDataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: records) { [weak self] in
                 guard let self else { return }
-                self.isClearingWebsiteData = false; self.refreshWebsiteRecords()
+                #if DEBUG
+                trace("removeCompleted")
+                if BrowserLoginFixture.enabled != nil {
+                    self.websiteDataStore.httpCookieStore.getAllCookies { cookies in
+                        trace("fixtureCookies", ["remaining": cookies.filter { $0.name == BrowserLoginFixture.cookieName }.count])
+                    }
+                }
+                #endif
+                self.isClearingWebsiteData = false
+                #if DEBUG
+                self.websiteDataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { [weak self] remaining in
+                    self?.websiteRecords = remaining.sorted { $0.displayName < $1.displayName }
+                    let selected = remaining.filter { selectedNames.contains($0.displayName) }
+                    let classifiedTypes: Set<String> = [WKWebsiteDataTypeCookies, WKWebsiteDataTypeMemoryCache, WKWebsiteDataTypeDiskCache]
+                    trace("recordsRefreshed", ["allRecords": remaining.count, "selectedRecords": selected.count,
+                                              "selectedCookieRecords": selected.filter { $0.dataTypes.contains(WKWebsiteDataTypeCookies) }.count,
+                                              "selectedMemoryCacheRecords": selected.filter { $0.dataTypes.contains(WKWebsiteDataTypeMemoryCache) }.count,
+                                              "selectedDiskCacheRecords": selected.filter { $0.dataTypes.contains(WKWebsiteDataTypeDiskCache) }.count,
+                                              "selectedOtherDataTypes": Set(selected.flatMap { $0.dataTypes }).subtracting(classifiedTypes).count])
+                }
+                #else
+                self.refreshWebsiteRecords()
+                #endif
             }
         }
     }

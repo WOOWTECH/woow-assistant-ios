@@ -903,19 +903,33 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         cancel()
         guard let view = storedWebView else { return true }
         guard discardCompletion == nil else { return false }
+        #if DEBUG
+        print("BROWSER_WEBSITE_DISCARD phase=begin loading=\(view.isLoading ? 1 : 0) attached=\(view.window == nil ? 0 : 1) delegate=\(view.navigationDelegate == nil ? 0 : 1)")
+        #endif
         return await withCheckedContinuation { continuation in
             discardingPage = true; discardCompletion = continuation
             view.uiDelegate = nil
             discardTimeout = Task { [weak self] in
                 do { try await Task.sleep(nanoseconds: 10_000_000_000) } catch { return }
+                #if DEBUG
+                print("BROWSER_WEBSITE_DISCARD phase=timeout")
+                #endif
                 self?.finishDiscard(false)
             }
             discardNavigation = view.loadHTMLString("<!doctype html><html><body></body></html>", baseURL: nil)
-            if discardNavigation == nil { finishDiscard(false) }
+            if discardNavigation == nil {
+                #if DEBUG
+                print("BROWSER_WEBSITE_DISCARD phase=noNavigation")
+                #endif
+                finishDiscard(false)
+            }
         }
     }
     private func finishDiscard(_ success: Bool) {
         guard let completion = discardCompletion else { return }
+        #if DEBUG
+        print("BROWSER_WEBSITE_DISCARD phase=finished success=\(success ? 1 : 0) blank=\(storedWebView?.url?.absoluteString == "about:blank" ? 1 : 0) loading=\(storedWebView?.isLoading == true ? 1 : 0)")
+        #endif
         discardCompletion = nil; discardTimeout?.cancel(); discardTimeout = nil
         discardNavigation = nil
         if success { storedWebView?.navigationDelegate = nil; storedWebView?.uiDelegate = nil }
