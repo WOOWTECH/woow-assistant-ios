@@ -7,6 +7,7 @@ A disposable simulator is created and deleted; physical devices are untouched.
 import argparse
 import json
 import os
+import platform
 from pathlib import Path
 import subprocess
 import sys
@@ -64,7 +65,8 @@ def execute(output, requested, download):
         raise ReleaseError("只接受 iOS 17.x。")
     output.mkdir(parents=True, exist_ok=False)
     report = {"requested_runtime": requested, "runtime_tested": False,
-              "deployment_target": "17.0", "physical_devices_used": False}
+              "deployment_target": "17.0", "physical_devices_used": False,
+              "host_architecture": platform.machine(), "host_macos": platform.mac_ver()[0]}
     simulator = None
     try:
         report["xcode"] = run(["xcodebuild", "-version"], "需要完整 Xcode").decode().strip()
@@ -82,7 +84,17 @@ def execute(output, requested, download):
                         "建立此次驗證專用 Simulator").decode().strip()
         # Validate before using the identifier for any mutation.
         uuid.UUID(simulator)
-        run(["xcrun", "simctl", "bootstatus", simulator, "-b"], "啟動指定 iOS 17 Simulator", timeout=300)
+        report["phase"] = "booting"
+        # Newly installed runtimes can spend several minutes preparing their
+        # shared caches. Keep bounded boot output rather than hiding the cause.
+        try:
+            run(["xcrun", "simctl", "bootstatus", simulator, "-b"], "啟動指定 iOS 17 Simulator",
+                timeout=900, diagnostic_log=output / "simulator-boot.log")
+        finally:
+            devices = json.loads(run(["xcrun", "simctl", "list", "devices", "--json"], "取得測試裝置狀態"))
+            own = [item for group in devices.get("devices", {}).values() for item in group if item.get("udid") == simulator]
+            report["simulator_state"] = [{key: item.get(key) for key in ("state", "isAvailable", "availabilityError")} for item in own]
+        report["phase"] = "testing"
         with (output / "tests.log").open("wb") as log:
             result = subprocess.run(common + ["-destination", "platform=iOS Simulator,id=" + simulator,
                 "-resultBundlePath", str(output / "Tests.xcresult"), "-parallel-testing-enabled", "NO",
@@ -92,6 +104,7 @@ def execute(output, requested, download):
         if result.returncode:
             raise ReleaseError("iOS 17 建置／XCTest 失敗；請查看 tests.log 與 Tests.xcresult。")
         report["runtime_tested"] = True
+        report["phase"] = "passed"
     finally:
         (output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
         if simulator:

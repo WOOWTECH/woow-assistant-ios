@@ -29,7 +29,7 @@ defaults:
     shell: bash
 
 concurrency:
-  group: release-ios-${{ github.ref }}-${{ inputs.mode }}
+  group: release-ios-${{ github.ref }}-${{ inputs.mode }}-${{ inputs.ios17_version }}
   cancel-in-progress: false
 
 jobs:
