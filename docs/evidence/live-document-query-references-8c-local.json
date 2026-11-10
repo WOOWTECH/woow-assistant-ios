@@ -1,0 +1,83 @@
+{
+  "base_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+  "base_match_verified": true,
+  "binary_sha256": "15cb941acfc784454a2cd57653c175a2d69f355fb87da4ee296f73187497156e",
+  "credentials_recorded": false,
+  "evidence_kind": "actual_model_local_macos_app_pdf_reference",
+  "interpretation": {
+    "actual_http_attempts_cumulative": 4,
+    "confirmed": [
+      "pinned catalog validation",
+      "actual PDFKit synthetic document extraction",
+      "temporary encrypted LearningStore persisted and reopened",
+      "all four actual Session request input/reference boundaries verified",
+      "actual model search and both page reads",
+      "runtime completed with two citations",
+      "temporary state cleanup"
+    ],
+    "failed_assertion": "Completed answer did not begin with the exact stored preference prefix followed by a space.",
+    "false_fields_after_early_failure": "exactReadLedger, sourceUnchanged, and storageUnchanged remain their initial false values because the earlier preference assertion stopped execution; these are not separate observed defects.",
+    "maximum_authorized_http_attempts": 12,
+    "native_ios_ui_acceptance": false,
+    "no_retry": true,
+    "not_executed": [
+      "independent post-result exact citation ledger assertions",
+      "post-result immutable source assertion",
+      "current_request_priority case",
+      "post-cases encrypted storage byte equality assertion"
+    ],
+    "remaining_allowance_used": false,
+    "root_cause_limit": "The strict preference prefix check failed. No raw reply was retained, so this report does not classify the exact answer deviation."
+  },
+  "no_retry": true,
+  "raw_reply_or_stderr_recorded": false,
+  "report_sha256": "72dc75bd58fd9f5470f1f2a8f86ef2e928fb0a4098db3309ae9a3345b5f55289",
+  "result": {
+    "cases": [
+      {
+        "attempts": 4,
+        "citations": 2,
+        "consentRequired": true,
+        "corrections": 0,
+        "exactReadLedger": false,
+        "failure": "preference",
+        "id": "saved_preference",
+        "modelCalls": 4,
+        "passed": false,
+        "prefixMatched": false,
+        "reads": 2,
+        "responses": 4,
+        "results": 1,
+        "searches": 1,
+        "seconds": 12.421443094,
+        "sourceUnchanged": false,
+        "terminal": "completed",
+        "verifiedInputs": 4
+      }
+    ],
+    "catalogVerified": true,
+    "cleanupSucceeded": true,
+    "encryptedStoreReopened": true,
+    "failure": "preference",
+    "maximumHTTPAttempts": 12,
+    "model": {
+      "attempts": 4,
+      "budgetRejections": 0,
+      "failure": "none",
+      "httpStatus": 0,
+      "rejectedInputs": 0,
+      "responses": 4,
+      "verifiedInputs": 4
+    },
+    "nativeIOSUI": false,
+    "result": "FAIL",
+    "schemaVersion": 1,
+    "seconds": 12.557085033,
+    "storageUnchanged": false,
+    "syntheticSourceOnly": true
+  },
+  "schema_version": 1,
+  "single_actual_invocation": true,
+  "source_scope": "Frozen 8c product checkout plus the new reference harness; no production substitution.",
+  "source_sha256": "fc0005b74d107bdfd05dbb8d7800a651c65a96a2a59df6cb76b861a36c76bdf3"
+}
