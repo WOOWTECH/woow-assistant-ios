@@ -309,8 +309,13 @@ final class BrowserLearningUITests: XCTestCase {
         XCTAssertTrue(initialStatus.waitForExistence(timeout: 5))
         XCTAssertEqual(initialStatus.label, "輸入網址開始瀏覽")
         XCTAssertFalse(app.buttons["browser.research"].isEnabled)
+        // DEBUG startup removes website data asynchronously. The failed Large
+        // event-dispatch snapshot showed this field present but Disabled.
+        // Wait for that reset to finish before the single tap and submission.
+        let address = app.textFields["browser.address"]
+        waitFor(address, predicate: "exists == true AND enabled == true AND hittable == true", timeout: 30)
         // Return submits the address exactly once through BrowserView.onSubmit.
-        enter(fixtureURL + "\n", into: app.textFields["browser.address"])
+        enter(fixtureURL + "\n", into: address)
         // Recorded iOS 18 WebContent startup alone took 57.481s. This remains
         // a bounded wait for real page readiness, not a fixed sleep or a retry.
         waitForLabel(app.staticTexts["browser.status"], "頁面已載入", timeout: 75)

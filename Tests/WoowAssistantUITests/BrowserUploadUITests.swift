@@ -479,51 +479,34 @@ final class BrowserUploadUITests: XCTestCase {
         print("UPLOAD_INPUT_TAP x=\(point.x) y=\(point.y) width=\(frame.width) height=\(frame.height)")
         let presentationStarted = ProcessInfo.processInfo.systemUptime
         input.coordinate(withNormalizedOffset: .zero).withOffset(offset).tap()
+        let cancel = nativeCancel
         var observedCancel = false
-        var observedSourceAction = false
-        var sourceAction: XCUIElement?
-        let chooserReady = XCTNSPredicateExpectation(predicate: NSPredicate { [weak self] _, _ in
-            guard let self else { return false }
-            let cancel = self.nativeCancel
+        var readinessChecks = 0
+        let chooserReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            readinessChecks += 1
             if cancel.exists {
                 observedCancel = true
-                if cancel.isHittable { return true }
-            }
-            if let files = self.chooseFilesAction {
-                observedSourceAction = true
-                sourceAction = files
-                return true
+                return cancel.isHittable
             }
             return false
         }, object: nil)
-        // e1024aa SE recording: a single tap opens Files, initially with a blank
-        // Recents sheet; Cancel/content appear later while XCTest is still
-        // resolving the remote control. Large fails the same 15-second wait.
-        // Bound cold presentation readiness; never tap the input again.
+        // This fixture accepts only .txt,text/plain. WKFileUploadPanel's
+        // showDocumentPickerMenu directly presents Files for non-image/video
+        // types. The 1b iOS 26 recording confirms a blank native sheet followed
+        // by Files, not a source menu. Do not issue three extra AX queries per
+        // poll for source containers that this fixture cannot present.
+        // https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/ios/forms/WKFileUploadPanel.mm
+        // Keep the same bound and single input tap; actual Cancel must be ready.
         let readiness = XCTWaiter.wait(for: [chooserReady], timeout: 45)
         let elapsedMilliseconds = Int((ProcessInfo.processInfo.systemUptime - presentationStarted) * 1_000)
-        print("UPLOAD_CHOOSER_READY ready=\(readiness == .completed) elapsedMs=\(elapsedMilliseconds) cancelSeen=\(observedCancel) sourceSeen=\(observedSourceAction)")
+        print("UPLOAD_CHOOSER_READY ready=\(readiness == .completed) elapsedMs=\(elapsedMilliseconds) cancelSeen=\(observedCancel) nativeChecks=\(readinessChecks) sourceChecks=0")
         XCTAssertEqual(readiness, .completed,
-                       "WebKit must present the native file-source menu or Files picker.")
-        if let sourceAction { sourceAction.tap() }
-        requireHittable(nativeCancel, message: "The native Files document picker must actually open.")
+                       "WebKit must present Files with an accessible native Cancel control.")
+        requireHittable(cancel, message: "The native Files document picker must actually open.")
     }
 
     private var nativeCancel: XCUIElement {
         app.navigationBars.buttons.matching(NSPredicate(format: "label IN %@", ["取消", "Cancel"])).firstMatch
-    }
-
-    private var chooseFilesAction: XCUIElement? {
-        let names = ["選擇檔案", "選擇檔案⋯", "選擇檔案…", "Choose File", "Choose Files", "Choose File…", "Browse…"]
-        let predicate = NSPredicate(format: "label IN %@", names)
-        // Resolving every app button crossed remote WebKit AX at the 776
-        // readiness deadline and failed with "Interrupted by waiter". Inspect
-        // only native presentation containers and the one expected action.
-        for buttons in [app.sheets.buttons, app.popovers.buttons, app.menus.buttons] {
-            let candidate = buttons.matching(predicate).firstMatch
-            if candidate.exists && candidate.isHittable { return candidate }
-        }
-        return nil
     }
 
     private func selectSyntheticFile() {
