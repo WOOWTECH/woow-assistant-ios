@@ -250,8 +250,7 @@ final class SkillExecutionUITests: XCTestCase {
         extractFixtureForExport()
         openNativeExporter()
         chooseLocalExportFolder()
-        let save = app.navigationBars.buttons.matching(NSPredicate(format: "label IN %@",
-            ["儲存", "Save", "匯出", "Export", "移動", "Move"])).firstMatch
+        let save = nativeExportConfirmation
         requireHittable(save)
         save.tap()
         assertExportStatus("文字已儲存至所選位置。")
@@ -271,16 +270,14 @@ final class SkillExecutionUITests: XCTestCase {
         }
         if !exported.exists && !exportedCell.exists { recordPickerDiagnostics(stage: "export-file-not-visible") }
         XCTAssertTrue(exported.exists || exportedCell.exists, "The actual Files destination must contain this namespace's exact exported text basename.")
-        requireHittable(nativeCancel)
-        nativeCancel.tap()
+        cancelNativeExporter()
         assertExportStatus("已取消匯出，擷取結果仍保留。")
     }
 
     func testNativeExportCancellationPreservesResultAndAllowsRetry() {
         extractFixtureForExport()
         openNativeExporter()
-        requireHittable(nativeCancel)
-        nativeCancel.tap()
+        cancelNativeExporter()
         assertExportStatus("已取消匯出，擷取結果仍保留。")
         assertAudit(selections: 1, reads: 1, extractionAttempts: 1, results: 1)
         let output = app.staticTexts["skillExecution.result.text"]
@@ -289,8 +286,7 @@ final class SkillExecutionUITests: XCTestCase {
         XCTAssertTrue(output.label.contains(namespace))
         XCTAssertTrue(output.label.contains("WOOW_SKILL_PDF_PAGE_2"))
         openNativeExporter()
-        requireHittable(nativeCancel)
-        nativeCancel.tap()
+        cancelNativeExporter()
         assertExportStatus("已取消匯出，擷取結果仍保留。")
         assertAudit(selections: 1, reads: 1, extractionAttempts: 1, results: 1)
     }
@@ -307,7 +303,51 @@ final class SkillExecutionUITests: XCTestCase {
 
     private func openNativeExporter() {
         tap("skillExecutionExportText", scroll: true)
-        requireHittable(nativeCancel)
+        // 4dbbddb recordings: the exporter opens inside the app folder with
+        // Move (iOS 18: 搬移) / Save (iOS 26), but no Cancel at that depth.
+        requireHittable(nativeExportConfirmation)
+    }
+
+    private var nativeExportConfirmation: XCUIElement {
+        app.navigationBars.buttons.matching(NSPredicate(format: "label IN %@",
+            ["儲存", "Save", "匯出", "Export", "搬移", "移動", "Move"])).firstMatch
+    }
+
+    private func cancelNativeExporter() {
+        // Return only through known local ancestors to the native Cancel button.
+        // Each label is tapped at most once; never save or dismiss app state to
+        // simulate cancellation. Callers still verify the real cancel callback.
+        let navigation = app.navigationBars["FullDocumentManagerViewControllerNavigationBar"]
+        let ancestorLabels = localLabels + browseLabels + locationsLabels
+        var attempted = Set<String>()
+        for attempt in 0...3 {
+            if nativeCancel.exists {
+                requireHittable(nativeCancel)
+                nativeCancel.tap()
+                return
+            }
+            guard attempt < 3 else { break }
+            guard let back = firstHittable(navigation.buttons.matching(
+                NSPredicate(format: "label IN %@", ancestorLabels))),
+                attempted.insert(back.label).inserted else {
+                recordPickerDiagnostics(stage: "export-cancel-no-known-ancestor")
+                XCTFail("Native export cancellation must expose Cancel or a known local ancestor.")
+                return
+            }
+            let previous = back.label
+            back.tap()
+            let changed = XCTNSPredicateExpectation(predicate: NSPredicate { [weak self] _, _ in
+                guard let self else { return false }
+                return self.nativeCancel.exists || !navigation.buttons.matching(
+                    NSPredicate(format: "label == %@", previous)).firstMatch.exists
+            }, object: nil)
+            guard XCTWaiter.wait(for: [changed], timeout: 12) == .completed else {
+                recordPickerDiagnostics(stage: "export-cancel-no-navigation-progress")
+                XCTFail("Native exporter must leave the previous folder before another navigation action.")
+                return
+            }
+        }
+        XCTFail("Native exporter must expose Cancel within the bounded local ancestor route.")
     }
 
     private func chooseLocalExportFolder() {
@@ -492,7 +532,8 @@ final class SkillExecutionUITests: XCTestCase {
             })),
             ("browse", NSPredicate(format: "label IN %@", browseLabels)),
             ("locations", NSPredicate(format: "label IN %@", locationsLabels)),
-            ("cancel", NSPredicate(format: "label IN %@", ["取消", "Cancel"]))
+            ("cancel", NSPredicate(format: "label IN %@", ["取消", "Cancel"])),
+            ("export-confirm", NSPredicate(format: "label IN %@", ["儲存", "Save", "匯出", "Export", "搬移", "移動", "Move"]))
         ]
         let counts = groups.map { name, predicate in
             "\(name)[cell=\(app.cells.matching(predicate).count),button=\(app.buttons.matching(predicate).count),text=\(app.staticTexts.matching(predicate).count),other=\(app.otherElements.matching(predicate).count)]"

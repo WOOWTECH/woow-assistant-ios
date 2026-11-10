@@ -409,6 +409,16 @@ final class BrowserLearningUITests: XCTestCase {
                               file: StaticString = #filePath, line: UInt = #line) {
         let expectation = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "exists == true AND label == %@", label), object: element)
-        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: timeout), .completed, file: file, line: line)
+        let result = XCTWaiter.wait(for: [expectation], timeout: timeout)
+        if result != .completed, element.exists, element.identifier == "browser.status" {
+            // AX debugDescription truncates the load counters. Capture the
+            // native diagnostic value before assertion reporting/teardown can
+            // take another snapshot after the delayed document finally loads.
+            let attachment = XCTAttachment(string: "label=\(element.label)\nload=\(element.value as? String ?? "unavailable")")
+            attachment.name = "browser-load-at-wait-deadline"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+        }
+        XCTAssertEqual(result, .completed, file: file, line: line)
     }
 }

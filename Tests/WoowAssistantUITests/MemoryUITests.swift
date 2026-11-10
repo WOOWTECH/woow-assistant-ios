@@ -322,10 +322,18 @@ final class MemoryUITests: XCTestCase {
     private func replaceEditor(_ prefix: String, text: String) {
         let id = prefix == "memory" ? "memory.editor.content" : "skills.editor.markdown"
         let editor = app.textViews[id]
-        waitUntilHittable(editor)
-        editor.tap()
+        let clear = app.buttons["\(prefix).editor.clear"]
+        // After failed validation the SE editor remains keyboard-focused, but
+        // XCTest may not report its resized TextView as hittable. The visible
+        // native toolbar already belongs to this editor; no second tap is needed.
+        if !clear.exists || !clear.isHittable {
+            waitUntilHittable(editor)
+            editor.tap()
+        }
         tap("\(prefix).editor.clear")
-        enter(text, into: editor)
+        XCTAssertEqual(editor.value as? String, "")
+        editor.typeText(text)
+        XCTAssertEqual(editor.value as? String, text)
     }
 
     private func enter(_ text: String, into field: XCUIElement) {
@@ -382,7 +390,7 @@ final class MemoryUITests: XCTestCase {
                 searchUp.toggle()
                 maximumDistance = max(24, maximumDistance / 2)
             }
-            guard let drag = MemoryImportScrollDrag.make(
+            guard let drag = LearningScrollDrag.make(
                 listFrame: listFrame, viewport: viewport,
                 targetFrame: targetIsPresent ? frame : nil,
                 searchUp: searchUp, maximumDistance: maximumDistance
@@ -433,50 +441,5 @@ final class MemoryUITests: XCTestCase {
     private func waitForAbsence(_ element: XCUIElement) {
         let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 5), .completed)
-    }
-}
-
-/// Pure geometry so the measured SE failure can be checked without a simulator.
-/// Coordinates are used only for a List-relative scroll, never to tap a control.
-private struct MemoryImportScrollDrag {
-    let start: CGPoint
-    let end: CGPoint
-
-    static func make(listFrame: CGRect, viewport: CGRect, targetFrame: CGRect?,
-                     searchUp: Bool, maximumDistance: CGFloat) -> Self? {
-        guard valid(listFrame), valid(viewport), listFrame.contains(viewport),
-              viewport.width >= 48, maximumDistance.isFinite, maximumDistance > 0 else { return nil }
-        let limit = min(maximumDistance, viewport.height * 0.3)
-        guard limit >= 16 else { return nil }
-        let up: Bool
-        let distance: CGFloat
-        if let targetFrame {
-            guard valid(targetFrame), targetFrame.height <= viewport.height,
-                  targetFrame.minX >= viewport.minX, targetFrame.maxX <= viewport.maxX else { return nil }
-            if targetFrame.maxY > viewport.maxY {
-                up = true
-                distance = min(limit, max(24, targetFrame.maxY - viewport.maxY + 12))
-            } else if targetFrame.minY < viewport.minY {
-                up = false
-                distance = min(limit, max(24, viewport.minY - targetFrame.minY + 12))
-            } else {
-                // Already in the viewport: scrolling cannot establish why a
-                // control is not hittable, so never substitute a coordinate tap.
-                return nil
-            }
-        } else {
-            up = searchUp
-            distance = limit
-        }
-        let displacement = up ? distance : -distance
-        let start = CGPoint(x: viewport.midX, y: viewport.midY + displacement / 2)
-        let end = CGPoint(x: viewport.midX, y: viewport.midY - displacement / 2)
-        guard viewport.contains(start), viewport.contains(end) else { return nil }
-        return Self(start: start, end: end)
-    }
-
-    private static func valid(_ frame: CGRect) -> Bool {
-        !frame.isNull && !frame.isInfinite && frame.width > 0 && frame.height > 0
-            && [frame.origin.x, frame.origin.y, frame.size.width, frame.size.height].allSatisfy { $0.isFinite }
     }
 }

@@ -187,11 +187,23 @@ enum BrowserDOMFixtures {
         catch is CancellationError { try expect(true, "Cancellation honored before dispatch") }
         let afterCancel = try await js("document.getElementById('note').value", stage: .cancelledValue)
         try expect(afterCancel == "human edit", "Cancelled action changed nothing")
+        let beforeScroll = try await js("String(window.scrollY)", stage: .scrollPosition)
+        let initialScrollY = Double(beforeScroll) ?? .nan
         let scrolling = try await proposal(.scroll, direction: .down)
         stage = .scrolling
         try await executor.performApproved(scrolling)
-        let scroll = try await js("String(window.scrollY > 0)", stage: .scrollPosition)
-        try expect(scroll == "true", "Actual viewport scrolled")
+        // performApproved reports dispatch, not presentation completion. iOS
+        // returned the old offset on the very next JS callback. Observe the
+        // actual offset across rendering turns; dispatch the action only once.
+        let scrollDeadline = ProcessInfo.processInfo.systemUptime + 1
+        var scrollY = initialScrollY
+        repeat {
+            let value = try await js("String(window.scrollY)", stage: .scrollPosition)
+            scrollY = Double(value) ?? .nan
+            if scrollY > initialScrollY { break }
+            try await Task.sleep(nanoseconds: 20_000_000)
+        } while ProcessInfo.processInfo.systemUptime < scrollDeadline
+        try expect(scrollY > initialScrollY, "Actual viewport scrolled: before=\(initialScrollY), after=\(scrollY)")
         let oldDocument = try await proposal(.click, label: "Save locally")
         try await load()
         stage = .reloadedApproval

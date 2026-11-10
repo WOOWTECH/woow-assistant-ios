@@ -196,7 +196,25 @@ enum SkillExecutionChecks {
         try await rejects(.busy) { _ = try await runtime.execute(grant) }
         await runtime.cancel(); await worker.release()
         try await rejects(.cancelled) { _ = try await task.value }
+        let returned = await worker.responses
+        try expect(returned == 1, "the adapter actually returned a late response; cancellation must discard it")
         let next = await runtime.nextStep(); try expect(next == nil, "no late result after cancellation")
+
+        // Positive control: the same adapter response must pass runtime validation
+        // without cancellation. Also force release-before-registration rather than
+        // relying on a particular actor scheduler to exercise that gate ordering.
+        let early = GateWorker()
+        await early.release()
+        let accepting = try SkillExecutionRuntime(selectedFile: .init(userSelectedURL: url), options: .init(),
+            backend: .originalWorker, worker: early, catalog: catalog)
+        _ = try await accepting.execute(accepting.authorize(stepID: accepting.plan.steps[0].id))
+        let approved = try await accepting.authorize(stepID: accepting.plan.steps[1].id)
+        guard case .pdf(let accepted) = try await accepting.execute(approved) else {
+            throw Failure(message: "uncancelled adapter response must be accepted")
+        }
+        await early.waitForStart()
+        try expect(accepted.pages.map(\.number) == [1, 2, 3] && accepted.emptyPages == [2],
+                   "late-result fixture is valid, so an invalid response cannot mask cancellation")
     }
 
     static func remote(_ catalog: BundledSkillCatalog, endpoint: URL) async throws {
@@ -256,14 +274,34 @@ enum SkillExecutionChecks {
     actor GateWorker: SkillExecutionPDFWorker {
         nonisolated let destination = "test adapter; no network"
         var calls = 0
+        var responses = 0
+        private var released = false
         private var started: CheckedContinuation<Void, Never>?
         private var pending: CheckedContinuation<Void, Never>?
-        func waitForStart() async { if calls == 0 { await withCheckedContinuation { started = $0 } } }
-        func release() { pending?.resume(); pending = nil }
+        func waitForStart() async {
+            await withCheckedContinuation { continuation in
+                if calls > 0 { continuation.resume() } else { started = continuation }
+            }
+        }
+        func release() { released = true; pending?.resume(); pending = nil }
         func extract(data: Data, options: SkillExecutionPDFOptions) async throws -> SkillExecutionPDFResult {
-            calls += 1
-            await withCheckedContinuation { pending = $0; started?.resume(); started = nil }
-            return try SkillExecutionPDF.extract(data, options: options)
+            await withCheckedContinuation { continuation in
+                calls += 1
+                if released { continuation.resume() } else { pending = continuation }
+                started?.resume(); started = nil
+            }
+            // This adapter tests delayed remote responses, not local extraction.
+            // Both iOS 18 timeout spindumps reached PDFDocument.init here after
+            // release, waiting on SpringBoard. Keep PDFKit in nativePDF(), the
+            // coordinated-read checks and native UI tests; keep real Python in
+            // the HTTP integration tests. Do not start it after this fake gate.
+            let texts = ["Alpha evidence", "", "Beta evidence"]
+            let numbers = options.metadataOnly ? [] : try SkillExecutionPageRange.parse(options.pages, pageCount: 3)
+            let pages = numbers.map { SkillExecutionPDFPage(number: $0, text: texts[$0 - 1]) }
+            responses += 1
+            return SkillExecutionPDFResult(pageCount: 3, pages: pages, metadata: ["pages": "3"],
+                emptyPages: pages.filter { $0.text.isEmpty }.map(\.number), inputSHA256: skillExecutionDigest(data),
+                engine: "GateWorker test fixture", originalScriptSHA256: SkillExecutionHTTPWorker.scriptSHA256)
         }
     }
 }
