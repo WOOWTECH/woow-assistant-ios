@@ -1,0 +1,242 @@
+{
+  "schema_version": 1,
+  "source_revision": "1abc6d7bdf38c03d4e6fe3e2052238fdfa112dd8",
+  "run_id": 42902035480,
+  "job_id": 130130226201,
+  "artifact_id": 13805127481,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902035480",
+  "scope": "documents-read",
+  "result": "Passed",
+  "actual_runtime": {
+    "architecture": "arm64",
+    "deviceId": "9BDF16C2-3B50-45B8-97AF-22200495802E",
+    "deviceName": "Woow-iOS17-b82b84ec34f647d2b5a43d37de75ea5b",
+    "modelName": "iPhone 15",
+    "osBuildNumber": "21A342",
+    "osVersion": "17.0.1",
+    "platform": "iOS Simulator"
+  },
+  "counts": {
+    "totalTestCount": 6,
+    "passedTests": 6,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "methods": [
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 149.403,
+      "start_log_line": 19,
+      "pass_log_line": 700
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 115.952,
+      "start_log_line": 701,
+      "pass_log_line": 1366
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testNativePickerCancellationDoesNotReadOrExtract",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 69.14,
+      "start_log_line": 1367,
+      "pass_log_line": 1570
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 136.704,
+      "start_log_line": 1571,
+      "pass_log_line": 2231
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 115.177,
+      "start_log_line": 2232,
+      "pass_log_line": 2892
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 124.788,
+      "start_log_line": 2893,
+      "pass_log_line": 3590
+    }
+  ],
+  "test_completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 6,
+      "passedTests": 6,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 6,
+    "completed_ui_count": 6,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "phase_history": [
+    {
+      "phase": "preflight",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:15:07.195140+00:00",
+      "elapsed_seconds": 0.0
+    },
+    {
+      "phase": "checking_runtime",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:15:07.485351+00:00",
+      "elapsed_seconds": 0.3
+    },
+    {
+      "phase": "downloading_runtime",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:16:05.296526+00:00",
+      "elapsed_seconds": 58.1
+    },
+    {
+      "phase": "checking_installed_runtime",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:17:12.826875+00:00",
+      "elapsed_seconds": 125.6
+    },
+    {
+      "phase": "generating_project",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:17:15.711623+00:00",
+      "elapsed_seconds": 128.5
+    },
+    {
+      "phase": "checking_build_settings",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:17:16.004465+00:00",
+      "elapsed_seconds": 128.8
+    },
+    {
+      "phase": "building_before_boot",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:17:22.529139+00:00",
+      "elapsed_seconds": 135.3
+    },
+    {
+      "phase": "prebuilt_tests_ready",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:20:37.102506+00:00",
+      "elapsed_seconds": 329.9
+    },
+    {
+      "phase": "creating_simulator",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:20:37.115215+00:00",
+      "elapsed_seconds": 329.9
+    },
+    {
+      "phase": "booting",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:20:40.555123+00:00",
+      "elapsed_seconds": 333.4
+    },
+    {
+      "phase": "prelaunching_test_daemon",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:22:17.571715+00:00",
+      "elapsed_seconds": 430.4
+    },
+    {
+      "phase": "testing",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:22:40.238908+00:00",
+      "elapsed_seconds": 453.0
+    },
+    {
+      "phase": "verifying_test_completion",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:37:30.742424+00:00",
+      "elapsed_seconds": 1343.5
+    },
+    {
+      "phase": "passed",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:37:36.232585+00:00",
+      "elapsed_seconds": 1349.0
+    }
+  ],
+  "prebuild": {
+    "prebuild_exit_code": 0,
+    "prebuild_elapsed_seconds": 194.522,
+    "prebuilt_xctestrun": {
+      "path": "DerivedData/Build/Products/WoowAssistant_iphonesimulator18.5-arm64.xctestrun",
+      "sha256": "9978e367f9653f556eb13135435df6a6257e0d78a60f4fcc7482c857ec8b63e2"
+    },
+    "remaining_test_timeout_seconds": 1605.477724917,
+    "build_test_timeout_seconds": 1800,
+    "maximum_case_seconds": 300
+  },
+  "execution": "one build-for-testing before fresh simulator creation; one test-without-building with the exact recorded xctestrun",
+  "xctestrun_hash_source": "runner report; raw xctestrun not archived for independent rehash",
+  "runtime_fallback": false,
+  "retries": 0,
+  "boot_succeeded": true,
+  "test_daemon_prelaunch": {
+    "budget_seconds": 120,
+    "attempts": 1,
+    "status": "process_started_handshake_unverified",
+    "handshake_verified": false,
+    "process_alive": true,
+    "elapsed_seconds": 22.257
+  },
+  "simulator_deleted": true,
+  "artifacts": {
+    "bounded-extraction.json": {
+      "bytes": 881,
+      "sha256": "1ec67c59e27609b63bebd7b4ccb155bd14bab604a7f5b40825eb0de7ed9bb842"
+    },
+    "build-for-testing.log": {
+      "bytes": 1123291,
+      "sha256": "5df9fba16e503df4cad86ff2ce4b7c495a1d3f5408c127a2495270d9cabd48b7"
+    },
+    "report.json": {
+      "bytes": 9268,
+      "sha256": "5a48efb574055649cfb0a28519ac55f7890c85f887eebb6f036f76f1367b5bab"
+    },
+    "test-summary.json": {
+      "bytes": 1007,
+      "sha256": "b75f7c8503b29d3900ed16f7433b8c20fe157f123e75a076875b2bf89309de47"
+    },
+    "tests.log": {
+      "bytes": 266347,
+      "sha256": "72f51bc729ac5fb7cdbcc4c6068b48a79c066b0c14d4543ee3b0e0f76d906ab3"
+    }
+  },
+  "bounded_retrieval": {
+    "whole_archive_downloaded": false,
+    "archive_bytes": 34120254,
+    "transferred_bytes": 86130
+  },
+  "limits": [
+    "Focused six-case evidence only; not the full suite or documents-output scope.",
+    "Exact runtime is independently confirmed by xcresult device metadata; the report runtime_tested/full_acceptance_succeeded booleans remain false for focused acceptance.",
+    "Prelaunch reports process alive, not a verified XCTest handshake. No root-cause or broad environment-fix claim.",
+    "This does not establish two-file batch import, which remains a separate current26 failure."
+  ]
+}

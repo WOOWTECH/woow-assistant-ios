@@ -57,7 +57,7 @@ PDF 操作斷言失敗。原流程先 boot／prelaunch，再讓 `xcodebuild test
 watchdog 取樣仍落在編譯期間。[原始結果](evidence/pdf-assembly-bbbb514-final.json)。
 
 新的 `ios17_build_before_boot`／`--build-before-boot` 預設關閉，目前只接受
-GitHub hosted 的 `startup-smoke`、`pdf-assembly`、`pdf-assembly-copy`、`documents-read` 或 `documents-output`，並要求原有 prelaunch 和 sampling 開關。
+GitHub hosted 的非 Live `ui-*` 分片，或既有 `startup-smoke`、`pdf-assembly`、`pdf-assembly-copy`、`documents-read`／`documents-output`，並要求原有 prelaunch 和 sampling 開關。`all`、`core` 及 Live 工作不適用。
 它先以指定主機架構 `build-for-testing`，成功且產生唯一可讀取的本次 `.xctestrun`
 後，才建立／啟動專用裝置，最後以該產物執行一次 `test-without-building`。
 這兩個命令是 [Apple 公開支援的建置／測試分離方式](https://developer.apple.com/library/archive/technotes/tn2339/_index.html)。
@@ -77,3 +77,5 @@ GitHub 上的原生執行結果。
 `pdf-assembly-multi` 單獨選取新雙檔合併案例，仍歸 `ui-documents`／`documents-output` 管理。案例先宣告 300 秒上限；既有單檔案例保持 240 秒。兩次逐檔讀取核准、交錯頁序、真實 PDFKit 輸出與匯出取消後保存都必須完成，不能用允許多選的單檔結果代替。此新範圍尚未加入預編譯診斷的允許清單。
 
 `aa676a3` 的一般與副本 PDF 重排入口在 exact 17.0.1 各通過 1/1、零略過，後續預編譯流程可明確選取 `documents-read`／`documents-output`。兩組仍共用各自原有的 1800 秒建置＋測試額度；全部方法必須按清單完成，失敗或略過不能當成通過。
+
+在 `1abc6d7`，exact 17.0.1 的 [documents-read](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902035480) 已完成 6/6。預編譯選項現可用於其餘非 Live UI 分片，以驗證完整介面；仍為明確選用，不擴大診斷取樣的 fixture 白名單。各 UI 分片保留原有 1800 秒共同建置＋測試額度，workspace 的既有 420 秒單案例上限亦不變。這次擴充尚不代表新增分片已通過原生驗收。

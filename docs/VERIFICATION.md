@@ -1,6 +1,28 @@
 # Verification — 2026-11-11
 
 
+## Exact iOS 17 document reading completed; two-file batch import failed separately
+
+At `1abc6d7`, [42902035480](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902035480)
+passed **6/6 documents-read methods, zero skips**, on exact iOS **17.0.1 / 21A342**,
+iPhone 15 arm64. This includes actual original/coordinated/UIKit open/copy and
+user-chosen-copy selection plus picker cancellation without a read. Each selected
+method started and completed once. One prebuild preceded the fresh simulator;
+194.522 seconds were deducted from the unchanged 1800-second build/test budget.
+The simulator was deleted afterward. [Runtime, methods and limitations](evidence/ios17-documents-read-1abc6d7.json).
+The same opt-in ordering is now available for the other non-Live UI shards;
+[231 isolated Python checks and actionlint pass](evidence/prebuild-ui-shards-local.json).
+That infrastructure extension alone is not native acceptance of those shards.
+
+At `92a9ef4`, [42901181555](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42901181555)
+failed the new two-PDF batch case **0/1** on iOS 26.2. Video shows both distinct
+files checked before Open, but the App completion received one URL and prepared
+one source. The adapter forwards the complete callback array; current evidence
+does not establish the underlying OS/provider cause. Both-file read approval,
+interleaved assembly and export were not reached. The strict two-source assertion
+and original failure remain preserved; an explicit user-driven add-file path is
+being implemented as a separate workflow. [Failure and selection frame](evidence/pdf-assembly-multi-92a9ef4.json).
+
 ## SE notification approval and learning UI completed
 
 At `f49c8f7`, [42902405880](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902405880)

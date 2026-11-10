@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "base_revision": "e9945223b52dc4451b06693c19f67a4f3fcd231c",
+  "snapshot": "isolated committed base plus the four hashed prebuild-shard files",
+  "status": "PASS",
+  "python_unittest_methods": 231,
+  "python_failures": 0,
+  "actionlint_exit_code": 0,
+  "native_ios_execution": false,
+  "source_sha256": {
+    "scripts/release_ios17.py": "3e33cbd6eec78b7b913e843ff34b611321ed2acb5e6a700216f73b8aed80f6ce",
+    "scripts/test_release_ios17_prebuild.py": "ae61d1a8a6f306e675cf89a94d8b494ff041eb6bd8f570faf49efe0a6ade02d6",
+    ".github/workflows/release-ios.yml": "68abdea0161056ca2118d298ba07bc41d47d3777e2799eeb6ff7a885f599e353",
+    "docs/IOS17_UI_SHARDS.md": "3df7e3eaf0f55652f4729e0f3c02bc364ffefed939e39e0a27cabb9e9a8a5475"
+  },
+  "scope": "Explicit build-before-boot opt-in extended to all eleven existing non-Live UI shards; hosted prelaunch/sampling gate retained.",
+  "preserved": [
+    "No live/core/all scope admitted.",
+    "No deadline reset, retry, simulator service restart or target process kill added.",
+    "Build time is deducted from the same 1800-second UI-shard budget.",
+    "Exact method coverage, no skips, one completion and real xcresult success gates remain."
+  ],
+  "checked_at_utc": "2026-11-10T21:44:28.408103+00:00"
+}

@@ -1,0 +1,136 @@
+{
+  "schema_version": 1,
+  "source_revision": "92a9ef46efda9e369083773de9a9a59a20004462",
+  "run_id": 42901181555,
+  "job_id": 130127246054,
+  "artifact_id": 13804051884,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42901181555",
+  "artifact_archive_bytes": 216241413,
+  "whole_archive_downloaded": false,
+  "device": {
+    "model": "iPhone 17",
+    "runtime": "26.2",
+    "runtime_build": "23C54",
+    "architecture": "arm64"
+  },
+  "selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyImportsTwoDistinctPDFsAndInterleavesApprovedPages",
+  "result": "Failed",
+  "actual_method_starts": 1,
+  "actual_method_completions": 1,
+  "counts": {
+    "totalTestCount": 1,
+    "passedTests": 0,
+    "failedTests": 1,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "duration_seconds": 102.26,
+  "failure_source_line": 187,
+  "failure_code": "actual_picker_callback_contains_one_source_instead_of_two",
+  "observed_callback": "source=user-copy mode=import allowsMultipleSelection=true callbacks=1 outcome=one sources=1",
+  "required_callback": "source=user-copy mode=import allowsMultipleSelection=true callbacks=1 outcome=multiple sources=2",
+  "timeline_test_seconds": [
+    {
+      "time": 53.46,
+      "event": "user_copy_button_tap"
+    },
+    {
+      "time": 81.23,
+      "event": "exact_synthetic_A_cell_tap_once"
+    },
+    {
+      "time": 87.92,
+      "event": "exact_synthetic_B_cell_tap_once"
+    },
+    {
+      "time": 94.14,
+      "event": "native_open_tap_once"
+    },
+    {
+      "time": 99.2,
+      "event": "source_one_callback_metadata_assertion_fails"
+    }
+  ],
+  "native_picker_fixed_events": [
+    "SKILL_PDF_PICKER_LIFECYCLE namespace=4A376262-2483-4A3A-9689-E932E9782FAA event=bindingChanged ordinal=1 presented=true callbacks=0 sampledAt=1794345485.423568",
+    "SKILL_PDF_ASSEMBLY_PICKER namespace=4A376262-2483-4A3A-9689-E932E9782FAA source=user-copy event=bindingChanged presented=true callbacks=0 sampledAt=1794345485.423635",
+    "SKILL_PDF_PICKER_PRESENTATION namespace=4A376262-2483-4A3A-9689-E932E9782FAA source=user-copy mode=unobserved sampledAt=1794345485.427722",
+    "SKILL_PDF_PICKER_LIFECYCLE namespace=4A376262-2483-4A3A-9689-E932E9782FAA event=nativeCreated mode=import allowsMultipleSelection=true delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=0 sampledAt=1794345485.448701",
+    "SKILL_PDF_PICKER_PRESENTATION namespace=4A376262-2483-4A3A-9689-E932E9782FAA source=user-copy mode=import allowsMultipleSelection=true sampledAt=1794345486.266786",
+    "SKILL_PDF_PICKER_LIFECYCLE namespace=4A376262-2483-4A3A-9689-E932E9782FAA source=user-copy event=observed mode=import allowsMultipleSelection=true delegatePresent=true inWindow=true dismissing=false sampledAt=1794345486.540555",
+    "SKILL_PDF_PICKER_LIFECYCLE namespace=4A376262-2483-4A3A-9689-E932E9782FAA event=nativePicked mode=import allowsMultipleSelection=true delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=1 sampledAt=1794345528.350743",
+    "SKILL_PDF_PICKER_LIFECYCLE namespace=4A376262-2483-4A3A-9689-E932E9782FAA event=completion source=uikit callbacks=1 outcome=one sampledAt=1794345528.351606",
+    "SKILL_PDF_ASSEMBLY_PICKER namespace=4A376262-2483-4A3A-9689-E932E9782FAA source=user-copy event=completion outcome=one callbacks=1 sampledAt=1794345528.3568048",
+    "SKILL_PDF_PICKER_LIFECYCLE namespace=4A376262-2483-4A3A-9689-E932E9782FAA event=nativeDismantled mode=import allowsMultipleSelection=true delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=1 sampledAt=1794345528.4144258",
+    "SKILL_PDF_PICKER_LIFECYCLE namespace=4A376262-2483-4A3A-9689-E932E9782FAA event=bindingChanged ordinal=1 presented=false callbacks=1 sampledAt=1794345528.537242",
+    "SKILL_PDF_ASSEMBLY_PICKER namespace=4A376262-2483-4A3A-9689-E932E9782FAA source=user-copy event=bindingChanged presented=false callbacks=1 sampledAt=1794345528.537393"
+  ],
+  "visual_evidence": {
+    "source_attachment": "screenshots/4B29B76A-311F-4B31-A858-3F3CCB858187.mp4",
+    "video": {
+      "bytes": 15300991,
+      "sha256": "f42f08fd8cc101c03abd1d29b5c96d1ad0089a114575e8be41ae5b71caacdf16"
+    },
+    "frame_video_seconds": 91,
+    "frame_path": "docs/evidence/pdf-assembly-multi-92a9ef4-selection.png",
+    "frame": {
+      "bytes": 318580,
+      "sha256": "fbf771f383ee5d58dbe25b1f9d5e0c3453f039b069d4462685a833434ecf062f"
+    },
+    "observation": "Both distinct synthetic A and B files display blue selection checkmarks before Open; this contradicts the initial hypothesis that only one cell was selected.",
+    "earlier_frame_at_84_seconds": "Only A checked, after its single tap and before the B tap."
+  },
+  "source_audit": {
+    "adapter": "Sources/App/PDFNativePicker.swift",
+    "finding": "didPickDocumentsAt forwards the complete URL array via onCompletion(.success(urls)); no first-element or prefix truncation exists in this path.",
+    "public_api_reference": "https://developer.apple.com/documentation/uikit/uidocumentpickerdelegate/documentpicker(_:didpickdocumentsat:)",
+    "public_api_contract": "The delegate receives URLs for the selected documents; import-mode URLs refer to copies."
+  },
+  "diagnostic_limitations": [
+    "The nativeCreated/observed records confirm import mode, allowsMultipleSelection=true, and delegatePresent=true; the existing nativePicked record does not independently encode the delegate URL count before forwarding.",
+    "A DocumentManager QLThumbnailErrorDomain code 102 / GSLibraryErrorDomain code 3 warning occurs shortly before callback. It does not establish why one URL was returned.",
+    "No claim of an OS bug, provider root cause, successful two-file import, reads, assembly, or export cancellation follows from this failed test."
+  ],
+  "stages": {
+    "two_distinct_native_cells_visible": true,
+    "both_native_selection_checkmarks_visible": true,
+    "one_presentation_and_callback": true,
+    "two_URL_callback": false,
+    "per_source_read_approval": "not_reached",
+    "three_page_output": "not_reached",
+    "export_cancellation": "not_reached"
+  },
+  "source_sha256": {
+    "Sources/App/SkillExecutionUITestSupport.swift": "87cb6c06a942150b59426a403b816a60866b30b3a93da7c0261f17e1252bf81d",
+    "Sources/App/SkillPDFAssemblySession.swift": "3c7353d3656aaf0351f9c7bc5bf633f23cc36185e21bb629585516ae0642aa7d",
+    "Sources/App/SkillPDFAssemblyView.swift": "224ec63b16dac2d8bc4bc2e221ec337aeddc9e23c1d94a7ea46bc0c86d10e81f",
+    "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift": "ad60181080ee8a9a2f6cd6733344535671824c39b4b8216576f7302da2328280",
+    "scripts/check_pdf_assembly_pair.py": "d66529f16f7399bc44ec73fed95bf89d8168628be692242ac8fd5baa591d5064",
+    ".github/workflows/ios.yml": "9f8c58bfb01ba48ed92d844cdf432553f246ff7261029dc07842803803d00737"
+  },
+  "artifacts": {
+    "test-summary.json": {
+      "bytes": 1765,
+      "sha256": "e6fc7dcea95bf3dd562bc71941fc22186f33b524ab45d953928cd3196a982878"
+    },
+    "ios-tests.log": {
+      "bytes": 935678,
+      "sha256": "d8feb31c8bbbd4ce50572b4287fe89e1a6fe730d438abf93de9d3fb659af35f2"
+    },
+    "ui-shard-completion.json": {
+      "bytes": 463,
+      "sha256": "df3f13805055cfc7087c16c26f3f64b1103a5f36f0ad456f83b2da1cddca1741"
+    }
+  },
+  "bounded_retrieval": {
+    "summary_log_completion_transfer_bytes": 287716,
+    "video_and_manifest_transfer_bytes": 15492374,
+    "fixed_events_transfer_bytes": 1753420
+  },
+  "repair_status": "No source changes; preserve strict two-source assertion while isolating the callback mismatch.",
+  "limits_unchanged": {
+    "case_allowance_seconds": 300,
+    "picker_callback_wait_seconds": 15,
+    "retry_count": 0
+  }
+}
