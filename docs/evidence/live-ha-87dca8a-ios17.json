@@ -1,0 +1,77 @@
+{
+  "revision": "87dca8a0aaae7d4978948d25a4d260f45687ca3a",
+  "run": 42827099096,
+  "job": 129867167935,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42827099096/job/129867167935",
+  "runtime": {
+    "requestedVersion": "17.0.1",
+    "selectedVersion": "17.0.1",
+    "selectedBuild": "21A342",
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "metadataLogLine": 180,
+    "testInvocationDestinationMatchesPreparedSimulator": true,
+    "destinationLogLine": 4538,
+    "versionBasis": "Selected runtime metadata; the generic iOS-17-0 identifier is not a patch-version assertion.",
+    "physicalDevice": false
+  },
+  "stages": {
+    "nativeReadOnlyHAProbe": "passed",
+    "appBuildForTesting": "passed",
+    "appUITestInvocation": "failed_before_any_actual_case_started",
+    "clearPrivateRunnerConfiguration": "passed",
+    "deleteOwnedSimulator": "passed"
+  },
+  "uiEvidence": {
+    "testInvocations": 1,
+    "expectedActualCases": 3,
+    "expectedByClass": {
+      "LiveMCPUITests": 1,
+      "LiveMCPConversationUITests": 2
+    },
+    "actualCaseStartsObserved": 0,
+    "verifier": {
+      "logLine": 4560,
+      "expectedTests": 3,
+      "totalTestCount": 1,
+      "passedTests": 0,
+      "failedTests": 1,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "countInterpretation": "The single failure record is a synthetic runner-bootstrap failure, not one of the three actual UI methods.",
+    "lifecycleHelperExercised": false,
+    "appMCPFunctionalFlowExercised": false,
+    "appModelRequests": 0,
+    "appMCPToolRequests": 0
+  },
+  "failure": {
+    "phase": "runner_bootstrap",
+    "logLine": 4552,
+    "fixedReason": "Early unexpected exit; operation never finished bootstrapping; test crashed with signal kill before starting test execution.",
+    "noRestartReported": true,
+    "installUninstallBusyObserved": false,
+    "scope": "The single-invocation lifecycle experiment did not reach a test case. This run neither validates the lifecycle helper nor establishes an App, model, or MCP functional failure. The separate native HA probe passed."
+  },
+  "followUp": {
+    "status": "opt-in prelaunch implementation frozen for parent integration; not natively validated in this report",
+    "sharedHelper": "release_ios17.prelaunch_test_daemon",
+    "attemptsAllowed": 1,
+    "sharedBudgetSeconds": 120,
+    "killOrRestartFlagUsed": false,
+    "handshakeClaimed": false,
+    "localTests": {
+      "livePrelaunchWrapper": 7,
+      "existingDaemonPrelaunch": 10,
+      "liveSimulatorPreparationAndCleanup": 15,
+      "actualUICountVerification": 16,
+      "passed": 48
+    }
+  },
+  "privacy": {
+    "rawLogsIncluded": false,
+    "environmentsIncluded": false,
+    "configurationIncluded": false,
+    "modelOrToolContentIncluded": false,
+    "artifactUploads": false
+  }
+}

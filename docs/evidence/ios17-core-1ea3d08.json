@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "bounded_artifact_report_and_actual_xctest_log",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828238084",
+  "job_id": 129871097720,
+  "artifact_id": 13772618240,
+  "artifact_archive_bytes": 717865,
+  "source_revision": "1ea3d08056aa04a4b6f16269900d16fc974fb8a8",
+  "scope": "core",
+  "host_architecture": "arm64",
+  "host_macos": "15.8.2",
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "runtime": {
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "version": "17.0.1",
+    "buildversion": "21A342"
+  },
+  "boot_succeeded": true,
+  "experimental_prelaunch_test_daemon": false,
+  "method_counts_from_tests_log": {
+    "started": 163,
+    "completed": 163,
+    "unique_completed": 163,
+    "passed": 163,
+    "failed": 0,
+    "skipped": 0
+  },
+  "passed_method_counts_by_target": {
+    "AssistantBrowserIntegrationTests": 20,
+    "AssistantDomainTests": 53,
+    "AssistantMCPTests": 15,
+    "AssistantMemoryTests": 10,
+    "AssistantModelsTests": 6,
+    "AssistantPersistenceTests": 4,
+    "AssistantSkillsTests": 55
+  },
+  "verified_completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 163,
+      "passedTests": 163,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 0,
+    "completed_ui_count": 0,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "test_exit_code": 0,
+  "selected_tests_succeeded": true,
+  "runtime_tested_full_scheme": false,
+  "full_acceptance_succeeded": false,
+  "cookie_regression": [
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests",
+      "method": "testPersistentCookiesAreSharedAndRemovingOneRecordPreservesOtherSites",
+      "outcome": "passed",
+      "seconds": 19.526,
+      "log_line": 4820
+    }
+  ],
+  "new_feature_methods": [
+    {
+      "class": "AssistantDomainTests.MultiSourceResearchTests",
+      "method": "testActualHTTPModelRequestCarriesBothSourcesAndReturnsCheckedCitations",
+      "outcome": "passed",
+      "seconds": 0.469,
+      "log_line": 4321
+    },
+    {
+      "class": "AssistantDomainTests.MultiSourceResearchTests",
+      "method": "testByteExactUnicodeAndSingleBoundedFormatCorrection",
+      "outcome": "passed",
+      "seconds": 0.086,
+      "log_line": 4323
+    },
+    {
+      "class": "AssistantDomainTests.MultiSourceResearchTests",
+      "method": "testConfirmedRootsAndActualCitationReceipts",
+      "outcome": "passed",
+      "seconds": 0.037,
+      "log_line": 4325
+    },
+    {
+      "class": "AssistantDomainTests.MultiSourceResearchTests",
+      "method": "testPartialResultsGlobalBudgetAndCancellation",
+      "outcome": "passed",
+      "seconds": 0.043,
+      "log_line": 4327
+    },
+    {
+      "class": "AssistantDomainTests.MultiSourceResearchTests",
+      "method": "testUnsupportedCommandsStaleIDsAndInventedCitationsFailClosed",
+      "outcome": "passed",
+      "seconds": 0.043,
+      "log_line": 4329
+    },
+    {
+      "class": "AssistantMemoryTests.UserProfileStateTests",
+      "method": "testCapacityAndExactUniqueMatching",
+      "outcome": "passed",
+      "seconds": 0.225,
+      "log_line": 4472
+    },
+    {
+      "class": "AssistantMemoryTests.UserProfileStateTests",
+      "method": "testCRAndLFRejectedAcrossAddReplaceAndDecode",
+      "outcome": "passed",
+      "seconds": 0.007,
+      "log_line": 4474
+    },
+    {
+      "class": "AssistantMemoryTests.UserProfileStateTests",
+      "method": "testHistoryAndFrozenContext",
+      "outcome": "passed",
+      "seconds": 0.04,
+      "log_line": 4476
+    },
+    {
+      "class": "AssistantMemoryTests.UserProfileStateTests",
+      "method": "testMalformedCodableStateRejected",
+      "outcome": "passed",
+      "seconds": 0.119,
+      "log_line": 4478
+    },
+    {
+      "class": "AssistantMemoryTests.UserProfileStateTests",
+      "method": "testSafetyAndTransactionalMutations",
+      "outcome": "passed",
+      "seconds": 0.088,
+      "log_line": 4480
+    },
+    {
+      "class": "AssistantSkillsTests.UserProfilePersistenceTests",
+      "method": "testEncryptedStoreRollbackRelaunchSwitchMigrationAndClear",
+      "outcome": "passed",
+      "seconds": 0.203,
+      "log_line": 4649
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+      "method": "testOtherApprovedOriginStillCannotRedirectOrRebindThisWebView",
+      "outcome": "passed",
+      "seconds": 1.826,
+      "log_line": 4832
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+      "method": "testPersistentManualStoreCannotBeUsedForApprovedResearchRoots",
+      "outcome": "passed",
+      "seconds": 0.006,
+      "log_line": 4834
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+      "method": "testTwoActualWebKitSourcesNavigateAndProduceExactReceipts",
+      "outcome": "passed",
+      "seconds": 2.228,
+      "log_line": 4840
+    }
+  ],
+  "hashes": {
+    "report.json": "df30e0b9f4e6d198546298a5ff63e350800ed121d22b1093d52d674f6aa9a62c",
+    "tests.log": "642e2bdf2682624ddd001e1513549d4038a6332118a937eb62eb44370cf46031",
+    "simulator-boot.log": "464b802dee3b872bb4bb4663473159c4cad3109845dac8107b658880fb19e6a5"
+  },
+  "interpretation": [
+    "All 163 selected native/hosted methods completed exactly once with zero failures or skips on exact iOS 17.0.1.",
+    "The native core run used no experimental daemon prelaunch.",
+    "The cookie case passed before the newer c532fbe refresh-and-verify deletion change; this is not acceptance of that patch.",
+    "UI flows, private live services, physical-device signing and production worker deployment are outside this run."
+  ]
+}
