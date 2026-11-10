@@ -10,6 +10,10 @@ The completed `faf7536` memory UI matrix is **32/39 passed, 7 failed, zero skipp
 
 At `74f7b71`, native iOS 18.5 Large and iOS 26.2 each passed **169/169**, including all five PDF assembly methods; SE remained queued at evidence collection. [Actual event counts](evidence/native-74f7b71.json). This result predates the profile-tool batch above and is not its acceptance.
 
+## Exact iOS 17 document UI did not start
+
+The `74f7b71` document run [42847908760](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42847908760) booted exact **17.0.1 / 21A342**, built the App and runner, but executed **zero of twelve expected methods**. The summary's one failure is a runner-bootstrap error. Session evidence records a 120-second daemon control-session timeout, followed by runner termination before any method starts. The opt-in prelaunch observed process liveness in 0.844 seconds without a verified handshake; this did not prevent the failure. [Bounded log/summary evidence](evidence/ios17-documents-74f7b71-bootstrap.json). The daemon's underlying stall remains unknown; no App document assertion failed or passed in this run.
+
 ## Exact iOS 17 actual HA MCP flow passed
 
 At `dabe9bf`, [42833543641](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42833543641) passed **3/3 actual App UI methods, zero skips**, on exact **17.0.1 / 21A342**. Discovery/disconnect/reconnect, two approved read-only model-selected tools and refusal/draft preservation all executed in one XCTest invocation. The two-tool conversation used three model calls, two actual attempts/results, and zero corrections/tool errors. Native HA probing and App build passed separately. [Fixed runtime, counts and lifecycle evidence](evidence/live-ha-dabe9bf-ios17.json).

@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-10T16:24:25.693979+00:00",
+  "revision": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+  "run_id": 42847908760,
+  "job_id": 129940480219,
+  "artifact_id": 13780524484,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42847908760",
+  "scope": "ui-documents",
+  "runtime": {
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "version": "17.0.1",
+    "buildversion": "21A342"
+  },
+  "host_architecture": "arm64",
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "bootstrap_failure": true,
+  "expected_ui_count": 12,
+  "expected_ui_methods": [
+    "WoowAssistantUITests/SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText",
+    "WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry",
+    "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder",
+    "WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText",
+    "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+    "WoowAssistantUITests/SkillExecutionUITests/testNativePickerCancellationDoesNotReadOrExtract",
+    "WoowAssistantUITests/SkillExecutionUITests/testRefusingFirstStepDoesNotReadOrExtract",
+    "WoowAssistantUITests/SkillExecutionUITests/testRefusingSecondStepKeepsExtractionUnauthorized",
+    "WoowAssistantUITests/SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+    "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+    "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText",
+    "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile"
+  ],
+  "actual_method_starts": 0,
+  "actual_method_completions": 0,
+  "xcresult_summary": {
+    "totalTestCount": 1,
+    "passedTests": 0,
+    "failedTests": 1,
+    "skippedTests": 0,
+    "expectedFailures": 0,
+    "result": "Failed"
+  },
+  "interpretation": "One synthetic XCTest runner bootstrap error, not one executed document-method failure. None of twelve expected UI methods started. This is neither a functional pass nor evidence of a specific App document defect.",
+  "prelaunch": {
+    "budget_seconds": 120,
+    "attempts": 1,
+    "status": "process_started_handshake_unverified",
+    "handshake_verified": false,
+    "process_alive": true,
+    "elapsed_seconds": 0.844
+  },
+  "boot_succeeded": true,
+  "test_exit_code": 65,
+  "dedicated_simulator_deleted": true,
+  "observations": [
+    {
+      "utc": "2026-11-10T15:58:18.766Z",
+      "event": "Host connected to selected simulator testmanagerd socket",
+      "source": "Session log lines50-53"
+    },
+    {
+      "utc": "2026-11-10T16:00:32.978Z",
+      "event": "Daemon control session did not initiate within120 seconds",
+      "domain": "com.apple.dt.xctest.error",
+      "code": 8,
+      "source": "Session log line58"
+    },
+    {
+      "utc": "2026-11-10T16:02:26.593959Z",
+      "event": "Runner19096 printed Running tests; no XCTest method-start event followed",
+      "source": "tests.log"
+    },
+    {
+      "utc": "2026-11-10T16:06:15.894Z",
+      "event": "Coordinator recorded runner signal kill before test execution",
+      "source": "Session log line124"
+    }
+  ],
+  "root_cause_limit": "The control-session timeout and subsequent runner termination are established. The cause of daemon unresponsiveness is not established; process liveness from prelaunch did not prove a completed handshake.",
+  "evidence": [
+    {
+      "file": "report.json",
+      "bytes": 6108,
+      "sha256": "02b96098ceb89450efb668edbae0592720033c3fa6e1b12eb4b59bc1c5bf22d3"
+    },
+    {
+      "file": "test-summary.json",
+      "bytes": 1459,
+      "sha256": "3c8b6eeb34313586ccc01ad0e590ab1ce510b7833a610c883777865a882100b4"
+    },
+    {
+      "file": "tests.log",
+      "bytes": 1072366,
+      "sha256": "4edd79730ab7f7d96bf0d44895c4accad72800e2979f96da8395ec5c4c45402c"
+    },
+    {
+      "file": "Session-WoowAssistantUITests-2026-11-10_155818-QPrju0.log",
+      "bytes": 12332,
+      "sha256": "23d46c19670319a0974e3cbc2afbbc2392619d189804a2f7bd14559cf9a69869"
+    }
+  ],
+  "retrieval": "Bounded ZIP range requests for report/summary/test/session logs only; no full archive download.",
+  "acceptance": false
+}

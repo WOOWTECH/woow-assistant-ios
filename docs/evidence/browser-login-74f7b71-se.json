@@ -1,0 +1,130 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-10T16:18:57.667862+00:00",
+  "run_id": 42847884733,
+  "job_id": 129940206151,
+  "artifact_id": 13781775166,
+  "artifact_bytes": 146041404,
+  "source_commit": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+  "variant": "ios18-compact",
+  "device": "iPhone SE (3rd generation)",
+  "runtime": "iOS Simulator 18.5 (22F77)",
+  "original_ui_result": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "case": "BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+    "seconds": 50.466,
+    "line": 515
+  },
+  "other_variant_status": {
+    "ios26_current_job": 129940205816,
+    "ios26_current_conclusion": "success",
+    "ios18_large_job": 129940206605,
+    "ios18_large_conclusion": "success",
+    "source": "GitHub workflow jobs API; not independently expanded test counts"
+  },
+  "cause_boundary": {
+    "observed": "QuickPath tutorial and Continue remain fully visible in the actual recording. Repeated AX queries inside one readiness predicate exhaust its ten-second waiter before any tutorial-button tap.",
+    "not_reached": [
+      "Synthetic username typing",
+      "Password target geometry/tap",
+      "Login POST",
+      "Cookie/tabs/relaunch/logout assertions"
+    ],
+    "unknown": "Underlying reason for AX service latency; no App login-layout or cookie defect established."
+  },
+  "timeline": [
+    {
+      "utc": "2026-11-10T16:08:31.355Z",
+      "event": "Exact Continue Button existence query matches.",
+      "session_log_line": 3804
+    },
+    {
+      "utc": "2026-11-10T16:08:31.362Z",
+      "event": "Original ten-second readiness waiter starts.",
+      "session_log_line": 3820
+    },
+    {
+      "utc": "2026-11-10T16:08:32.429Z",
+      "event": "Exact QuickPath explanation existence query starts.",
+      "session_log_line": 3827
+    },
+    {
+      "utc": "2026-11-10T16:08:40.070Z",
+      "event": "Explanation query succeeds after 7.64101 seconds.",
+      "session_log_line": 3873
+    },
+    {
+      "utc": "2026-11-10T16:08:40.619Z",
+      "event": "A further exact Continue existence query succeeds after 0.547547 seconds.",
+      "session_log_line": 3901
+    },
+    {
+      "utc": "2026-11-10T16:08:41.659Z",
+      "event": "Another Continue lookup is interrupted by the outer waiter.",
+      "domain": "com.apple.dt.XCTest.XCTFuture",
+      "code": 1001,
+      "session_log_line": 3924
+    },
+    {
+      "utc": "2026-11-10T16:08:41.713Z",
+      "event": "Readiness waiter times out after 10.351 seconds.",
+      "session_log_line": 4068
+    }
+  ],
+  "visual_evidence": {
+    "local_directory": "/tmp/woow-74-login-se",
+    "video": "64E33957-BB68-4B05-8750-37856515CE5C.mp4",
+    "duration_seconds": 45.39833333333333,
+    "frames": [
+      {
+        "file": "frame-32.png",
+        "actual_video_seconds": 31.965,
+        "sha256": "6f8c4b65be794a6d3a09d7dbfcb3ba90ce14ccab6008b724652d021ef21ba830"
+      },
+      {
+        "file": "frame-40.png",
+        "actual_video_seconds": 39.98833333333334,
+        "sha256": "965acacfa86c59bef20b80f631300c7a4f6e3d16eeac427585ac56a6cb586b07"
+      }
+    ],
+    "inspection": "Both frames show the full exact English tutorial explanation and blue Continue button; the native username field is still empty."
+  },
+  "session_log": "Session-WoowAssistantUITests-2026-11-10_160727-VnA5cc.log",
+  "candidate": {
+    "changed_file": "Tests/WoowAssistantUITests/BrowserLoginUITests.swift",
+    "original_sha256": "384129860aba9a4265f273e681bfd2e7ee42fef11bbabb363a908b50cc77a336",
+    "candidate_sha256": "fb0a567e575632b77bdb3587bbe7eb4e21e2e04f7b5e9c96d253a786ddac6592",
+    "scope": "Only dismissKeyboardIntroductionIfPresented; product and fixture unchanged.",
+    "checks": "One public App snapshot verifies exactly one explanatory StaticText and one enabled Continue Button, both finite/nonempty/inside viewport, with button below explanation. One normal native button.tap follows; no coordinate fallback.",
+    "preserved": [
+      "Keyboard existence ten seconds",
+      "Optional Continue existence three seconds",
+      "Tutorial readiness ten seconds",
+      "Tutorial disappearance ten seconds",
+      "Exact synthetic credentials and actual native form POST",
+      "Cookie sharing across tabs, real relaunch and logout assertions"
+    ],
+    "new_timeout_or_retry": false,
+    "native_retest_pass_claim": false
+  },
+  "validation": {
+    "debug_ios17_syntax_parse": "passed",
+    "release_ios17_syntax_parse": "passed",
+    "git_diff_check": "passed",
+    "native_XCTest_typecheck_or_execution": false,
+    "limitation": "macOS13 Intel CLT has no iOS XCTest SDK; native CI is required."
+  },
+  "bounded_retrieval": {
+    "whole_zip_downloaded": false,
+    "selected_entries": 6,
+    "uncompressed_bytes": 7284302
+  },
+  "apple_primary_references": [
+    "https://developer.apple.com/documentation/xcuiautomation/xcuielementsnapshot",
+    "https://developer.apple.com/documentation/xcuiautomation/xcuielementsnapshotproviding/snapshot()"
+  ],
+  "commit_push_dispatch_performed": false
+}

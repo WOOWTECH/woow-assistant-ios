@@ -609,7 +609,12 @@ final class SkillExecutionUITests: XCTestCase {
     }
 
     private func openNativePicker(picker: PickerArm = .swiftUI) {
+        let presentationTimeout: TimeInterval
         if case .userImportCopy = picker {
+            // 74f7b71 SE: the import controller appeared immediately, but Files
+            // rendered its first controls about 48–50 seconds later. Only this
+            // initial presentation gets 60 seconds within the unchanged 240.
+            presentationTimeout = 60
             XCTAssertFalse(app.launchArguments.contains { $0.hasPrefix("-UITestPDFUIKit") },
                            "The user entry must select import-copy without a picker experiment flag.")
             XCTAssertFalse(app.launchArguments.contains("-UITestSkillFixtureWriteMode"))
@@ -625,12 +630,13 @@ final class SkillExecutionUITests: XCTestCase {
             requireHittable(copy)
             copy.tap()
         } else {
+            presentationTimeout = 45
             tap("skillExecutionSelectPDF", scroll: true)
         }
         // iOS 17 evidence: Files initialization can exhaust the old 15-second
         // readiness budget. Wait for the actual native control once;
         // do not retap the launch button or bypass the document picker.
-        requireHittable(nativeCancel, timeout: 45)
+        requireHittable(nativeCancel, timeout: presentationTimeout)
         XCTAssertFalse(app.buttons["skillExecutionApproveStep"].isHittable,
                        "Native picker must be shown before any runtime plan is approved.")
     }

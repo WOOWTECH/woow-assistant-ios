@@ -1,0 +1,181 @@
+{
+  "schema_version": 1,
+  "source_commit": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+  "run_id": 42847890878,
+  "job_id": 129940229247,
+  "artifact_id": 13781780353,
+  "device": "iPhone SE (3rd generation)",
+  "runtime": "iOS 18.5",
+  "runtime_build": "22F77",
+  "method": "SkillExecutionUITests.testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText",
+  "total": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "duration_seconds": 137.528,
+  "case_deadline_seconds": 240,
+  "failure": {
+    "source_file": "Tests/WoowAssistantUITests/SkillExecutionUITests.swift",
+    "line": 899,
+    "call_site": "openNativePicker(.userImportCopy) -> requireHittable(nativeCancel, timeout: 45)",
+    "category": "native_picker_readiness_timeout",
+    "wait_elapsed_seconds": 45.016,
+    "file_selected": false,
+    "importer_callback_observed": false,
+    "read_approval_reached": false,
+    "extraction_approval_reached": false,
+    "result_reached": false
+  },
+  "observed_audits": [
+    {
+      "selections": 0,
+      "reads": 0,
+      "extractionAttempts": 0,
+      "results": 0
+    }
+  ],
+  "presentation": {
+    "source": "user-copy",
+    "mode": "import",
+    "allowsMultipleSelection": false,
+    "preceding_unobserved_sample": true
+  },
+  "timeline": [
+    {
+      "test_seconds": 82.9,
+      "event": "single_tap_user_copy_button",
+      "log_line": 3067
+    },
+    {
+      "utc": "2026-11-10T16:09:03.577165Z",
+      "event": "passive_probe_observed_visible_import_mode_picker",
+      "app_stdout_line": 91766
+    },
+    {
+      "utc": "2026-11-10T16:09:48.611Z",
+      "event": "45.016_second_native_cancel_wait_timed_out",
+      "session_log_line": 18428
+    },
+    {
+      "utc": "2026-11-10T16:09:50.982Z",
+      "event": "remote_view_service_ViewDidAppear",
+      "session_log_line": 18440
+    },
+    {
+      "utc": "2026-11-10T16:09:51.342Z",
+      "event": "DocumentManager_DOCServiceViewController_ViewDidAppear",
+      "session_log_line": 18456
+    },
+    {
+      "test_seconds": 132.89,
+      "event": "failure_teardown_started",
+      "log_line": 3206
+    },
+    {
+      "utc": "2026-11-10T16:09:52.879Z",
+      "event": "DOCFullDocumentManagerViewController_ViewDidAppear",
+      "session_log_line": 18549
+    }
+  ],
+  "visual_evidence": {
+    "frame-82.png": "Actual user-copy notice and button visible; all four audits zero.",
+    "frame-85.png": "Blank white presented sheet.",
+    "frame-128.png": "Blank white presented sheet persists.",
+    "frame-133.png": "Recent Items title and tabs start rendering after readiness timeout; file list still blank."
+  },
+  "error_scan": {
+    "scope": "extracted application stdout only",
+    "NSFileProviderErrorDomain_occurrences": 0,
+    "NSFileProviderResolverErrorDomain_occurrences": 0
+  },
+  "assessment": {
+    "confirmed": "The native picker controller is presented in import mode, but its Files UI is not ready within the existing 45-second wait. No file selection or callback is attempted.",
+    "root_cause": "unknown: no evidence establishes why DocumentManager rendering was delayed",
+    "not_established": [
+      "old provider URL resolution failure",
+      "wrong Cancel selector",
+      "copy delegate/callback failure",
+      "conditional SwiftUI presentation branch as cause",
+      "a product or test fix sufficient to pass within the unchanged 240-second budget"
+    ],
+    "action": "Retain the failed baseline. Change only the user-copy initial native picker readiness wait from 45 to 60 seconds; no product change, retry, or weakening of callback/approval/result assertions."
+  },
+  "evidence": [
+    {
+      "file": "test-summary.json",
+      "sha256": "ed96f804c00e963fe77e3d32987cc2a11e2fb8a7f0c9ccbd06b827a409ff32a1",
+      "bytes": 1611
+    },
+    {
+      "file": "ios-tests.log",
+      "sha256": "56b07eae4662b2f524750be41d9c163e8f2a2387ef2ea0e046aed12b112596f5",
+      "bytes": 872889
+    },
+    {
+      "file": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+      "sha256": "b2533583dfa02331d6a63181a4509d7631092704f08e78f6949f7453cca7bbd4",
+      "bytes": 30484249
+    },
+    {
+      "file": "Session-WoowAssistantUITests-2026-11-10_160711-gZQHNU.log",
+      "sha256": "c8f415ee45e3aa168fd7fe5006e7b9417a4dc83b354cb4a16b3325595231bd0d",
+      "bytes": 2042013
+    },
+    {
+      "file": "frame-82.png",
+      "sha256": "9555a7e0c3008f1da8a3e72f114b433ffded27befe16e91764344527c877b925",
+      "bytes": 289140
+    },
+    {
+      "file": "frame-85.png",
+      "sha256": "f82935a3e8c4f62711a42b1911f7242ba927c94ab847b6e954c3b23d0a4ed502",
+      "bytes": 30333
+    },
+    {
+      "file": "frame-128.png",
+      "sha256": "f82935a3e8c4f62711a42b1911f7242ba927c94ab847b6e954c3b23d0a4ed502",
+      "bytes": 30333
+    },
+    {
+      "file": "frame-133.png",
+      "sha256": "57da2352d4401e2790bcdb073722ed4bee537207786da9b1c40fb799ec3b5ade",
+      "bytes": 56598
+    }
+  ],
+  "test_driver_change": {
+    "file": "Tests/WoowAssistantUITests/SkillExecutionUITests.swift",
+    "function": "openNativePicker(picker:)",
+    "arm": "userImportCopy",
+    "old_initial_presentation_seconds": 45,
+    "new_initial_presentation_seconds": 60,
+    "case_deadline_seconds": 240,
+    "other_picker_arms_seconds": 45,
+    "assembly_initial_presentation_seconds": 45,
+    "all_other_waits_unchanged": true,
+    "real_native_selection_required": true,
+    "real_importer_callback_required": true,
+    "both_read_and_extraction_approvals_required": true,
+    "exact_full_output_and_audits_required": true,
+    "automatic_retry": false,
+    "validation": {
+      "swift_syntax_parse": "passed",
+      "native_UI_after_change": "not_run",
+      "existing_standalone_Files_route_and_thumbnail_geometry_checks": "passed",
+      "git_diff_check": "passed"
+    },
+    "candidate_file_sha256": "72128bbfff95c93d1b46ace5c19a44b6ee92d6b933d2b113e96b967c5200f401"
+  },
+  "local_evidence_directory": "/tmp/woow-74-user-copy-se",
+  "other_variant_at_checkpoint": {
+    "device": "iPhone 16 Pro Max",
+    "runtime": "iOS 18.5 (22F77)",
+    "job_id": 129940229985,
+    "artifact_id": 13780708447,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "duration_seconds": 182.001,
+    "source_commit": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+    "note": "Same source, different CI host/device; this does not establish the root cause of the SE startup delay."
+  }
+}
