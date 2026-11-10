@@ -4,10 +4,15 @@ name: Live model on iOS Simulator
 on:
   workflow_dispatch:
     inputs:
+      ios_version:
+        description: Exact simulator runtime (ARM, Xcode 16.4; no fallback)
+        type: choice
+        options: ['18.5', '17.0.1']
+        default: '18.5'
       ui_scope:
         description: Live App UI coverage (native probes always run)
         type: choice
-        options: [all, browser, browser-learning, browser-interaction, skill-authoring, self-configuration, browser-transcript, transcript-files]
+        options: [all, browser, browser-learning, browser-interaction, skill-authoring, self-configuration, browser-transcript, transcript-files, transcript-formats]
         default: all
 
 permissions:
@@ -20,21 +25,28 @@ defaults:
 concurrency:
   # A single global group can retain only one pending run, even with cancellation
   # disabled. Independent acceptance scopes must not evict each other in queue.
-  group: live-model-${{ inputs.ui_scope || 'all' }}
+  group: live-model-${{ inputs.ui_scope || 'all' }}-${{ inputs.ios_version || '18.5' }}
   cancel-in-progress: false
 
 jobs:
   live-native-model:
     if: github.ref == 'refs/heads/main'
     runs-on: macos-15
-    timeout-minutes: 35
+    timeout-minutes: 70
     env:
       DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           persist-credentials: false
+      - name: Verify exact-runtime preparation and cleanup
+        run: python3 -m unittest discover -s scripts -p 'test_prepare_live_simulator.py' -v
+      - name: Prepare dedicated exact-runtime simulator
+        env:
+          WOOW_REQUESTED_RUNTIME: ${{ inputs.ios_version || '18.5' }}
+        run: python3 scripts/prepare_live_simulator.py --os "$WOOW_REQUESTED_RUNTIME" --output build/live-simulator
       - name: Build native simulator transport test
+        id: native-build
         run: |
           mkdir -p build/live
           sdk_path="$(xcrun --sdk iphonesimulator --show-sdk-path)"
@@ -62,13 +74,12 @@ jobs:
           xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -parse-as-library \
             -I build/live -L build/live -lAssistantModels -lAssistantSkills \
             scripts/LiveSkillLearningSmoke.swift -o build/live/LiveSkillLearningSmoke
-      - name: Boot iOS 18.5 iPhone simulator
-        run: |
-          device_id="$(xcrun simctl list devices available -j | python3 scripts/select_simulator.py --runtime iOS-18-5 --device 'iPhone 16 Pro Max')"
-          echo "WOOW_LIVE_SIMULATOR=$device_id" >> "$GITHUB_ENV"
-          xcrun simctl bootstatus "$device_id" -b
+          xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -parse-as-library \
+            -I build/live -L build/live -lAssistantModels -lAssistantSkills \
+            scripts/LiveTranscriptSmoke.swift -o build/live/LiveTranscriptSmoke
       - name: Prepare App UI test build
         id: app-build
+        if: inputs.ui_scope != 'transcript-formats'
         run: |
           tool_dir="$(mktemp -d "$RUNNER_TEMP/woow-xcodegen.XXXXXX")"
           curl --fail --location --retry 3 --max-time 120 \
@@ -82,8 +93,10 @@ jobs:
             -derivedDataPath build/LiveDerivedData build-for-testing CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES
           codesign --verify --strict build/LiveDerivedData/Build/Products/Debug-iphonesimulator/WoowAssistant.app
           codesign -d --entitlements :- build/LiveDerivedData/Build/Products/Debug-iphonesimulator/WoowAssistant.app
-          xcrun simctl list runtimes -j | python3 scripts/prepare_simulator_webkit.py \
-            --runtime iOS-18-5 --products build/LiveDerivedData/Build/Products/Debug-iphonesimulator
+          if [ "$WOOW_LIVE_RUNTIME" = iOS-18-5 ]; then
+            xcrun simctl list runtimes -j | python3 scripts/prepare_simulator_webkit.py \
+              --runtime "$WOOW_LIVE_RUNTIME" --products build/LiveDerivedData/Build/Products/Debug-iphonesimulator
+          fi
       - name: Make two bounded live requests inside iOS Simulator
         timeout-minutes: 4
         env:
@@ -107,9 +120,21 @@ jobs:
           SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
           SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveSkillLearningSmoke"
+      - name: Real model completes all five transcript formats over fixed text
+        if: ${{ !cancelled() && steps.native-build.outcome == 'success' && contains(fromJSON('["all","transcript-formats","transcript-files","browser-transcript"]'), inputs.ui_scope || 'all') }}
+        timeout-minutes: 12
+        env:
+          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
+        run: |
+          xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveTranscriptSmoke" \
+            "$PWD/Sources/AssistantSkills/Resources/MikaBundledSkills.json"
       - name: Real model App UI tests
         if: ${{ !cancelled() && steps.app-build.outcome == 'success' }}
-        timeout-minutes: 20
+        # Eleven live UI methods now include settings and transcript flows;
+        # focused scopes keep their previous 20-minute bound and case limits.
+        timeout-minutes: ${{ (inputs.ui_scope || 'all') == 'all' && 40 || 20 }}
         env:
           WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
           WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
@@ -144,7 +169,7 @@ jobs:
           for test_run in build/LiveDerivedData/Build/Products/*.xctestrun; do
             [ ! -f "$test_run" ] || python3 scripts/prepare_live_xctestrun.py "$test_run" --clear
           done
-      - name: Stop test simulator
-        if: always() && env.WOOW_LIVE_SIMULATOR != ''
-        run: xcrun simctl shutdown "$WOOW_LIVE_SIMULATOR"
+      - name: Delete only this run's simulator
+        if: always()
+        run: python3 scripts/prepare_live_simulator.py --cleanup --output build/live-simulator
       # Deliberately no artifact upload: live process environments contain secrets.

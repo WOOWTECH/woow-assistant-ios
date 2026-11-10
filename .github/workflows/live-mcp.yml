@@ -2,6 +2,12 @@ name: Live HA MCP on iOS Simulator
 
 on:
   workflow_dispatch:
+    inputs:
+      ios_version:
+        description: Exact simulator runtime (ARM, Xcode 16.4; no fallback)
+        type: choice
+        options: ['18.5', '17.0.1']
+        default: '18.5'
 
 permissions:
   contents: read
@@ -11,20 +17,26 @@ defaults:
     shell: bash
 
 concurrency:
-  group: live-ha-mcp
+  group: live-ha-mcp-${{ inputs.ios_version || '18.5' }}
   cancel-in-progress: false
 
 jobs:
   live-native-mcp:
     if: github.ref == 'refs/heads/main'
     runs-on: macos-15
-    timeout-minutes: 45
+    timeout-minutes: 70
     env:
       DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
         with:
           persist-credentials: false
+      - name: Verify exact-runtime preparation and cleanup
+        run: python3 -m unittest discover -s scripts -p 'test_prepare_live_simulator.py' -v
+      - name: Prepare dedicated exact-runtime simulator
+        env:
+          WOOW_REQUESTED_RUNTIME: ${{ inputs.ios_version || '18.5' }}
+        run: python3 scripts/prepare_live_simulator.py --os "$WOOW_REQUESTED_RUNTIME" --output build/live-simulator
       - name: Build native simulator MCP acceptance
         run: |
           mkdir -p build/live
@@ -44,11 +56,6 @@ jobs:
           xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -parse-as-library \
             -I build/live -L build/live -lAssistantMCP -lAssistantModels scripts/LiveMCPSmoke.swift \
             -o build/live/LiveMCPSmoke
-      - name: Boot iOS simulator
-        run: |
-          device_id="$(xcrun simctl list devices available -j | python3 scripts/select_simulator.py --runtime iOS-18-5 --device 'iPhone 16 Pro Max')"
-          echo "WOOW_LIVE_SIMULATOR=$device_id" >> "$GITHUB_ENV"
-          xcrun simctl bootstatus "$device_id" -b
       - name: Read-only HA acceptance inside iOS Simulator
         timeout-minutes: 8
         env:
@@ -71,8 +78,10 @@ jobs:
             -derivedDataPath build/LiveDerivedData build-for-testing CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES
           codesign --verify --strict build/LiveDerivedData/Build/Products/Debug-iphonesimulator/WoowAssistant.app
           codesign -d --entitlements :- build/LiveDerivedData/Build/Products/Debug-iphonesimulator/WoowAssistant.app
-          xcrun simctl list runtimes -j | python3 scripts/prepare_simulator_webkit.py \
-            --runtime iOS-18-5 --products build/LiveDerivedData/Build/Products/Debug-iphonesimulator
+          if [ "$WOOW_LIVE_RUNTIME" = iOS-18-5 ]; then
+            xcrun simctl list runtimes -j | python3 scripts/prepare_simulator_webkit.py \
+              --runtime "$WOOW_LIVE_RUNTIME" --products build/LiveDerivedData/Build/Products/Debug-iphonesimulator
+          fi
       - name: Real MCP App discovery and reconnection
         timeout-minutes: 8
         env:
@@ -110,7 +119,7 @@ jobs:
             [ ! -f "$test_run" ] || python3 scripts/prepare_live_xctestrun.py "$test_run" --service mcp --clear
             [ ! -f "$test_run" ] || python3 scripts/prepare_live_xctestrun.py "$test_run" --service model --clear
           done
-      - name: Stop test simulator
-        if: always() && env.WOOW_LIVE_SIMULATOR != ''
-        run: xcrun simctl shutdown "$WOOW_LIVE_SIMULATOR"
+      - name: Delete only this run's simulator
+        if: always()
+        run: python3 scripts/prepare_live_simulator.py --cleanup --output build/live-simulator
       # Never publish live endpoints, server response bodies or process environments.
