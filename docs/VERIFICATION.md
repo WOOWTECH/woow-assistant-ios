@@ -8,9 +8,12 @@ Latest completed simulator evidence (passed test cases / selected cases, not ass
 | --- | --- | --- | --- |
 | [Workspace 42763765491](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42763765491), `1747c20` | Native/hosted 26/26; UI 3/5 | Native/hosted 25/26; UI 3/5 | Native/hosted 26/26; UI 3/5 |
 | [Files 42762605111](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762605111), `776f5f9` | Native/hosted 40/40; UI 5/8 | Native/hosted 40/40; UI 8/8 | Native/hosted 40/40; UI 6/8 |
+| [Files 42769116674](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769116674), `1b0f3d8` | Native/hosted 44/45; UI 7/8 | Native/hosted 45/45; UI 8/8 | Pending |
 | [Parity 42762628864](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762628864), `776f5f9` | Native/hosted 94/94; UI 18/21 | Native/hosted 94/94; UI 21/21 | Native/hosted 94/94; UI 21/21 |
 
-Each workspace, files and parity variant above passed 98 portable cases. Each files variant also passed the 12 original-script
+The `776f5f9` and `1747c20` variants passed 98 portable cases. The completed
+`1b0f3d8` files SE/large variants passed 103, including the five new authoring
+bridge cases, plus all 12 original-worker cases with real Swift HTTP integration. Each files variant also passed the 12 original-script
 worker cases, including the real Swift HTTP client. No selected test was skipped in these three scoped matrices. A timed-out
 case is a failure even when XCTest restarts and later prints a passing suite:
 `SkillExecutionTests.testCancellationAndUploadGating` exceeded its four-minute
@@ -110,6 +113,19 @@ focused scopes. Replacement runs:
 - [Files 42769116674](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769116674), all three variants.
 - [Learning 42769122118](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769122118), all three variants.
 
+The `1b0f3d8` files SE result is 51/53 selected native/hosted/UI cases;
+large is 53/53, both with zero skips. SE export/save, full PDF extraction and both
+native upload cases now pass. Export/cancel instead failed at initial navigation:
+two CollectionViews became one, invalidating a cached index-1 query before file
+selection. `5d85da4` binds containers by accessibility identity, checks cached
+validity and reuses one snapshot's geometry; it preserves the gesture budget and
+all outcome assertions. SE also hit the older 15-second hosted deletion deadline,
+which `0df511b` already changes to a bounded 30 seconds. These fixes require native
+reruns; large success does not retroactively pass SE. Targeted SE
+[files 42773301406](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42773301406)
+on `e2b7de9` includes both repairs. CI concurrency now separates effective device
+variants, allowing this targeted run without cancelling the older full matrix.
+
 Current follow-up runs are separate source checkpoints:
 - `0df511b` [workspace 42769973948](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769973948): pending native rerun with exact keyboard tutorial and sheet confirmation lookup, separate bounded deletion/refresh waits, and only the relevant hosted removal wait increased from 15 to 30 seconds. Workspace/all now honor the login case's existing 420-second declaration; other scopes remain capped at 300. The four unexplained 60-second XCTest idle waits in the prior SE case remain an open intermittent issue, not a proven product fix.
 - `1747c20` [workspace 42763765491](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42763765491): completed with the failures and timings above. The bounded persistent website-removal phases and failure cleanup evidence do not themselves fix cookie removal.
@@ -149,7 +165,7 @@ Local direct Swift execution passed five groups / 51 checks (26 ordinary conditi
 and 25 expected-error checks), using actual AES-GCM files with an in-memory key
 provider. Those map to five native XCTest methods, not 51 test cases. Four new UI
 cases cover create/relaunch, refusal/relaunch, read/update/relaunch, and invalid-tool
-rejection. The original [authoring 42765232695](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42765232695) passed 103 portable cases on SE, including all five authoring methods, then failed test-target compilation because its private `name` property collided with XCTestCase.name. Remaining jobs were cancelled; no iOS authoring UI pass is inferred. The property was renamed to `fixtureSkillName` in `1b0f3d8`; [replacement 42769111436](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769111436) is pending on all three variants.
+rejection. The original [authoring 42765232695](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42765232695) passed 103 portable cases on SE, including all five authoring methods, then failed test-target compilation because its private `name` property collided with XCTestCase.name. Remaining jobs were cancelled; no iOS authoring UI pass is inferred. The property was renamed to `fixtureSkillName` in `1b0f3d8`. Files SE/large then compiled the complete UI target and ran the five authoring bridge cases on iOS; the manual authoring UI still awaits execution. Replacement 42769111436 was cancelled while all three jobs were queued, so the next run includes the confirmed container-identity fix. [Authoring 42772009461](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42772009461) on `5d85da4` is pending on all three variants.
 
 ### Earlier increment evidence
 
