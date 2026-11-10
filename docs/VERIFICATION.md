@@ -1,5 +1,19 @@
 # Verification — 2026-11-11
 
+## Integrated native suite completed at 8c4195f
+
+[42911161821](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911161821)
+passed **306/306 native/hosted methods, zero skips**, on iPhone 17 / iOS 26.2 /
+23C54. The separate portable suite passed **212/212**; these executions overlap
+and are not additive coverage. Each method started and completed exactly once;
+xcresult and the completion gate agree. The complete artifact ZIP was independently
+downloaded and its SHA-256 verified. This covers 3 archive core and 6 actual App
+methods, 6 replay-reference App methods, and all 10 PDF-query core / 9 App methods.
+[Source hashes, actual methods and artifact proof](evidence/native-current-8c4195f.json).
+This accepts that source's native logic, not its separate UI runs, later hosted
+PDF-add tests, in-flight transcript/site-mode changes, or full product parity.
+
+
 ## Prior-source exact17 output and SE profile acceptance
 
 At `1abc6d7`, [42902041641](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902041641)

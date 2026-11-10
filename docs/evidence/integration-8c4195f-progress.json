@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-11-10T22:11:34.829384+00:00",
+  "observed_at": "2026-11-10T22:22:40.775059+00:00",
   "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
   "status": "PENDING_NATIVE_ACCEPTANCE",
   "test_plan_only": true,
@@ -58,8 +58,8 @@
         "current_only": "true",
         "fresh_simulator": "true"
       },
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "label": "pdf-pair-se",
@@ -71,8 +71,8 @@
         "compact_only": "true",
         "fresh_simulator": "true"
       },
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "label": "archive-exact17",
@@ -89,7 +89,7 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null
     },
     {
@@ -120,7 +120,7 @@
         "compact_only": "true",
         "fresh_simulator": "true"
       },
-      "status": "queued",
+      "status": "in_progress",
       "conclusion": null
     },
     {
