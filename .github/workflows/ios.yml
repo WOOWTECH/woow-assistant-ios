@@ -92,7 +92,7 @@ jobs:
               test_filters=(-only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/BrowserInteractionUITests)
               ;;
             parity)
-              test_filters=(-only-testing:AssistantMCPTests -only-testing:AssistantSkillsTests -only-testing:AssistantDomainTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/MCPConversationUITests -only-testing:WoowAssistantUITests/BrowserInteractionUITests -only-testing:WoowAssistantUITests/SkillCatalogUITests)
+              test_filters=(-only-testing:AssistantMCPTests -only-testing:AssistantSkillsTests -only-testing:AssistantDomainTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/MCPConversationUITests -only-testing:WoowAssistantUITests/BrowserInteractionUITests -only-testing:WoowAssistantUITests/BrowserLearningUITests -only-testing:WoowAssistantUITests/SkillCatalogUITests)
               ;;
             startup)
               test_filters=(-only-testing:WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded)

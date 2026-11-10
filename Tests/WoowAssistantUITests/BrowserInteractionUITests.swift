@@ -1,4 +1,5 @@
 import XCTest
+import CoreGraphics
 
 /// Local HTML, actual WKWebView/isolated DOM executor and native approval UI.
 /// No model stub is used to simulate DOM effects. No credentials or network.
@@ -24,7 +25,14 @@ final class BrowserInteractionUITests: XCTestCase {
         openControls()
         XCTAssertFalse(control("Password").exists)
         XCTAssertFalse(control("Upload excluded").exists)
-        XCTAssertFalse(control("Disabled action").isEnabled)
+        let disabledMatches = controls(matching: "Disabled action")
+        let disabled = disabledMatches.firstMatch
+        // Materialize the native Form row before reading its disabled trait.
+        // This fixes an offscreen assertion precondition, not a proven AX cause.
+        revealDisabledRowForStateAssertion(disabled)
+        XCTAssertEqual(disabledMatches.count, 1, "The disabled fixture control must match exactly one native row.")
+        XCTAssertTrue(disabled.exists)
+        XCTAssertFalse(disabled.isEnabled)
         choose("Public note")
         let value = "Approved note"
         enter(value, into: editor)
@@ -133,7 +141,45 @@ final class BrowserInteractionUITests: XCTestCase {
     }
     private var note: XCUIElement { app.webViews.textFields["Public note"].firstMatch }
     private func control(_ label: String) -> XCUIElement {
-        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND label == %@", "browser.control.", label)).firstMatch
+        controls(matching: label).firstMatch
+    }
+    private func controls(matching label: String) -> XCUIElementQuery {
+        app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND label == %@", "browser.control.", label))
+    }
+    /// State inspection only: a disabled button need not be hittable. Never use
+    /// this helper to authorize a tap; all actionable Form controls retain the
+    /// existing full-visibility AND hittability checks in revealLearningElement.
+    private func revealDisabledRowForStateAssertion(_ element: XCUIElement,
+                                                    file: StaticString = #filePath, line: UInt = #line) {
+        let candidates = app.collectionViews.allElementsBoundByIndex + app.scrollViews.allElementsBoundByIndex
+        guard let form = candidates.first(where: { $0.isHittable && !$0.frame.intersection(app.frame).isEmpty }) else {
+            XCTFail("A visible native Form is required to inspect the disabled row.", file: file, line: line)
+            return
+        }
+        let navigation = app.navigationBars.firstMatch
+        let keyboard = app.keyboards.firstMatch
+        for attempt in 0...8 {
+            var bounds = form.frame.intersection(app.frame)
+            if navigation.exists, navigation.isHittable {
+                let top = max(bounds.minY, navigation.frame.maxY)
+                bounds = CGRect(x: bounds.minX, y: top, width: bounds.width, height: max(0, bounds.maxY - top))
+            }
+            if keyboard.exists {
+                let bottom = min(bounds.maxY, keyboard.frame.minY)
+                bounds.size.height = max(0, bottom - bounds.minY)
+            }
+            bounds = bounds.insetBy(dx: 0, dy: 4)
+            let exists = element.exists
+            let frame = exists ? element.frame : .zero
+            if exists && learningFrameIsVisible(frame, in: bounds, visibility: .fullyVisible) { return }
+            guard attempt < 8 else {
+                print("Fixture disabled-row visibility: exists=\(exists); frame=\(frame); viewport=\(bounds)")
+                XCTFail("Disabled row must be fully visible before reading isEnabled.", file: file, line: line)
+                return
+            }
+            if exists && frame.minY < bounds.minY { form.swipeDown() }
+            else { form.swipeUp() }
+        }
     }
     private func dom(_ label: String) -> XCUIElement {
         app.webViews.descendants(matching: .any).matching(NSPredicate(format: "label == %@", label)).firstMatch
