@@ -1,0 +1,94 @@
+{
+  "schema_version": 1,
+  "run_id": 42895993706,
+  "job_id": 130109154050,
+  "source_commit": "7b0b89ab9c4d6c37b82eabececec9c71fb3998fe",
+  "ui_source_sha256": "3778e26287029eb6b887aa86954d943485e7149de899d48909a7c1f176b2bb39",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42895993706",
+  "job_conclusion": "failure",
+  "runtime_observed_in_job": "iOS-18-5",
+  "method": "LiveDocumentQueryUITests.testRealModelAnswersFromApprovedPDFAndExportCancellationPreservesResult",
+  "counts": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0
+  },
+  "counts_basis": "The fixed verify_live_ui.py output from the actual xcresult agrees with the normal failed-method completion line.",
+  "fixed_xcresult_verification": {
+    "expectedFailures": 0,
+    "expectedTests": 1,
+    "failedTests": 1,
+    "passedTests": 0,
+    "skippedTests": 0,
+    "totalTestCount": 1,
+    "code": "NOT_PASSED"
+  },
+  "duration_seconds": 163.457,
+  "case_allowance_seconds": 300,
+  "driver_cleanup_reserve_boundary_seconds": 285,
+  "phases_seconds_since_setup": {
+    "selected": 69,
+    "extracted": 85,
+    "question_input_started": 115,
+    "question_input_delivered": 131
+  },
+  "actual_query_audit": null,
+  "xctest_event_seconds": {
+    "question_type_start": 115.81,
+    "question_synthesis_start": 123.95,
+    "question_synthesis_following_idle": 132.09,
+    "keyboard_done_exists_check": 132.1,
+    "keyboard_done_enabled_lookup": 138.28,
+    "keyboard_done_hittable_lookup": 139.11,
+    "tear_down_start": 150
+  },
+  "fixed_failure": {
+    "category": "test_driver_post_readiness_deadline_regression",
+    "file": "Tests/WoowAssistantUITests/LiveDocumentQueryUITests.swift",
+    "line": 201,
+    "fixed_message": "A required native control did not become ready.",
+    "utc": "2026-11-10T20:47:40.9792460Z",
+    "control_id": "documentQuery.keyboardDone",
+    "local_readiness_timeout_seconds": 10
+  },
+  "diagnosis": {
+    "confirmed": "The new wait helper failed at its final Date() <= deadline guard after the synchronous readiness condition returned. The three checks for the Done button started at XCTest t=132.10s, 138.28s and 139.11s; teardown began at t=150.00s. There is no Done tap.",
+    "source_control_flow_inference": "The readiness condition is exists && isEnabled && isHittable. Its first evaluation already exceeded the 10-second local deadline. A false result would fail at line 193 before starting the predicate waiter; the observed failure at line 201 therefore means the condition was true but the new postcondition rejected it for elapsed AX-query time.",
+    "regression_scope": "Confirmed regression in the new local deadline postcheck. The scoped Form snapshot and wrapper/staticText selection helpers were not reached, so this run neither validates nor falsifies them.",
+    "minimum_followup": "Review only the wait helper's treatment of a satisfied synchronous readiness check while retaining the existing whole-case budget and unchanged native readiness assertions. No implementation change or retry was made during this monitoring task."
+  },
+  "reached": [
+    "actual_native_import_copy_selection",
+    "separate_read_and_extract_approvals",
+    "actual_two_page_PDFKit_extraction_and_source_identity_check",
+    "query_sheet_open_and_native_keyboard_acquisition",
+    "unchanged_question_typeText_returned"
+  ],
+  "not_reached": [
+    "native_keyboard_Done_tap_and_keyboard_dismissal",
+    "exact_question_value_assertion",
+    "scoped_query_Form_snapshot_and_zero_audit_validation",
+    "destination_approval_and_query_model_start",
+    "actual_query_search_reads_answer_and_citations",
+    "native_export_and_cancellation",
+    "post_cancel_answer_citation_audit_retention",
+    "closing_query_and_exact_extraction_retention"
+  ],
+  "cleanup_steps": {
+    "Clear private runner configuration": "success",
+    "Delete only this run's simulator": "success"
+  },
+  "previous_failed_evidence": [
+    "live-document-query-4f26118-ios18.json",
+    "live-document-query-517d0d1-ios18.json"
+  ],
+  "limitations": [
+    "This is one failed E2E method, not a timeout at the unchanged 285/300-second whole-case limits.",
+    "The model-start action in this UI case was not reached. Other real model probes in the workflow are separate; no global zero-HTTP claim is made.",
+    "No PDF provider callback failure or model failure is established in this run.",
+    "Setup-relative phase integers and XCTest relative event times have different origins.",
+    "No endpoint, credentials, model/source prose, AX dump, screenshot or private artifact bundle was downloaded or included.",
+    "Only this bounded evidence report was added; the frozen UI source and prior failure reports remain unchanged."
+  ]
+}

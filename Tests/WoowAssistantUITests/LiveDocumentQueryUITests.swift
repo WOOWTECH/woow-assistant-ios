@@ -186,18 +186,24 @@ final class LiveDocumentQueryUITests: XCTestCase {
         // Reserve time for namespace cleanup inside the existing 300s cap.
         try requireBudget()
         let deadline = min(started.addingTimeInterval(285), Date().addingTimeInterval(timeout))
-        // Ready controls need no scheduled predicate poll. Charge the initial
-        // native check to the same timeout; never add it to the waiting budget.
-        if !condition() {
-            let remaining = deadline.timeIntervalSinceNow
-            guard remaining > 0 else { XCTFail(message); throw Failure.readiness }
-            let expectation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in condition() }, object: nil)
-            guard XCTWaiter.wait(for: [expectation], timeout: remaining) == .completed else {
-                XCTFail(message); throw Failure.readiness
-            }
-        }
+        // AX queries are synchronous and cannot be interrupted by this local
+        // polling timeout. Honor an already-ready result without querying it
+        // again, but always enforce the whole-case cleanup boundary afterward.
+        let initiallyReady = condition()
         try requireBudget()
-        guard Date() <= deadline else {
+        if initiallyReady { return }
+
+        // A false initial result consumes the original timeout. Never reset it
+        // or start another AX query after that local deadline has elapsed.
+        let remaining = deadline.timeIntervalSinceNow
+        guard remaining > 0 else { XCTFail(message); throw Failure.readiness }
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard Date() < deadline else { return false }
+            return condition()
+        }, object: nil)
+        let result = XCTWaiter.wait(for: [expectation], timeout: remaining)
+        try requireBudget()
+        guard result == .completed else {
             XCTFail(message); throw Failure.readiness
         }
     }

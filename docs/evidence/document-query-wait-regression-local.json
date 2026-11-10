@@ -1,0 +1,55 @@
+{
+  "changed_repo_file": "Tests/WoowAssistantUITests/LiveDocumentQueryUITests.swift",
+  "ui_source_sha256": "6af6e92babd78e91f248427d07fb58612bee6bc317bc10963f7137a62eeba267",
+  "baseline_commit": "7b0b89ab9c4d6c37b82eabececec9c71fb3998fe",
+  "baseline_actual_ci": {
+    "run_id": 42895993706,
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "seconds": 163.457,
+    "evidence": "docs/evidence/live-document-query-7b0b89a-ios18.json"
+  },
+  "change_scope": "Only wait(message:timeout:condition:); every byte outside this function is unchanged from baseline.",
+  "semantics": [
+    "Check whole-case budget before and immediately after initial synchronous condition evaluation.",
+    "If initially ready, return without another AX evaluation even if the local polling deadline has elapsed.",
+    "If initially false, subtract its elapsed time from the original local deadline and fail without polling if no time remains.",
+    "Predicate callbacks do not start another condition evaluation at or after that same local deadline.",
+    "After the bounded waiter, check the whole-case budget before accepting completion; no deadline reset."
+  ],
+  "checks": {
+    "swift_parse": "passed",
+    "wait_regression_cases": {
+      "passed": 16,
+      "failed": 0
+    },
+    "same_regression_cases_on_old_7b": {
+      "passed": 10,
+      "failed": 6,
+      "observed_ready_after_local_failure_reproduced": true
+    },
+    "unchanged_helper_checks": {
+      "passed": 64,
+      "failed": 0
+    },
+    "assertions_question_actions_unchanged": true,
+    "whole_case_seconds": 300,
+    "cleanup_boundary_seconds": 285,
+    "diff_check": "passed",
+    "old_7b_and_517_evidence_unchanged": true
+  },
+  "local_harness": {
+    "generator": "/tmp/woow-document-query-wait-regression.py",
+    "current_source": "/tmp/woow-document-query-wait-current.swift",
+    "current_source_sha256": "fb1760c0a44da703969048cbb06f07652f7689ab0b206441ec5491601e80d1a5",
+    "binary": "/tmp/woow-document-query-wait-current",
+    "binary_sha256": "e00083bf679906fc5a5bcd5d84d298d4e822eb4eed8bf257a4ae013d9162e840"
+  },
+  "limitations": [
+    "The local harness executes the byte-for-byte extracted wait/requireBudget bodies with a virtual clock and XCTest scheduling adapters, not actual XCTest or native AX.",
+    "CLT Swift 5.8 parse and standalone checks passed; actual iOS/XCTest execution is pending parent dispatch.",
+    "No commit, push, dispatch, retry, private data output, application changes or native assertion removal."
+  ]
+}
