@@ -96,9 +96,15 @@ enum SkillPDFAssemblyChecks {
         try expect(decoded as Data == Data(imageRGB), "decoded real raster samples")
         let rendered = [UInt8](try pixels(page))
         for channel in 0..<3 {
-            let hits = stride(from: 0, to: rendered.count, by: 4).filter { i in
-                rendered[i + channel] > 240 && rendered[i + (channel + 1) % 3] < 20 && rendered[i + (channel + 2) % 3] < 20
-            }.count
+            let otherChannel = (channel + 1) % 3
+            let remainingChannel = (channel + 2) % 3
+            var hits = 0
+            for pixel in stride(from: 0, to: rendered.count, by: 4) {
+                let primary = rendered[pixel + channel]
+                let other = rendered[pixel + otherChannel]
+                let remaining = rendered[pixel + remainingChannel]
+                if primary > 240 && other < 20 && remaining < 20 { hits += 1 }
+            }
             try expect(hits > 50, "real raster has saturated RGB regions, not blank output")
         }
         try expect((page.string ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty, "raster-only page has no fabricated text/OCR")

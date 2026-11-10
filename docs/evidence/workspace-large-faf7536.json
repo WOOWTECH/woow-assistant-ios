@@ -1,0 +1,319 @@
+{
+  "revision": "faf753657c4912ca70bdd4f63623b5262fc53d4b",
+  "run": 42838022703,
+  "job": 129905353654,
+  "artifact": 13777870207,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42838022703/job/129905353654",
+  "scope": "Large browser workspace with permanent session retirement",
+  "device": {
+    "architecture": "arm64",
+    "deviceId": "41E4762F-B20D-41AC-BFA5-AE0DB661BB84",
+    "deviceName": "iPhone 16 Pro Max",
+    "modelName": "iPhone 16 Pro Max",
+    "osBuildNumber": "22F77",
+    "osVersion": "18.5",
+    "platform": "iOS Simulator"
+  },
+  "counts": {
+    "expected": 41,
+    "actualStarts": 41,
+    "uniqueStarts": 41,
+    "completions": 41,
+    "passed": 41,
+    "failed": 0,
+    "skipped": 0,
+    "nativeAndHosted": 36,
+    "UI": 5
+  },
+  "cases": [
+    {
+      "class": "AssistantDomainTests.BrowserLibraryTests",
+      "method": "testBookmarksDeduplicateFragmentsAndPreserveUserTitles",
+      "result": "passed",
+      "seconds": 0.017
+    },
+    {
+      "class": "AssistantDomainTests.BrowserLibraryTests",
+      "method": "testCallbackSecretsNotRetainedOrBookmarked",
+      "result": "passed",
+      "seconds": 0.011
+    },
+    {
+      "class": "AssistantDomainTests.BrowserLibraryTests",
+      "method": "testCorruptLibraryIsRejectedInsteadOfReset",
+      "result": "passed",
+      "seconds": 0.024
+    },
+    {
+      "class": "AssistantDomainTests.BrowserLibraryTests",
+      "method": "testHistoryCapacityOrderAndSeparateClear",
+      "result": "passed",
+      "seconds": 0.094
+    },
+    {
+      "class": "AssistantDomainTests.BrowserLibraryTests",
+      "method": "testManualAddressRejectsMalformedPortsWithoutChangingTheDestination",
+      "result": "passed",
+      "seconds": 0.013
+    },
+    {
+      "class": "AssistantDomainTests.BrowserLibraryTests",
+      "method": "testManualNavigationDoesNotRelaxResearchPolicy",
+      "result": "passed",
+      "seconds": 0.028
+    },
+    {
+      "class": "AssistantDomainTests.BrowserLibraryTests",
+      "method": "testTabsSelectionClosingAndRestore",
+      "result": "passed",
+      "seconds": 0.002
+    },
+    {
+      "class": "AssistantDomainTests.BrowserNavigationIntentTests",
+      "method": "testActionAndResponseKindsCannotConsumeEachOthersPermit",
+      "result": "passed",
+      "seconds": 0.007
+    },
+    {
+      "class": "AssistantDomainTests.BrowserNavigationIntentTests",
+      "method": "testCancelledOrSupersededNavigationCannotDownload",
+      "result": "passed",
+      "seconds": 0.002
+    },
+    {
+      "class": "AssistantDomainTests.BrowserNavigationIntentTests",
+      "method": "testDownloadRequiresManualInitiationAndSingleUsePermit",
+      "result": "passed",
+      "seconds": 0.001
+    },
+    {
+      "class": "AssistantDomainTests.BrowserNavigationIntentTests",
+      "method": "testMatchingIssuerWithExpiredOrMismatchedURLConsumesPermitWithoutAcceptingDownload",
+      "result": "passed",
+      "seconds": 0.0
+    },
+    {
+      "class": "AssistantDomainTests.BrowserNavigationIntentTests",
+      "method": "testPermitRetainsIssuerUntilInvalidatedOrConsumedToPreventAddressReuse",
+      "result": "passed",
+      "seconds": 0.003
+    },
+    {
+      "class": "AssistantDomainTests.BrowserNavigationIntentTests",
+      "method": "testRedirectMustBelongToManualNavigationAndRemainPublicHTTPS",
+      "result": "passed",
+      "seconds": 0.001
+    },
+    {
+      "class": "AssistantDomainTests.BrowserNavigationIntentTests",
+      "method": "testReplacedPolicyObjectInSameGenerationCannotConsumeNewPermit",
+      "result": "passed",
+      "seconds": 0.0
+    },
+    {
+      "class": "AssistantDomainTests.BrowserNavigationIntentTests",
+      "method": "testSameURLLateCallbackCannotStealOrConsumeNewActionOrResponsePermit",
+      "result": "passed",
+      "seconds": 0.001
+    },
+    {
+      "class": "WoowAssistantUITests.BrowserLoginUITests",
+      "method": "testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+      "result": "passed",
+      "seconds": 88.669
+    },
+    {
+      "class": "WoowAssistantUITests.BrowserLoginUITests",
+      "method": "testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+      "result": "passed",
+      "seconds": 66.64
+    },
+    {
+      "class": "WoowAssistantUITests.BrowserWorkspaceUITests",
+      "method": "testBookmarkRenameHistoryClearAndRelaunch",
+      "result": "passed",
+      "seconds": 40.751
+    },
+    {
+      "class": "WoowAssistantUITests.BrowserWorkspaceUITests",
+      "method": "testManualQueryPageAndRealJavaScriptDialog",
+      "result": "passed",
+      "seconds": 18.721
+    },
+    {
+      "class": "WoowAssistantUITests.BrowserWorkspaceUITests",
+      "method": "testTabsKeepIndependentPageStateAndRestoreSelection",
+      "result": "passed",
+      "seconds": 40.089
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserDOMWebKitTests",
+      "method": "testActualDOMAndStaleIdentity",
+      "result": "passed",
+      "seconds": 1.685
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserDownloadIntegrationTests",
+      "method": "testRealWebKitSessionDownloadsRedirectsProgressAndCancellation",
+      "result": "passed",
+      "seconds": 1.988
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests",
+      "method": "testActualUnreadableDOMEndsLoadingAndCannotRestoreOldPage",
+      "result": "passed",
+      "seconds": 0.592
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests",
+      "method": "testLocalDocumentBecomesReadyAndMatchingFailuresStayTerminal",
+      "result": "passed",
+      "seconds": 0.454
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests",
+      "method": "testMalformedAddressDoesNotStartANormalizedNavigation",
+      "result": "passed",
+      "seconds": 0.006
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests",
+      "method": "testSearchBeyondExcerptDoesNotClaimAbsenceFromWholePage",
+      "result": "passed",
+      "seconds": 0.636
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests",
+      "method": "testSyntheticProcessTerminationFencesQueuedAndLateFinish",
+      "result": "passed",
+      "seconds": 0.447
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests",
+      "method": "testTranscriptAcceptsExactUTF8LimitIncludingOnlyActualSeparators",
+      "result": "passed",
+      "seconds": 0.631
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests",
+      "method": "testTranscriptExcludesHiddenAncestorsAndSensitiveRolesButReadsDisplayContents",
+      "result": "passed",
+      "seconds": 0.537
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests",
+      "method": "testTranscriptFlattensOpenShadowRootsAndAssignedSlotsWithoutLightDOMDuplicates",
+      "result": "passed",
+      "seconds": 0.462
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests",
+      "method": "testTranscriptReadsBeyondResearchExcerptWithoutCapturingFormFields",
+      "result": "passed",
+      "seconds": 0.452
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests",
+      "method": "testTranscriptRejectsOversizedUTF8AndUnloadedPagesInsteadOfTruncating",
+      "result": "passed",
+      "seconds": 0.505
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests",
+      "method": "testTranscriptReportsOmittedRegionsAndPreservesReadableLightDOMWithoutPlaceholders",
+      "result": "passed",
+      "seconds": 0.486
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests",
+      "method": "testDeferredApprovedInputStaysRestrictedUntilExplicitManualDocumentCommits",
+      "result": "passed",
+      "seconds": 0.774
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests",
+      "method": "testManualCallbackPageLoadsButCannotBecomeAutomationEvidenceOrSavedURL",
+      "result": "passed",
+      "seconds": 0.574
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests",
+      "method": "testPersistentCookiesAreSharedAndRemovingOneRecordPreservesOtherSites",
+      "result": "passed",
+      "seconds": 1.384
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests",
+      "method": "testRetiredUnmaterializedSessionRejectsManualNavigation",
+      "result": "passed",
+      "seconds": 0.001
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests",
+      "method": "testTabsRetainDifferentDocumentsAndSwitchingOrClosingRevokesProposals",
+      "result": "passed",
+      "seconds": 0.917
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+      "method": "testOtherApprovedOriginStillCannotRedirectOrRebindThisWebView",
+      "result": "passed",
+      "seconds": 0.623
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+      "method": "testPersistentManualStoreCannotBeUsedForApprovedResearchRoots",
+      "result": "passed",
+      "seconds": 0.007
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+      "method": "testTwoActualWebKitSourcesNavigateAndProduceExactReceipts",
+      "result": "passed",
+      "seconds": 1.5
+    }
+  ],
+  "removalTrace": [
+    "BROWSER_WEBSITE_REMOVAL elapsedMs=0 persistent=1 phase=begin records=1 sessions=2",
+    "BROWSER_WEBSITE_REMOVAL elapsedMs=0 index=0 phase=pageBegin",
+    "BROWSER_WEBSITE_DISCARD phase=begin loading=0 attached=1 delegate=1",
+    "BROWSER_WEBSITE_DISCARD phase=finished success=1 blank=1 loading=0",
+    "BROWSER_WEBSITE_REMOVAL elapsedMs=12 index=0 phase=pageFinished stopped=1",
+    "BROWSER_WEBSITE_REMOVAL elapsedMs=12 index=1 phase=pageBegin",
+    "BROWSER_WEBSITE_DISCARD phase=begin loading=0 attached=0 delegate=1",
+    "BROWSER_WEBSITE_DISCARD phase=finished success=1 blank=1 loading=0",
+    "BROWSER_WEBSITE_REMOVAL elapsedMs=25 index=1 phase=pageFinished stopped=1",
+    "BROWSER_WEBSITE_REMOVAL elapsedMs=25 phase=pagesDiscarded ready=1",
+    "BROWSER_WEBSITE_REMOVAL elapsedMs=26 phase=recordsSelected records=1 types=2",
+    "BROWSER_WEBSITE_REMOVAL elapsedMs=26 phase=removeRequested",
+    "BROWSER_WEBSITE_REMOVAL elapsedMs=35 phase=removeCompleted",
+    "BROWSER_WEBSITE_REMOVAL allRecords=1 elapsedMs=36 phase=recordsRefreshed selectedCookieRecords=0 selectedDiskCacheRecords=0 selectedMemoryCacheRecords=0 selectedOtherDataTypes=0 selectedRecords=0",
+    "BROWSER_WEBSITE_REMOVAL elapsedMs=46 phase=sessionsReplaced ready=1"
+  ],
+  "regressionAssertions": [
+    "retained loaded sessions reject manual navigation after retirement",
+    "unmaterialized session rejects manual navigation after retirement",
+    "late-added localStorage and selected cookie removed while unrelated cookie remains",
+    "pre-removal and in-flight refresh cannot overwrite verified final records",
+    "actual login, cross-tab cookie sharing, relaunch and logout",
+    "actual site clear remains effective after relaunch"
+  ],
+  "materials": [
+    {
+      "file": "ios-tests.log",
+      "sha256": "1f35ee405a92f44e463db2b30525d095fdf54cf711a3bacbe6baa1c0e17a1816",
+      "bytes": 940341
+    },
+    {
+      "file": "test-summary.json",
+      "sha256": "f55d60294ba446b4b372ca872f57ad6ddbc9436eeab4a55e2d0fdea19f371b49",
+      "bytes": 989
+    }
+  ],
+  "limits": [
+    "This is the Large variant only; same-run current login UI failed and SE is still running.",
+    "No physical device or newer PDF feature acceptance is inferred.",
+    "Shorter removal duration is not a controlled performance comparison."
+  ],
+  "collectedAtUTC": "2026-11-10T15:32:31.623307+00:00"
+}

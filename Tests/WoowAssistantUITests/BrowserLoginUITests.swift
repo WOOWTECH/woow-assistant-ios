@@ -430,8 +430,14 @@ final class BrowserLoginUITests: XCTestCase {
             XCTFail("Native keyboard input must populate the exact synthetic username before entering the password.")
             return
         }
-        revealPasswordByNativeScrolling(password)
-        tap(password); password.typeText("fixture-password-v1")
+        guard let passwordOffset = revealPasswordByNativeScrolling(password) else { return }
+        // faf7536 iOS 26: after the native scroll, the video shows the entire
+        // enabled password field, but XCTest throws when resolving its activation
+        // point. Tap the verified field center through the visible WebView. This
+        // remains a real touch; the actual form POST must still validate input.
+        app.webViews.firstMatch.coordinate(withNormalizedOffset: .zero)
+            .withOffset(passwordOffset).tap()
+        password.typeText("fixture-password-v1")
         // Only a boolean for the fixed synthetic account; no password values or
         // arbitrary keyboard/AX dumps. Keep submission separate from typing so
         // an input failure cannot be reported as a cookie/network timeout.
@@ -516,7 +522,7 @@ final class BrowserLoginUITests: XCTestCase {
                        "The native keyboard tutorial must dismiss before typing synthetic credentials.")
     }
 
-    private func revealPasswordByNativeScrolling(_ password: XCUIElement) {
+    private func revealPasswordByNativeScrolling(_ password: XCUIElement) -> CGVector? {
         // d160a24: iOS 17/18/26 reach native username entry, then the password
         // is below the keyboard's remaining viewport. e1024aa's fast upward
         // drag overshot it (relative Y 169 -> -121 in a 123-point viewport).
@@ -525,8 +531,8 @@ final class BrowserLoginUITests: XCTestCase {
         XCTAssertTrue(web.waitForExistence(timeout: 10))
         XCTAssertTrue(password.waitForExistence(timeout: 10))
 
-        func visibleFrame() -> CGRect {
-            var visible = web.frame.intersection(app.frame)
+        func visibleFrame(in frame: CGRect) -> CGRect {
+            var visible = frame.intersection(app.frame)
             let keyboard = app.keyboards.firstMatch
             if keyboard.exists {
                 let overlap = visible.intersection(keyboard.frame)
@@ -536,20 +542,36 @@ final class BrowserLoginUITests: XCTestCase {
             }
             return visible
         }
+        var verifiedOffset: CGVector?
         func passwordIsReady() -> Bool {
+            verifiedOffset = nil
             guard password.exists else { return false }
-            let visible = visibleFrame()
-            let field = password.frame
-            // XCTest can throw while calculating an offscreen web control's
-            // activation point. Check geometry before asking for hittability.
+            let snapshot: XCUIElementSnapshot
+            do { snapshot = try password.snapshot() }
+            catch {
+                XCTFail("Unable to snapshot the exact synthetic password field; no touch was sent.")
+                return false
+            }
+            guard snapshot.elementType == .secureTextField, snapshot.label == "測試密碼",
+                  snapshot.isEnabled else { return false }
+            let frame = web.frame
+            let visible = visibleFrame(in: frame)
+            let field = snapshot.frame
+            // Do not ask this synthetic secure field for an activation point:
+            // faf7536 fails there even after the full frame becomes visible.
+            // One snapshot binds its exact role/label/enabled state and frame.
             guard !visible.isNull, visible.width >= 64, visible.height >= 64,
+                  [field.minX, field.minY, field.width, field.height,
+                   visible.minX, visible.minY, visible.width, visible.height].allSatisfy({ $0.isFinite }),
                   !field.isEmpty, visible.insetBy(dx: 1, dy: 1).contains(field) else { return false }
-            return password.isEnabled && password.isHittable
+            verifiedOffset = CGVector(dx: field.midX - frame.minX, dy: field.midY - frame.minY)
+            print("LOGIN_PASSWORD_TARGET_VERIFIED width=\(Int(field.width)) height=\(Int(field.height)) inside=1")
+            return true
         }
         for attempt in 0...3 {
-            if passwordIsReady() { return }
+            if passwordIsReady() { return verifiedOffset }
             let frame = web.frame
-            let visible = visibleFrame()
+            let visible = visibleFrame(in: frame)
             let field = password.frame
             let fieldY = Int(field.minY - frame.minY)
             // Only fixed synthetic field geometry; no values, labels, URLs,
@@ -557,11 +579,11 @@ final class BrowserLoginUITests: XCTestCase {
             print("LOGIN_FORM_GEOMETRY attempt=\(attempt) webHeight=\(Int(frame.height)) visibleHeight=\(Int(visible.height)) passwordY=\(fieldY) keyboard=\(app.keyboards.firstMatch.exists)")
             guard !visible.isNull, visible.width >= 64, visible.height >= 64 else {
                 XCTFail("Browser WebView has insufficient visible space above the keyboard for native form scrolling.")
-                return
+                return nil
             }
             guard attempt < 3 else {
                 XCTFail("Synthetic password field stayed inaccessible after three native page scrolls.")
-                return
+                return nil
             }
             let origin = web.coordinate(withNormalizedOffset: .zero)
             let x = visible.minX - frame.minX + visible.width * 0.88
@@ -577,8 +599,9 @@ final class BrowserLoginUITests: XCTestCase {
                             withVelocity: .slow, thenHoldForDuration: 0.3)
             }
             let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in passwordIsReady() }, object: nil)
-            if XCTWaiter.wait(for: [ready], timeout: 3) == .completed { return }
+            if XCTWaiter.wait(for: [ready], timeout: 3) == .completed { return verifiedOffset }
         }
+        return nil
     }
 
     private func currentProtectedURL() -> URL {

@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "recorded_at_utc": "2026-11-10T15:38:46+00:00",
+  "run_id": 42838022703,
+  "job_id": 129905353270,
+  "artifact_id": 13777092838,
+  "artifact_bytes": 196953711,
+  "source_commit": "faf753657c4912ca70bdd4f63623b5262fc53d4b",
+  "variant": "ios26-current",
+  "device": "iPhone 17",
+  "runtime": "iOS Simulator 26.2 (23C54)",
+  "architecture": "arm64",
+  "original_result": {
+    "total": 41,
+    "passed": 40,
+    "failed": 1,
+    "skipped": 0,
+    "native_passed": 36,
+    "native_total": 36,
+    "ui_passed": 4,
+    "ui_total": 5,
+    "ui_cases": [
+      {
+        "class": "WoowAssistantUITests.BrowserLoginUITests",
+        "method": "testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+        "result": "failed",
+        "seconds": 125.044
+      },
+      {
+        "class": "WoowAssistantUITests.BrowserLoginUITests",
+        "method": "testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+        "result": "passed",
+        "seconds": 121.427
+      },
+      {
+        "class": "WoowAssistantUITests.BrowserWorkspaceUITests",
+        "method": "testBookmarkRenameHistoryClearAndRelaunch",
+        "result": "passed",
+        "seconds": 75.168
+      },
+      {
+        "class": "WoowAssistantUITests.BrowserWorkspaceUITests",
+        "method": "testManualQueryPageAndRealJavaScriptDialog",
+        "result": "passed",
+        "seconds": 25.421
+      },
+      {
+        "class": "WoowAssistantUITests.BrowserWorkspaceUITests",
+        "method": "testTabsKeepIndependentPageStateAndRestoreSelection",
+        "result": "passed",
+        "seconds": 56.7
+      }
+    ]
+  },
+  "failure": {
+    "method": "BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+    "source_line": 547,
+    "seconds": 125.044,
+    "error_domain": "com.apple.dt.xctest.ui-testing.error",
+    "error_code": 10201,
+    "message": "Failed to determine hittability of synthetic password SecureTextField: Activation point invalid and no suggested hit points based on element frame",
+    "phase": "After exact username input and one native page scroll, before password tap/type or login POST."
+  },
+  "observations": [
+    {
+      "utc": "2026-11-10T15:16:22.380Z",
+      "test_seconds": 105.57,
+      "event": "Exact synthetic username value predicate succeeded."
+    },
+    {
+      "utc": "2026-11-10T15:16:23.448Z",
+      "event": "Archived AX snapshot before scroll has enabled synthetic secure field, below remaining viewport.",
+      "password_frame_points": [
+        24,
+        390,
+        220,
+        43
+      ],
+      "web_frame_points": [
+        0,
+        196.66666666666666,
+        402,
+        178.66666666666666
+      ],
+      "attachment": "08742DF2-84FB-4910-BB09-870A281D31A0"
+    },
+    {
+      "utc": "2026-11-10T15:16:30.602Z",
+      "test_seconds": 113.8,
+      "event": "Existing fixed-number scroll diagnostic.",
+      "scroll_attempt": 0,
+      "web_height_integer_points": 206,
+      "visible_height_integer_points": 206,
+      "password_relative_y_integer_points": 193,
+      "keyboard_present": true
+    },
+    {
+      "utc": "2026-11-10T15:16:30.624Z",
+      "test_seconds": 113.84,
+      "event": "One native WebView scroll starts; no repeated taps."
+    },
+    {
+      "utc": "2026-11-10T15:16:36.009Z",
+      "event": "Session log resolves finite password frame after scroll without error.",
+      "password_frame_points": [
+        24,
+        293,
+        220,
+        43
+      ],
+      "session_log_line": 12309
+    },
+    {
+      "utc": "2026-11-10T15:16:36.970Z",
+      "event": "Activation-point fetch says Interrupted by waiter.",
+      "session_log_line": 12705
+    },
+    {
+      "utc": "2026-11-10T15:16:36.987Z",
+      "event": "Subsequent frame fetch also says Interrupted by waiter.",
+      "session_log_line": 12921
+    },
+    {
+      "utc": "2026-11-10T15:16:36.988Z",
+      "event": "XCTest hit-point traversal reports non-finite origins and zero extents, then error 10201.",
+      "non_finite_origin": true,
+      "extent_points": [
+        0,
+        0
+      ],
+      "session_log_line": 12945
+    }
+  ],
+  "visual_evidence": {
+    "video": "05EDBC89-1B76-4136-A730-64E0BCF16AF5.mp4",
+    "video_duration_seconds": 122.42,
+    "recording_timestamp_utc": "2026-11-10T15:14:37.939Z",
+    "frames": [
+      {
+        "local_file": "frame-112.png",
+        "actual_video_seconds": 111.98666666666666,
+        "sha256": "9e220810c534fbd2df94012340a7e4da1a84305c1b7f839c8bc5da0b770d2902"
+      },
+      {
+        "local_file": "frame-118.png",
+        "actual_video_seconds": 117.985,
+        "sha256": "16b3fe4c04c25b17d66d008bd92b0eab42c80b24080c34de780e598fffe3b800"
+      },
+      {
+        "local_file": "frame-120.png",
+        "actual_video_seconds": 119.985,
+        "sha256": "22317b4c1be87d32b1622c449e11e027b3bf72459465e714e0fb1939b23d2221"
+      }
+    ],
+    "inspection": "At 112 seconds the field is clipped below the WebView. At 118 and 120 seconds the entire empty password field is visible above the App footer, with no overlay; username remains populated."
+  },
+  "classification": {
+    "supported": "XCTest activation-point lookup is interrupted inside the bounded readiness predicate despite finite field geometry and a visibly exposed control.",
+    "not_established": [
+      "Broken native form layout",
+      "Cookie/server/authentication failure",
+      "A general WebKit or OS defect"
+    ],
+    "causal_limit": "The precise AX service latency cause is unknown. The candidate removes the expensive secure-field hit-point path; native CI must validate it."
+  },
+  "candidate": {
+    "changed_file": "Tests/WoowAssistantUITests/BrowserLoginUITests.swift",
+    "fixture_changed": false,
+    "app_product_files_changed": false,
+    "actions": [
+      "Read one public snapshot for the exact synthetic secure field role, label, enabled state and frame.",
+      "Require a finite nonempty full field rectangle inside the keyboard-excluded WebView viewport.",
+      "Single real coordinate touch at that verified center, anchored to the WebView; no hardcoded screen position.",
+      "Snapshot failure records a test failure; no fallback field or repeated tap.",
+      "Keep original maximum three page scrolls, existing deadlines and all exact username, real POST, cookie, tabs, relaunch and logout assertions."
+    ],
+    "maximum_scrolls": 3,
+    "post_scroll_readiness_seconds": 3,
+    "test_execution_allowance_seconds": 420,
+    "added_wait_or_retry": false,
+    "javascript_or_cookie_injection": false,
+    "new_native_pass_claim": false,
+    "original_test_sha256": "f5d4b055766b31834a97fbd3e48373a6291a78a20fe01b479346d783d814df22",
+    "candidate_test_sha256": "384129860aba9a4265f273e681bfd2e7ee42fef11bbabb363a908b50cc77a336",
+    "unchanged_fixture_sha256": "3578a046f5cacd2466b06b2efeb12d76982c96d394505778acfa9648b9153f19"
+  },
+  "local_validation": {
+    "ios17_debug_syntax_parse": "passed",
+    "ios17_release_syntax_parse": "passed",
+    "diff_check": "passed",
+    "native_XCTest_typecheck_or_execution": false,
+    "limitation": "Host macOS 13 Intel CLT Swift 5.8 has no iOS/XCTest SDK. Parse is not native typecheck or UI execution."
+  },
+  "bounded_retrieval": {
+    "whole_zip_downloaded": false,
+    "selected_entries": 8,
+    "selected_entry_uncompressed_bytes": 21055561,
+    "local_directory": "/tmp/woow-faf-login-current",
+    "raw_diagnostics_committed": false
+  },
+  "apple_primary_references": [
+    "https://developer.apple.com/documentation/xcuiautomation/xcuielement/coordinate(withnormalizedoffset:)",
+    "https://developer.apple.com/documentation/xcuiautomation/xcuielementattributes/frame",
+    "https://developer.apple.com/documentation/xcuiautomation/xcuielementsnapshot"
+  ],
+  "commit_push_dispatch_performed": false
+}
