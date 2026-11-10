@@ -1,0 +1,35 @@
+{
+  "revision": "23b47f4",
+  "run": 42808230313,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42808230313",
+  "runtime": "17.0.1",
+  "physicalDevice": false,
+  "overall": "failure",
+  "modelConversation": {
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "twoReadOnlyTools": {
+      "modelCalls": 3,
+      "formatCorrections": 0,
+      "attempts": 2,
+      "results": 2,
+      "toolErrors": 0,
+      "finalAnswerMatched": true,
+      "seconds": 82.95
+    },
+    "refusalPreservedDraft": {
+      "seconds": 59.365
+    }
+  },
+  "discovery": {
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "failure": "LiveMCPUITests.swift:64 expected disconnected; still connected after manual disconnect tap",
+    "backgroundDisconnectPassed": true,
+    "reconnectDiscoveryPassed": true
+  },
+  "diagnosis": "The second manual disconnect tap did not produce the expected App state. The prior isHittable-only helper does not establish that the row is fully above navigation. No screenshot/private AX tree is published, so obstruction is a candidate, not a proven cause. The repair uses existing viewport geometry, one native tap and a bounded state/publication wait; it also requires catalog removal.",
+  "privacy": "Fixed known enum states, source/run metadata and counters only; no endpoint, credentials, catalog content or model replies."
+}

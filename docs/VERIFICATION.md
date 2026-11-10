@@ -1,5 +1,19 @@
 # Verification — 2026-11-10
 
+## Five transcript formats completed on iOS 18.5 after bounded repair
+
+Source `9a53e61`, [42814211141](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42814211141), passed **5/5 actual-model native formats, zero skips** over the fixed 847-byte source. Summary, chapters, quotations and article each used two calls without correction. Transcript used one syntax correction and three calls. All formats read the full snapshot and verified exact quotations; total model requests/responses were **11/11**. This establishes the bounded repair in a real response, not native Files UI or independent semantic-quality acceptance. [Per-format evidence](evidence/transcript-formats-9a53e61-ios18.json).
+
+A separate one-shot macOS combined-model/HA diagnostic at the same source also passed: actual server catalog, exact approved two-tool calls, actual results and expected final answer; **3 model calls, 2 tool results, zero corrections/errors**. It is explicitly not iOS/UI evidence and does not establish the cause of the earlier provider rejection. [Native local evidence](evidence/live-ha-local-9a53e61.json).
+
+
+## Exact iOS 17 real-model HA conversation passed; manual disconnect remains under repair
+
+At `23b47f4`, [42808230313](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42808230313) passed **2/2 actual-model HA App UI, zero skips** on iOS 17.0.1. The model proposed the exact audited arithmetic and floor/area calls, received two successful results, and produced the required answer in three model calls with no format correction. The separate refusal case preserved the draft. [Fixed-count evidence](evidence/live-ha-23b47f4-ios17.json).
+
+The workflow still failed its discovery case: initial discovery, background disconnect and reconnect completed, but the second manual disconnect tap left the connected state. The old helper checked only `isHittable`, not the unobscured List viewport. The revised test uses the existing full-visibility geometry, performs one native tap, waits at most five seconds for the actual disconnected state, and requires both catalog counts to disappear. Obstruction is a candidate, not a proven root cause; native retest remains required.
+
+
 ## UIKit open-in-place reproduced the native picker failure
 
 At `ca3e72a`, current iOS 26.2 [42806373840](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42806373840) executed the explicit UIKit open-in-place case and failed **0/1, zero skips**. The App independently observed actual picker mode `open`, then the exact synthetic PDF was tapped. FileProvider reported `-1005` with resolver `-1012`; no App importer callback arrived and neither App approval was reached. Fixture identity/hash matched before and after, which does not prove uninterrupted availability at the failure instant. [Bounded evidence](evidence/file-provider-uikit-ca3e72a.json).

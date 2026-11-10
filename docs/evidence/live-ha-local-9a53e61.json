@@ -1,0 +1,82 @@
+{
+  "schema_version": 1,
+  "source_revision": "9a53e6107e32c936e62c8143d58e898f64137147",
+  "kind": "Actual configured model plus actual HA MCP server through native macOS clients; not iOS or UI acceptance",
+  "execution_provenance": "One private configured execution of the frozen binary, with source/module hashes and separate compilation, exact-action policy and missing-configuration checks.",
+  "host": {
+    "macos": "13.7.8",
+    "architecture": "x86_64",
+    "swift": "5.8.1"
+  },
+  "probe": {
+    "source_file": "/tmp/CombinedHAProbe.swift",
+    "source_sha256": "e7f700ade28301ebacace58ac41f9eb922675a66ddd84cfe16b8b8ac4969fac4",
+    "binary_file": "/tmp/woow-combined-ha-9a53e61/CombinedHAProbe",
+    "binary_sha256": "2604f2d9e9678a5a828acf76ac200b8204768b498b3d840f10febb4871ce2c86",
+    "warnings_as_errors_compile_passed": true,
+    "module_source_hashes": {
+      "Sources/AssistantModels/ChatSSEParser.swift": "daaf8668b25edac1d67cb6fb1e804f3d359bbcd9580368bb30618d56022aad5d",
+      "Sources/AssistantModels/HTTPChatModelClient.swift": "94e7ccb5ffc86d0cff2bb6f4a822a55a2ef94ac064d9d39ea76482395c0e1d8c",
+      "Sources/AssistantModels/ModelConfiguration.swift": "b886eede4c8c41247a9010b668849d9fceb67fca4dcd399baffe47b90e951142",
+      "Sources/AssistantMCP/MCPClient.swift": "aecf3f5e700162558cff4c11fe24cc3aea14f716d2816ed57bf1797f34317762",
+      "Sources/AssistantMCP/MCPConversationRunner.swift": "7b664e36f94219121a2019ec8c5da8c3dc5d6c0392580afd1f8b57cead64a8da",
+      "Sources/AssistantMCP/MCPConversationTypes.swift": "3c9df64d0f94e9c0aeaae14f74d161bc388dcdbf93e94b012578af6edd83db54",
+      "Sources/AssistantMCP/MCPHTTPTransport.swift": "80810c09ca7fd94a923876a28588d618bd96f6bde152128c8b556c01173eb759",
+      "Sources/AssistantMCP/MCPResponseParser.swift": "56d4cc3b35cd55ac762a71540c28d1f37aaaeadd584c3561e6638eeb106d7747",
+      "Sources/AssistantMCP/MCPTypes.swift": "dcce43b8528990968b0255f6f9f1d7a2145eadfd76bc7cb15a5f6634784dbff3"
+    },
+    "module_binary_sha256": {
+      "AssistantModels": "e6b00550bc9612d62fa4b363569cceef3fed10fe967c719a25d033242a4556a8",
+      "AssistantMCP": "4106e950e81c8316a1f8fea308d2241786a476c743a552a7172785e9f2a508a7"
+    }
+  },
+  "bounds": {
+    "total_seconds_including_discovery": 180,
+    "maximum_model_calls": 12,
+    "maximum_tool_calls": 2,
+    "max_output_tokens": 1024,
+    "automatic_tool_retries": 0
+  },
+  "authorization": {
+    "catalog": "Two immutable tools selected from actual server discovery, retaining actual descriptions and input schemas",
+    "tools": [
+      "ha_eval_template",
+      "ha_list_floors_areas"
+    ],
+    "approval": "Exact literal arithmetic template or empty floor/area listing arguments only; each tool at most once. Resources, extra arguments and other tools rejected. Executor independently consumes the approved permit."
+  },
+  "offline_policy_check": {
+    "status": "PASS",
+    "accepted_exact_actions": 2,
+    "rejected_actions": 4,
+    "network_calls": 0
+  },
+  "offline_missing_configuration_check": {
+    "status": "expected_failure",
+    "code": "configuration",
+    "model_calls": 0,
+    "tool_attempts": 0
+  },
+  "live_result": {
+    "status": "PASS",
+    "stop": "finished",
+    "calls": 3,
+    "responses": 3,
+    "proposals": 2,
+    "approvals": 2,
+    "denials": 0,
+    "attempts": 2,
+    "results": 2,
+    "toolErrors": 0,
+    "corrections": 0,
+    "answerMatched": 1,
+    "modelHTTP": 0,
+    "mcpHTTP": 0
+  },
+  "limitations": [
+    "This macOS execution is not an iOS Simulator, native App UI or full original-tool-parity result.",
+    "The successful local run does not establish the cause of the earlier iOS HTTP rejection. The separate iOS diagnostic run is not included here.",
+    "The final answer marker matched after two actual server results; raw household/server data and model replies are not retained in this evidence."
+  ],
+  "privacy": "No credential files were written for the parent execution. Only fixed categories, counters and local source/binary hashes are recorded; no configuration values, endpoints, catalogs, arguments, headers or response bodies."
+}
