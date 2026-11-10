@@ -4,6 +4,9 @@ import AssistantSkills
 #endif
 import SwiftUI
 import UniformTypeIdentifiers
+#if DEBUG
+import Darwin
+#endif
 
 /// An immutable UTF-8 snapshot of a completed extraction. FileDocument leaves
 /// destination selection and writing to the system exporter, never to a skill.
@@ -130,9 +133,15 @@ struct SkillExecutionView: View {
         .accessibilityIdentifier("skillExecution.form")
         .navigationTitle("執行 PDF 技能")
         .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.pdf], allowsMultipleSelection: false) { outcome in
+            #if DEBUG
+            model.recordImporterCallback(outcome)
+            #endif
             switch outcome {
             case .success(let urls):
-                guard let url = urls.first, urls.count == 1 else { return }
+                guard let url = urls.first, urls.count == 1 else {
+                    model.status = "未能取得選取的 PDF，請重新選取一個檔案。"
+                    return
+                }
                 model.prepare(url: url, pages: pages, password: password, metadataOnly: metadataOnly, worker: useWorker ? worker : nil)
                 password = ""
             case .failure: model.status = "未能選取檔案，請重試。"
@@ -196,6 +205,22 @@ private final class SkillExecutionViewModel: ObservableObject {
         } catch { status = "測試 PDF 無法建立；請檢查測試命名空間與檔案設定。" }
         #endif
     }
+
+    #if DEBUG
+    func recordImporterCallback(_ outcome: Result<[URL], Error>) {
+        // This fixture exists only after the seeder's strict DEBUG test gates
+        // pass. Report delivery/counts only, never URLs or error descriptions.
+        guard let fixture = uiTestFixture else { return }
+        let outcomeName: String
+        let count: String
+        switch outcome {
+        case .success(let urls): outcomeName = "success"; count = String(urls.count)
+        case .failure: outcomeName = "failure"; count = "none"
+        }
+        print("SKILL_PDF_IMPORTER_CALLBACK namespace=\(fixture.namespace.uuidString) outcome=\(outcomeName) count=\(count) sampledAt=\(Date().timeIntervalSince1970)")
+        fflush(stdout)
+    }
+    #endif
 
     func prepare(url: URL, pages: String, password: String, metadataOnly: Bool, worker: (any SkillExecutionPDFWorker)?) {
         clear()
