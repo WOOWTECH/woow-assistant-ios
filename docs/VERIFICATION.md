@@ -1,5 +1,12 @@
 # Verification — 2026-11-11
 
+## Real-model PDF query completed on exact iOS 17 — 2026-11-11
+
+At `956aa9f`, `testRealModelAnswersFromApprovedPDFAndExportCancellationPreservesResult` passed **1/1, zero skips**, in **223.730 seconds** on iOS **17.0.1 / 21A342**. The fixed audit records four model calls, one search, two reads, one result, two citations and zero corrections. Native copy selection, separate read/extract approvals, query, exact citations and exporter cancellation completed; unchanged answer/citations/audit were verified at 185 seconds and the original extraction after returning at 211 seconds. The 300-second test and 285-second cleanup boundaries are unchanged. Parent independently checked the test source hash, actual completed method and fixed phase/audit log markers. [Safe evidence](evidence/live-document-query-956-ios17.json), [run](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42913237285). The original `f49c8f7` timeout remains recorded. This case does not seed a saved preference and does not establish preference effectiveness or a causal performance improvement from one run.
+
+At `8c4195f`, notification interface regression also completed **2/2 each, zero skips** on exact iOS 17.0.1, SE/iOS 18.5 and iOS 26.2. [Evidence](evidence/ui-notifications-8c4195f.json). This verifies controls and navigation, not audible notification or a physical device.
+
+
 ## Native PDF selection diagnosis extended — 2026-11-11
 
 Current and SE `8c4195f` logs place the failed selection before any App callback: the exact synthetic filename is selected, FileProvider reports `NSFileProviderErrorDomain -1005` for its local item identifier, and DocumentManager obtains no URL. This does not establish why the provider item is unavailable or whether the original file still existed at the precise failure. Independent local creation/re-entry checks found no App deletion path. The observed provider identifier is not a filesystem inode. [Preserved failure evidence](evidence/pdf-assembly-add-8c4195f.json).

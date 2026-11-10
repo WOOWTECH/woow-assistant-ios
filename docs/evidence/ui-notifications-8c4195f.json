@@ -1,0 +1,305 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-10T22:51:36.859764+00:00",
+  "status": "PASS",
+  "source_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+  "scope": "Actual OS notification fixture regression after archive Chat/UI integration",
+  "accepted_devices": [
+    {
+      "device_group": "se",
+      "run_id": 42911430223,
+      "job_id": 130162790857,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911430223",
+      "job_conclusion": "success",
+      "source_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "runtime": {
+        "device_name": "iPhone SE (3rd generation)",
+        "runtime_version": "18.5",
+        "runtime_build": "22F77",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-5"
+      },
+      "ui": {
+        "source_expected": 2,
+        "started": 2,
+        "unique_started": 2,
+        "completed": 2,
+        "unique_completed": 2,
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "each_source_method_started_and_completed_once": true,
+        "runner_restart_messages": 0,
+        "method_completions": [
+          {
+            "class": "NotificationApprovalUITests",
+            "method": "testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval",
+            "result": "passed",
+            "seconds": 87.645
+          },
+          {
+            "class": "NotificationUITests",
+            "method": "testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable",
+            "result": "passed",
+            "seconds": 46.757
+          }
+        ]
+      },
+      "fixed_markers": [
+        "NOTIFICATION_APPROVAL authorizationBefore=notDetermined authorizationAfter=authorized",
+        "NOTIFICATION_APPROVAL actualSystemBanner=1 defaultOpenObserved=1 destination=chat sameProposalUUID=1 explicitApprovals=1 calls=1 audibleSoundVerified=0",
+        "NOTIFICATION_SETTINGS enabled=1 systemPromptObserved=0",
+        "NOTIFICATION_SETTINGS actualSystemBanner=1 audibleSoundVerified=0",
+        "NOTIFICATION_SETTINGS actualBannerTap=1 rootChatVisible=1",
+        "NOTIFICATION_SETTINGS relaunchEnabled=1 disablePersisted=1 systemPermissionRetained=1"
+      ],
+      "xcresult_summary_counts": {
+        "totalTestCount": 2,
+        "passedTests": 2,
+        "failedTests": 0,
+        "skippedTests": 0
+      },
+      "completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 2,
+          "passedTests": 2,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 2,
+        "completed_ui_count": 2,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "artifact": {
+        "id": 13808369431,
+        "size_bytes": 3352974,
+        "digest": "sha256:1d9d6e0600fc37217ade81fb768ae3a7052adc53a9da9f81fbed2e2160e01059",
+        "inspected_metadata": [
+          "test-summary.json",
+          "test-simulator.json",
+          "ui-shard-completion.json"
+        ]
+      }
+    },
+    {
+      "device_group": "exact17_prebuild",
+      "run_id": 42911445587,
+      "job_id": 130162842797,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911445587",
+      "job_conclusion": "success",
+      "source_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "runtime": {
+        "device_name": "iPhone 15",
+        "runtime_version": "17.0.1",
+        "runtime_build": "21A342",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "platform": "iOS Simulator",
+        "architecture": "arm64",
+        "requested_runtime": "17.0.1",
+        "selection_and_xcresult_metadata_agree": true
+      },
+      "ui": {
+        "source_expected": 2,
+        "started": 2,
+        "unique_started": 2,
+        "completed": 2,
+        "unique_completed": 2,
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "each_source_method_started_and_completed_once": true,
+        "runner_restart_messages": 0,
+        "method_completions": [
+          {
+            "class": "NotificationApprovalUITests",
+            "method": "testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval",
+            "outcome": "passed",
+            "seconds": 42.076
+          },
+          {
+            "class": "NotificationUITests",
+            "method": "testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable",
+            "outcome": "passed",
+            "seconds": 33.966
+          }
+        ]
+      },
+      "xcresult_summary_counts": {
+        "totalTestCount": 2,
+        "passedTests": 2,
+        "failedTests": 0,
+        "skippedTests": 0
+      },
+      "completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 2,
+          "passedTests": 2,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 2,
+        "completed_ui_count": 2,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "prebuild_experiment": {
+        "experimental_build_before_boot": true,
+        "prebuild_exit_code": 0,
+        "prebuild_elapsed_seconds": 184.149,
+        "build_test_timeout_seconds": 1800,
+        "remaining_test_timeout_seconds": 1615.851259416,
+        "prebuilt_xctestrun": {
+          "path": "DerivedData/Build/Products/WoowAssistant_iphonesimulator18.5-arm64.xctestrun",
+          "sha256": "9978e367f9653f556eb13135435df6a6257e0d78a60f4fcc7482c857ec8b63e2"
+        },
+        "test_daemon_prelaunch": {
+          "budget_seconds": 120,
+          "attempts": 1,
+          "status": "process_started_handshake_unverified",
+          "handshake_verified": false,
+          "process_alive": true,
+          "elapsed_seconds": 19.705
+        },
+        "boot_succeeded": true,
+        "test_exit_code": 0
+      },
+      "artifact": {
+        "id": 13809267082,
+        "size_bytes": 3213541,
+        "digest": "sha256:f6e2097985caf96e36bbca20019ecc05de05c1e92a71800a00b918917626d30f",
+        "inspected_members": [
+          "report.json",
+          "test-summary.json",
+          "tests.log"
+        ]
+      }
+    },
+    {
+      "device_group": "current",
+      "run_id": 42911435946,
+      "job_id": 130162818547,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911435946",
+      "job_conclusion": "success",
+      "source_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "runtime": {
+        "device_name": "iPhone 17",
+        "runtime_version": "26.2",
+        "runtime_build": "23C54",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2"
+      },
+      "ui": {
+        "source_expected": 2,
+        "started": 2,
+        "unique_started": 2,
+        "completed": 2,
+        "unique_completed": 2,
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0,
+        "each_source_method_started_and_completed_once": true,
+        "runner_restart_messages": 0,
+        "method_completions": [
+          {
+            "class": "NotificationApprovalUITests",
+            "method": "testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval",
+            "result": "passed",
+            "seconds": 84.17
+          },
+          {
+            "class": "NotificationUITests",
+            "method": "testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable",
+            "result": "passed",
+            "seconds": 51.359
+          }
+        ]
+      },
+      "fixed_markers": [
+        "NOTIFICATION_APPROVAL authorizationBefore=notDetermined authorizationAfter=authorized",
+        "NOTIFICATION_APPROVAL actualSystemBanner=1 defaultOpenObserved=1 destination=chat sameProposalUUID=1 explicitApprovals=1 calls=1 audibleSoundVerified=0",
+        "NOTIFICATION_SETTINGS enabled=1 systemPromptObserved=0",
+        "NOTIFICATION_SETTINGS actualSystemBanner=1 audibleSoundVerified=0",
+        "NOTIFICATION_SETTINGS actualBannerTap=1 rootChatVisible=1",
+        "NOTIFICATION_SETTINGS relaunchEnabled=1 disablePersisted=1 systemPermissionRetained=1"
+      ],
+      "xcresult_summary_counts": {
+        "totalTestCount": 2,
+        "passedTests": 2,
+        "failedTests": 0,
+        "skippedTests": 0
+      },
+      "completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 2,
+          "passedTests": 2,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 2,
+        "completed_ui_count": 2,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "artifact": {
+        "id": 13810686975,
+        "size_bytes": 154706730,
+        "digest": "sha256:d0e380e2033a0300c57255e541f4f8aba0d862ad240a913e8e72e575074b8eae",
+        "inspected_metadata": [
+          "test-summary.json",
+          "test-simulator.json",
+          "ui-shard-completion.json"
+        ]
+      }
+    }
+  ],
+  "pending_devices": [],
+  "accepted_aggregate": {
+    "devices": 3,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "expected_final_devices": 3,
+    "expected_final_methods": 6
+  },
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/NotificationUITests.swift": "f749a606e2a53ab3898163e5225664b7f23c60a612f1719729839913203e3cfa",
+    "Tests/WoowAssistantUITests/NotificationApprovalUITests.swift": "332f852be000110427e2293bbaf55c1029711f5fe50db6a39dacc64582a5ee96",
+    "Sources/App/TaskNotificationStore.swift": "f3909bc05a2766e672f57038fe4829f880bd684a4f4ef626e9d68b08e6be360d",
+    "Sources/App/TaskNotificationChatBridge.swift": "0184d1e792531fb9c82430a0e0d4f67ab9d0db9ceb40bde69fb2dee9b565b67b",
+    "Sources/App/TaskNotificationCenterAdapter.swift": "4955d72a2b9b90b546c9fd18ccd68cf548ac2a5f62b3adc35b24a5ffd7180378",
+    "Sources/App/TaskNotificationSettingsView.swift": "2ffebaa5995f93dce3c34bf52a1d01d8c28838183c91ac13aca5cd02c54c83dd",
+    "Sources/App/MCPApprovalView.swift": "cf0344eed31977b9117160fb07417871aa4189bcd3a7df2a68b8d1ea670e0939",
+    "Sources/AssistantDomain/TaskNotificationService.swift": "1e619c0d691314338248e70abf402da7d8cde41dc29b5389ed3f44a45ff4278f",
+    "Sources/App/ContentView.swift": "faf1645f3dc4749e9de27ee1dc1ad441a7a7df809fe8b1d9ffd6e1cf31b69e53",
+    "Sources/App/ChatSession.swift": "6f01a8f493eff3f5e8b14f6d9fd8b47a63bb7ac55f03aadfa845e65801a355a6",
+    "scripts/release_ios17.py": "f8869c62446143df7f89de07b3164cc083478c62ee01ef35e29f3070c6233c1f",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204"
+  },
+  "test_method_sha256": {
+    "NotificationUITests/testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable": "bc1c7f28494d5b93f48a2dc7b945f843a265b9f8436a859c7c75ee7a88894792",
+    "NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval": "d5d5d98e871f0c315faef8b3ce4eebc4a1b862051ce286cc5803c9aa44a63b32"
+  },
+  "test_method_hash_definition": "Exact source text from test declaration to next function declaration, trailing whitespace stripped.",
+  "limits": [
+    "All three requested runtimes have two actual source-matched method completions and passing zero-skip xcresult summaries. This is notification fixture acceptance, not full application acceptance.",
+    "Actual authorization UI and OS notification banners with synthetic App model/MCP transport; no external model or Home Assistant claim.",
+    "Approval test observed actual default-open routing, retained proposal UUID, one explicit native approval, and one real in-process fixture tool call.",
+    "Settings test reused system authorization granted by the prior case; its systemPromptObserved=0 is preserved and does not imply a reset or new prompt.",
+    "No permission/quota resets or reruns requested. No runner restart observed. Audible notification sound remains unverified.",
+    "Source-specific UI regression, not full native or App-store acceptance. No private environment, credentials, raw logs, live AX trees or signed URLs published.",
+    "iOS17 runtime identifier contains iOS-17-0, but selected runtime version and xcresult OS version both explicitly report 17.0.1, build 21A342. The xctestrun filename contains build SDK 18.5; it is not the executed runtime.",
+    "Prebuild is an observed lifecycle experiment, not proof of an installer/testdaemon root-cause fix. One prelaunch attempt reports process_alive=true, handshake_verified=false. Successful actual tests independently establish this run completed.",
+    "No product or UI driver changes were made during these runs. These source-specific results do not cover later 7b2fb3e transcript changes or any unpublished streaming implementation."
+  ]
+}

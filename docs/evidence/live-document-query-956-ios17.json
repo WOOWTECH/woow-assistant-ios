@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "actual_exact_runtime_private_model_native_ui",
+  "result": "PASS",
+  "run_id": 42913237285,
+  "job_id": 130169006678,
+  "source_commit": "956aa9fa3e1a0a596614c684459614d9a5b6b12b",
+  "test_file_sha256": "698178488eb69b8d13044ffc0a215eb7bed5e1db3250ce86e3e318a743acc496",
+  "runtime": {
+    "requested_runtime": "17.0.1",
+    "selected_runtime": {
+      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+      "version": "17.0.1",
+      "buildversion": "21A342"
+    },
+    "boot_succeeded": true,
+    "physical_devices_used": false,
+    "host_architecture": "arm64",
+    "xcode": "16.4 (16F6)"
+  },
+  "method": {
+    "method": "testRealModelAnswersFromApprovedPDFAndExportCancellationPreservesResult",
+    "result": "passed",
+    "seconds": 223.73
+  },
+  "counts": {
+    "code": "PASSED",
+    "expectedFailures": 0,
+    "expectedTests": 1,
+    "failedTests": 0,
+    "passedTests": 1,
+    "skippedTests": 0,
+    "totalTestCount": 1
+  },
+  "audit": {
+    "modelCalls": 4,
+    "searches": 1,
+    "reads": 2,
+    "results": 1,
+    "citations": 2,
+    "corrections": 0
+  },
+  "phases": [
+    {
+      "phase": "selected",
+      "elapsedSeconds": 56
+    },
+    {
+      "phase": "extracted",
+      "elapsedSeconds": 75
+    },
+    {
+      "phase": "question_input_started",
+      "elapsedSeconds": 91
+    },
+    {
+      "phase": "question_input_delivered",
+      "elapsedSeconds": 101
+    },
+    {
+      "phase": "question_keyboard_dismissed",
+      "elapsedSeconds": 104
+    },
+    {
+      "phase": "question_verified",
+      "elapsedSeconds": 104
+    },
+    {
+      "phase": "model_started",
+      "elapsedSeconds": 127
+    },
+    {
+      "phase": "verified",
+      "elapsedSeconds": 158
+    },
+    {
+      "phase": "export_presented",
+      "elapsedSeconds": 170
+    },
+    {
+      "phase": "export_cancel_tapped",
+      "elapsedSeconds": 183
+    },
+    {
+      "phase": "export_callback_verified",
+      "elapsedSeconds": 185
+    },
+    {
+      "phase": "retained_answer_verified",
+      "elapsedSeconds": 185
+    },
+    {
+      "phase": "retained_citations_verified",
+      "elapsedSeconds": 185
+    },
+    {
+      "phase": "export_cancelled",
+      "elapsedSeconds": 185
+    },
+    {
+      "phase": "extraction_preserved",
+      "elapsedSeconds": 211
+    }
+  ],
+  "budgets": {
+    "xctest_case_cap_seconds": 300,
+    "cleanup_boundary_seconds": 285,
+    "unchanged": true
+  },
+  "confirmed_stages": [
+    "native PDF copy picker callback",
+    "separate file read and PDF extraction approvals",
+    "actual PDFKit extraction and selected synthetic source identity",
+    "exact unchanged question and destination approval before Start",
+    "actual model search and two reads",
+    "answer with two exact original-page citations",
+    "native exporter presentation and cancellation callback",
+    "exact retained answer and both exact retained page/quote citations",
+    "post-export unchanged audit comparison",
+    "query sheet close",
+    "original extracted PDF exact text retained after returning",
+    "final extraction audit assertion"
+  ],
+  "privacy": {
+    "raw_private_logs_exported": false,
+    "private_artifact_downloaded": false,
+    "endpoints_or_configuration_exported": false,
+    "raw_model_or_source_text_exported": false
+  },
+  "cleanup": {
+    "own_simulator_deletion": "deleted"
+  },
+  "interpretation": {
+    "functional_pass": true,
+    "saved_reference_behavior_proven_by_this_ui_case": false,
+    "source_attribution": "Source 956 includes the 8c DocumentQuery saved-reference implementation; this UI case does not seed a saved reference.",
+    "driver_change": "Read each stable UI phase in a fresh scoped accessibility snapshot; no snapshot is reused across exporter cancellation.",
+    "timing_limit": "One successful run does not isolate a causal performance improvement from simulator or service variability."
+  },
+  "history": {
+    "previous_exact17_run": 42903804459,
+    "previous_exact17_result": "FAIL",
+    "previous_exact17_seconds": 300.288,
+    "previous_failure_evidence": "live-document-query-f49-ios17.json",
+    "previous_failures_retained": true
+  }
+}
