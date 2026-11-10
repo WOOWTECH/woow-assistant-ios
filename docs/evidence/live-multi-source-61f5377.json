@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "source_commit": "61f5377254d15c99736223efbc7dae3d57a577ca",
+  "run_id": 42866589370,
+  "job_id": 130006457382,
+  "workflow_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866589370",
+  "runtime": "iOS 18.5",
+  "method": "LiveModelUITests.testRealWebKitMultiSourceResearchCitesBothApprovedRoots",
+  "seconds": 146.692,
+  "completion": {
+    "code": "PASSED",
+    "expectedTests": 1,
+    "totalTestCount": 1,
+    "passedTests": 1,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "fixed_diagnostic": {
+    "phase": "finished",
+    "failure": "none",
+    "pages": 2
+  },
+  "actual_ui_assertions": [
+    "Exact native question and both approved public URLs were typed and read back before Start.",
+    "Real WebKit plus configured HTTP model completed without product error or partial result.",
+    "Both approved source citation sets contained a nonempty byte-verified quote including the requested example-domain evidence.",
+    "After closing research, approved-skills and pending lists remained empty."
+  ],
+  "public_approved_sources": [
+    "https://www.iana.org/domains/reserved",
+    "https://www.rfc-editor.org/rfc/rfc2606.txt"
+  ],
+  "not_claimed": [
+    "Search discovery (introduced later) was not part of this run.",
+    "No statement that the two publishers are independent.",
+    "No model-call or global HTTP count inferred from a UI completion.",
+    "One public question does not establish all-site compatibility or eliminate stochastic model failures.",
+    "No physical iPhone or iOS17 acceptance inferred."
+  ],
+  "evidence_policy": "Only fixed counters, method completion and public approved roots; no raw model prose, private endpoints, credential environment, screenshot or AX dump.",
+  "source_sha256": {
+    "Sources/App/MultiSourceResearchSession.swift": "5c38d10c1f50e3bd40b5800d00b049cf75ac5a1477f2f91576eec3c47cdf8ab2",
+    "Sources/App/MultiSourceResearchView.swift": "a1bf8245e6c54d97ac981803fee1aa2ae655ffbf2cdf4988837e6f76ab1797e6",
+    "Sources/App/BrowserSession.swift": "c0301cc8add3b7973363597646b84b2f9f2882a89f67599886e61df5e31f05fc",
+    "Sources/AssistantBrowser/MultiSourceResearchRunner.swift": "045082fa9d6704854efdf44f26d57c176ab87806cb23092ec4ecb0d8bd9a967a",
+    "Sources/AssistantBrowser/MultiSourceResearchTypes.swift": "af1ac51d3b6d243217678b033f1b82be8c22fb3ed890370fe6e8b4f0ed9f82d2",
+    "Tests/WoowAssistantUITests/LiveModelUITests.swift": "64b82c53ee5fb7a9247442183a7616562b5b3dd2eb3de9cdd6adbb19445cda0b"
+  }
+}

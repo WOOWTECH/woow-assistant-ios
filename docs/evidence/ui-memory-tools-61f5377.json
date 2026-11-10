@@ -2,7 +2,7 @@
   "schema_version": 1,
   "run_id": 42866520782,
   "source_commit": "61f5377254d15c99736223efbc7dae3d57a577ca",
-  "scope": "Native three-device ui-memory-tools fixture; current device still pending at this report capture.",
+  "scope": "Native three-device ui-memory-tools fixture: SE and Large 6/6 each; current 4 pass / 2 timeout failures; no retries.",
   "source_declared_methods": [
     "testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch",
     "testDeclinedSavePreservesDraftAndCreatesNoData",
@@ -181,25 +181,194 @@
     },
     "current": {
       "job_id": 130006841353,
-      "job_conclusion": null,
-      "status_at_last_observation": "in_progress",
-      "counts": null,
-      "acceptance": null
+      "records": [
+        {
+          "class": "MemoryToolUITests",
+          "method": "testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch",
+          "outcome": "failed",
+          "seconds": 313.445
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testDeclinedSavePreservesDraftAndCreatesNoData",
+          "outcome": "passed",
+          "seconds": 162.694
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testReviewedUpdateOfManualMemoryPersistsAfterRelaunch",
+          "outcome": "passed",
+          "seconds": 214.967
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testSavedProcedureCanBeRejectedAndRelaunchesAbsent",
+          "outcome": "passed",
+          "seconds": 212.676
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testSavedProcedureRequiresSeparateApprovalAndRelaunchesActive",
+          "outcome": "passed",
+          "seconds": 168.831
+        }
+      ],
+      "completion": {
+        "completed_ui_count": 5,
+        "counts": {
+          "expectedFailures": 0,
+          "failedTests": 2,
+          "passedTests": 4,
+          "skippedTests": 0,
+          "totalTestCount": 6
+        },
+        "expected_ui_count": 6,
+        "missing_ui_tests": [
+          "WoowAssistantUITests/MemoryToolUITests/testReviewedDeleteCanBeUndoneAndRestoresManualMemoryAfterRelaunch"
+        ],
+        "nonpassing_or_repeated_ui_tests": [
+          "WoowAssistantUITests/MemoryToolUITests/testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch"
+        ],
+        "result": "Failed",
+        "unexpected_ui_tests": [],
+        "verified": false
+      },
+      "fixed_timelines": [
+        {
+          "method": "testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch",
+          "expectationChecks": 71,
+          "exactActions": [
+            "    t =     1.33s     Launch io.woowtech.assistant",
+            "    t =    28.67s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.settings\" Button`",
+            "    t =   122.43s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.chat\" Button`",
+            "    t =   172.50s Tap \"memoryTool.approve\" Button",
+            "    t =   185.67s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.memory\" Button`",
+            "    t =   189.71s Checking `Expect predicate `value == \"已選取\"` for object \"memory.segment.memories\" Button`",
+            "    t =   194.95s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.chat\" Button`",
+            "    t =   197.38s Tap \"chat.undoMemory.0\" Button",
+            "    t =   203.63s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.memory\" Button`",
+            "    t =   208.09s Checking `Expect predicate `value == \"已選取\"` for object \"memory.segment.memories\" Button`",
+            "    t =   211.24s     Launch io.woowtech.assistant",
+            "    t =   230.27s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.memory\" Button`",
+            "    t =   235.07s Checking `Expect predicate `value == \"已選取\"` for object \"memory.segment.memories\" Button`",
+            "    t =   240.32s Checking `Expect predicate `value == \"已選取\"` for object \"memory.segment.pending\" Button`",
+            "Test Case '-[WoowAssistantUITests.MemoryToolUITests testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch]' exceeded execution time allowance of 4 minutes. The test may have hung; check Xcode's test report for additional diagnostics. If the test requires additional time, use -[XCTestCase executionTimeAllowance] or one of xcodebuild's command-line overrides."
+          ]
+        },
+        {
+          "method": "testReviewedDeleteCanBeUndoneAndRestoresManualMemoryAfterRelaunch",
+          "expectationChecks": 89,
+          "exactActions": [
+            "    t =     0.21s     Launch io.woowtech.assistant",
+            "    t =    11.26s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.settings\" Button`",
+            "    t =    69.20s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.chat\" Button`",
+            "    t =    75.00s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.memory\" Button`",
+            "    t =    78.95s Checking `Expect predicate `value == \"已選取\"` for object \"memory.segment.memories\" Button`",
+            "    t =   145.82s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.chat\" Button`",
+            "    t =   188.14s Tap \"memoryTool.approve\" Button",
+            "    t =   204.26s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.memory\" Button`",
+            "    t =   208.60s Checking `Expect predicate `value == \"已選取\"` for object \"memory.segment.memories\" Button`",
+            "    t =   215.48s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.chat\" Button`",
+            "    t =   218.44s Tap \"chat.undoMemory.0\" Button",
+            "    t =   223.83s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.memory\" Button`",
+            "    t =   228.63s Checking `Expect predicate `value == \"已選取\"` for object \"memory.segment.memories\" Button`",
+            "    t =   232.75s     Launch io.woowtech.assistant",
+            "Test Case '-[WoowAssistantUITests.MemoryToolUITests testReviewedDeleteCanBeUndoneAndRestoresManualMemoryAfterRelaunch]' exceeded execution time allowance of 4 minutes. The test may have hung; check Xcode's test report for additional diagnostics. If the test requires additional time, use -[XCTestCase executionTimeAllowance] or one of xcodebuild's command-line overrides.",
+            "    t =   249.50s Checking `Expect predicate `value == \"已選取\"` for object \"navigation.memory\" Button`",
+            "    t =   253.81s Checking `Expect predicate `value == \"已選取\"` for object \"memory.segment.memories\" Button`",
+            "    t =   259.46s Checking `Expect predicate `value == \"已選取\"` for object \"memory.segment.pending\" Button`"
+          ]
+        }
+      ],
+      "job_conclusion": "failure",
+      "source_listed_methods_exactly_completed_once": false,
+      "runtime": {
+        "device_name": "iPhone 17",
+        "runtime_build": "23C54",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+        "runtime_version": "26.2"
+      },
+      "xcresult_summary_counts": {
+        "totalTestCount": 6,
+        "passedTests": 4,
+        "failedTests": 2,
+        "skippedTests": 0
+      },
+      "artifact": {
+        "id": 13793555238,
+        "size_bytes": 366827802,
+        "digest": "sha256:39301770115cda4aca955c7980320302a0a84ca54476e3e43526e28e398943c4",
+        "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866520782/artifacts/13793555238"
+      },
+      "failures": [
+        {
+          "method": "testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch",
+          "kind": "execution_time_allowance_exceeded",
+          "allowance_seconds": 240,
+          "completion": "failed",
+          "reported_completion_seconds": 313.445,
+          "additional_failure": {
+            "file": "Tests/WoowAssistantUITests/MemoryToolUITests.swift",
+            "line": 28,
+            "reason": "Failed to terminate io.woowtech.assistant during tearDown"
+          },
+          "observed_phase": "Native Undo tapped at 197.38s; relaunch at 211.24s; final pending-list empty check at 241.50s after the timeout."
+        },
+        {
+          "method": "testReviewedDeleteCanBeUndoneAndRestoresManualMemoryAfterRelaunch",
+          "kind": "execution_time_allowance_exceeded",
+          "allowance_seconds": 240,
+          "completion": null,
+          "reported_completion_seconds": null,
+          "observed_phase": "Native Undo tapped at 218.44s; relaunch at 232.75s; timeout during relaunch; continued through restored-memory identity and final pending-list checks; no normal method completion line."
+        }
+      ],
+      "fixture_AX_evidence": {
+        "custom_failure_AX_or_screenshot_files_available": 0,
+        "method": "Bounded archive manifest inspected for both failed methods; no custom fixture AX/PNG attachments matched. No AX geometry claim is made."
+      }
     }
   },
   "completed_device_aggregate": {
-    "devices": 2,
-    "total": 12,
-    "passed": 12,
-    "failed": 0,
-    "skipped": 0
+    "devices": 3,
+    "total": 18,
+    "passed": 16,
+    "failed": 2,
+    "skipped": 0,
+    "normal_method_completion_lines": 17,
+    "missing_normal_completions": 1,
+    "counts_source": "xcresult summaries; method completion lines separately retained"
   },
   "fixture_deadline_seconds": 240,
   "retries": 0,
   "limits": [
     "Synthetic ordinary-Chat model commands exercise real native review UI and encrypted storage; not live model HTTP acceptance.",
-    "SE and Large each completed all six source-listed methods once, with zero skips. Current is excluded until actual completion.",
-    "Passing methods assert native approval/decline, save/update/delete/undo, separate pending-procedure approval/rejection and relaunch persistence.",
-    "No private configuration or raw logs included."
-  ]
+    "SE and Large each completed all six source-listed methods once, with zero skips. Current failed; no overall matrix success is claimed.",
+    "Current xcresult counts two failures while console has only five normal completions. The delete/undo timeout is retained as a missing completion, not a skip or pass.",
+    "No content assertion failure was reported before the two time allowances. This does not turn the timed-out methods into passed tests or prove a product defect absent.",
+    "Candidate fixture fast-path change has syntax/readiness checks only; native efficacy is unverified.",
+    "No private configuration, raw logs or live AX trees included."
+  ],
+  "candidate_fix": {
+    "file": "Tests/WoowAssistantUITests/MemoryToolUITests.swift",
+    "sha256": "9ce6a53ded0816932509dd86584d910870feaed05910b318b63a213e0cb1a8d2",
+    "change": "Evaluate the exact existing ready/absent/label/value predicates immediately. Only if false, enter the existing XCTNSPredicateExpectation with the unchanged timeout.",
+    "basis": "The two timed-out methods reached final relaunch assertions and logged 71 / 89 predicate checks. Avoiding the first polling wait for already-satisfied conditions is a bounded fixture-cost reduction. It is not a proven fix for all runner slowness.",
+    "preserved": [
+      "All six methods and all data/receipt/identity/undo/procedure/relaunch assertions",
+      "Native input and tap actions",
+      "240-second method allowance and all existing 5/10-second helper waits",
+      "No launch retry, test retry or arbitrary sleep"
+    ],
+    "local_validation": {
+      "ios17_swift_syntax_parse": "PASS; local CLT warns macOS sysroot targeting iPhone, so not native typecheck",
+      "release_readiness_script_tests": {
+        "passed": 10,
+        "failed": 0
+      }
+    },
+    "native_retest": null,
+    "production_files_changed": false
+  },
+  "observed_at": "2026-11-10T18:50:45.029103+00:00"
 }

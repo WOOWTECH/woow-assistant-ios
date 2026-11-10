@@ -373,12 +373,16 @@ final class MemoryToolUITests: XCTestCase {
     }
 
     private func assertLabel(_ element: XCUIElement, _ text: String) {
-        let expected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label == %@", text), object: element)
+        let predicate = NSPredicate(format: "exists == true AND label == %@", text)
+        if predicate.evaluate(with: element) { return }
+        let expected = XCTNSPredicateExpectation(predicate: predicate, object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [expected], timeout: 10), .completed)
     }
 
     private func assertValue(_ element: XCUIElement, _ text: String) {
-        let expected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", text), object: element)
+        let predicate = NSPredicate(format: "value == %@", text)
+        if predicate.evaluate(with: element) { return }
+        let expected = XCTNSPredicateExpectation(predicate: predicate, object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [expected], timeout: 10), .completed)
     }
 
@@ -389,12 +393,20 @@ final class MemoryToolUITests: XCTestCase {
     }
 
     private func ready(_ element: XCUIElement) {
-        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: element)
+        // 61f current reached the undo scenarios' final relaunch checks after
+        // the 240s allowance. Avoid entering a polling expectation when its
+        // exact predicate already holds; preserve every readiness requirement
+        // and the original bounded wait when the UI is still transitioning.
+        let predicate = NSPredicate(format: "exists == true AND hittable == true AND enabled == true")
+        if predicate.evaluate(with: element) { return }
+        let ready = XCTNSPredicateExpectation(predicate: predicate, object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed)
     }
 
     private func absent(_ element: XCUIElement) {
-        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: element)
+        let predicate = NSPredicate(format: "exists == false")
+        if predicate.evaluate(with: element) { return }
+        let gone = XCTNSPredicateExpectation(predicate: predicate, object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 5), .completed)
     }
 }
