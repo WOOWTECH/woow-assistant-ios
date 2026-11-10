@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source_revision": "e493842",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42802753665",
+  "job_id": 129787409304,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "case_seconds": 130.045,
+  "scope": "Actual native selected text and real model UI. Failed at final audit, before result acceptance. The exact terminal runtime error is not retained by this older test; do not infer it from the separate short-source format probes.",
+  "safe_log_excerpt": [
+    "2026-11-10T11:24:55.6798430Z ** TEST BUILD SUCCEEDED **",
+    "2026-11-10T11:27:08.8529220Z Test Suite 'LiveTranscriptUITests' started at 2026-11-10 11:27:08.630.",
+    "2026-11-10T11:27:08.8588260Z Test Case '-[WoowAssistantUITests.LiveTranscriptUITests testRealModelReadsEntireNativeTextAndReturnsVerifiedSourceQuotes]' started.",
+    "2026-11-10T11:29:08.8954770Z /Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/LiveTranscriptUITests.swift:77: error: -[WoowAssistantUITests.LiveTranscriptUITests testRealModelReadsEntireNativeTextAndReturnsVerifiedSourceQuotes] : XCTAssertEqual failed: (\"Optional(0)\") is not equal to (\"Optional(1)\")",
+    "2026-11-10T11:29:18.7358790Z Test Case '-[WoowAssistantUITests.LiveTranscriptUITests testRealModelReadsEntireNativeTextAndReturnsVerifiedSourceQuotes]' failed (130.045 seconds).",
+    "2026-11-10T11:29:18.7605750Z Test Suite 'LiveTranscriptUITests' failed at 2026-11-10 11:29:18.689.",
+    "2026-11-10T11:29:18.7615930Z \t Executed 1 test, with 1 failure (0 unexpected) in 130.045 (130.059) seconds",
+    "2026-11-10T11:29:18.9866850Z \t Executed 1 test, with 1 failure (0 unexpected) in 130.045 (130.060) seconds",
+    "2026-11-10T11:29:18.9995140Z \t Executed 1 test, with 1 failure (0 unexpected) in 130.045 (130.064) seconds",
+    "2026-11-10T11:30:13.5317690Z ** TEST EXECUTE FAILED **"
+  ]
+}

@@ -1,0 +1,128 @@
+{
+  "revision": "2fce6cf",
+  "run": 42805681299,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805681299",
+  "physicalDevice": false,
+  "records": [
+    {
+      "variant": "woow-2fce-settings-se",
+      "summarySHA256": "c7a8cb302878215e491b6b0a291d19d677f8b11ea3a8f29def9a0f5de21ca9f6",
+      "summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "66571EB4-A450-4628-ABB9-3D215AFEDD58",
+              "deviceName": "iPhone SE (3rd generation)",
+              "modelName": "iPhone SE (3rd generation)",
+              "osBuildNumber": "22F77",
+              "osVersion": "18.5",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 0,
+            "passedTests": 10,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "WoowAssistant · Built with macOS 15.8.2",
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "finishTime": 1794312193.754,
+        "passedTests": 10,
+        "result": "Passed",
+        "skippedTests": 0,
+        "startTime": 1794311889.888,
+        "statistics": [],
+        "testFailures": [],
+        "title": "Test - WoowAssistant",
+        "topInsights": [],
+        "totalTestCount": 10
+      }
+    },
+    {
+      "variant": "woow-2fce-settings-large",
+      "summarySHA256": "a54130682b6f3e1a35f10758ddcb30604e94fa06aff6b1cf71e12f5646af4082",
+      "summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "41E4762F-B20D-41AC-BFA5-AE0DB661BB84",
+              "deviceName": "iPhone 16 Pro Max",
+              "modelName": "iPhone 16 Pro Max",
+              "osBuildNumber": "22F77",
+              "osVersion": "18.5",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 0,
+            "passedTests": 10,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "WoowAssistant · Built with macOS 15.8.2",
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "finishTime": 1794311013.605,
+        "passedTests": 10,
+        "result": "Passed",
+        "skippedTests": 0,
+        "startTime": 1794310624.723,
+        "statistics": [],
+        "testFailures": [],
+        "title": "Test - WoowAssistant",
+        "topInsights": [],
+        "totalTestCount": 10
+      }
+    },
+    {
+      "variant": "woow-2fce-settings-current",
+      "summarySHA256": "9cad054a5beff22ff07d673d3ef225dc981108d19ec64e073780a7de2208486e",
+      "summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "BC7CEBFB-6B90-4D7E-B85E-BB0102C99F06",
+              "deviceName": "iPhone 17",
+              "modelName": "iPhone 17",
+              "osBuildNumber": "23C54",
+              "osVersion": "26.2",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 0,
+            "passedTests": 10,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "WoowAssistant · Built with macOS 15.8.2",
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "finishTime": 1794311853.126,
+        "passedTests": 10,
+        "result": "Passed",
+        "skippedTests": 0,
+        "startTime": 1794311511.758,
+        "statistics": [],
+        "testFailures": [],
+        "title": "Test - WoowAssistant",
+        "topInsights": [],
+        "totalTestCount": 10
+      }
+    }
+  ]
+}

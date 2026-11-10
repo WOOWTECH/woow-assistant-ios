@@ -1,5 +1,19 @@
 # Verification — 2026-11-10
 
+## Corrected settings matrix and iOS 17 browser interaction passed
+
+At `2fce6cf`, [42805681299](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805681299) passed **10/10 on each of SE/18.5, large/18.5 and current/26.2**, zero failures/skips. This includes eight native appearance cases, actual appearance/persistence UI and dedicated script-service settings save/remove/relaunch with zero automatic PDF reads. The corrected fixed-header selector reached the real settings form. This does not establish deployed worker connectivity. [Exact summaries](evidence/settings-matrix-2fce6cf.json).
+
+At `32f4ecb`, exact iOS 17.0.1 [42805244364](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805244364) passed **5/5 browser UI**, zero failures/skips: public-page navigation/interaction plus actual native upload and cancellation. The earlier missing native input label was repaired without changing the input/refusal/effect assertions. Other iOS 17 groups remain separate. [Exact summary](evidence/ios17-browser-32f4ecb.json).
+
+
+## Transcript model failures retained for repair
+
+At `4108325`, actual native model probes over fixed 847-byte source passed **4/5 formats on iOS 18.5** ([42806954467](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42806954467)) and **3/5 on iOS 17.0.1** ([42806963315](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42806963315)). Every failed format returned `invalidCommand` on its first model response, before reading any source; successful formats read all bytes and verified citations in two real calls. These are genuine failures, not missing-runtime/skip outcomes. A bounded schema correction is being implemented without broadening accepted tools or arguments. [Fixed-code evidence](evidence/transcript-formats-4108325.json).
+
+The longer native-file real-model UI case at `e493842` [42802753665](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42802753665) failed **0/1**, 130.045 seconds, at the final audit's expected completed-result count. This run passed native selection/read steps but did not accept a completed model result. Its older test does not expose a fixed terminal failure category, so the short-source formatting failures cannot be assumed to be its cause. [Retained UI evidence](evidence/live-file-transcript-e493842.json).
+
+
 ## Public webpage to real-model transcript verified (`08fec36`)
 
 [42802827631](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42802827631) passed **1/1 App UI, zero skips**, 76.495 seconds on iPhone 16 Pro Max / iOS 18.5. It loaded IANA through real WebKit, captured the page text, reviewed the source URL, approved the model destination, and required full snapshot coverage plus byte-verified model quotations. No skill/draft was automatically created. This covers the initial DOM implementation; the subsequent accessible-tree/omission fixes have separate local WebKit evidence and await hosted regression. [Bounded live evidence](evidence/live-browser-transcript-08fec36.json).

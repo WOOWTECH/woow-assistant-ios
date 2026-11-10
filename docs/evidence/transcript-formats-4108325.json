@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "source_revision": "4108325",
+  "kind": "Actual configured model on exact Simulator runtimes over fixed UTF-8 source, not UI or fetched webpage",
+  "results": [
+    {
+      "runtime": "18.5",
+      "run_id": 42806954467,
+      "job_id": 129798422109,
+      "passed": 4,
+      "failed": 1,
+      "calls": 9,
+      "log": [
+        "2026-11-10T11:29:05.1748590Z TRANSCRIPT_PROBE mode=simulator transport=realHTTP fixedSource=1 ui=0 fetchedPage=0",
+        "2026-11-10T11:29:05.1778570Z TRANSCRIPT_FORMAT format=summary status=RUNNING callsLimit=6 deadlineSeconds=90",
+        "2026-11-10T11:29:21.3660730Z TRANSCRIPT_FORMAT format=summary status=PASS code=complete calls=2 responses=2 reads=1 covered=847 total=847 sections=3 citations=3 elapsedMs=16159",
+        "2026-11-10T11:29:21.3662220Z TRANSCRIPT_FORMAT format=chapters status=RUNNING callsLimit=6 deadlineSeconds=90",
+        "2026-11-10T11:29:38.0718480Z TRANSCRIPT_FORMAT format=chapters status=PASS code=complete calls=2 responses=2 reads=1 covered=847 total=847 sections=3 citations=3 elapsedMs=16732",
+        "2026-11-10T11:29:38.0738540Z TRANSCRIPT_FORMAT format=quotations status=RUNNING callsLimit=6 deadlineSeconds=90",
+        "2026-11-10T11:29:41.4773040Z TRANSCRIPT_FORMAT format=quotations status=FAIL code=invalidCommand calls=1 responses=1 reads=0 covered=0 total=847 sections=0 citations=0 elapsedMs=3398",
+        "2026-11-10T11:29:41.5168130Z TRANSCRIPT_FORMAT format=transcript status=RUNNING callsLimit=6 deadlineSeconds=90",
+        "2026-11-10T11:29:58.4661720Z TRANSCRIPT_FORMAT format=transcript status=PASS code=complete calls=2 responses=2 reads=1 covered=847 total=847 sections=3 citations=3 elapsedMs=16995",
+        "2026-11-10T11:29:58.4765770Z TRANSCRIPT_FORMAT format=article status=RUNNING callsLimit=6 deadlineSeconds=90",
+        "2026-11-10T11:30:18.0259160Z TRANSCRIPT_FORMAT format=article status=PASS code=complete calls=2 responses=2 reads=1 covered=847 total=847 sections=4 citations=4 elapsedMs=19552",
+        "2026-11-10T11:30:18.0534120Z TRANSCRIPT_PROBE status=FAIL attempted=5 passed=4 failed=1 calls=9 ui=0 fetchedPage=0"
+      ]
+    },
+    {
+      "runtime": "17.0.1",
+      "run_id": 42806963315,
+      "job_id": 129798452071,
+      "passed": 3,
+      "failed": 2,
+      "calls": 8,
+      "log": [
+        "2026-11-10T11:29:06.3304110Z TRANSCRIPT_PROBE mode=simulator transport=realHTTP fixedSource=1 ui=0 fetchedPage=0",
+        "2026-11-10T11:29:06.3490120Z TRANSCRIPT_FORMAT format=summary status=RUNNING callsLimit=6 deadlineSeconds=90",
+        "2026-11-10T11:29:09.5046440Z TRANSCRIPT_FORMAT format=summary status=FAIL code=invalidCommand calls=1 responses=1 reads=0 covered=0 total=847 sections=0 citations=0 elapsedMs=3150",
+        "2026-11-10T11:29:09.5133770Z TRANSCRIPT_FORMAT format=chapters status=RUNNING callsLimit=6 deadlineSeconds=90",
+        "2026-11-10T11:29:25.7657320Z TRANSCRIPT_FORMAT format=chapters status=PASS code=complete calls=2 responses=2 reads=1 covered=847 total=847 sections=3 citations=3 elapsedMs=16253",
+        "2026-11-10T11:29:25.7658260Z TRANSCRIPT_FORMAT format=quotations status=RUNNING callsLimit=6 deadlineSeconds=90",
+        "2026-11-10T11:29:42.4113600Z TRANSCRIPT_FORMAT format=quotations status=PASS code=complete calls=2 responses=2 reads=1 covered=847 total=847 sections=3 citations=3 elapsedMs=16631",
+        "2026-11-10T11:29:42.4116960Z TRANSCRIPT_FORMAT format=transcript status=RUNNING callsLimit=6 deadlineSeconds=90",
+        "2026-11-10T11:30:00.9017470Z TRANSCRIPT_FORMAT format=transcript status=PASS code=complete calls=2 responses=2 reads=1 covered=847 total=847 sections=3 citations=3 elapsedMs=18487",
+        "2026-11-10T11:30:00.9025680Z TRANSCRIPT_FORMAT format=article status=RUNNING callsLimit=6 deadlineSeconds=90",
+        "2026-11-10T11:30:03.8621420Z TRANSCRIPT_FORMAT format=article status=FAIL code=invalidCommand calls=1 responses=1 reads=0 covered=0 total=847 sections=0 citations=0 elapsedMs=2960",
+        "2026-11-10T11:30:03.8622550Z TRANSCRIPT_PROBE status=FAIL attempted=5 passed=3 failed=2 calls=8 ui=0 fetchedPage=0"
+      ]
+    }
+  ],
+  "diagnosis": "All three failing formats returned invalidCommand on the first response, before any source range read. Successful formats each made two real calls, covered all 847 bytes and verified citations. No OS-specific causal claim; runtime correction remains pending."
+}

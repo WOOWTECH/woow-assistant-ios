@@ -96,7 +96,15 @@ final class LiveMCPConversationUITests: XCTestCase {
     func testRealModelToolRefusalKeepsDraft() {
         let prompt = "Use ha_eval_template with only template={{7*6}} to calculate the result. Propose the tool call and wait for my approval."
         send(prompt)
-        XCTAssertTrue(app.staticTexts["mcp.approval.name"].waitForExistence(timeout: 95))
+        let next = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            self.app.staticTexts["mcp.approval.name"].exists || self.app.staticTexts["chat.error"].exists
+                || self.app.staticTexts["chat.message.1.assistant"].exists
+        }, object: nil)
+        let waitResult = XCTWaiter.wait(for: [next], timeout: 95)
+        let diagnostics = app.staticTexts["chat.mcpActivity"].value as? String ?? "unavailable"
+        print("Live MCP refusal proposal: \(diagnostics); proposal=\(app.staticTexts["mcp.approval.name"].exists); error=\(app.staticTexts["chat.error"].exists)")
+        XCTAssertEqual(waitResult, .completed)
+        XCTAssertTrue(app.staticTexts["mcp.approval.name"].exists, "No real approval proposal; fixed diagnostics identify the terminal phase.")
         XCTAssertTrue(app.staticTexts["mcp.approval.name"].label == "ha_eval_template")
         app.buttons["mcp.approval.decline"].tap()
         XCTAssertTrue(app.staticTexts["chat.error"].waitForExistence(timeout: 10))

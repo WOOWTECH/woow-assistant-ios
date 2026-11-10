@@ -1,0 +1,48 @@
+{
+  "revision": "32f4ecb",
+  "run": 42805244364,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805244364",
+  "physicalDevice": false,
+  "records": [
+    {
+      "variant": "woow-32-ios17-browser",
+      "summarySHA256": "3c3bcdb6593d75d006afb739b1557039419a032b64110ddb51a97d387aa27ab9",
+      "summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "27E03ADE-9A5A-4251-A712-848BF71BF6D1",
+              "deviceName": "Woow-iOS17-d030e58c4719436bbe1470c45a096902",
+              "modelName": "iPhone 15",
+              "osBuildNumber": "21A342",
+              "osVersion": "17.0.1",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 0,
+            "passedTests": 5,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "WoowAssistant · Built with macOS 15.8.2",
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "finishTime": 1794311191.588,
+        "passedTests": 5,
+        "result": "Passed",
+        "skippedTests": 0,
+        "startTime": 1794310621.217,
+        "statistics": [],
+        "testFailures": [],
+        "title": "Test - WoowAssistant",
+        "topInsights": [],
+        "totalTestCount": 5
+      }
+    }
+  ]
+}

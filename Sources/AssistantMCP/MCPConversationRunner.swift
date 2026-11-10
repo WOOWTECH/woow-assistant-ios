@@ -180,7 +180,14 @@ public struct MCPConversationRunner: Sendable {
         switch error {
         case .timedOut: return .modelTimedOut
         case .transportFailure: return .modelTransportFailed
-        case .httpStatus: return .modelHTTPRejected
+        case .httpStatus(let status):
+            switch status {
+            case 401, 403: return .modelAuthenticationRejected
+            case 429: return .modelRateLimited
+            case 500...599: return .modelServiceUnavailable
+            case 400...499: return .modelRequestRejected
+            default: return .modelHTTPRejected
+            }
         case .invalidResponse: return .modelInvalidResponse
         case .incompleteResponse: return .modelIncompleteResponse
         case .responseTooLarge: return .modelResponseTooLarge

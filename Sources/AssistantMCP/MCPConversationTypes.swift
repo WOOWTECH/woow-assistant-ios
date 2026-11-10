@@ -82,6 +82,7 @@ public enum MCPConversationError: String, Error, Sendable, Equatable, LocalizedE
     /// Provider request failures are distinct from the whole-conversation deadline.
     /// HTTP status numbers, bodies and underlying error descriptions are discarded.
     case modelTimedOut, modelTransportFailed, modelHTTPRejected, modelInvalidResponse, modelIncompleteResponse
+    case modelAuthenticationRejected, modelRateLimited, modelServiceUnavailable, modelRequestRejected
 
     public var errorDescription: String? { "MCP conversation stopped: \(rawValue)." }
 }

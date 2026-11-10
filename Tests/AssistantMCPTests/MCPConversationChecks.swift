@@ -239,7 +239,11 @@ enum MCPConversationChecks {
         // the diagnostic category; unknown model implementations stay generic.
         let cases: [(HTTPChatModelError?, MCPConversationError)] = [
             (.invalidConfiguration, .modelFailed), (.redirectRejected, .modelFailed),
-            (.httpStatus(401), .modelHTTPRejected), (.httpStatus(503), .modelHTTPRejected),
+            (.httpStatus(401), .modelAuthenticationRejected), (.httpStatus(403), .modelAuthenticationRejected),
+            (.httpStatus(429), .modelRateLimited), (.httpStatus(500), .modelServiceUnavailable),
+            (.httpStatus(503), .modelServiceUnavailable), (.httpStatus(599), .modelServiceUnavailable),
+            (.httpStatus(400), .modelRequestRejected), (.httpStatus(422), .modelRequestRejected),
+            (.httpStatus(499), .modelRequestRejected), (.httpStatus(600), .modelHTTPRejected),
             (.invalidResponse, .modelInvalidResponse), (.incompleteResponse, .modelIncompleteResponse),
             (.responseTooLarge, .modelResponseTooLarge), (.consumerTooSlow, .modelFailed),
             (.timedOut, .modelTimedOut), (.transportFailure, .modelTransportFailed),
