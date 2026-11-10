@@ -1,0 +1,395 @@
+{
+  "revision": "1ea3d08056aa04a4b6f16269900d16fc974fb8a8",
+  "run": 42828120124,
+  "scope": "ui-memory on three simulator matrix destinations; ten source-defined UI cases per destination at the tested revision",
+  "aggregate": {
+    "expectedTests": 30,
+    "totalTestCount": 30,
+    "passedTests": 22,
+    "failedTests": 8,
+    "skippedTests": 0,
+    "expectedFailures": 0,
+    "completedCaseEvents": 27,
+    "completedPassingCaseEvents": 22,
+    "completedFailingCaseEvents": 5,
+    "missingCompletionEvents": 3,
+    "timeoutEvents": 4
+  },
+  "countInterpretation": [
+    "xcresult reports 22 passed and 8 failed out of 30, with zero skipped. The completion verifier separately observes 27 completed methods and three missing completion events.",
+    "The Profile invalid/sensitive/duplicate method times out at 240 seconds on each destination and has no terminal passed/failed event; each is still counted as one failed test in xcresult.",
+    "The compact Memory validation/edit/pin/search/delete method also exceeds its 180-second allowance, then reports a teardown termination failure and a terminal failed event at 247.147 seconds. It is not a missing-completion case.",
+    "These are actual started UI methods, not synthetic bootstrap failures. A timeout record and a later failure event for the same method are not separate tests."
+  ],
+  "jobs": [
+    {
+      "matrixLabel": "ios18-compact",
+      "job": 129870691915,
+      "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828120124/job/129870691915",
+      "conclusion": "failure",
+      "xcresultCounts": {
+        "expectedFailures": 0,
+        "failedTests": 4,
+        "passedTests": 6,
+        "skippedTests": 0,
+        "totalTestCount": 10
+      },
+      "completionVerifier": {
+        "logLine": 14544,
+        "expected": 10,
+        "completed": 9,
+        "missing": [
+          "WoowAssistantUITests/UserProfileUITests/testInvalidSensitiveAndDuplicateTextNeverPublish"
+        ],
+        "nonpassingOrRepeated": [
+          "WoowAssistantUITests/MemoryUITests/testMemoryValidationEditPinSearchAndDeletePersist",
+          "WoowAssistantUITests/MemoryUITests/testTwoStepClearCancellationAndModelSettingsIsolation",
+          "WoowAssistantUITests/UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch"
+        ],
+        "unexpected": [],
+        "verified": false
+      },
+      "timeoutEvents": [
+        {
+          "line": 9018,
+          "class": "MemoryUITests",
+          "method": "testMemoryValidationEditPinSearchAndDeletePersist",
+          "seconds": 180
+        },
+        {
+          "line": 12890,
+          "class": "UserProfileUITests",
+          "method": "testInvalidSensitiveAndDuplicateTextNeverPublish",
+          "seconds": 240
+        }
+      ],
+      "completedFailureEvents": [
+        {
+          "line": 9028,
+          "class": "MemoryUITests",
+          "method": "testMemoryValidationEditPinSearchAndDeletePersist",
+          "result": "failed",
+          "seconds": 247.147
+        },
+        {
+          "line": 11306,
+          "class": "MemoryUITests",
+          "method": "testTwoStepClearCancellationAndModelSettingsIsolation",
+          "result": "failed",
+          "seconds": 99.858
+        },
+        {
+          "line": 11999,
+          "class": "UserProfileUITests",
+          "method": "testCreateReplaceDeleteAndHistorySurviveRelaunch",
+          "result": "failed",
+          "seconds": 151.141
+        }
+      ],
+      "masterSwitchAndClear": {
+        "line": 13709,
+        "class": "UserProfileUITests",
+        "method": "testMasterSwitchAndTwiceConfirmedClearPersist",
+        "result": "passed",
+        "seconds": 156.498
+      },
+      "artifact": {
+        "id": 13772761267,
+        "name": "ios-test-evidence-ios18-compact-42828120124",
+        "sizeBytes": 469286863,
+        "digest": "sha256:d75195ec63d51e8b673704e53775ccebc06329a3266612ae34e41a03f0cf6bc0",
+        "reference": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828120124/artifacts/13772761267"
+      },
+      "fixtureAttachments": [
+        {
+          "purpose": "historyAX",
+          "exportedFileName": "0AC4CCFF-F546-4A25-8455-839AAE6ED587.txt",
+          "sha256": "58bafde8fc588d778518f7ba4efd78d9bcf5989ef905b2b287fc4a833eab24a4"
+        },
+        {
+          "purpose": "historyScreenshot",
+          "exportedFileName": "E587DB09-FFFB-40B8-993D-08C44606DA7C.png",
+          "sha256": "8439ccbdcd684074fe49c246869cc8e31a824a4aa700c175d2ba43a1dea95db0"
+        },
+        {
+          "purpose": "clearAX",
+          "exportedFileName": "BAD39599-0AB6-4267-8C1B-18C12F0B3F56.txt",
+          "sha256": "47882b5a3384103bbf4889208882c53d9e19f20ef6b8c1408a2e9c8e52c57bc0"
+        },
+        {
+          "purpose": "clearScreenshot",
+          "exportedFileName": "B5D7C9EB-A9C3-4EFC-8C1C-98835BCB0FF9.png",
+          "sha256": "ca8cf57e5df008390a5185db9c6adb2a454219d21e2085641fb579ebeabba7c3"
+        }
+      ]
+    },
+    {
+      "matrixLabel": "ios18-large",
+      "job": 129870692287,
+      "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828120124/job/129870692287",
+      "conclusion": "failure",
+      "xcresultCounts": {
+        "expectedFailures": 0,
+        "failedTests": 2,
+        "passedTests": 8,
+        "skippedTests": 0,
+        "totalTestCount": 10
+      },
+      "completionVerifier": {
+        "logLine": 13695,
+        "expected": 10,
+        "completed": 9,
+        "missing": [
+          "WoowAssistantUITests/UserProfileUITests/testInvalidSensitiveAndDuplicateTextNeverPublish"
+        ],
+        "nonpassingOrRepeated": [
+          "WoowAssistantUITests/UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch"
+        ],
+        "unexpected": [],
+        "verified": false
+      },
+      "timeoutEvents": [
+        {
+          "line": 12453,
+          "class": "UserProfileUITests",
+          "method": "testInvalidSensitiveAndDuplicateTextNeverPublish",
+          "seconds": 240
+        }
+      ],
+      "completedFailureEvents": [
+        {
+          "line": 11511,
+          "class": "UserProfileUITests",
+          "method": "testCreateReplaceDeleteAndHistorySurviveRelaunch",
+          "result": "failed",
+          "seconds": 173.131
+        }
+      ],
+      "masterSwitchAndClear": {
+        "line": 13124,
+        "class": "UserProfileUITests",
+        "method": "testMasterSwitchAndTwiceConfirmedClearPersist",
+        "result": "passed",
+        "seconds": 166.978
+      },
+      "artifact": {
+        "id": 13773741347,
+        "name": "ios-test-evidence-ios18-large-42828120124",
+        "sizeBytes": 417176044,
+        "digest": "sha256:0c75bdcaebbd0f9c1a3c6501b707435d3084f1d9ec3f2a07949c9caa80bf26c5",
+        "reference": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828120124/artifacts/13773741347"
+      },
+      "fixtureAttachments": [
+        {
+          "purpose": "historyAX",
+          "exportedFileName": "1DA0E14B-3EA6-4C4F-8F56-E16E99E085C9.txt",
+          "sha256": "008de9789ccb89e58f2d56af1f7a89ca5e0d4697a4f54e8bed30a35559198026"
+        },
+        {
+          "purpose": "historyScreenshot",
+          "exportedFileName": "1230C9E8-EAC7-48A7-96DB-7C3A6B8C10F1.png",
+          "sha256": "cbd458a1e906a35c1d743ad4d2ab1ea1778b7c861e40fdba0c36a6cdc6a1275d"
+        }
+      ]
+    },
+    {
+      "matrixLabel": "ios26-current",
+      "job": 129870691590,
+      "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828120124/job/129870691590",
+      "conclusion": "failure",
+      "xcresultCounts": {
+        "expectedFailures": 0,
+        "failedTests": 2,
+        "passedTests": 8,
+        "skippedTests": 0,
+        "totalTestCount": 10
+      },
+      "completionVerifier": {
+        "logLine": 14342,
+        "expected": 10,
+        "completed": 9,
+        "missing": [
+          "WoowAssistantUITests/UserProfileUITests/testInvalidSensitiveAndDuplicateTextNeverPublish"
+        ],
+        "nonpassingOrRepeated": [
+          "WoowAssistantUITests/UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch"
+        ],
+        "unexpected": [],
+        "verified": false
+      },
+      "timeoutEvents": [
+        {
+          "line": 12912,
+          "class": "UserProfileUITests",
+          "method": "testInvalidSensitiveAndDuplicateTextNeverPublish",
+          "seconds": 240
+        }
+      ],
+      "completedFailureEvents": [
+        {
+          "line": 12145,
+          "class": "UserProfileUITests",
+          "method": "testCreateReplaceDeleteAndHistorySurviveRelaunch",
+          "result": "failed",
+          "seconds": 191.698
+        }
+      ],
+      "masterSwitchAndClear": {
+        "line": 13826,
+        "class": "UserProfileUITests",
+        "method": "testMasterSwitchAndTwiceConfirmedClearPersist",
+        "result": "passed",
+        "seconds": 189.658
+      },
+      "artifact": {
+        "id": 13773701964,
+        "name": "ios-test-evidence-ios26-current-42828120124",
+        "sizeBytes": 392761512,
+        "digest": "sha256:31c3506fc4cd6c85df05c34e63513ef943195523f70465fd8e52ba98df7f8097",
+        "reference": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828120124/artifacts/13773701964"
+      },
+      "fixtureAttachments": [
+        {
+          "purpose": "historyAX",
+          "exportedFileName": "79CD3AD8-61F5-4AE6-8773-AD80BAAC8FCE.txt",
+          "sha256": "1e3235e39b0d1af9d1aa285a7911ec0739b32250c1097e9685d3abee75f54f6c"
+        },
+        {
+          "purpose": "historyScreenshot",
+          "exportedFileName": "44F5AAA4-ED9D-4390-AB72-73EEDEE30A15.png",
+          "sha256": "ab1d733c3de27144e5ca4f7f5682a0775e4f70e34fba36f89e75f17fea84eb16"
+        }
+      ]
+    }
+  ],
+  "findings": {
+    "profileHistory": {
+      "classification": "App accessibility identifier propagation; exact history-row selector cannot match",
+      "devices": [
+        "ios18-compact",
+        "ios18-large",
+        "ios26-current"
+      ],
+      "assertion": {
+        "file": "Tests/WoowAssistantUITests/UserProfileUITests.swift",
+        "line": 166
+      },
+      "observed": "The expanded history sentence and timestamp are visibly present in each fixture screenshot and AX attachment, but both static texts inherit profile.history from DisclosureGroup.",
+      "expectedRowIdentifierPrefix": "profile.history.item.",
+      "observedHistoryControlAndChildIdentifier": "profile.history",
+      "missingStoredHistoryEstablished": false,
+      "keyboardFailureEstablished": false
+    },
+    "profileTimeout": {
+      "classification": "Aggregate test-case time allowance exhausted while native input is progressing",
+      "allowanceSeconds": 240,
+      "compact": "Three rejection flows completed; cancellation-case editor keyboard preparation was in progress at timeout.",
+      "large": "Three rejection flows completed; character entry for the cancellation case was in progress at timeout.",
+      "current": "Sensitive and multi-sentence rejection flows completed; native entry for the duplicate case was in progress at timeout.",
+      "assertionOrInputRepairRemoved": false
+    },
+    "compactMemoryTimeout": {
+      "allowanceSeconds": 180,
+      "logLine": 9018,
+      "completedFailureSeconds": 247.147,
+      "observed": "Delete and the first empty-state check completed; the second relaunch finished near the allowance and navigation to Memory was in progress.",
+      "teardownFailure": {
+        "file": "Tests/WoowAssistantUITests/MemoryUITests.swift",
+        "line": 26,
+        "logLine": 9027,
+        "fixedCategory": "App termination failed during teardown"
+      },
+      "laterQueuedChecksDoNotEstablishCaseSuccess": true
+    },
+    "compactClear": {
+      "assertion": {
+        "file": "Tests/WoowAssistantUITests/MemoryUITests.swift",
+        "line": 213,
+        "logLine": 11298
+      },
+      "identifier": "skills.empty",
+      "observed": "Fixture screenshot and AX show Skills selected and the clear notice; catalog/scope rows occupy the compact viewport, with the empty-state row not materialized there.",
+      "classification": "Offscreen List assertion without revealing the target; stored-data deletion failure not established",
+      "largeAndCurrentSameCasePassed": true
+    },
+    "keyboardBoundary": "The profile master-switch/twice-confirmed-clear method passes on all three destinations, including native entry, done/save, relaunch and persistence checks. No profile toolbar-readiness failure occurs in these fixture cases; this does not determine the cause of a different live run."
+  },
+  "followUp": {
+    "revision": "faf753657c4912ca70bdd4f63623b5262fc53d4b",
+    "changes": [
+      "Keep the history expansion button and history rows as siblings so the control identifier does not overwrite child row identifiers.",
+      "Split the long Memory validation/CRUD method and the Profile rejection/cancellation method into independently bounded cases; retain original assertions and 180/240-second allowances.",
+      "Use firstMatch for exact Memory queries and reveal skills.empty before the compact clear assertion.",
+      "Shorten CRUD fixture sentences while preserving per-character equality, stable/new row ID, relaunch, deletion and both history-row assertions."
+    ],
+    "inventory": {
+      "previousPerDestination": 10,
+      "newPerDestination": 13,
+      "newByClass": {
+        "MemoryUITests": 7,
+        "MemoryRaceUITests": 1,
+        "UserProfileUITests": 5
+      },
+      "expectedThreeDestinationCases": 39
+    },
+    "localValidation": {
+      "swiftFrontendParse": "passed",
+      "diffCheck": "passed",
+      "sourceInventory": "passed",
+      "releaseIOS17Readiness": {
+        "command": "python3 scripts/test_release_ios17_readiness.py",
+        "passed": 10,
+        "failed": 0
+      }
+    },
+    "nativeStatus": "New revision regression pending; the old failed run does not validate the fix.",
+    "sources": [
+      {
+        "path": "Sources/App/UserProfileView.swift",
+        "gitBlob": "9aed5fca5c56fa2db8c96c54ad6325949addac06",
+        "sha256": "69ebbc881e5ec6bee50f5eefa79be14dc1bd2a7752b7621692c357d2dd18c783"
+      },
+      {
+        "path": "Tests/WoowAssistantUITests/MemoryUITests.swift",
+        "gitBlob": "ab64bd707688222107e03f4412d8d7ea44e7cd8d",
+        "sha256": "d0c69d04e15dbe54ca4029f1f73667d71a9654888a3f0ebd6af3bdf8549c64bf"
+      },
+      {
+        "path": "Tests/WoowAssistantUITests/UserProfileUITests.swift",
+        "gitBlob": "c6c886babe9406f4343defdbde033a051ff8bf63",
+        "sha256": "88c5b0d6686b38111321ecf18205e36805b7850be94d94ba2e3b54dc6768f991"
+      }
+    ]
+  },
+  "privacy": {
+    "rawLogsIncluded": false,
+    "fullAXTreesIncluded": false,
+    "environmentsIncluded": false,
+    "configurationIncluded": false,
+    "liveInputOrModelContentIncluded": false,
+    "fixtureAttachmentReferencesOnly": true,
+    "artifactUploadsPerformedByThisAgent": false
+  },
+  "testedSources": [
+    {
+      "path": "Sources/App/UserProfileView.swift",
+      "gitBlob": "71bb2201537dad7d88d57a61b533280207116c71",
+      "sha256": "f2a238e6751732981bc1617fb7fbc72c4de8685f76512365c8b50903a7a86b59"
+    },
+    {
+      "path": "Tests/WoowAssistantUITests/MemoryUITests.swift",
+      "gitBlob": "28f15acf4c7931aea26e9d50ad78312d028b2342",
+      "sha256": "6b93ddcc24048a04c47386c06328bd50416ebb947d659b6f9ffe0acbc6bfc9c4"
+    },
+    {
+      "path": "Tests/WoowAssistantUITests/UserProfileUITests.swift",
+      "gitBlob": "dd7c90dd2793071b2c6e00dab752dd771cea78a5",
+      "sha256": "0cb8f8b7674ccbde3846a901f906a3f1a5beaff6d5b894c85cbea2706f056b09"
+    },
+    {
+      "path": "scripts/release_ios17.py",
+      "gitBlob": "c60af73ed17c0d2f0494c75bb07a6b560d84912b",
+      "sha256": "33452a618919aebaa49774265fde6993d9bd93f8a4c9e6ced4725148cebe750d"
+    }
+  ]
+}

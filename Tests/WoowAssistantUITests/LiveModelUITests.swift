@@ -479,11 +479,17 @@ final class LiveModelUITests: XCTestCase {
         revealLearningElement(count, in: app, visibility: .readableText)
         XCTAssertTrue(count.label.contains("2"), "Both approved origins must have verified citations.")
         for source in ["source-1", "source-2"] {
-            let quote = app.staticTexts.matching(identifier: "multiResearch.quote." + source).firstMatch
+            // One source can contribute multiple citations across findings.
+            // Require the requested evidence from that source's citation set;
+            // the first citation need not be the one about an example domain.
+            let quotes = app.staticTexts.matching(identifier: "multiResearch.quote." + source)
+            let quote = quotes.matching(NSPredicate(
+                format: "label CONTAINS[cd] %@ OR label CONTAINS[cd] %@", "example.com", "example.org")).firstMatch
             revealLearningElement(quote, in: app, visibility: .readableText)
-            XCTAssertTrue(!quote.label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+            let text = quote.label
+            XCTAssertTrue(!text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
                           "Each actually fetched source must contribute a nonempty byte-verified quote.")
-            XCTAssertTrue(quote.label.lowercased().contains("example.com") || quote.label.lowercased().contains("example.org"),
+            XCTAssertTrue(text.lowercased().contains("example.com") || text.lowercased().contains("example.org"),
                           "Each source must supply the requested example-domain evidence, not an error page.")
         }
         XCTAssertFalse(app.staticTexts["uitest.banner"].exists)

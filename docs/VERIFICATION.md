@@ -1,5 +1,11 @@
 # Verification — 2026-11-10
 
+## Actual-model profile recall and three-device memory UI follow-up
+
+At `dabe9bf`, [42833548977](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42833548977) passed **1/1 actual-model profile UI, zero skips**, in 107.319 seconds. After saving a random preference and relaunching, the first foreground query returned that exact value. After disabling memory and relaunching again, a second query returned exactly `UNKNOWN`, while the saved profile remained. These are two completed foreground queries, not a claim about all background/provider HTTP requests. No keyboard introduction tap was observed, so the previous toolbar failure cause remains unproved. [Source and native event evidence](evidence/live-profile-dabe9bf.json).
+
+The earlier `1ea3d08` three-device memory shard completed **22 passed / 8 failed / zero skipped**. Expanded history rows visibly existed but inherited the disclosure control identifier; three combined Profile cases and one SE Memory case exhausted their unchanged method allowances. SE also checked a Skills empty-state row before scrolling it into view. [Counts, missing completion events and fixture evidence](evidence/memory-ui-1ea3d08.json). Revision `faf7536` makes history rows independently accessible, separates long scenarios while retaining their assertions and 180/240-second limits, and reveals the compact empty state. Its **13-case/device** retest is [42838016543](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42838016543); those pending results are not passes.
+
 ## Retired browser sessions cannot reopen deleted-site documents
 
 Source review found that stopped sessions retained after website deletion could still accept `manualNavigation`, after their WebKit delegates had been detached. Sessions now retire permanently before page disposal, including sessions whose WebView was never created; observations/navigation flags are cleared and later manual/model navigation is rejected. Browser and library views show the pending removal, and navigation controls stay disabled.

@@ -1,0 +1,92 @@
+{
+  "revision": "dabe9bfb0537e0825f931144b38cf648673eb219",
+  "run": 42833548977,
+  "job": 129889629105,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42833548977/job/129889629105",
+  "jobConclusion": "success",
+  "uiCase": {
+    "class": "LiveModelUITests",
+    "method": "testRealModelRecallsManualProfileAfterRelaunchAndMasterSwitchDisablesIt",
+    "result": "passed",
+    "seconds": 107.319,
+    "startLogLine": 4605,
+    "completionLogLine": 4910
+  },
+  "verifier": {
+    "logLine": 4927,
+    "expectedTests": 1,
+    "totalTestCount": 1,
+    "passedTests": 1,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "foregroundProfileQueries": {
+    "uiSendTapCount": 2,
+    "sendLogLines": [
+      4755,
+      4844
+    ],
+    "sendElapsedSeconds": [
+      64.88,
+      90.13
+    ],
+    "completedExactReplyAssertions": 2,
+    "basis": "Two native chat.send events and successful completion of the source-verified method, which asserts no chat error and exact reply equality for both foreground queries. This is UI/source evidence, not a packet trace.",
+    "allProviderHTTPRequestsCountClaimed": false,
+    "excludedFromCount": "Workflow transport/learning/judge probes and any background memory extraction are not included in the two foreground profile queries."
+  },
+  "passedAssertions": [
+    "Actual native profile text equals the generated sentence before save.",
+    "Saved profile appears before the first relaunch.",
+    "Fresh conversation after relaunch returns exactly the saved random value.",
+    "Memory master switch changes from enabled to disabled and has no persistence error.",
+    "Another fresh conversation after relaunch returns exactly UNKNOWN.",
+    "Profile disabled notice and the actual saved profile both remain present."
+  ],
+  "keyboardEvidence": {
+    "doneTapLogLine": 4704,
+    "saveTapLogLine": 4716,
+    "readinessFailureDiagnosticEvents": 0,
+    "keyboardIntroductionContinueTapObserved": false,
+    "priorFailureRootCauseEstablished": false,
+    "interpretation": "Native toolbar readiness/visibility assertions passed in this invocation; the earlier toolbar failure did not recur. This does not prove that keyboard introduction caused the earlier failure."
+  },
+  "sourceBoundary": {
+    "profileHistoryFixIncluded": false,
+    "profileViewMatchesRevision": "1ea3d08056aa04a4b6f16269900d16fc974fb8a8",
+    "profileView": {
+      "path": "Sources/App/UserProfileView.swift",
+      "gitBlob": "71bb2201537dad7d88d57a61b533280207116c71",
+      "sha256": "f2a238e6751732981bc1617fb7fbc72c4de8685f76512365c8b50903a7a86b59"
+    },
+    "scope": "Validates manual save, relaunch recall, master-switch gating and retained profile. It does not validate the later history AX fix, all profile UI cases, or model ProfileEdit tool mutations."
+  },
+  "sources": [
+    {
+      "path": "Tests/WoowAssistantUITests/LiveModelUITests.swift",
+      "gitBlob": "2e83352d1df57c173679170cfbb40b7aa3e3afd8",
+      "sha256": "ff07fd9ea1e08a0872db6f7baf7aae755d63313505a1a8ce083706515c3c3e7c"
+    },
+    {
+      "path": "Sources/App/ChatSession.swift",
+      "gitBlob": "4e1780c3ca49a03136b48b4e60ce9b0b434e1e72",
+      "sha256": "e9fcec3ce513e3b2232d2df09fd7c4ba69a131579d5f83a73b33afe9ab71ccb6"
+    },
+    {
+      "path": "Sources/AssistantModels/HTTPChatModelClient.swift",
+      "gitBlob": "4adf0db9b49410ec82f50c8169692a7729362d71",
+      "sha256": "94e7ccb5ffc86d0cff2bb6f4a822a55a2ef94ac064d9d39ea76482395c0e1d8c"
+    }
+  ],
+  "privacy": {
+    "rawLogsIncluded": false,
+    "liveAXTreesIncluded": false,
+    "liveScreenshotsIncluded": false,
+    "environmentsIncluded": false,
+    "configurationIncluded": false,
+    "randomProfileValueIncluded": false,
+    "modelReplyContentIncluded": false,
+    "artifactUploadsPerformedByThisAgent": false
+  }
+}
