@@ -28,7 +28,7 @@ defaults:
     shell: bash
 
 concurrency:
-  group: ios-${{ github.workflow }}-${{ github.ref }}-${{ inputs.test_scope || 'all' }}
+  group: ios-${{ github.workflow }}-${{ github.ref }}-${{ inputs.test_scope || 'all' }}-${{ inputs.current_only && 'current' || inputs.compact_only && 'compact' || 'matrix' }}
   cancel-in-progress: true
 
 jobs:
