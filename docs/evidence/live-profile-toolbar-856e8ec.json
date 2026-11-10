@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "source_commit": "856e8ec",
+  "run_id": 42853423972,
+  "job_id": 129959947032,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42853423972/job/129959947032",
+  "scope": "Actual-model manual-profile recall, relaunch and master-switch UI; failure before saving or any model call",
+  "method": "LiveModelUITests/testRealModelRecallsManualProfileAfterRelaunchAndMasterSwitchDisablesIt",
+  "total": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "duration_seconds": 75.463,
+  "failure": {
+    "file": "Tests/WoowAssistantUITests/LiveModelUITests.swift",
+    "line": 719,
+    "control": "profile.editor.save",
+    "category": "five_second_composite_native_readiness_timeout",
+    "actual_waiter_result": 2,
+    "expected_waiter_result": 1
+  },
+  "timeline": [
+    {
+      "test_seconds": 55.08,
+      "event": "begin exists/hittable/enabled readiness predicate"
+    },
+    {
+      "test_seconds": 59.37,
+      "event": "predicate captures debug description after three property queries"
+    },
+    {
+      "test_seconds": 64.22,
+      "event": "failure diagnostic finishes",
+      "exists": true,
+      "enabled": true,
+      "hittable": true,
+      "keyboard": false,
+      "frame": [
+        378,
+        86,
+        42,
+        28.33333333333333
+      ],
+      "app_frame": [
+        0,
+        0,
+        440,
+        956
+      ]
+    }
+  ],
+  "assessment": "The late diagnostic proves the control was ready when sampled after timeout, not that all conditions held within the original five-second window. The log shows separate native queries during polling. No model failure or profile persistence failure is established.",
+  "change": "Poll only isHittable, which implies element existence and on-screen hit-point availability; retain five-second wait, explicit existence/enabled/geometry assertions and one tap. Native retest required.",
+  "api_reference": "https://developer.apple.com/documentation/xcuiautomation/xcuielement/ishittable",
+  "privacy": "Only fixed identifiers, booleans, geometry, completion counts and timing retained. No screenshot, AX tree, model response, endpoint or private configuration."
+}

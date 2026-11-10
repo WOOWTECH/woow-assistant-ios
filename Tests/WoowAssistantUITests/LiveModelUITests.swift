@@ -811,8 +811,12 @@ final class LiveModelUITests: XCTestCase {
     /// the Form cannot reveal a toolbar and must not be used as a fallback.
     private func tapToolbarButton(_ identifier: String, in app: XCUIApplication) {
         let button = app.buttons.matching(identifier: identifier).firstMatch
+        // isHittable already requires an existing onscreen element. Poll that
+        // single native property: run 42853423972 spent the five-second window
+        // resolving three separate properties, then observed all three true.
+        // Keep enabled, geometry and the same five-second deadline explicit.
         let ready = XCTNSPredicateExpectation(
-            predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: button)
+            predicate: NSPredicate(format: "hittable == true"), object: button)
         let outcome = XCTWaiter.wait(for: [ready], timeout: 5)
         if outcome != .completed {
             let exists = button.exists
@@ -823,6 +827,8 @@ final class LiveModelUITests: XCTestCase {
             print("Live toolbar readiness \(identifier): exists=\(exists); enabled=\(exists && button.isEnabled); hittable=\(exists && button.isHittable); frame=\(frame); keyboard=\(keyboard.exists); appFrame=\(app.frame)")
         }
         XCTAssertEqual(outcome, .completed)
+        XCTAssertTrue(button.exists)
+        XCTAssertTrue(button.isEnabled)
         let frame = button.frame
         XCTAssertFalse(frame.isEmpty)
         XCTAssertTrue(app.frame.contains(frame), "Native toolbar control must be inside the App window.")

@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "source_commit": "61a94d6c24b209848460fa125a2f7697d519c215",
+  "test_source": "Tests/WoowAssistantUITests/LiveModelUITests.swift",
+  "test_source_sha256": "64b82c53ee5fb7a9247442183a7616562b5b3dd2eb3de9cdd6adbb19445cda0b",
+  "run_id": 42861716124,
+  "job_id": 129989310297,
+  "job_conclusion": "success",
+  "workflow_scope": "memory-tools",
+  "method": "LiveModelUITests.testRealModelSavesOrdinaryMemoryAndUndoSurvivesRelaunch",
+  "environment": {
+    "host_architecture": "arm64",
+    "xcode": "16.4 (16F6)",
+    "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-5",
+    "runtime_version": "18.5",
+    "runtime_build": "22F77",
+    "boot_succeeded": true,
+    "physical_devices_used": false
+  },
+  "counts": {
+    "expected": 1,
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "expected_failures": 0
+  },
+  "duration_seconds": 168.793,
+  "case_time_allowance_seconds": 240,
+  "summary_verifier_code": "PASSED",
+  "fixed_phase_observations": {
+    "proposal": {
+      "memory_review": true,
+      "profile_review": false,
+      "chat_error": false,
+      "answer": false
+    },
+    "completion": {
+      "receipt": true,
+      "note": true,
+      "chat_error": false,
+      "answer": true
+    },
+    "relaunch": {
+      "item_absent": true,
+      "pending_empty": true
+    }
+  },
+  "passed_test_assertions": [
+    "The exact synthetic request reached the native Chat input before the actual configured HTTP model request.",
+    "The model proposed memory_save; native review matched the exact operation, kind, quotation, content and keywords before approval.",
+    "No receipt or memory note existed before the native approval tap.",
+    "Approval produced the expected receipt, one note and a nonempty model answer without a Chat or learning error.",
+    "The real Memory list contained exactly one matching saved item.",
+    "The native undo removed the note and saved item without a learning error.",
+    "App termination and relaunch reused the isolated encrypted namespace; the item remained absent and pending memory remained empty."
+  ],
+  "evidence_sources": [
+    "Completed job log: fixed simulator readiness JSON and selected runtime metadata.",
+    "Completed job log: fixed Live memory-tool phase counters and XCTest method result.",
+    "Completed job log: selected-test summary verifier reported PASSED for exactly one expected test with zero skips."
+  ],
+  "privacy": {
+    "raw_live_artifact_downloaded": false,
+    "raw_model_or_server_content_published": false,
+    "credentials_or_endpoints_published": false,
+    "private_screenshots_or_accessibility_trees_published": false
+  },
+  "limitations": [
+    "This is one actual iOS 18.5 simulator UI case, not physical-device or iOS 17 acceptance.",
+    "This case tests ordinary memory review, save and undo; it does not test the separate mixed remote MCP plus local memory flow or profile editing.",
+    "The fixed UI observations do not report model HTTP call counts; no such count is inferred.",
+    "Encrypted persistence uses the production isolated store path; this UI case does not independently inspect ciphertext bytes."
+  ]
+}
