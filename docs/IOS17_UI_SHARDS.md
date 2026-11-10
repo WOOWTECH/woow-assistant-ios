@@ -57,7 +57,7 @@ PDF 操作斷言失敗。原流程先 boot／prelaunch，再讓 `xcodebuild test
 watchdog 取樣仍落在編譯期間。[原始結果](evidence/pdf-assembly-bbbb514-final.json)。
 
 新的 `ios17_build_before_boot`／`--build-before-boot` 預設關閉，目前只接受
-GitHub hosted 的 `startup-smoke`，並要求原有 prelaunch 和 sampling 開關。
+GitHub hosted 的 `startup-smoke`、`pdf-assembly` 或 `pdf-assembly-copy`，並要求原有 prelaunch 和 sampling 開關。
 它先以指定主機架構 `build-for-testing`，成功且產生唯一可讀取的本次 `.xctestrun`
 後，才建立／啟動專用裝置，最後以該產物執行一次 `test-without-building`。
 這兩個命令是 [Apple 公開支援的建置／測試分離方式](https://developer.apple.com/library/archive/technotes/tn2339/_index.html)。
@@ -71,3 +71,5 @@ watchdog 僅從 test-only 階段取樣。只有這一個 smoke 實際通過才�
 這是在測試「編譯負載／啟動時序可能干擾握手」的假說；目前沒有資源飽和或
 根因已確定的證據。合成命令測試檢查先後順序、失敗清理及共享預算，不代替
 GitHub 上的原生執行結果。
+
+`e963698` 的 [exact 17.0.1 啟動測試](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42893709163) 已完成 1/1、零略過；下一步以同一預編譯時序驗證兩個 PDF assembly 入口。這不證明先前 bootstrap 失敗的根因，也不代表完整 iOS 17 驗收。

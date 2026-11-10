@@ -485,8 +485,9 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
         raise ReleaseError("未知的 iOS 17 測試範圍。")
     if expected_host_arch not in (None, "arm64", "x86_64"):
         raise ReleaseError("未知的主機架構。")
-    if build_before_boot and (test_scope != "startup-smoke" or not sample_bootstrap or not prelaunch_daemon):
-        raise ReleaseError("預編譯啟動比較目前只允許明確預啟動及取樣的 hosted startup-smoke；未執行測試。")
+    if build_before_boot and (test_scope not in {"startup-smoke", "pdf-assembly", "pdf-assembly-copy"}
+                              or not sample_bootstrap or not prelaunch_daemon):
+        raise ReleaseError("預編譯啟動比較目前只允許明確預啟動及取樣的 hosted startup-smoke／PDF assembly；未執行測試。")
     if bounded_test_diagnostics and not sample_bootstrap:
         raise ReleaseError("限制失敗後系統診斷只允許已啟用 bootstrap 取樣的 hosted 非 Live fixture 比較。")
     if sample_bootstrap:
@@ -723,7 +724,7 @@ def main():
     parser.add_argument("--bounded-test-diagnostics", action="store_true",
                         help="Experimental suppression of verbose failure system logs; requires hosted fixture sampling (default off)")
     parser.add_argument("--build-before-boot", action="store_true",
-                        help="Experimental build-for-testing before cold simulator boot; sampled hosted startup-smoke only (default off)")
+                        help="Experimental build-for-testing before cold simulator boot; sampled hosted startup-smoke/pdf-assembly/pdf-assembly-copy only (default off)")
     parser.add_argument("--check-ui-inventory", action="store_true",
                         help="Validate and print the UI class partition without invoking Xcode")
     parser.add_argument("--output", type=Path, default=Path("build/ios17"))

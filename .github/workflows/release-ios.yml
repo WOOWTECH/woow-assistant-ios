@@ -43,7 +43,7 @@ on:
         type: boolean
         default: false
       ios17_build_before_boot:
-        description: 實驗：先編譯再冷啟動；僅 hosted startup-smoke，須啟用 prelaunch 與 sampling
+        description: 實驗：先編譯再冷啟動；僅 hosted startup-smoke／PDF assembly，須啟用 prelaunch 與 sampling
         type: boolean
         default: false
 
@@ -198,8 +198,8 @@ jobs:
             args+=(--bounded-test-diagnostics)
           fi
           if [ "$IOS17_BUILD_BEFORE_BOOT" = true ]; then
-            if [ "$VALIDATION_MODE" != ios17-hosted ] || [ "$IOS17_TEST_SCOPE" != startup-smoke ] || [ "$IOS17_SAMPLE_BOOTSTRAP" != true ] || [ "$IOS17_PRELAUNCH" != true ]; then
-              echo 'Build-before-boot requires sampled hosted startup-smoke with explicit prelaunch.'
+            if [ "$VALIDATION_MODE" != ios17-hosted ] || [[ ! "$IOS17_TEST_SCOPE" =~ ^(startup-smoke|pdf-assembly|pdf-assembly-copy)$ ]] || [ "$IOS17_SAMPLE_BOOTSTRAP" != true ] || [ "$IOS17_PRELAUNCH" != true ]; then
+              echo 'Build-before-boot requires sampled hosted startup-smoke/pdf-assembly/pdf-assembly-copy with explicit prelaunch.'
               exit 1
             fi
             args+=(--build-before-boot)
