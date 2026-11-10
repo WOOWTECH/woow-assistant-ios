@@ -1,0 +1,70 @@
+{
+  "revision": "da553bc604a8c8b1a4094fcaddc2990e3ac64034",
+  "run": 42816449809,
+  "job": 129830636338,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42816449809/job/129830636338",
+  "runtime": "iOS 17.0.1 simulator (21A342)",
+  "runtimeEvidence": {
+    "requestedVersion": "17.0.1",
+    "selectedRuntimeVersion": "17.0.1",
+    "selectedRuntimeBuild": "21A342",
+    "selectedRuntimeIdentifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "source": "job preparation report selected_runtime metadata, log line 180",
+    "preparationReady": true,
+    "bootSucceeded": true,
+    "testInvocationsTargetingPreparedSimulator": 2,
+    "destinationEvidenceLogLines": [4462, 4722],
+    "destinationVerification": "Both executed test-without-building destination UUIDs match the prepared simulator UUID; UUID omitted from this report.",
+    "displayLabels": ["iOS 17.0", "iOS-17-0"],
+    "displayLabelCaveat": "Generic Xcode/runtime identifier labels do not establish the patch version; version and build above come from the selected runtime metadata."
+  },
+  "physicalDevice": false,
+  "overall": "failed; two-tool case failed during setup before model/tool requests",
+  "cases": [
+    {
+      "case": "discoveryDisconnectReconnect",
+      "executed": 1,
+      "passed": 1,
+      "failed": 0,
+      "seconds": 59.142
+    },
+    {
+      "case": "twoReadOnlyToolsConversation",
+      "executed": 1,
+      "passed": 0,
+      "failed": 1,
+      "seconds": 27.905,
+      "failurePhase": "setup.initialLaunch",
+      "modelRequests": 0,
+      "toolRequests": 0
+    },
+    {
+      "case": "toolRefusalPreservesDraft",
+      "executed": 1,
+      "passed": 1,
+      "failed": 0,
+      "seconds": 62.061
+    }
+  ],
+  "diagnosis": {
+    "fixedReason": "SBMainWorkspace Busy: application is installing or uninstalling and cannot be launched",
+    "observedBoundary": "first case in the second test-without-building invocation",
+    "initialLaunchAtSeconds": 0.13,
+    "teardownAtSeconds": 15.24,
+    "teardownObservation": "immediate cleanup launch encountered the same installation-busy class of failure",
+    "installationCompletionObserved": false,
+    "scope": "native harness installation/launch boundary; no evidence of product, model, or HA tool failure for this case"
+  },
+  "followUp": {
+    "fixture": "explicit app termination/Home/foreground state checks; unconfirmed initial launch does not trigger another cleanup launch",
+    "workflowProposal": "single invocation for discovery and conversation classes, preserving separate class counts and all three methods",
+    "status": "diagnostic lifecycle experiment; installer fix not established by these state checks"
+  },
+  "privacy": {
+    "rawLogsIncluded": false,
+    "environmentsIncluded": false,
+    "configurationIncluded": false,
+    "toolResultsIncluded": false,
+    "artifactUploads": false
+  }
+}

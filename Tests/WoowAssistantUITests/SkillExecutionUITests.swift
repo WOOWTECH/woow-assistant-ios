@@ -311,13 +311,15 @@ final class SkillExecutionUITests: XCTestCase {
         revealLearningElement(summary, in: app, visibility: .readableText)
         XCTAssertEqual(summary.label, "共 2 頁；引擎：Apple PDFKit")
         let output = app.staticTexts["skillExecution.result.text"]
-        scrollExecutionToTop()
+        // The text follows the summary in the same result section. Keep this
+        // viewport instead of returning to the intro and searching down again.
         revealLearningElement(output, in: app, visibility: .readableText)
-        XCTAssertTrue(output.label.contains("--- page 1 ---"))
-        XCTAssertTrue(output.label.contains("--- page 2 ---"))
-        XCTAssertTrue(output.label.contains("WOOW_SKILL_PDF_PAGE_1"))
-        XCTAssertTrue(output.label.contains("WOOW_SKILL_PDF_PAGE_2"))
-        XCTAssertTrue(output.label.contains(namespace), "Must extract this namespace's actual selected PDF.")
+        let extractedText = output.label
+        XCTAssertTrue(extractedText.contains("--- page 1 ---"))
+        XCTAssertTrue(extractedText.contains("--- page 2 ---"))
+        XCTAssertTrue(extractedText.contains("WOOW_SKILL_PDF_PAGE_1"))
+        XCTAssertTrue(extractedText.contains("WOOW_SKILL_PDF_PAGE_2"))
+        XCTAssertTrue(extractedText.contains(namespace), "Must extract this namespace's actual selected PDF.")
         assertAudit(selections: 1, reads: 1, extractionAttempts: 1, results: 1)
         XCTAssertFalse(app.buttons["skillExecutionApproveStep"].exists)
     }
@@ -714,10 +716,28 @@ final class SkillExecutionUITests: XCTestCase {
         let form = executionForm
         let intro = form.staticTexts["skillExecution.intro"]
         for _ in 0..<6 {
-            if intro.exists && intro.isHittable { return }
+            if executionIntroIsVisible(intro, in: form) { return }
             if form.exists { form.swipeDown() } else { app.swipeDown() }
         }
         XCTFail("PDF execution form must expose its first row within bounded scrolling.")
+    }
+
+    private func executionIntroIsVisible(_ intro: XCUIElement, in form: XCUIElement) -> Bool {
+        // copy21 spent 43s in this static text's hit-test after Files dismissed.
+        // The anchor is never tapped: require its whole frame in the unobscured
+        // Form instead. Actual approval buttons still require hittability.
+        let titleBar = app.navigationBars["執行 PDF 技能"]
+        guard form.exists, intro.exists, titleBar.exists else { return false }
+        let bounds = form.frame.intersection(app.frame)
+        let top = max(bounds.minY, titleBar.frame.maxY)
+        var bottom = bounds.maxY
+        let navigation = app.buttons["navigation.chat"]
+        if navigation.exists { bottom = min(bottom, navigation.frame.minY) }
+        let keyboard = app.keyboards.firstMatch
+        if keyboard.exists { bottom = min(bottom, keyboard.frame.minY) }
+        guard bottom > top else { return false }
+        let viewport = CGRect(x: bounds.minX, y: top, width: bounds.width, height: bottom - top)
+        return learningFrameIsVisible(intro.frame, in: viewport.insetBy(dx: 0, dy: 4), visibility: .fullyVisible)
     }
 
     private func evidence(selections: Int, reads: Int, extractionAttempts: Int, results: Int) -> String {

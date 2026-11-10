@@ -1,0 +1,358 @@
+{
+  "schemaVersion": 1,
+  "purpose": "Read-only comparison of observed migration timing against actual native selection outcomes; no startup initialization treatment executed.",
+  "previousResolverEvidence": "file-provider-resolver-chain-ca3e72a.json",
+  "newCurrentArms": [
+    {
+      "checkpoint": "file-provider-fresh-d464176.json",
+      "run": 42819390644,
+      "artifact": 13768093062,
+      "namespace": "5DAA8B32-2EEF-4AA0-AB78-13D61D76E758",
+      "mode": "open",
+      "testResult": {
+        "started": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "secondsIncludingTeardown": 129.547
+      },
+      "callbackTraceCount": 0,
+      "callbacks": [],
+      "syntheticSource": {
+        "coordinatedWriteAndDocumentManagerPickedURLMatch": true,
+        "sameContainerAndDocumentsBasename": true,
+        "normalizedSourcePathSHA256": "7329764df55a7d9120df3db647441c3c4668a510c6b50877bf61737fc57db9e6",
+        "providerParent": "#io.woowtech.assistant",
+        "providerItem": "did=3",
+        "providerFileID": 3549556,
+        "baselineAndPostInode": 3549556,
+        "providerFileIDMatchesBothSamples": true
+      },
+      "timeline": [
+        {
+          "kind": "DocumentManager-selected-provider-item",
+          "decodedLine": 7230,
+          "utc": "2026-11-10T13:17:44.430692Z",
+          "processID": 17947,
+          "itemIdentifier": "did=3",
+          "fileID": 3549556
+        },
+        {
+          "kind": "DocumentManager-picked-source-URL",
+          "decodedLine": 7240,
+          "utc": "2026-11-10T13:17:44.538493Z",
+          "processID": 17947,
+          "isAppCallback": false
+        },
+        {
+          "kind": "fileproviderd-migration-notice",
+          "decodedLine": 7290,
+          "utc": "2026-11-10T13:17:45.520584Z",
+          "processID": 6551,
+          "fromVersion": 0,
+          "toVersion": 1
+        },
+        {
+          "kind": "fileproviderd-migration-notice",
+          "decodedLine": 7291,
+          "utc": "2026-11-10T13:17:45.524069Z",
+          "processID": 6551,
+          "fromVersion": 1,
+          "toVersion": 2
+        },
+        {
+          "kind": "fileproviderd-migration-notice",
+          "decodedLine": 7292,
+          "utc": "2026-11-10T13:17:45.528023Z",
+          "processID": 6551,
+          "fromVersion": 2,
+          "toVersion": 3
+        },
+        {
+          "kind": "fileproviderd-migration-notice",
+          "decodedLine": 7293,
+          "utc": "2026-11-10T13:17:45.534752Z",
+          "processID": 6551,
+          "fromVersion": 3,
+          "toVersion": 4
+        },
+        {
+          "kind": "DocumentManager-bookmark-prepared",
+          "decodedLine": 7294,
+          "utc": "2026-11-10T13:17:45.587035Z",
+          "processID": 17947
+        },
+        {
+          "kind": "host-using-bookmark",
+          "decodedLine": 7297,
+          "utc": "2026-11-10T13:17:45.590007Z",
+          "processID": 15995,
+          "usingBookmark": true
+        },
+        {
+          "kind": "host-resolver-error",
+          "decodedLine": 7310,
+          "utc": "2026-11-10T13:17:45.954445Z",
+          "processID": 15995,
+          "code": -1005,
+          "underlyingCode": -1012,
+          "itemIdentifier": "did=3"
+        }
+      ],
+      "migrationDatabaseIdentity": null,
+      "decoder": {
+        "events": 7469,
+        "composeFailures": 0,
+        "file": "provider-decoded.ndjson",
+        "sha256": "544a52dd062b14b68ef53155f09efe27cc99198da8788a9b21fbb8c76052dc7a",
+        "windowUTC": [
+          "2026-11-10T13:16:50Z",
+          "2026-11-10T13:17:55Z"
+        ]
+      },
+      "bookmark": {
+        "provider": "com.apple.FileProvider.LocalStorage",
+        "domainPathComponent": "",
+        "itemIdentifier": "did=3",
+        "opaqueComponentOmitted": true,
+        "hostUsingBookmark": true,
+        "effectiveResolutionOptionsKnown": false
+      }
+    },
+    {
+      "checkpoint": "file-provider-import-copy-21c29d2.json",
+      "run": 42815645050,
+      "artifact": 13768745337,
+      "namespace": "05D465E8-31FB-4957-A537-330906E5F50A",
+      "mode": "import",
+      "testResult": {
+        "started": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "secondsIncludingTeardown": 323.189
+      },
+      "callbackTraceCount": 1,
+      "callbacks": [
+        {
+          "appStdoutLine": 120186,
+          "namespace": "05D465E8-31FB-4957-A537-330906E5F50A",
+          "outcome": "success",
+          "count": 1,
+          "utc": "2026-11-10T13:18:18.856764Z"
+        }
+      ],
+      "syntheticSource": {
+        "coordinatedWriteAndDocumentManagerPickedURLMatch": true,
+        "sameContainerAndDocumentsBasename": true,
+        "normalizedSourcePathSHA256": "0732f3bee7521b1b462627d605e96f7f369f66dd7a65683fd19f54e659b2e2fe",
+        "providerParent": "#io.woowtech.assistant",
+        "providerItem": "did=3",
+        "providerFileID": 3594582,
+        "baselineAndPostInode": 3594582,
+        "providerFileIDMatchesBothSamples": true
+      },
+      "timeline": [
+        {
+          "kind": "DocumentManager-selected-provider-item",
+          "decodedLine": 12435,
+          "utc": "2026-11-10T13:18:17.329387Z",
+          "processID": 37168,
+          "itemIdentifier": "did=3",
+          "fileID": 3594582
+        },
+        {
+          "kind": "DocumentManager-picked-source-URL",
+          "decodedLine": 12443,
+          "utc": "2026-11-10T13:18:17.348841Z",
+          "processID": 37168,
+          "isAppCallback": false
+        },
+        {
+          "kind": "host-thumbnail-association-warning-for-Inbox-copy",
+          "decodedLine": 12489,
+          "utc": "2026-11-10T13:18:17.653504Z",
+          "processID": 35226
+        },
+        {
+          "kind": "fileproviderd-migration-notice",
+          "decodedLine": 12533,
+          "utc": "2026-11-10T13:18:18.760567Z",
+          "processID": 6805,
+          "fromVersion": 0,
+          "toVersion": 1
+        },
+        {
+          "kind": "fileproviderd-migration-notice",
+          "decodedLine": 12534,
+          "utc": "2026-11-10T13:18:18.762101Z",
+          "processID": 6805,
+          "fromVersion": 1,
+          "toVersion": 2
+        },
+        {
+          "kind": "fileproviderd-migration-notice",
+          "decodedLine": 12535,
+          "utc": "2026-11-10T13:18:18.762891Z",
+          "processID": 6805,
+          "fromVersion": 2,
+          "toVersion": 3
+        },
+        {
+          "kind": "fileproviderd-migration-notice",
+          "decodedLine": 12536,
+          "utc": "2026-11-10T13:18:18.763532Z",
+          "processID": 6805,
+          "fromVersion": 3,
+          "toVersion": 4
+        },
+        {
+          "kind": "App-importer-callback",
+          "utc": "2026-11-10T13:18:18.856764Z",
+          "appStdoutLine": 120186,
+          "outcome": "success",
+          "count": 1
+        }
+      ],
+      "migrationDatabaseIdentity": null,
+      "decoder": {
+        "events": 13332,
+        "composeFailures": 0,
+        "file": "provider-decoded.ndjson",
+        "sha256": "a8457968ee13002d577fa00caad5a623bc8c508b1deb4701269a2528b814e3ff",
+        "windowUTC": [
+          "2026-11-10T13:17:25Z",
+          "2026-11-10T13:18:40Z"
+        ]
+      },
+      "importCopyObservation": {
+        "hostLogFormat": "Failed to associate thumbnails for picked URL %@ with the Inbox copy %@: %@",
+        "decodedLine": 12489,
+        "utc": "2026-11-10T13:18:17.653504Z",
+        "originalSourcePathMatchesFixture": true,
+        "copiedURLDiffersFromSource": true,
+        "copiedURLContainsInboxComponent": true,
+        "destinationPathOmitted": true,
+        "thumbnailAssociationWarningIsNotImporterFailure": true
+      },
+      "bookmark": {
+        "hostUsingBookmarkTraceCount": 0,
+        "serializedBookmarkDomain": null,
+        "note": "No usingBookmark/serialized-bookmark handoff observed in this selected window; do not substitute a claimed usingBookmark == NO event."
+      }
+    }
+  ],
+  "successfulSEControls": [
+    {
+      "arm": "se-uikit",
+      "run": 42806387359,
+      "artifact": 13765889341,
+      "runtime": "18.5",
+      "result": {
+        "started": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "seconds": 162.723
+      },
+      "presentation": {
+        "source": "uikit",
+        "mode": "open",
+        "allowsMultipleSelection": false,
+        "utc": "2026-11-10T12:51:25.682709Z",
+        "appStdoutLine": 59449
+      },
+      "callbacks": [
+        {
+          "outcome": "success",
+          "count": 1,
+          "utc": "2026-11-10T12:51:48.256589Z",
+          "appStdoutLine": 124374
+        }
+      ],
+      "artifactFileCount": 47,
+      "systemLogarchiveEntryCount": 0,
+      "tracev3EntryCount": 0,
+      "availableDiagnosticBasenames": [
+        "Session-WoowAssistantUITests-2026-11-10_124945-i1Q54z.log",
+        "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+        "StandardOutputAndStandardError.txt",
+        "scheduling.log",
+        "testmanagerd.log"
+      ],
+      "AppStdoutMigrationMentions": 0,
+      "AppStdoutDidIdentifierMentions": 0,
+      "providerMigrationComparison": "unknown: successful artifacts contain no FileProvider daemon unified log; absence of these App messages is not absence of migration.",
+      "bookmarkDomainAndItemIDComparison": null
+    },
+    {
+      "arm": "se-swiftui",
+      "run": 42806393204,
+      "artifact": 13762884092,
+      "runtime": "18.5",
+      "result": {
+        "started": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "seconds": 147.326
+      },
+      "presentation": {
+        "source": "swiftui",
+        "mode": "open",
+        "allowsMultipleSelection": false,
+        "utc": "2026-11-10T12:18:43.071369Z",
+        "appStdoutLine": 66605
+      },
+      "callbacks": [
+        {
+          "outcome": "success",
+          "count": 1,
+          "utc": "2026-11-10T12:19:03.573959Z",
+          "appStdoutLine": 119417
+        }
+      ],
+      "artifactFileCount": 47,
+      "systemLogarchiveEntryCount": 0,
+      "tracev3EntryCount": 0,
+      "availableDiagnosticBasenames": [
+        "Session-WoowAssistantUITests-2026-11-10_121717-UfD7PZ.log",
+        "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+        "StandardOutputAndStandardError.txt",
+        "scheduling.log",
+        "testmanagerd.log"
+      ],
+      "AppStdoutMigrationMentions": 0,
+      "AppStdoutDidIdentifierMentions": 0,
+      "providerMigrationComparison": "unknown: successful artifacts contain no FileProvider daemon unified log; absence of these App messages is not absence of migration.",
+      "bookmarkDomainAndItemIDComparison": null
+    }
+  ],
+  "findings": [
+    "The fresh current open failure repeats selection before fileproviderd migration 0→1→2→3→4, then bookmark handoff and -1005/-1012 before any App callback.",
+    "The current import-copy arm also selects the same synthetic did=3/inode and logs migration 0→1→2→3→4 before its successful one-file App callback. Its UI method still fails the 240-second execution allowance after extraction.",
+    "Migration occurrence before delivery is therefore not sufficient to explain callback failure. An interaction specific to open/bookmark resolution remains unproven, as does the migrated database identity.",
+    "The successful SE open arms cannot be compared for migration/domain/item-ID details: their archived diagnostics omit system.logarchive and App stdout has no such provider fields.",
+    "No wrong source folder/container is observed in either new current arm: selected source URL equals the coordinated fixture URL, and provider file-ID equals baseline/post inode. These snapshots do not establish continuous presence at every instant."
+  ],
+  "causalLimits": [
+    "Open/fresh and copy/existing are different revisions and simulator-lifecycle conditions; this is observational comparison, not a same-head randomized mode-only treatment.",
+    "Single successful copy callback does not establish reliability or authorize a production picker change.",
+    "Before/post identity and absence of log events cannot establish internal resolver database contents or root cause."
+  ],
+  "recommendedBoundary": "Do not present Files warmup/provider reset as a demonstrated repair. The observed migration does not by itself justify a startup-initialization experiment or a production switch. Preserve the original failing open cases and failed copy timeout.",
+  "symbolProvenance": {
+    "DSCArtifact": 13763842496,
+    "UUID": "97ECA66BAD553F618379F8AB536FC272",
+    "bytes": 121738223,
+    "sha256": "0a5c63c96c7a8788c86a5dcb06d1965b7a1a85d2ed44cdd750bbd8b9aca7fe43",
+    "sameUUIDSizeAndCompressedSizeInBothCurrentArtifacts": true
+  },
+  "actions": {
+    "productionChanges": false,
+    "testChanges": false,
+    "warmupOrProviderReset": false,
+    "newCIDispatch": false
+  },
+  "retrieval": "Named bounded trace entries plus matching symbols; selected time windows and processes, not all processes/all time. No full artifact ZIP downloads."
+}

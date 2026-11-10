@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "bounded_artifact_report_and_actual_xctest_log",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42819575642",
+  "job_id": 129841339578,
+  "artifact_id": 13768160559,
+  "artifact_archive_bytes": 13103407,
+  "source_revision": "d46417667f7ef9589b55bb36c949c6ca99a34819",
+  "scope": "ui-memory",
+  "host_architecture": "arm64",
+  "host_macos": "15.8.2",
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "runtime": {
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "version": "17.0.1",
+    "buildversion": "21A342"
+  },
+  "boot_succeeded": true,
+  "simulator_state_unavailable": true,
+  "experimental_prelaunch_test_daemon": true,
+  "test_daemon_prelaunch": {
+    "budget_seconds": 120,
+    "attempts": 1,
+    "status": "process_started_handshake_unverified",
+    "handshake_verified": false,
+    "process_alive": true,
+    "elapsed_seconds": 54.782
+  },
+  "verified_completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 7,
+      "passedTests": 7,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 7,
+    "completed_ui_count": 7,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "actual_methods": [
+    {
+      "class": "WoowAssistantUITests.MemoryRaceUITests",
+      "method": "testClearWhileReplyPendingDoesNotRepopulateAndNewChatHidesOldNotes",
+      "outcome": "passed",
+      "seconds": 116.267,
+      "log_line": 4703
+    },
+    {
+      "class": "WoowAssistantUITests.MemoryUITests",
+      "method": "testMemoryValidationEditPinSearchAndDeletePersist",
+      "outcome": "passed",
+      "seconds": 169.303,
+      "log_line": 5335
+    },
+    {
+      "class": "WoowAssistantUITests.MemoryUITests",
+      "method": "testProceduresRequireApprovalAndCanBeRejected",
+      "outcome": "passed",
+      "seconds": 66.018,
+      "log_line": 5632
+    },
+    {
+      "class": "WoowAssistantUITests.MemoryUITests",
+      "method": "testSegmentsAndPreferencePersistence",
+      "outcome": "passed",
+      "seconds": 47.363,
+      "log_line": 5903
+    },
+    {
+      "class": "WoowAssistantUITests.MemoryUITests",
+      "method": "testSkillImportFailureReviewAndEnablementPersist",
+      "outcome": "passed",
+      "seconds": 77.521,
+      "log_line": 6233
+    },
+    {
+      "class": "WoowAssistantUITests.MemoryUITests",
+      "method": "testSkillUpdateRejectionAndRollback",
+      "outcome": "passed",
+      "seconds": 116.329,
+      "log_line": 6699
+    },
+    {
+      "class": "WoowAssistantUITests.MemoryUITests",
+      "method": "testTwoStepClearCancellationAndModelSettingsIsolation",
+      "outcome": "passed",
+      "seconds": 116.101,
+      "log_line": 7251
+    }
+  ],
+  "test_exit_code": 0,
+  "selected_tests_succeeded": true,
+  "runtime_tested_full_scheme": false,
+  "full_acceptance_succeeded": false,
+  "simulator_deleted": true,
+  "hashes": {
+    "report.json": "5c917815f7a83bb229533c7813f6ebf2b1c5bfe6c80a72f968fc871da6217338",
+    "tests.log": "d4330f78aaa2df81ce9d30494f199029650a233b4238779d54f30960838c2779",
+    "simulator-boot.log": "73c15764c83b96b0a88fb03a658ff1f4d666301b2190cce7de38f78898fc88f1"
+  },
+  "interpretation": [
+    "All seven selected memory UI methods actually completed and passed on exact iOS 17.0.1, with zero skips or expected failures.",
+    "The opt-in prelaunch made one attempt; 54.782 seconds measures process start, not a verified XCTest daemon handshake.",
+    "This second successful opt-in UI shard is not a matched on/off causal control and does not establish a general startup repair.",
+    "No full-scheme or private live-model acceptance is implied by this UI-only scope."
+  ]
+}

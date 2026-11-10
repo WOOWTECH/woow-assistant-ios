@@ -1,5 +1,13 @@
 # Verification — 2026-11-10
 
+## Selected PDF UI avoids a redundant return to the beginning
+
+The failed import-copy case's log places **42.98 seconds** between finding the static `skillExecution.intro` anchor and the next action in `scrollExecutionToTop()`. The anchor is never tapped. Its check now requires its entire frame inside the unobscured Form, while actual approval controls still require hittability. After inspecting the extraction summary, the test keeps that viewport to inspect the immediately following output and reads the actual label once for all existing exact marker/namespace assertions. The 240-second deadline, picker selection, both approvals and final audit are unchanged. Native retesting must establish any timing improvement; the lower-level cause of the delay is not established.
+
+## Exact iOS 17 memory shard completed before the new profile feature
+
+At `d464176`, [42819575642](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42819575642) passed the then-current **7/7 memory UI methods, zero skips** on exact **17.0.1 / 21A342**. This covers memory editing/persistence, procedure approval, skill import/revision/rollback and clearing while a reply is pending. The opt-in one-shot test-daemon prelaunch ran for 54.782 seconds without establishing a handshake; all seven actual XCTest methods subsequently completed. [Evidence](evidence/ios17-memory-prelaunch-d464176.json). The new three profile UI methods are absent from that revision and require separate acceptance.
+
 ## Profile newline regression and native-toolbar test correction
 
 At `cdf10d1`, [42825863580](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42825863580) stopped in portable-core validation before iOS tests: the profile safety method expected `invalid_sentence` but an input was accepted. The three matrix jobs retained that failure. Profile validation now checks CR/LF UTF-16 code units explicitly, avoiding Swift's combined-CRLF Character matching, and covers add/replace/decode transaction boundaries. Local **199 state / 58 real LearningStore encryption assertions** passed; new native acceptance is still required.
@@ -12,11 +20,11 @@ The fresh-peer current simulator at `d464176` [42819390644](https://github.com/W
 
 The DEBUG import-copy experiment at `21c29d2` [42815645050](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42815645050) delivered one real native callback, then completed both separate App approvals, one read and one PDF extraction/result. The selected case nevertheless failed **0/1, zero skips** at its unchanged 240-second method deadline while revealing result text, followed by a termination failure. Post-timeout observations do not count as a pass. [Complete bounded timeline](evidence/file-provider-import-copy-21c29d2.json). This isolated observation neither proves intermittent failures eliminated nor changes the production picker; OS import-copy may copy/read before the App's read approval.
 
-The open-mode resolver trace matches the coordinated source URL, App document container and file inode at observed checkpoints; DocumentManager's selection is distinct from an App callback. [Trace](evidence/file-provider-resolver-chain-ca3e72a.json). Migration timing remains under comparison and is not asserted as the cause.
+The open-mode resolver trace matches the coordinated source URL, App document container and file inode at observed checkpoints; DocumentManager's selection is distinct from an App callback. [Trace](evidence/file-provider-resolver-chain-ca3e72a.json). Migration also appeared before the successful copy callback; SE artifacts lack the daemon logs needed for a matching comparison. [Migration comparison](evidence/file-provider-migration-comparison-d464-21c.json) does not establish migration as the cause.
 
 ## Exact iOS 17 live MCP launch handoff under investigation
 
-At `da553bc`, [42816449809](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42816449809), real discovery/disconnect/reconnect and model refusal passed, while the approved two-tool case failed in setup before issuing a model/tool request: SpringBoard denied launch because the App was installing or uninstalling. The workflow had two XCTest invocations. The next experiment keeps all three methods in one invocation, observes native termination/Home/foreground states without launch retries, preserves strict count and zero-skip verification, and always removes its dedicated simulator. These states do not establish installer readiness; native retest is required.
+At `da553bc`, [42816449809](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42816449809), real discovery/disconnect/reconnect and model refusal passed, while the approved two-tool case failed in setup before issuing a model/tool request: SpringBoard denied launch because the App was installing or uninstalling. The workflow had two XCTest invocations. The next experiment keeps all three methods in one invocation, observes native termination/Home/foreground states without launch retries, preserves strict count and zero-skip verification, and always removes its dedicated simulator. These states do not establish installer readiness; native retest is required. [Exact 17.0.1 runtime and method evidence](evidence/live-ha-da553-ios17.json).
 
 ## Personal profile and multi-source research integration ready for native acceptance
 
@@ -44,7 +52,7 @@ At `2fce6cf`, [42805689497](https://github.com/WOOWTECH/woow-assistant-ios/actio
 
 ## Opt-in iOS 17 test-daemon prelaunch executed the selected smoke case
 
-At `01d3646`, [42815313693](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42815313693) passed the unchanged section-reachability UI **1/1, zero skips** on exact iOS 17.0.1. The one-shot daemon prelaunch took 1.071 seconds; subsequent XCTest completed. [Evidence](evidence/ios17-prelaunch-01d3646.json). A live process alone is not handshake evidence, and this single result does not establish causality or repair every previous bootstrap failure. The seven-case memory shard is the next opt-in experiment; default execution remains unchanged.
+At `01d3646`, [42815313693](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42815313693) passed the unchanged section-reachability UI **1/1, zero skips** on exact iOS 17.0.1. The one-shot daemon prelaunch took 1.071 seconds; subsequent XCTest completed. [Evidence](evidence/ios17-prelaunch-01d3646.json). A live process alone is not handshake evidence, and this single result does not establish causality or repair every previous bootstrap failure. The later seven-case memory shard passed in its separate opt-in experiment above; default execution remains unchanged.
 
 
 ## Complete audited HA live acceptance passed on iOS 18.5
