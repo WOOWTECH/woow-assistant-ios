@@ -23,7 +23,7 @@ on:
       ios17_test_scope:
         description: iOS 17 範圍；core 加全部 ui-* 涵蓋非 Live，局部或略過不代表完整驗收
         type: choice
-        options: [all, core, workspace, files, parity, startup, startup-smoke, picker-user-copy, pdf-assembly, profile-tool, memory-tools, ui-startup, ui-workspace, ui-browser, ui-learning, ui-memory, ui-profile, ui-memory-tools, ui-skills, ui-documents, ui-mcp]
+        options: [all, core, workspace, files, parity, startup, startup-smoke, picker-user-copy, pdf-assembly, profile-tool, memory-tools, documents-read, documents-output, ui-startup, ui-workspace, ui-browser, ui-learning, ui-memory, ui-profile, ui-memory-tools, ui-skills, ui-documents, ui-mcp]
         default: all
       ios17_host_arch:
         description: Hosted iOS 17 主機架構；明確比較，不自動替換 runtime
@@ -38,6 +38,10 @@ on:
         description: 實驗：最多三次 bootstrap stack 取樣（僅 hosted、prelaunch、非 Live UI；不延長測試）
         type: boolean
         default: false
+      ios17_bounded_test_diagnostics:
+        description: 實驗：停用失敗後大型系統診斷，保留 bounded sampling（須同時啟用取樣；不改測試判定）
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -47,7 +51,7 @@ defaults:
     shell: bash
 
 concurrency:
-  group: release-ios-${{ github.ref }}-${{ inputs.mode }}-${{ inputs.ios17_version }}-${{ inputs.ios17_test_scope }}-${{ inputs.ios17_host_arch }}-${{ inputs.ios17_prelaunch }}-${{ inputs.ios17_sample_bootstrap }}
+  group: release-ios-${{ github.ref }}-${{ inputs.mode }}-${{ inputs.ios17_version }}-${{ inputs.ios17_test_scope }}-${{ inputs.ios17_host_arch }}-${{ inputs.ios17_prelaunch }}-${{ inputs.ios17_sample_bootstrap }}-${{ inputs.ios17_bounded_test_diagnostics }}
   cancel-in-progress: false
 
 jobs:
@@ -165,6 +169,7 @@ jobs:
           IOS17_HOST_ARCH: ${{ inputs.ios17_host_arch }}
           IOS17_PRELAUNCH: ${{ inputs.ios17_prelaunch }}
           IOS17_SAMPLE_BOOTSTRAP: ${{ inputs.ios17_sample_bootstrap }}
+          IOS17_BOUNDED_TEST_DIAGNOSTICS: ${{ inputs.ios17_bounded_test_diagnostics }}
         run: |
           args=()
           if [ "$VALIDATION_MODE" = ios17-hosted ]; then
@@ -179,6 +184,13 @@ jobs:
               exit 1
             fi
             args+=(--sample-test-bootstrap)
+          fi
+          if [ "$IOS17_BOUNDED_TEST_DIAGNOSTICS" = true ]; then
+            if [ "$IOS17_SAMPLE_BOOTSTRAP" != true ]; then
+              echo 'Bounded failure diagnostics requires explicit hosted fixture sampling.'
+              exit 1
+            fi
+            args+=(--bounded-test-diagnostics)
           fi
           python3 scripts/release_ios17.py --os "$IOS17_VERSION" --test-scope "$IOS17_TEST_SCOPE" "${args[@]}" --output build/ios17
       - name: 匯出 iOS 17 測試摘要

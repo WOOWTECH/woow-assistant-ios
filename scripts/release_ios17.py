@@ -33,7 +33,29 @@ UI_SHARDS = {
     "ui-documents": ["SkillExecutionUITests", "SkillWorkerSettingsUITests"],
     "ui-mcp": ["MCPConversationUITests", "MCPLearningUITests"],
 }
-LIVE_UI_CLASSES = {"LiveMCPUITests", "LiveMCPConversationUITests", "LiveModelUITests", "LiveTranscriptUITests"}
+LIVE_UI_CLASSES = {"LiveMCPUITests", "LiveMCPConversationUITests", "LiveModelUITests", "LiveTranscriptUITests",
+                   "LiveDocumentQueryUITests"}
+
+# Focused selections within ui-documents, not additional partition owners.
+# Their exact union is checked against discovered Swift methods at preflight.
+DOCUMENT_SCOPES = {
+    "documents-read": [
+        "WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText",
+        "WoowAssistantUITests/SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText",
+        "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+        "WoowAssistantUITests/SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+        "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText",
+        "WoowAssistantUITests/SkillExecutionUITests/testNativePickerCancellationDoesNotReadOrExtract",
+    ],
+    "documents-output": [
+        "WoowAssistantUITests/SkillExecutionUITests/testRefusingFirstStepDoesNotReadOrExtract",
+        "WoowAssistantUITests/SkillExecutionUITests/testRefusingSecondStepKeepsExtractionUnauthorized",
+        "WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry",
+        "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder",
+        "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+        "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
+    ],
+}
 
 TEST_SCOPES = {
     "all": [],
@@ -47,6 +69,7 @@ TEST_SCOPES = {
     "pdf-assembly": ["WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
     "profile-tool": ["WoowAssistantUITests/UserProfileToolUITests"],
     "memory-tools": ["WoowAssistantUITests/MemoryToolUITests"],
+    **DOCUMENT_SCOPES,
     **{scope: ["WoowAssistantUITests/" + name for name in classes]
        for scope, classes in UI_SHARDS.items()},
 }
@@ -96,8 +119,31 @@ def ui_inventory(root, shards=None):
                          for scope, names in shards.items()},
               "live_tests_excluded": sorted(t for name in LIVE_UI_CLASSES for t in classes[name])}
     result["non_live_test_count"] = sum(len(s["tests"]) for s in result["shards"].values())
+    if "ui-documents" in result["shards"]:
+        result["document_focused_scopes"] = validate_document_scopes(result)
     result["inventory_sha256"] = hashlib.sha256(json.dumps(result, sort_keys=True).encode()).hexdigest()
     return result
+
+
+def validate_document_scopes(catalog, scopes=None):
+    """Require exact disjoint method coverage; equal counts are insufficient."""
+    names = ("documents-read", "documents-output")
+    scopes = {name: TEST_SCOPES[name] for name in names} if scopes is None else scopes
+    expected = catalog["shards"]["ui-documents"]["tests"]
+    if set(scopes) != set(names) or not expected or len(expected) != len(set(expected)):
+        raise ReleaseError("PDF focused scopes 清單格式不符。")
+    selected = []
+    for name in names:
+        methods = scopes[name]
+        if (not methods or len(methods) != len(set(methods)) or any(
+                re.fullmatch(r"WoowAssistantUITests/\w+/test\w+", method) is None for method in methods)):
+            raise ReleaseError("PDF focused scope 必須列出互不重複的完整測試方法：" + name)
+        selected.extend(methods)
+    if len(selected) != len(set(selected)):
+        raise ReleaseError("PDF focused scopes 不能重疊。")
+    if set(selected) != set(expected):
+        raise ReleaseError("PDF focused scopes 聯集必須精確等於 ui-documents 的實際方法清單；請歸屬新增或更名的測試。")
+    return {name: sorted(scopes[name]) for name in names}
 
 
 def selected_ui_tests(catalog, scope):
@@ -348,14 +394,52 @@ def collect_boot_diagnostics(output, simulator):
     return result
 
 
+def observed_ui_events(log_path, expected):
+    """Diagnostic only: log events never substitute for a successful xcresult.
+
+    Keep fixed counts and source-inventoried method names, not assertion text,
+    launch arguments, or arbitrary names printed by the process under test.
+    """
+    limit = 16 * 1024 * 1024
+    if log_path.stat().st_size > limit:
+        return {"status": "log_size_limit", "acceptance_evidence": False}
+    methods = {name: {"starts": 0, "passed": 0, "failed": 0, "skipped": 0} for name in expected}
+    unexpected = 0
+    pattern = re.compile(r"^Test Case '-\[WoowAssistantUITests\.(\w+) (test\w+)\]' (started|passed|failed|skipped)(?:\.| \()")
+    with log_path.open("rb") as log:
+        text = log.read(limit + 1)
+    if len(text) > limit:
+        return {"status": "log_size_limit", "acceptance_evidence": False}
+    for line in text.decode("utf-8", errors="replace").splitlines():
+        match = pattern.match(line)
+        if not match:
+            continue
+        name, method, outcome = match.groups()
+        key = "WoowAssistantUITests/" + name + "/" + method
+        if key not in methods:
+            unexpected += 1
+            continue
+        methods[key]["starts" if outcome == "started" else outcome] += 1
+    totals = {key: sum(value[key] for value in methods.values())
+              for key in ("starts", "passed", "failed", "skipped")}
+    complete = bool(methods) and not unexpected and all(
+        row["starts"] == 1 and sum(row[k] for k in ("passed", "failed", "skipped")) == 1
+        for row in methods.values())
+    return {"status": "observed", "acceptance_evidence": False, "expected_methods": len(methods),
+            "counts": totals, "unexpected_events": unexpected,
+            "all_expected_completed_once": complete, "methods": methods}
+
+
 def execute(output, requested, download, test_scope="all", expected_host_arch=None, prelaunch_daemon=False,
-            *, sample_bootstrap=False):
+            *, sample_bootstrap=False, bounded_test_diagnostics=False):
     if version(requested)[0] != 17:
         raise ReleaseError("只接受 iOS 17.x。")
     if test_scope not in TEST_SCOPES:
         raise ReleaseError("未知的 iOS 17 測試範圍。")
     if expected_host_arch not in (None, "arm64", "x86_64"):
         raise ReleaseError("未知的主機架構。")
+    if bounded_test_diagnostics and not sample_bootstrap:
+        raise ReleaseError("限制失敗後系統診斷只允許已啟用 bootstrap 取樣的 hosted 非 Live fixture 比較。")
     if sample_bootstrap:
         from ios17_bootstrap_watchdog import validate_gate
         try:
@@ -369,6 +453,7 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
               "expected_host_architecture": expected_host_arch,
               "experimental_prelaunch_test_daemon": prelaunch_daemon,
               "experimental_sample_bootstrap": sample_bootstrap,
+              "experimental_bounded_test_diagnostics": bounded_test_diagnostics,
               "phase_history": [], "test_scope": test_scope,
               "selected_tests_succeeded": False,
               "full_acceptance_succeeded": False,
@@ -465,7 +550,7 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
         report["maximum_case_seconds"] = 420 if test_scope in ("all", "workspace", "ui-workspace") else 300
         # New class shards aim for 10–20 minutes of testing, with a bounded
         # 30-minute build+test budget. Existing repair scopes keep their bounds.
-        report["build_test_timeout_seconds"] = 1800 if test_scope in UI_SHARDS else 4800
+        report["build_test_timeout_seconds"] = 1800 if test_scope in UI_SHARDS or test_scope in DOCUMENT_SCOPES else 4800
         checkpoint("testing")
         with (output / "tests.log").open("wb") as log:
             watcher = None
@@ -480,11 +565,17 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
                     # Optional diagnostics must not replace XCTest or its verdict.
                     report["bootstrap_sampling_status"] = "identity_unavailable"
                 save_report()
+            # If owned sampling could not be initialized, retain Xcode's
+            # default diagnostics instead of silently losing both sources.
+            suppress_verbose_diagnostics = bounded_test_diagnostics and watcher is not None
+            report["verbose_failure_diagnostics"] = (
+                "disabled_with_bounded_sampling" if suppress_verbose_diagnostics else "xcode_default")
             try:
                 arguments = (common + ["-destination", "platform=iOS Simulator,id=" + simulator,
                     "-resultBundlePath", str(output / "Tests.xcresult"), "-parallel-testing-enabled", "NO",
                     "-test-timeouts-enabled", "YES", "-default-test-execution-time-allowance", "240",
                     "-maximum-test-execution-time-allowance", str(report["maximum_case_seconds"])] +
+                    (["-collect-test-diagnostics", "never"] if suppress_verbose_diagnostics else []) +
                     ["-only-testing:" + target for target in TEST_SCOPES[test_scope]] +
                     ["test", "CODE_SIGN_IDENTITY=-",
                     "CODE_SIGNING_ALLOWED=YES"])
@@ -499,6 +590,24 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
                 report["test_timed_out"] = True
                 raise ReleaseError("iOS 17 編譯／所選測試超過 %d 分鐘；保留已執行結果，不視為通過。" %
                                    (report["build_test_timeout_seconds"] // 60)) from None
+            finally:
+                if watcher is not None:
+                    report["bootstrap_sampling_status"] = watcher.report.get("status", "unavailable")
+                # Preserve real method progress even when xcodebuild is killed
+                # while finalizing diagnostics and cannot finish its bundle.
+                # These observations do not alter exit/summary acceptance.
+                if report["expected_ui_tests"]:
+                    try:
+                        log.flush()
+                        events = observed_ui_events(output / "tests.log", report["expected_ui_tests"])
+                        report["observed_ui_events"] = events
+                        if report.get("test_timed_out"):
+                            report["timeout_phase"] = (
+                                "after_selected_ui_methods" if events.get("all_expected_completed_once") else
+                                "during_selected_ui_methods" if events.get("counts", {}).get("starts", 0) else
+                                "before_selected_ui_methods" if events.get("status") == "observed" else "unknown")
+                    except (OSError, ValueError):
+                        report["observed_ui_events"] = {"status": "unavailable", "acceptance_evidence": False}
         report["test_exit_code"] = result.returncode
         if result.returncode:
             raise ReleaseError("iOS 17 建置／XCTest 失敗；請查看 tests.log 與 Tests.xcresult。")
@@ -553,6 +662,8 @@ def main():
                         help="Experimental one-shot daemon prelaunch; not proof of XCTest readiness (default off)")
     parser.add_argument("--sample-test-bootstrap", action="store_true",
                         help="Experimental bounded hosted fixture process stacks; requires prelaunch (default off)")
+    parser.add_argument("--bounded-test-diagnostics", action="store_true",
+                        help="Experimental suppression of verbose failure system logs; requires hosted fixture sampling (default off)")
     parser.add_argument("--check-ui-inventory", action="store_true",
                         help="Validate and print the UI class partition without invoking Xcode")
     parser.add_argument("--output", type=Path, default=Path("build/ios17"))
@@ -562,7 +673,8 @@ def main():
             print(json.dumps(ui_inventory(Path(__file__).resolve().parents[1]), indent=2))
             return 0
         execute(args.output.resolve(), args.os, args.download, args.test_scope, args.expected_host_arch,
-                args.prelaunch_test_daemon, sample_bootstrap=args.sample_test_bootstrap)
+                args.prelaunch_test_daemon, sample_bootstrap=args.sample_test_bootstrap,
+                bounded_test_diagnostics=args.bounded_test_diagnostics)
     except (ReleaseError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
         print(str(error) if isinstance(error, ReleaseError) else "iOS 17 驗證未完成；請檢查輸出證據。", file=sys.stderr)
         return 1

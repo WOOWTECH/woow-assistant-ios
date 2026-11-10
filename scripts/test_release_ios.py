@@ -470,7 +470,9 @@ class RuntimeTests(unittest.TestCase):
         cases = [("all", 65, False, False), ("all", None, True, False), ("core", 0, False, False),
                  ("all", 0, False, False), ("startup-smoke", 0, False, False), ("all", 0, False, True),
                  ("ui-documents", 0, True, False), ("ui-memory", 0, False, True)]
-        cases += [(scope, 0, False, False) for scope in ios17.UI_SHARDS]
+        cases += [(scope, 0, False, False) for scope in [*ios17.UI_SHARDS, *ios17.DOCUMENT_SCOPES]]
+        cases += [(scope, 0, True, False) for scope in ios17.DOCUMENT_SCOPES]
+        cases += [(scope, 0, False, True) for scope in ios17.DOCUMENT_SCOPES]
         for scope, exit_code, timed_out, skipped in cases:
             with self.subTest(scope=scope, exit_code=exit_code, timed_out=timed_out, skipped=skipped), tempfile.TemporaryDirectory() as folder:
                 output = Path(folder) / "result"
@@ -480,11 +482,11 @@ class RuntimeTests(unittest.TestCase):
                 def child(args, **kwargs):
                     if args[0] == "xcodebuild":
                         self.assertEqual(args[args.index("-maximum-test-execution-time-allowance") + 1], "420" if scope in ("all", "ui-workspace") else "300")
-                        self.assertEqual(kwargs["timeout"], 1800 if scope in ios17.UI_SHARDS else 4800)
+                        self.assertEqual(kwargs["timeout"], 1800 if scope in ios17.UI_SHARDS or scope in ios17.DOCUMENT_SCOPES else 4800)
                         if scope == "core": self.assertIn("-only-testing:AssistantDomainTests", args)
                         elif scope == "startup-smoke":
                             self.assertIn("-only-testing:WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded", args)
-                        elif scope in ios17.UI_SHARDS:
+                        elif scope in ios17.UI_SHARDS or scope in ios17.DOCUMENT_SCOPES:
                             self.assertEqual([arg for arg in args if arg.startswith("-only-testing:")],
                                              ["-only-testing:" + t for t in ios17.TEST_SCOPES[scope]])
                         else: self.assertFalse(any(arg.startswith("-only-testing:") for arg in args))

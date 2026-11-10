@@ -93,7 +93,7 @@ struct MemoryDataView: View {
                     Section {
                         Button("Mika 內建技能目錄（6）") { sheet = .catalog }
                             .accessibilityIdentifier("skills.catalog.open")
-                        NavigationLink { SkillExecutionView() } label: { Text("選取 PDF 並擷取文字") }
+                        NavigationLink { SkillExecutionView(modelAccess: modelAccess, modelChanges: modelChanges) } label: { Text("選取 PDF 並擷取文字") }
                             .accessibilityIdentifier("skills.documents.execute")
                         NavigationLink {
                             SkillAgentView(store: store, modelAccess: modelAccess)

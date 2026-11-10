@@ -8,9 +8,10 @@ import PDFKit
 #endif
 
 /// No startup hook is required: SkillExecutionView calls seedIfRequested on appear.
-/// DEBUG + -UITestMode + -UITestSkillExecution + exactly one valid
-/// -UITestNamespace UUID are required. This never selects, reads or approves a
-/// runtime input. Release/default calls return before touching the filesystem.
+/// DEBUG + -UITestSkillExecution + exactly one isolated local or live namespace
+/// are required. Live creates the same synthetic PDF without diagnostic file
+/// inventory output. Neither mode selects, reads or approves a runtime input.
+/// Release/default calls return before touching the filesystem.
 enum SkillExecutionUITestSupport {
     struct Fixture {
         let namespace: UUID
@@ -26,12 +27,23 @@ enum SkillExecutionUITestSupport {
                                 }) throws -> Fixture? {
         #if DEBUG
         guard arguments.contains("-UITestSkillExecution") else { return nil }
+        let local = arguments.filter { $0 == "-UITestMode" }.count
+        let live = arguments.filter { $0 == "-LiveModelUITest" }.count
+        let namespaceFlag = local == 1 ? "-UITestNamespace" : "-LiveModelUITestNamespace"
+        let otherNamespaceFlag = local == 1 ? "-LiveModelUITestNamespace" : "-UITestNamespace"
+        let allowedLiveFlags: Set<String> = live == 1 ? ["-LiveModelUITest", "-LiveModelUITestNamespace"] : []
         guard arguments.filter({ $0 == "-UITestSkillExecution" }).count == 1,
-              arguments.filter({ $0 == "-UITestMode" }).count == 1,
-              arguments.filter({ $0 == "-UITestNamespace" }).count == 1,
-              !arguments.contains(where: { $0.hasPrefix("-Live") }),
-              let index = arguments.firstIndex(of: "-UITestNamespace"), arguments.indices.contains(index + 1),
+              (local == 1 && live == 0) || (local == 0 && live == 1),
+              !arguments.contains(otherNamespaceFlag),
+              !arguments.contains(where: { $0.hasPrefix("-Live") && !allowedLiveFlags.contains($0) }),
+              arguments.filter({ $0 == namespaceFlag }).count == 1,
+              let index = arguments.firstIndex(of: namespaceFlag), arguments.indices.contains(index + 1),
               let namespace = UUID(uuidString: arguments[index + 1]) else { throw Failure.invalidNamespace }
+        // Live tests exercise the real user copy option, never a picker or
+        // writer experiment. Cleanup is excluded by the live flag allowlist.
+        guard live == 0 || !arguments.contains(where: {
+            $0.hasPrefix("-UITestPDFUIKit") || $0.hasPrefix("-UITestSkillFixtureWriteMode")
+        }) else { throw Failure.invalidNamespace }
         let writeMode = try fixtureWriteMode(arguments)
         // Do not even resolve/create Documents until all fixture gates pass.
         let root = try documentsDirectory()
@@ -45,8 +57,10 @@ enum SkillExecutionUITestSupport {
                   document.documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String == title else {
                 throw Failure.existingFile
             }
-            recordBaseline(fixture, phase: "existing")
-            recordWriteMode(fixture, mode: writeMode, phase: "existing")
+            if live == 0 {
+                recordBaseline(fixture, phase: "existing")
+                recordWriteMode(fixture, mode: writeMode, phase: "existing")
+            }
             return fixture // Re-entering the view never overwrites another file.
         }
         let buffer = NSMutableData()
@@ -72,7 +86,7 @@ enum SkillExecutionUITestSupport {
                                        PDFDocumentAttribute.authorAttribute: "Synthetic UI fixture"]
         guard let bytes = document.dataRepresentation(), bytes.count <= 128 * 1024 else { throw Failure.cannotCreatePDF }
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
-        recordWriteMode(fixture, mode: writeMode, phase: "willCreate")
+        if live == 0 { recordWriteMode(fixture, mode: writeMode, phase: "willCreate") }
         switch writeMode {
         case .direct:
             try bytes.write(to: url, options: .withoutOverwriting)
@@ -88,8 +102,10 @@ enum SkillExecutionUITestSupport {
             if let coordinationError { throw coordinationError }
             try written.get() // No direct-write fallback when coordination fails.
         }
-        recordBaseline(fixture, phase: "created")
-        recordWriteMode(fixture, mode: writeMode, phase: "created")
+        if live == 0 {
+            recordBaseline(fixture, phase: "created")
+            recordWriteMode(fixture, mode: writeMode, phase: "created")
+        }
         return fixture
         #else
         return nil

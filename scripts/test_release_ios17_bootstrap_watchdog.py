@@ -65,7 +65,7 @@ class GateTests(unittest.TestCase):
                           ["WoowAssistantUITests/SkillExecutionUITests/../LiveModelUITests"]]:
             with self.subTest(selectors=selectors), self.assertRaises(ValueError):
                 watchdog.validate_gate(ENV, OUTPUT, True, selectors, "Darwin")
-        for scope in ios17.UI_SHARDS:
+        for scope in [*ios17.UI_SHARDS, *ios17.DOCUMENT_SCOPES]:
             watchdog.validate_gate(ENV, OUTPUT, True, ios17.TEST_SCOPES[scope], "Darwin")
 
     def test_opt_in_cli_and_workflow_preserve_default_budgets(self):
@@ -75,7 +75,7 @@ class GateTests(unittest.TestCase):
                 self.assertIs(execute.call_args.kwargs["sample_bootstrap"], expected)
         source = Path(ios17.__file__).read_text()
         self.assertIn('420 if test_scope in ("all", "workspace", "ui-workspace") else 300', source)
-        self.assertIn('1800 if test_scope in UI_SHARDS else 4800', source)
+        self.assertIn('1800 if test_scope in UI_SHARDS or test_scope in DOCUMENT_SCOPES else 4800', source)
         workflow = (Path(__file__).resolve().parents[1] / ".github/workflows/release-ios.yml").read_text()
         option = workflow.split("      ios17_sample_bootstrap:\n")[1].split("\npermissions:")[0]
         self.assertIn("default: false", option)

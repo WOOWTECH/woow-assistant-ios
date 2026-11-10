@@ -174,6 +174,7 @@ targets:
     sources:
       - Tests/AssistantSkillsTests
       - scripts/CheckProfileChatApp.swift
+      - scripts/CheckDocumentQueryApp.swift
     dependencies:
       # Exercise PDFKit in the real UIKit host, as it runs in production.
       # Unhosted iOS tests have stalled during PDFDocument initialization.

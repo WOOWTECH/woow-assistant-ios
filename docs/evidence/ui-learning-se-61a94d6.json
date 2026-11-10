@@ -1,0 +1,110 @@
+{
+  "source_revision": "61a94d6c24b209848460fa125a2f7697d519c215",
+  "run_id": 42861671702,
+  "verified": true,
+  "counts": {
+    "totalTestCount": 5,
+    "passedTests": 5,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "actual_start_count": 5,
+  "actual_completion_count": 5,
+  "missing_starts": [],
+  "missing_completions": [],
+  "unexpected_methods": [],
+  "methods": [
+    {
+      "method": "WoowAssistantUITests/BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+      "starts": 1,
+      "completions": [
+        {
+          "outcome": "passed",
+          "seconds": 152.899
+        }
+      ]
+    },
+    {
+      "method": "WoowAssistantUITests/BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+      "starts": 1,
+      "completions": [
+        {
+          "outcome": "passed",
+          "seconds": 122.932
+        }
+      ]
+    },
+    {
+      "method": "WoowAssistantUITests/BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch",
+      "starts": 1,
+      "completions": [
+        {
+          "outcome": "passed",
+          "seconds": 176.806
+        }
+      ]
+    },
+    {
+      "method": "WoowAssistantUITests/MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+      "starts": 1,
+      "completions": [
+        {
+          "outcome": "passed",
+          "seconds": 106.101
+        }
+      ]
+    },
+    {
+      "method": "WoowAssistantUITests/MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads",
+      "starts": 1,
+      "completions": [
+        {
+          "outcome": "passed",
+          "seconds": 35.327
+        }
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "file": "test-summary.json",
+      "bytes": 1004,
+      "sha256": "6ef8bb6f4043c6bf92017f8a8b533f57fa5644d7132ac5aa3463903c683d746e"
+    },
+    {
+      "file": "ios-tests.log",
+      "bytes": 1066081,
+      "sha256": "bf486672911d7e29b20f5572bd40507f2a0719a813cb39456b17f643d405ea07"
+    }
+  ],
+  "job_id": 129989153640,
+  "artifact_id": 13789406632,
+  "classification": "ALL_FIVE_SELECTED_SE_UI_CASES_PASSED",
+  "device": [
+    {
+      "model": "iPhone SE (3rd generation)",
+      "os": "18.5",
+      "architecture": "arm64"
+    }
+  ],
+  "coverage": [
+    "BrowserLearningUITests: three actual native UI fixture flows",
+    "MultiSourceResearchUITests: two actual WebKit fixture flows"
+  ],
+  "limits": [
+    "This validates only the selected SE iOS18.5 fixture scope.",
+    "No real model/provider or iOS17 learning runtime acceptance is inferred.",
+    "Old 74f7b71 SE 3/5 failure evidence remains recorded."
+  ],
+  "retrieval": {
+    "whole_archive_downloaded": false,
+    "artifact_bytes": 15205838,
+    "transferred_bytes": 67155,
+    "selected_bytes": 1067085
+  },
+  "source_hashes": {
+    "MultiSourceResearchUITests.swift": "e1eb35d7e3156c38cb035a6315221ba19003169e2776e0814455129bdf6493c7",
+    "BrowserLearningUITests.swift": "8d6bad8e401fc8b94cf94015ef2029a151eea29f78876fb28420f4f7f2236a8f"
+  }
+}

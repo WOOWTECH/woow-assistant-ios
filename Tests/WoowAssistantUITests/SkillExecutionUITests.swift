@@ -239,6 +239,53 @@ struct SkillExecutionPickerChecks {
         print("PASS multi-selection whole-cell geometry; a visible thumbnail alone cannot authorize a clipped cell tap")
     }
 }
+#elseif SKILL_EXECUTION_RESULT_TEXT_CHECKS
+import Foundation
+
+@main
+struct SkillExecutionResultTextChecks {
+    struct Failure: Error {}
+    static func main() throws {
+        var count = 0
+        func require(_ condition: Bool) throws {
+            guard condition else { throw Failure() }
+            count += 1
+        }
+        let namespace = "D207A112-7F53-49F1-A794-B3D1EBDE93E6"
+        let exact = "--- page 1 ---\nWOOW_SKILL_PDF_PAGE_1\n\(namespace)\n\n--- page 2 ---\nWOOW_SKILL_PDF_PAGE_2\n\(namespace)\n"
+        try require(skillPDFFixtureTextMatches(exact, namespace: namespace))
+        // 61a94d6 iOS17 recording: same complete UUID, with extraction
+        // whitespace inside 7F53. No character or hyphen may be discarded.
+        let spaced = exact.replacingOccurrences(of: "7F53", with: "7 F53")
+        try require(!spaced.contains(namespace))
+        try require(skillPDFFixtureTextMatches(spaced, namespace: namespace))
+        try require(skillPDFFixtureTextMatches(exact.replacingOccurrences(of: "7F53", with: "7\r\nF53"), namespace: namespace))
+        for invalid in [exact.replacingOccurrences(of: "7F53", with: "7F54"),
+                        exact.replacingOccurrences(of: "7F53-", with: "7F53"),
+                        exact.replacingOccurrences(of: "PAGE_1", with: "PAGE_2"),
+                        exact.replacingOccurrences(of: "--- page 2 ---", with: "--- page 3 ---"),
+                        exact + "unexpected content", String(exact.dropLast(3)),
+                        exact.replacingOccurrences(of: "7F53", with: "7\u{200B}F53") ] {
+            try require(!skillPDFFixtureTextMatches(invalid, namespace: namespace))
+        }
+        for prefix in ["已讀取 2 頁，", "已產生 2 頁，"] {
+            for digits in ["8373", "8,373", "1", "10,485,760"] {
+                try require(skillPDFReceiptByteCount(prefix + digits + " 位元組", prefix: prefix,
+                                                    limit: 10 * 1024 * 1024) != nil)
+            }
+            for digits in ["0", "08,373", "8,37", "8,,373", "8,373,", "1,0000", "8 373",
+                           "-8373", "８３７３", "10,485,761", "999999999999999999999"] {
+                try require(skillPDFReceiptByteCount(prefix + digits + " 位元組", prefix: prefix,
+                                                    limit: 10 * 1024 * 1024) == nil)
+            }
+            try require(skillPDFReceiptByteCount(prefix.replacingOccurrences(of: "2", with: "3") + "8,373 位元組",
+                                                prefix: prefix, limit: 10 * 1024 * 1024) == nil)
+            try require(skillPDFReceiptByteCount(prefix + "8,373 位元組 unexpected", prefix: prefix,
+                                                limit: 10 * 1024 * 1024) == nil)
+        }
+        print("PASS synthetic PDF result text: \(count) assertions; exact pages/UUID and bounded grouped bytes")
+    }
+}
 #else
 import XCTest
 
@@ -329,7 +376,8 @@ final class SkillExecutionUITests: XCTestCase {
         let receipt = form.staticTexts["pdfAssembly.receipt.1"]
         revealLearningElement(receipt, in: app, visibility: .readableText)
         XCTAssertTrue(receipt.waitForExistence(timeout: 15))
-        XCTAssertNotNil(receipt.label.range(of: "^已讀取 2 頁，[1-9][0-9]* 位元組$", options: .regularExpression))
+        XCTAssertNotNil(skillPDFReceiptByteCount(receipt.label, prefix: "已讀取 2 頁，", limit: 10 * 1024 * 1024),
+                        "Reading receipt must report exactly two pages and a positive bounded byte count.")
         XCTAssertFalse(form.buttons["pdfAssembly.read.1"].exists)
         XCTAssertFalse(form.staticTexts["pdfAssembly.result"].exists,
                        "Reading approval must not authorize PDF assembly.")
@@ -365,7 +413,8 @@ final class SkillExecutionUITests: XCTestCase {
         revealLearningElement(result, in: app, visibility: .readableText)
         XCTAssertTrue(result.waitForExistence(timeout: 15))
         let originalResult = result.label
-        XCTAssertNotNil(originalResult.range(of: "^已產生 2 頁，[1-9][0-9]* 位元組$", options: .regularExpression))
+        XCTAssertNotNil(skillPDFReceiptByteCount(originalResult, prefix: "已產生 2 頁，", limit: 20 * 1024 * 1024),
+                        "Assembly receipt must report exactly two pages and a positive bounded byte count.")
         XCTAssertFalse(form.buttons["pdfAssembly.assemble"].exists)
         tap("pdfAssembly.export", scroll: true)
         requireHittable(nativeExportConfirmation)
@@ -412,7 +461,8 @@ final class SkillExecutionUITests: XCTestCase {
         XCTAssertTrue(extractedText.contains("--- page 2 ---"))
         XCTAssertTrue(extractedText.contains("WOOW_SKILL_PDF_PAGE_1"))
         XCTAssertTrue(extractedText.contains("WOOW_SKILL_PDF_PAGE_2"))
-        XCTAssertTrue(extractedText.contains(namespace), "Must extract this namespace's actual selected PDF.")
+        XCTAssertTrue(skillPDFFixtureTextMatches(extractedText, namespace: namespace),
+                      "Both actual extracted pages must contain only their exact marker and this namespace's complete UUID; extraction whitespace may differ.")
         assertAudit(selections: 1, reads: 1, extractionAttempts: 1, results: 1)
         XCTAssertFalse(app.buttons["skillExecutionApproveStep"].exists)
     }
@@ -943,6 +993,28 @@ final class SkillExecutionUITests: XCTestCase {
     }
 }
 #endif
+
+private func skillPDFFixtureTextMatches(_ text: String, namespace: String) -> Bool {
+    guard text.utf8.count <= 2048, namespace.utf8.count == 36 else { return false }
+    // PDFKit17 can insert spaces/newlines within the drawn UUID. Normalize
+    // only ASCII layout whitespace; compare all remaining content, page order,
+    // markers, UUID characters and hyphens. Never substitute a fixture result.
+    let compact = text.filter { $0 != " " && $0 != "\t" && $0 != "\r" && $0 != "\n" && $0 != "\r\n" }
+    let expected = (1...2).map { "---page\($0)---WOOW_SKILL_PDF_PAGE_\($0)" + namespace }.joined()
+    return compact == expected
+}
+
+private func skillPDFReceiptByteCount(_ label: String, prefix: String, limit: Int) -> Int? {
+    let suffix = " 位元組"
+    guard label.utf8.count <= 128, label.hasPrefix(prefix), label.hasSuffix(suffix) else { return nil }
+    let body = label.dropFirst(prefix.count).dropLast(suffix.count)
+    let groups = body.split(separator: ",", omittingEmptySubsequences: false)
+    guard let first = groups.first, !first.isEmpty, first.first != "0",
+          groups.allSatisfy({ !$0.isEmpty && $0.utf8.allSatisfy({ $0 >= 48 && $0 <= 57 }) }),
+          groups.count == 1 || (first.count <= 3 && groups.dropFirst().allSatisfy({ $0.count == 3 })),
+          let count = Int(groups.joined()), count > 0, count <= limit else { return nil }
+    return count
+}
 
 private enum SkillPickerStep: String, CaseIterable {
     case file, application, local, back, locations, browseTab, browseButton

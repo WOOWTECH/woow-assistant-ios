@@ -1,5 +1,5 @@
 #if os(iOS) || SKILL_EXECUTION_EXPORT_CHECKS
-#if !SKILL_EXECUTION_EXPORT_CHECKS
+#if canImport(AssistantSkills)
 import AssistantSkills
 #endif
 import SwiftUI
@@ -34,9 +34,18 @@ struct SkillExecutionTextDocument: FileDocument {
 #endif
 
 #if os(iOS)
-/// Parent integration: present SkillExecutionView() from the documents skill.
+import Combine
+
+private struct DocumentQueryPresentation: Identifiable {
+    let id = UUID()
+    let source: DocumentTextSnapshot
+}
+
+/// Parent integration: present from the documents skill with current model access.
 /// A configured worker is optional; no endpoint or background upload is created.
 @MainActor struct SkillExecutionView: View {
+    private let modelAccess: () throws -> ModelAccess
+    private let modelChanges: AnyPublisher<Void, Never>
     private let suppliedWorker: (any SkillExecutionPDFWorker)?
     @StateObject private var workerSettings = SkillWorkerPreferences()
     private var worker: (any SkillExecutionPDFWorker)? { suppliedWorker ?? workerSettings.worker }
@@ -44,6 +53,7 @@ struct SkillExecutionTextDocument: FileDocument {
     @State private var choosingFile = false
     @State private var importChoice: PDFImportChoice = .original
     @State private var importCopyExpanded = false
+    @State private var documentQuery: DocumentQueryPresentation?
     @State private var pages = ""
     @State private var password = ""
     @State private var metadataOnly = false
@@ -66,7 +76,10 @@ struct SkillExecutionTextDocument: FileDocument {
         #endif
     }
 
-    init(worker: (any SkillExecutionPDFWorker)? = nil) { self.suppliedWorker = worker }
+    init(modelAccess: @escaping () throws -> ModelAccess, modelChanges: AnyPublisher<Void, Never>,
+         worker: (any SkillExecutionPDFWorker)? = nil) {
+        self.modelAccess = modelAccess; self.modelChanges = modelChanges; self.suppliedWorker = worker
+    }
 
     var body: some View {
         Form {
@@ -150,6 +163,11 @@ struct SkillExecutionTextDocument: FileDocument {
                     Text(result.notice)
                     if !result.text.isEmpty {
                         Text(result.text).textSelection(.enabled).accessibilityIdentifier("skillExecution.result.text")
+                        if result.pages.contains(where: { !$0.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
+                            Button("查詢這份 PDF") { beginQuery(result) }
+                                .disabled(model.running || exportingText)
+                                .accessibilityIdentifier("skillExecution.query")
+                        }
                         Button("匯出文字檔") { beginExport(result) }
                             .disabled(exportingText)
                             .accessibilityIdentifier("skillExecutionExportText")
@@ -180,6 +198,11 @@ struct SkillExecutionTextDocument: FileDocument {
             case .failure: finishExport("文字未能儲存，請重新選擇位置再試一次。")
             }
         }, onCancellation: { finishExport("已取消匯出，擷取結果仍保留。") })
+        .sheet(item: $documentQuery) { presentation in
+            NavigationStack {
+                DocumentQueryView(source: presentation.source, modelAccess: modelAccess, modelChanges: modelChanges)
+            }
+        }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 NavigationLink { SkillWorkerSettingsView(settings: workerSettings) } label: { Text("腳本服務") }
@@ -187,7 +210,21 @@ struct SkillExecutionTextDocument: FileDocument {
             }
         }
         .onAppear { workerSettings.reload(); model.seedUITestIfRequested() }
-        .onDisappear { resetExport(); model.clear() }
+        .onDisappear {
+            resetExport()
+            // The query sheet owns an immutable completed snapshot. Keep the
+            // extraction available when returning; leaving its screen otherwise
+            // still invalidates the original execution and its grants.
+            if documentQuery == nil { model.clear() }
+        }
+    }
+
+    private func beginQuery(_ result: SkillExecutionPDFResult) {
+        guard let plan = model.plan, !model.running, !exportingText, documentQuery == nil else { return }
+        do {
+            let source = try DocumentTextSnapshot(result: result, filename: plan.filename, catalog: .bundled())
+            documentQuery = DocumentQueryPresentation(source: source)
+        } catch { model.status = "這次擷取結果無法建立查詢快照，請確認已擷取可讀取的文字。" }
     }
 
     private func presentPicker(_ choice: PDFImportChoice) {

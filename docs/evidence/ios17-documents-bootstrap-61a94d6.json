@@ -1,0 +1,336 @@
+{
+  "source_revision": "61a94d6c24b209848460fa125a2f7697d519c215",
+  "run_id": 42861694796,
+  "job_id": 129989236443,
+  "artifact_id": 13787388778,
+  "classification": "ACTUAL_UI_ASSERTIONS_FAILED_AND_RESULT_FINALIZATION_TIMEOUT",
+  "accepted": false,
+  "runtime": {
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "version": "17.0.1",
+    "buildversion": "21A342"
+  },
+  "host_architecture": "arm64",
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "boot_succeeded": true,
+  "prelaunch": {
+    "budget_seconds": 120,
+    "attempts": 1,
+    "status": "process_started_handshake_unverified",
+    "handshake_verified": false,
+    "process_alive": true,
+    "elapsed_seconds": 12.061
+  },
+  "bootstrap_samples": {
+    "status": "stopped",
+    "handshake_verified": false,
+    "max_samples": 3,
+    "sample_seconds": 3,
+    "sample_command_seconds": 15,
+    "sample_byte_limit": 2097152,
+    "attempts": [
+      {
+        "role": "daemon_early",
+        "elapsed_seconds": 15.158,
+        "image": "xpcproxy_sim",
+        "status": "captured",
+        "frames": 1,
+        "bytes": 42
+      },
+      {
+        "role": "daemon_later",
+        "elapsed_seconds": 75.032,
+        "image": "xpcproxy_sim",
+        "status": "captured",
+        "frames": 1,
+        "bytes": 42
+      },
+      {
+        "role": "runner_bootstrap",
+        "elapsed_seconds": 409.838,
+        "image": "WoowAssistantUITests-Runner",
+        "status": "cancelled"
+      }
+    ],
+    "actual_test_case_started": true
+  },
+  "observed_ui_events": {
+    "status": "observed",
+    "acceptance_evidence": false,
+    "expected_methods": 12,
+    "counts": {
+      "starts": 12,
+      "passed": 10,
+      "failed": 2,
+      "skipped": 0
+    },
+    "unexpected_events": 0,
+    "all_expected_completed_once": true,
+    "methods": {
+      "WoowAssistantUITests/SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText": {
+        "starts": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult": {
+        "starts": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testNativePickerCancellationDoesNotReadOrExtract": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testRefusingFirstStepDoesNotReadOrExtract": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testRefusingSecondStepKeepsExtractionUnauthorized": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "summary": {
+    "available": false,
+    "bytes": 0,
+    "zero_skips_certified_by_summary": false,
+    "expected_failures_certified_by_summary": false
+  },
+  "limits": {
+    "build_test_seconds": 1800,
+    "maximum_case_seconds": 300,
+    "xcodebuild_invocations": 1,
+    "test_retries": 0
+  },
+  "events": {
+    "testing_checkpoint_utc": "2026-11-10T17:15:46.678852Z",
+    "runner_running_tests_utc": "2026-11-10T17:22:16.223666Z",
+    "selected_suite_started_utc": "2026-11-10T17:22:36.549Z",
+    "selected_suite_finished_utc": "2026-11-10T17:44:40.853Z",
+    "xcode_testing_completed_log_utc": "2026-11-10T17:45:34.230Z",
+    "timeout_reported_after_cleanup_utc": "2026-11-10T17:45:55.622588Z"
+  },
+  "staging_system_diagnostics": {
+    "entries": 246,
+    "uncompressed_bytes": 203960923,
+    "compressed_bytes": 122968649
+  },
+  "failure_details": [
+    {
+      "method": "SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText",
+      "source_line": 415,
+      "test_log_line": 7113,
+      "observation": "The actual recording displays both correct page markers and the current UUID D207A112-7F53-49F1-A794-B3D1EBDE93E6, with a space or line break inside 7F53. The original contiguous namespace assertion fails; preserving all non-layout characters matches the observed fixture.",
+      "fix": "Retain the existing exact page/marker checks; additionally compare the complete ordered two-page text, including this UUID on each page, ignoring only ASCII layout whitespace. Wrong digits, hyphens, ordering, extra content and zero-width characters still fail."
+    },
+    {
+      "method": "SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "source_line": 332,
+      "test_log_line": 7378,
+      "observation": "The actual recording shows 已讀取 2 頁，8,373 位元組. The old regex accepts only ungrouped digits and therefore rejects this native localized receipt.",
+      "fix": "Parse only strictly valid ASCII comma-grouped or ungrouped positive byte counts with exact two-page prefix/suffix. Enforce 10 MiB input and 20 MiB output bounds; apply to both read and assembly-result receipts."
+    }
+  ],
+  "diagnosis_limits": [
+    "Both daemon samples contain only _dyld_start in dyld from xpcproxy_sim. They do not identify an internal dyld cause or establish prelaunch causality.",
+    "Runner sample was cancelled on the first actual case as designed.",
+    "All 12 methods completed; this is not the prior zero-method bootstrap failure.",
+    "Large system-diagnostic staging and unfinished xcresult support a bounded diagnostic-policy comparison, not a proven finalization root cause.",
+    "Neither failed PDF assertion is excused by the later finalization timeout."
+  ],
+  "candidate_change": {
+    "option": "--bounded-test-diagnostics",
+    "workflow_input": "ios17_bounded_test_diagnostics",
+    "default": false,
+    "requires": "Existing hosted non-Live bootstrap sampling gate and an initialized owned-process watcher. Otherwise retain Xcode diagnostic policy.",
+    "xcodebuild_option": [
+      "-collect-test-diagnostics",
+      "never"
+    ],
+    "unchanged": [
+      "1800-second shard budget",
+      "300-second case cap",
+      "single xcodebuild invocation",
+      "all selected methods/assertions",
+      "summary and actual-event acceptance gates"
+    ],
+    "local_tests": {
+      "all_python_tests": 205,
+      "passed": 205,
+      "new_finalization_tests": 8,
+      "new_document_scope_tests": 5
+    },
+    "native_validation": "PENDING_PARENT_REVIEW_AND_DISPATCH",
+    "test_helper_local_validation": {
+      "synthetic_text_and_receipt_assertions": 45,
+      "passed": 45,
+      "compiler": "Swift 5.8.1 CLT macOS host, warnings-as-errors",
+      "ui_normal_parse": true,
+      "ui_debug_parse": true,
+      "native_ios_execution": "PENDING"
+    },
+    "local_source_hashes": {
+      "scripts/release_ios17.py": "972cdb7f59ff6c4e773d371e0dc3eae2b0a2b71d7fd5cada6c62021923666759",
+      "scripts/test_release_ios17_result_finalization.py": "4e4855a15f5b75661cbd3c313b06013ea740173ceb6e373628f6eb4a8686db59",
+      ".github/workflows/release-ios.yml": "8f5bdd65dba44f96754b94b2470cabd4d9cafab11879eed86625c4b5a02b5ae2",
+      "Tests/WoowAssistantUITests/SkillExecutionUITests.swift": "f6051e5475d0e4465b0b7a659b8e29ba3a85ebdd6b10881c4df584ed61faebbe",
+      "scripts/test_release_ios.py": "ce0324c6bb57b6f99d7c2a7a0d87ddef24a2d27e3e02322dcbf1621274d88311",
+      "scripts/test_release_ios17_bootstrap_watchdog.py": "f0e77bec04f03dd1add5878498ad6eddf78df43db542492b77610bfd5248c9b8",
+      "scripts/test_release_ios17_document_scopes.py": "9f6eb8dd5d9b25b48ab3cbf3d99b2062dcee775a56593af5b7ac2e74fcdafdce"
+    },
+    "focused_document_scopes": {
+      "methods": {
+        "documents-read": [
+          "WoowAssistantUITests/SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText",
+          "WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText",
+          "WoowAssistantUITests/SkillExecutionUITests/testNativePickerCancellationDoesNotReadOrExtract",
+          "WoowAssistantUITests/SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+          "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+          "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText"
+        ],
+        "documents-output": [
+          "WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry",
+          "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder",
+          "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+          "WoowAssistantUITests/SkillExecutionUITests/testRefusingFirstStepDoesNotReadOrExtract",
+          "WoowAssistantUITests/SkillExecutionUITests/testRefusingSecondStepKeepsExtractionUnauthorized",
+          "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile"
+        ]
+      },
+      "parent_shard": "ui-documents",
+      "parent_partition_unchanged": true,
+      "disjoint_exact_union_verified_against_source_inventory": true,
+      "reject_unassigned_new_or_renamed_methods": true,
+      "build_test_seconds_per_scope": 1800,
+      "maximum_case_seconds": 300,
+      "xcodebuild_invocations_per_scope": 1,
+      "native_execution": "PENDING_PARENT_DISPATCH",
+      "combined_coverage_requires_same_source_revision_and_inventory": true,
+      "inventory_sha256": "7b6baf60d1b76d14186693e49f0ff638eb891abbd013868c3be2244aa58e9d00",
+      "non_live_methods": 81,
+      "live_methods": 20
+    }
+  },
+  "primary_reference": "https://developer.apple.com/forums/thread/698054",
+  "evidence_files": [
+    {
+      "file": "bootstrap-samples/report.json",
+      "bytes": 719,
+      "sha256": "226bfa2efb9e894ab9da33ca7ee9074d154ffcb1633e1f05052ed6bd282c470e"
+    },
+    {
+      "file": "bootstrap-samples/daemon_early.txt",
+      "bytes": 42,
+      "sha256": "8a1ca88be566ed224aa667566d8633b40685caa1a728d881436785869d0280ee"
+    },
+    {
+      "file": "bootstrap-samples/daemon_later.txt",
+      "bytes": 42,
+      "sha256": "ba4e3df9c09aa76ede4d1f4bc3517bfcbab599b0e03b8860640cddec9e5cfd56"
+    },
+    {
+      "file": "report.json",
+      "bytes": 6320,
+      "sha256": "214aa6f9c779833971fe2b8f02b44aa9ad4991151c28d647b0a476d1d9ccf8bd"
+    },
+    {
+      "file": "test-summary.json",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "tests.log",
+      "bytes": 1547740,
+      "sha256": "796542e6361803e11473d30eb410d9fff63f062de21f5e42e2c2be11ab3e97a1"
+    }
+  ],
+  "retrieval": {
+    "whole_archive_downloaded": false,
+    "fixed_reports_transferred_bytes": 460763,
+    "small_metadata_transferred_bytes": 2872316,
+    "archive_bytes": 327049298,
+    "native_read_video_transferred_bytes": 26521743,
+    "assembly_video_verified_transfer_bytes": 14674760,
+    "interrupted_video_downloads_not_used_as_evidence": true
+  },
+  "targeted_fixture_attachments": [
+    {
+      "kind": "native_read_video",
+      "bytes": 26305590,
+      "sha256": "db2e11187c6ecb0c01f26964d029163a8917a9056369e92595d174a564d479e1",
+      "xcresult_payload_ref": "0~iSIRQ6eqqstLfPSY3PoMG9QfLI_Z4P1JsmYwU-0DahFwqVSLDlp8JmPyKkrXA8oEVwTSJ6tZoF17my0KO4-cLw=="
+    },
+    {
+      "kind": "assembly_video",
+      "bytes": 14377226,
+      "sha256": "68bb6c58215850d9586a9444a367fbc299eae02c0851d73fc48285c24b94b4c6",
+      "xcresult_payload_ref": "0~rHal8oJEHFdaH2vD3Q61sD-f6ne9heWygyNPs-VgY2v2rIril5KAE_NDEN2kk3PVk4f2kcg4Yd4nxFsqFgprsw=="
+    },
+    {
+      "kind": "native_read_frame",
+      "bytes": 499306,
+      "sha256": "00726c888812f621e719461c454e718dd894046c6baa27f4a3159bc0c0d29a02",
+      "requested_video_seconds": 150,
+      "actual_frame_seconds": 148.215
+    },
+    {
+      "kind": "assembly_receipt_frame",
+      "bytes": 546321,
+      "sha256": "ef66d2517af50d5a960145dfb40a26b70f7009878a35d6c14e795f24c59d80a5",
+      "requested_video_seconds": 62,
+      "actual_frame_seconds": 59.63
+    }
+  ],
+  "visual_evidence_limit": "Labels were read from the two specific synthetic fixture recordings, not inferred from an arbitrary provider tree. Incomplete xcresult prevented normal AX attachment export."
+}

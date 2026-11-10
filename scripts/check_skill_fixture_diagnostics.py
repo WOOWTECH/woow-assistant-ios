@@ -58,6 +58,76 @@ import PDFKit
 }
 '''
 
+LIVE_GATES = r'''
+import Foundation
+#if DEBUG
+import PDFKit
+#endif
+@main struct LiveGates {
+    enum Failure: Error { case check }
+    static func require(_ value: Bool) throws { if !value { throw Failure.check } }
+    static func main() throws {
+        let root = URL(fileURLWithPath: CommandLine.arguments[1], isDirectory: true)
+        let id = UUID()
+        let live = ["-LiveModelUITest", "-LiveModelUITestNamespace", id.uuidString, "-UITestSkillExecution"]
+        let invalid: [[String]] = [
+            live + ["-UITestMode"], live + ["-UITestNamespace", UUID().uuidString],
+            live + ["-LiveModelUITest"], live + ["-UITestSkillExecution"],
+            live + ["-LiveModelUITestNamespace", UUID().uuidString],
+            live + ["-LiveModelUITestCleanup"], live + ["-LiveMCPUITest"],
+            live + ["-UITestPDFUIKitPicker"], live + ["-UITestPDFUIKitCopyPicker"],
+            live + ["-UITestSkillFixtureWriteMode", "coordinated"],
+            ["-LiveModelUITest", "-LiveModelUITestNamespace", "../outside", "-UITestSkillExecution"],
+            ["-LiveModelUITestNamespace", id.uuidString, "-UITestSkillExecution"],
+            ["-LiveModelUITest", "-UITestSkillExecution"],
+            ["-UITestMode", "-UITestNamespace", id.uuidString, "-UITestSkillExecution", "-LiveModelUITestNamespace", id.uuidString]
+        ]
+        for args in invalid {
+            var touched = false
+            do {
+                let ignored = try SkillExecutionUITestSupport.seedIfRequested(arguments: args) {
+                    touched = true; throw Failure.check
+                }
+                #if DEBUG
+                _ = ignored; throw Failure.check
+                #else
+                try require(ignored == nil)
+                #endif
+            } catch SkillExecutionUITestSupport.Failure.invalidNamespace { }
+            try require(!touched)
+        }
+        #if DEBUG
+        let seeded = try SkillExecutionUITestSupport.seedIfRequested(arguments: live, documentsDirectory: { root })
+        guard let fixture = seeded, let document = PDFDocument(url: fixture.url) else { throw Failure.check }
+        try require(document.pageCount == 2 && fixture.filename == "SkillExecution-" + id.uuidString + ".pdf")
+        for page in 1...2 {
+            let text = document.page(at: page - 1)?.string ?? ""
+            try require(text.contains("WOOW_SKILL_PDF_PAGE_\(page)") && text.contains(id.uuidString))
+        }
+        let before = try Data(contentsOf: fixture.url)
+        _ = try SkillExecutionUITestSupport.seedIfRequested(arguments: live, documentsDirectory: { root })
+        try require(try Data(contentsOf: fixture.url) == before)
+        let audit = SkillExecutionUITestAudit()
+        try require(audit.selections == 0 && audit.reads == 0 && audit.extractionAttempts == 0 && audit.results == 0)
+        let sentinel = Data("unowned live fixture sentinel".utf8)
+        try sentinel.write(to: fixture.url)
+        do {
+            _ = try SkillExecutionUITestSupport.seedIfRequested(arguments: live, documentsDirectory: { root })
+            throw Failure.check
+        } catch SkillExecutionUITestSupport.Failure.existingFile { }
+        try require(try Data(contentsOf: fixture.url) == sentinel)
+        #else
+        var touched = false
+        let ignored = try SkillExecutionUITestSupport.seedIfRequested(arguments: live) {
+            touched = true; throw Failure.check
+        }
+        try require(ignored == nil && !touched)
+        #endif
+        // Any seeder inventory/private output makes the outer check fail.
+    }
+}
+'''
+
 
 def run(args):
     return subprocess.run([str(a) for a in args], capture_output=True, text=True, check=True, timeout=60)
@@ -133,11 +203,18 @@ def main():
         # The existing exact seeder checks also verify inactive/invalid gates and
         # Release's zero filesystem access, with the new baseline code compiled out.
         original_checks = REPO / "Tests/WoowAssistantUITests/SkillExecutionUITests.swift"
+        live_checks = work / "LiveGates.swift"
+        live_checks.write_text(LIVE_GATES)
         for mode in [[], ["-DDEBUG"]]:
             binary = work / ("debug-gates" if mode else "release-gates")
             run(["swiftc", *mode, "-D", "SKILL_EXECUTION_UI_FIXTURE_CHECKS", "-parse-as-library", SUPPORT, original_checks, "-o", binary])
             run([binary])
+            live_binary = work / ("debug-live-gates" if mode else "release-live-gates")
+            run(["swiftc", *mode, "-parse-as-library", SUPPORT, live_checks, "-o", live_binary])
+            live_result = run([live_binary, work / "LiveDocuments"])
+            assert live_result.stdout == "", "Live seeding must not print file inventory or source content"
     print("PASS real PDF seed baselines including abrupt _exit; unchanged/replaced/missing files; byte limit; symbolic/hard/directory links; metadata refusal; strict log schema; DEBUG/Release gates")
+    print("PASS live PDFKit source, 14 invalid/mixed/cleanup gates before file access, idempotence, overwrite refusal, zero runtime audit, silent live output and Release no-file-access")
 
 
 if __name__ == "__main__":

@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-11-10T17:24:00Z",
-  "scope": "Original 856e8ec ui-memory current failure; other matrix jobs remain separate.",
+  "observed_at": "2026-11-10T18:08:00Z",
+  "scope": "Original 856e8ec ui-memory current and SE each completed 13/17 pass, 4 fail, 0 skip. Large cancelled; no full matrix acceptance.",
   "run_id": 42853406511,
   "job_id": 129959885757,
   "head_sha": "856e8eca5e17a46f030de1a4b85a2236e58c51cd",
@@ -147,9 +147,147 @@
     {
       "job_id": 129959885587,
       "device": "iPhone SE (3rd generation)",
-      "status": "in_progress",
-      "phase": "Test",
-      "counts": null
+      "status": "completed",
+      "conclusion": "failure",
+      "counts": {
+        "expectedFailures": 0,
+        "failedTests": 4,
+        "passedTests": 13,
+        "skippedTests": 0,
+        "totalTestCount": 17
+      },
+      "completion": {
+        "completed_ui_count": 17,
+        "counts": {
+          "expectedFailures": 0,
+          "failedTests": 4,
+          "passedTests": 13,
+          "skippedTests": 0,
+          "totalTestCount": 17
+        },
+        "expected_ui_count": 17,
+        "missing_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": [
+          "WoowAssistantUITests/UserProfileToolUITests/testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+          "WoowAssistantUITests/UserProfileToolUITests/testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+          "WoowAssistantUITests/UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+          "WoowAssistantUITests/UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch"
+        ],
+        "result": "Failed",
+        "unexpected_ui_tests": [],
+        "verified": false
+      },
+      "records": [
+        {
+          "class": "MemoryRaceUITests",
+          "method": "testClearWhileReplyPendingDoesNotRepopulateAndNewChatHidesOldNotes",
+          "outcome": "passed",
+          "seconds": 97.664
+        },
+        {
+          "class": "MemoryUITests",
+          "method": "testMemoryEditPinSearchAndDeletePersist",
+          "outcome": "passed",
+          "seconds": 112.377
+        },
+        {
+          "class": "MemoryUITests",
+          "method": "testOversizedMemoryIsRejectedAndCorrectedTextPersists",
+          "outcome": "passed",
+          "seconds": 99.354
+        },
+        {
+          "class": "MemoryUITests",
+          "method": "testProceduresRequireApprovalAndCanBeRejected",
+          "outcome": "passed",
+          "seconds": 92.598
+        },
+        {
+          "class": "MemoryUITests",
+          "method": "testSegmentsAndPreferencePersistence",
+          "outcome": "passed",
+          "seconds": 59.371
+        },
+        {
+          "class": "MemoryUITests",
+          "method": "testSkillImportFailureReviewAndEnablementPersist",
+          "outcome": "passed",
+          "seconds": 94.176
+        },
+        {
+          "class": "MemoryUITests",
+          "method": "testSkillUpdateRejectionAndRollback",
+          "outcome": "passed",
+          "seconds": 113.703
+        },
+        {
+          "class": "MemoryUITests",
+          "method": "testTwoStepClearCancellationAndModelSettingsIsolation",
+          "outcome": "passed",
+          "seconds": 134.62
+        },
+        {
+          "class": "UserProfileToolUITests",
+          "method": "testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+          "outcome": "failed",
+          "seconds": 100.068
+        },
+        {
+          "class": "UserProfileToolUITests",
+          "method": "testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+          "outcome": "failed",
+          "seconds": 75.652
+        },
+        {
+          "class": "UserProfileToolUITests",
+          "method": "testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+          "outcome": "failed",
+          "seconds": 121.016
+        },
+        {
+          "class": "UserProfileToolUITests",
+          "method": "testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+          "outcome": "failed",
+          "seconds": 121.682
+        },
+        {
+          "class": "UserProfileUITests",
+          "method": "testCreateReplaceDeleteAndHistorySurviveRelaunch",
+          "outcome": "passed",
+          "seconds": 118.139
+        },
+        {
+          "class": "UserProfileUITests",
+          "method": "testDuplicateAndCancelledTextNeverPublish",
+          "outcome": "passed",
+          "seconds": 146.95
+        },
+        {
+          "class": "UserProfileUITests",
+          "method": "testMasterSwitchAndTwiceConfirmedClearPersist",
+          "outcome": "passed",
+          "seconds": 156.069
+        },
+        {
+          "class": "UserProfileUITests",
+          "method": "testMultipleSentencesNeverPublish",
+          "outcome": "passed",
+          "seconds": 111.439
+        },
+        {
+          "class": "UserProfileUITests",
+          "method": "testSensitiveTextNeverPublishes",
+          "outcome": "passed",
+          "seconds": 99.903
+        }
+      ],
+      "failure": {
+        "path": "Tests/WoowAssistantUITests/UserProfileToolUITests.swift",
+        "line": 248,
+        "message": "Learning element must meet its visibility requirement above navigation/keyboard: chat.draft",
+        "matched_current_failed_methods": true,
+        "ax_evidence_for_se_retrieved": false
+      }
     },
     {
       "job_id": 129959885142,
@@ -249,7 +387,7 @@
   },
   "limitations": [
     "Cancelled Large job has no recovered actual test counts; cancellation is not success or a test failure count.",
-    "SE remains pending in this bounded report; no matrix aggregate is claimed.",
+    "SE completed 13/17 pass, 4 fail, 0 skip with the same four methods and exact assertion as current. Its counts and completions were cross-checked in job logs; no SE AX attachment was retrieved. Across the two completed jobs: 26 pass, 8 fail, 0 skip; cancelled Large is excluded.",
     "The separate 61a94d6 native and memory-tools runs are not covered by this report.",
     "The newly added MCPLearningUITests also received the composer visibility correction but is not part of the original run.",
     "MemoryToolUITests received the same composer visibility correction based on the four original profile-tool failures. The separate queued memory-tools run has no actual result yet; this is not claimed as native validation."
