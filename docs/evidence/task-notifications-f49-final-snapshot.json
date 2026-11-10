@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "status": "TESTED_F49_MATRIX_PASS_WORKSPACE_SOURCE_CHANGED",
+  "observed_at_utc": "2026-11-10T21:50:21.876657+00:00",
+  "tested_commit": "f49c8f77ff7963f1993daf652069affc0e79c983",
+  "runs": [
+    {
+      "run_id": 42902405880,
+      "conclusion": "success",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "evidence_file": "task-notifications-approval-42902405880.json",
+      "evidence_sha256": "8ea173d0fa4ad2fb24deac6edeb82654870d65cc9e3c44bc256748018212134a"
+    },
+    {
+      "run_id": 42902411329,
+      "conclusion": "success",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "evidence_file": "task-notifications-approval-42902411329.json",
+      "evidence_sha256": "9f0479cbda6a97051f53fa291dcbe09f8c44ad4230861432ba97aea0dc2d22bc"
+    },
+    {
+      "run_id": 42903185255,
+      "conclusion": "success",
+      "passed": 2,
+      "failed": 0,
+      "skipped": 0,
+      "evidence_file": "task-notifications-approval-42903185255.json",
+      "evidence_sha256": "521dc65af6b1b1807e7ee3f0b4ad853da842ad703d45d1b39accb2f802761d49"
+    }
+  ],
+  "source_comparison": [
+    {
+      "file": "Sources/App/ContentView.swift",
+      "tested_sha256": "382d8f4f12814cf00a71535d5f086df22b67b61f8fe2bffbb43b8807048cf6d9",
+      "workspace_sha256": "faf1645f3dc4749e9de27ee1dc1ad441a7a7df809fe8b1d9ffd6e1cf31b69e53",
+      "changed": true
+    },
+    {
+      "file": "Sources/App/MCPApprovalView.swift",
+      "tested_sha256": "cf0344eed31977b9117160fb07417871aa4189bcd3a7df2a68b8d1ea670e0939",
+      "workspace_sha256": "cf0344eed31977b9117160fb07417871aa4189bcd3a7df2a68b8d1ea670e0939",
+      "changed": false
+    },
+    {
+      "file": "Tests/WoowAssistantUITests/NotificationApprovalUITests.swift",
+      "tested_sha256": "332f852be000110427e2293bbaf55c1029711f5fe50db6a39dacc64582a5ee96",
+      "workspace_sha256": "332f852be000110427e2293bbaf55c1029711f5fe50db6a39dacc64582a5ee96",
+      "changed": false
+    }
+  ],
+  "notification_root_wiring_region_unchanged": true,
+  "source_changed_description": "Shared ContentView gained separate conversation archive UI after the tested snapshot. Notification root wiring, MCPApprovalView and NotificationApprovalUITests are unchanged. No archive changes were made by this notifications task.",
+  "scope": "Passing native evidence applies to f49c8f7 only, not the changed shared workspace as a whole. Preserve prior results; no automatic rerun or source rollback."
+}

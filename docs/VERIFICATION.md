@@ -1,6 +1,20 @@
 # Verification — 2026-11-11
 
 
+## Notification approval matrix completed at f49c8f7
+
+The same two native notification cases passed on all three fresh simulators at
+`f49c8f7`: SE/iOS 18.5 [42902405880](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902405880),
+Large/iOS 18.5 [42902411329](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902411329),
+and current/iOS 26.2 [42903185255](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42903185255).
+Each is **2/2, zero skips**: six executions of two distinct methods. Every device
+verified actual OS banner/default-open routing before approval, the same pending
+proposal UUID, and one explicit approval followed by exactly one fixture call.
+Settings permission, relaunch and disable also passed. [Evidence index and source
+boundary](evidence/task-notifications-f49-final-snapshot.json). The later archive
+UI changes are outside that tested source snapshot; audible sound, physical
+devices and independent browser/skill-runner notifications are not covered.
+
 ## Exact iOS 17 document reading completed; two-file batch import failed separately
 
 At `1abc6d7`, [42902035480](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902035480)
