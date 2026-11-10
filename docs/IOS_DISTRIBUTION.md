@@ -78,6 +78,8 @@ python3 scripts/release_ios17.py --os 17.0.1 --download --output build/ios17
 
 `release_ios17.py` 保留 `report.json`、`runtimes-before.json`，下載後另有 `runtimes-after.json`、`runtime-download.log`、`runtime-download-status.json`。每個耗時階段開始前會原子更新報告並即時輸出階段、UTC 時間與已用秒數；若 runner 中斷，已完成的 checkpoint 仍保留在磁碟。這不代表中斷後 GitHub 必定能完成 artifact 上傳。只有 XCTest 成功才設定 `runtime_tested: true`；版本由 simctl 的 `version` 精確比對，不能只比 identifier（例如 suffix `iOS-17-0` 可能實際是 17.0.1）。17.0、17.0.1、17.5 的證據必須分開記錄。預設為 17.0.1；若承諾精確 17.0，也要選 17.0 成功實跑。17.5 成功不能填補 17.0／17.0.1 的缺口。
 
+`--test-scope`／workflow 的 `ios17_test_scope` 預設為 `all`，另有 `core`、`workspace`、`files`、`parity`、`startup`，供修正後的局部重測。報告會記錄範圍與 `selected_tests_succeeded`；只有 `all` 完整命令成功才會設 `runtime_tested: true`。局部成功不取代完整驗收，也不證明其他未選案例通過。完成後匯出原生介面 attachments 與 test-summary；若測試被中斷而 `.xcresult` 不完整，原始日誌仍保留。
+
 母任務擁有的 `ios.yml` 若要加入持續最低版本檢查，請增加獨立 job，避免現有 matrix 的 runtime 選擇被混淆：
 
 ```yaml
@@ -124,6 +126,8 @@ minimum-ios17:
 行為來源固定於 Mika `/tmp/woow-mika-memory-reference` 的 `0c172724`（本機短 SHA `0c17272`）；已對照 `core/.../memory/MemoryStore.kt` 的 unavailable 拒寫、更新需重新批准與 undo 行為。發佈檢查不驗證這些產品行為，也不代表 Mika parity；相關 app／memory 測試仍由其 owner 的實作與 XCTest 證據決定。
 
 ## Additional recorded results
+
+`0092fc8` [unsigned-device 42758873943](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758873943) passed the same nine-binary and packaged-resource checks after the raw-address fix. It still reports `signature_verified: false`, `runtime_tested: false`, `uploaded: false`. Full reruns [17.0.1 42758764668](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758764668) and [17.5 42758809838](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758809838) on that revision are pending.
 
 `39a13b0` [unsigned-device 42753499130](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42753499130) passed the actual Release build and packaged privacy-manifest audit: nine binaries, minimum OS 17.0, Xcode/SDK 26.2, `native_documents_enabled`, `ats_key_absent`, and `required_reason_entries_verified` all true. It remains unsigned, not installable, not runtime-tested and not uploaded for distribution.
 

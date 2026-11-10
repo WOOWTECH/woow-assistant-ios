@@ -337,7 +337,7 @@ class RuntimeTests(unittest.TestCase):
             self.assertTrue((output / "runtimes-after.json").is_file())
             self.assertEqual(json.loads((output / "runtime-download-status.json").read_text())["exit_code"], 70)
 
-    def test_xctest_failure_and_timeout_preserve_phase_and_cleanup(self):
+    def test_xctest_outcome_preserves_scope_phase_and_cleanup(self):
         simulator = "12345678-1234-1234-1234-123456789ABC"
         def command(args, *unused, **kwargs):
             if "-version" in args: return b"Xcode 16.4"
@@ -346,13 +346,15 @@ class RuntimeTests(unittest.TestCase):
             if "devices" in args:
                 return json.dumps({"devices": {"test": [{"udid": simulator, "state": "Booted", "isAvailable": True}]}}).encode()
             return b""
-        for timed_out in (False, True):
-            with self.subTest(timed_out=timed_out), tempfile.TemporaryDirectory() as folder:
+        for scope, exit_code, timed_out in [("all", 65, False), ("all", None, True), ("core", 0, False), ("all", 0, False)]:
+            with self.subTest(scope=scope, exit_code=exit_code, timed_out=timed_out), tempfile.TemporaryDirectory() as folder:
                 output = Path(folder) / "result"
                 def child(args, **kwargs):
                     if args[0] == "xcodebuild":
+                        if scope == "core": self.assertIn("-only-testing:AssistantDomainTests", args)
+                        else: self.assertFalse(any(arg.startswith("-only-testing:") for arg in args))
                         if timed_out: raise subprocess.TimeoutExpired(args, kwargs["timeout"])
-                        return subprocess.CompletedProcess(args, 65)
+                        return subprocess.CompletedProcess(args, exit_code)
                     return subprocess.CompletedProcess(args, 0)
                 with patch.object(ios17, "run", side_effect=command) as runner, \
                      patch.object(ios17, "ensure_runtime", return_value=self.payload()["runtimes"][0]), \
@@ -360,12 +362,18 @@ class RuntimeTests(unittest.TestCase):
                      patch.object(ios17, "verify_settings"), \
                      patch.object(ios17.subprocess, "run", side_effect=child), \
                      patch("builtins.print"):
-                    with self.assertRaises(release.ReleaseError): ios17.execute(output, "17.0.1", False)
+                    if timed_out or exit_code:
+                        with self.assertRaises(release.ReleaseError): ios17.execute(output, "17.0.1", False, scope)
+                    else:
+                        ios17.execute(output, "17.0.1", False, scope)
                 report = json.loads((output / "report.json").read_text())
-                self.assertFalse(report["runtime_tested"])
-                self.assertEqual(report["phase"], "testing")
-                self.assertEqual(report["phase_history"][-1]["phase"], "testing")
-                self.assertEqual(report["test_timed_out"] if timed_out else report["test_exit_code"], True if timed_out else 65)
+                succeeded = not timed_out and exit_code == 0
+                self.assertEqual(report["test_scope"], scope)
+                self.assertEqual(report["selected_tests_succeeded"], succeeded)
+                self.assertEqual(report["runtime_tested"], succeeded and scope == "all")
+                self.assertEqual(report["phase"], "passed" if succeeded else "testing")
+                self.assertEqual(report["phase_history"][-1]["phase"], report["phase"])
+                self.assertEqual(report["test_timed_out"] if timed_out else report["test_exit_code"], True if timed_out else exit_code)
                 self.assertTrue(any(call.args[0] == ["xcrun", "simctl", "delete", simulator] for call in runner.call_args_list))
                 self.assertFalse((output / "report.json.tmp").exists())
 

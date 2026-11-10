@@ -17,6 +17,15 @@ import uuid
 
 from release_ios import ReleaseError, generate_project, run, version, verify_settings
 
+TEST_SCOPES = {
+    "all": [],
+    "core": ["AssistantDomainTests", "AssistantModelsTests", "AssistantMCPTests", "AssistantMemoryTests", "AssistantSkillsTests", "AssistantPersistenceTests", "AssistantBrowserIntegrationTests"],
+    "workspace": ["AssistantDomainTests/BrowserLibraryTests", "AssistantDomainTests/BrowserPolicyTests", "AssistantDomainTests/BrowserNavigationIntentTests", "AssistantBrowserIntegrationTests", "WoowAssistantUITests/BrowserWorkspaceUITests", "WoowAssistantUITests/BrowserLoginUITests"],
+    "files": ["AssistantSkillsTests", "AssistantDomainTests/BrowserDownloadTests", "AssistantDomainTests/BrowserNavigationIntentTests", "AssistantBrowserIntegrationTests", "WoowAssistantUITests/BrowserUploadUITests", "WoowAssistantUITests/SkillExecutionUITests"],
+    "parity": ["AssistantMCPTests", "AssistantSkillsTests", "AssistantDomainTests", "AssistantBrowserIntegrationTests", "WoowAssistantUITests/MCPConversationUITests", "WoowAssistantUITests/BrowserInteractionUITests", "WoowAssistantUITests/BrowserLearningUITests", "WoowAssistantUITests/SkillCatalogUITests", "WoowAssistantUITests/MemoryUITests", "WoowAssistantUITests/MemoryRaceUITests"],
+    "startup": ["WoowAssistantUITests/WoowAssistantUITests"],
+}
+
 
 def select_runtime(payload, requested):
     if version(requested)[0] != 17:
@@ -66,14 +75,17 @@ def ensure_runtime(output, requested, download, progress=None):
         raise ReleaseError("指定 iOS 17 runtime 下載／安裝後仍不可用。請保留 runtime-download.log 與前後清單，改用已預裝該版本的 woow-ios17 自管 runner。") from None
 
 
-def execute(output, requested, download):
+def execute(output, requested, download, test_scope="all"):
     if version(requested)[0] != 17:
         raise ReleaseError("只接受 iOS 17.x。")
+    if test_scope not in TEST_SCOPES:
+        raise ReleaseError("未知的 iOS 17 測試範圍。")
     output.mkdir(parents=True, exist_ok=False)
     report = {"requested_runtime": requested, "runtime_tested": False,
               "deployment_target": "17.0", "physical_devices_used": False,
               "host_architecture": platform.machine(), "host_macos": platform.mac_ver()[0],
-              "phase_history": []}
+              "phase_history": [], "test_scope": test_scope,
+              "selected_tests_succeeded": False}
     started = time.monotonic()
 
     def save_report():
@@ -130,7 +142,9 @@ def execute(output, requested, download):
                 result = subprocess.run(common + ["-destination", "platform=iOS Simulator,id=" + simulator,
                     "-resultBundlePath", str(output / "Tests.xcresult"), "-parallel-testing-enabled", "NO",
                     "-test-timeouts-enabled", "YES", "-default-test-execution-time-allowance", "240",
-                    "-maximum-test-execution-time-allowance", "300", "test", "CODE_SIGN_IDENTITY=-",
+                    "-maximum-test-execution-time-allowance", "300"] +
+                    ["-only-testing:" + target for target in TEST_SCOPES[test_scope]] +
+                    ["test", "CODE_SIGN_IDENTITY=-",
                     "CODE_SIGNING_ALLOWED=YES"], stdout=log, stderr=subprocess.STDOUT, timeout=4800)
             except subprocess.TimeoutExpired:
                 report["test_timed_out"] = True
@@ -138,7 +152,10 @@ def execute(output, requested, download):
         report["test_exit_code"] = result.returncode
         if result.returncode:
             raise ReleaseError("iOS 17 建置／XCTest 失敗；請查看 tests.log 與 Tests.xcresult。")
-        report["runtime_tested"] = True
+        report["selected_tests_succeeded"] = True
+        # Retain the original full-scheme meaning. A focused repair run can
+        # pass its selected cases without certifying the complete acceptance set.
+        report["runtime_tested"] = test_scope == "all"
         checkpoint("passed")
     finally:
         save_report()
@@ -153,10 +170,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--os", default="17.0.1", help="Exact OS version, not device model number")
     parser.add_argument("--download", action="store_true")
+    parser.add_argument("--test-scope", choices=TEST_SCOPES, default="all")
     parser.add_argument("--output", type=Path, default=Path("build/ios17"))
     args = parser.parse_args()
     try:
-        execute(args.output.resolve(), args.os, args.download)
+        execute(args.output.resolve(), args.os, args.download, args.test_scope)
     except (ReleaseError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
         print(str(error) if isinstance(error, ReleaseError) else "iOS 17 驗證未完成；請檢查輸出證據。", file=sys.stderr)
         return 1

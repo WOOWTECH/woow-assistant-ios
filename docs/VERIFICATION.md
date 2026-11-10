@@ -2,52 +2,72 @@
 
 ## Browser workspace / files / PDF increment - validation in progress
 
-Latest completed evidence:
+Latest completed simulator evidence (passed test cases / selected cases, not assertion counts):
 
-- iOS 17 now has actual App execution evidence, with failures retained:
-  [17.5 42748380772](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748380772)
-  completed on `d160a24`: native/hosted 106 passed/one failed (two assertions),
-  UI 31 passed/15 failed/ten live-service skips.
-  [17.0.1 42748375007](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748375007)
-  booted and recorded native 96 passed/one failed and UI 26 passed/15 failed/ten
-  skips, then reached the old 55-minute limit before finishing all UI and hosted
-  cases. Neither run is a full pass. Both exposed Foundation discarding malformed
-  ports: `1153d5a` adds raw-address validation at manual entry, with 1,034 local
-  direct Swift checks passing and new iOS regression assertions pending. Browser
-  focus/accessibility and PDF native-picker failures remain under team repair.
-- [Files retest 42755073369](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42755073369)
-  on `4dbbddb` is pending. It includes the conditional cold Files presentation
-  wait, lazy status-row lookup correction and exact PDF thumbnail targeting;
-  App Swift implementation is still `d160a24` for that run.
+| Workflow / source | iPhone SE, 18.5 | iPhone 16 Pro Max, 18.5 | iPhone 17, 26.2 |
+| --- | --- | --- | --- |
+| [Workspace 42751396574](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42751396574), `e1024aa` | Native/hosted 24/24; UI 3/5 | Native/hosted 24/24; UI 4/5 | Native/hosted 24/24; UI 2/5 |
+| [Files 42755073369](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42755073369), `4dbbddb` | Native/hosted 37/39; UI 6/8 | Native/hosted 38/39; UI 6/8 | Native/hosted 38/39; UI 6/8 |
+| [Parity 42751403028](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42751403028), `e1024aa` | Native/hosted 91/92; UI 17/21 | Native/hosted 92/92; UI 20/21 | Native/hosted 92/92; UI 20/21 |
+
+Each matrix variant separately passed all 97 portable cases. Each files variant
+also passed the 12 original-script worker cases, including the real Swift HTTP
+client. No selected test was skipped in these three scoped matrices. A timed-out
+case is a failure even when XCTest restarts and later prints a passing suite:
+`SkillExecutionTests.testCancellationAndUploadGating` exceeded its four-minute
+allowance in parity SE and files large. Those cases are included in the failed
+native totals above, not omitted from the denominator.
+
+- Files: native upload/cancellation and four PDF UI cases passed on all three
+  devices, including actual selection, both approvals, real text extraction and
+  refusal boundaries. The two PDF export UI cases still fail. Hosted regressions
+  include actual scroll observation (SE), a WebKit InvalidTransition (current),
+  and website-record removal/cleanup (SE). These remain under investigation.
+- Workspace: independent tabs and manual query/dialog UI passed everywhere.
+  Bookmark/history/relaunch passed on SE/large; current failed on duplicate AX
+  representations of the history confirmation action. Large passed actual native
+  form login, authenticated HTTP requests across tabs/relaunch, then logout and
+  denial of a fresh protected request. Its separate website-data-clear case failed.
+  SE/current login cases failed during password interaction; fixes include native
+  keyboard-introduction handling and controlled page scrolling.
+- Parity: current failed one initial-browser AX lookup; large failed one local
+  page-load wait. SE failed four UI cases involving editor focus and virtualized
+  list controls, in addition to the native cancellation timeout. The shared list
+  helper is being repaired from actual frames/recordings; exact persisted values,
+  grant checks and post-operation assertions remain required.
+- [Release 42758873943](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758873943)
+  on `0092fc8` passed: nine device binaries, App minimum OS 17.0, SDK 26.2, native
+  Documents flags, absent Release ATS key and packaged required-reason entries
+  verified. Still unsigned/not installable, no runtime or distribution claim.
 - [Live model 42751407713](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42751407713)
-  on `e1024aa`: seven native model calls across transport/memory/skill probes and
-  all seven live UI cases passed, zero failures/skips. Actual browser cases cover
-  approved DOM navigation, public-page research, and five-page learning through
-  approval/relaunch. The separate native skill-judge probe uses a synthetic
-  trajectory and is not counted as live browser execution.
-- [Release 42753499130](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42753499130)
-  on `39a13b0`: nine device binaries, App minimum OS 17.0, SDK 26.2, native Documents
-  flags and actual packaged required-reason entries verified. This commit changes
-  only a privacy resource and release tooling/documentation; Swift App code is
-  unchanged from `d160a24`. Still unsigned/not installable, no runtime claim.
-- [Files 42751391794](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42751391794)
-  on test-only `e1024aa`: 97 portable, 12 original-script worker and 39 native cases
-  passed in each variant. UI: SE 3/8, large 4/8, current 4/8. Actual upload passed
-  everywhere; SE/large cancellation failed during cold native Files presentation.
-  Recording shows a blank Recents sheet before controls become ready; the next
-  test revision waits conditionally up to 45 seconds after one tap, without retry.
-  PDF refusal-before-read now passes everywhere, and large refusal-after-read
-  passes. Remaining failures include a virtualized status row queried too early
-  and iOS 26 whole-cell fallback taps missing the visible thumbnail. The next
-  revision repairs element lookup order and validates the exact thumbnail geometry;
-  extraction/export assertions remain unchanged and still require native retesting.
-- Earlier workspace `42748354209` retains SE/current failures; its remaining large
-  job was cancelled when the repaired workspace run was dispatched. It is not an
-  all-completed matrix. [Workspace 42751396574](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42751396574)
-  and [parity 42751403028](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42751403028)
-  on `e1024aa` are pending results.
+  on `e1024aa`: seven actual native model requests across transport/memory/skill
+  probes and all seven live UI cases passed, zero failures/skips. Browser cases
+  cover approved DOM navigation, public-page research, and five-page learning
+  through approval/relaunch. The native skill-judge probe uses a synthetic
+  trajectory, so it is not counted as live browser execution.
 
-Integrated source `d160a24` is under test in [files 42748349250](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748349250)
+The first full iOS 17 runs use `d160a24`:
+[17.5 42748380772](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748380772)
+completed with native/hosted 106 passed/one failed (two assertions), and UI 31
+passed/15 failed/ten live-service skips.
+[17.0.1 42748375007](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748375007)
+booted and recorded native 96 passed/one failed and UI 26 passed/15 failed/ten
+skips, then reached the old 55-minute limit before finishing all UI and hosted
+cases. Both actually executed App code, and neither is a full pass.
+`1153d5a`/`0092fc8` fix Foundation discarding malformed ports by checking the
+original address before normalization; 1,034 local direct Swift checks passed.
+The new native and hosted regression cases await the new simulator runs.
+
+Full reruns on `0092fc8` are in progress:
+[17.0.1 42758764668](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758764668)
+and [17.5 42758809838](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758809838).
+They include the input-focus, keyboard/scrolling, Files presentation and exact
+thumbnail corrections, plus the 80-minute build/test deadline. Later test-only
+repairs are separate revisions and must be retested before being called passed.
+
+### Earlier increment evidence
+
+Integrated source `d160a24` was tested in [files 42748349250](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748349250)
 and [workspace 42748354209](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748354209).
 The current-runtime partial logs confirm 97 portable cases and the files run's
 12 original-script worker cases passed, including the real Swift HTTP client.
