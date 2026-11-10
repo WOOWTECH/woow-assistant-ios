@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "source_commit": "856e8eca5e17a46f030de1a4b85a2236e58c51cd",
+  "run_id": 42853430458,
+  "job_id": 129959972511,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42853430458",
+  "runtime": "iOS18.5",
+  "native_probes": {
+    "json": "passed",
+    "sse": "passed",
+    "sse_chunks": 3
+  },
+  "ui": {
+    "method": "LiveModelUITests/testRealWebKitMultiSourceResearchCitesBothApprovedRoots",
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "seconds": 120.885,
+    "diagnostic": "phase=finished;failure=none;pages=2",
+    "failure_line": 481,
+    "failure": "Partial result does not satisfy the unchanged two-source completion assertion."
+  },
+  "limits": [
+    "The actual iOS limitation text, findings count and cited-source count were not retained; subsequent citation assertions were not reached.",
+    "No private screenshots, AX, credentials, endpoint or model prose are published.",
+    "The local WebKit/model reproduction is separate evidence and does not establish the exact cause of the original iOS response."
+  ]
+}

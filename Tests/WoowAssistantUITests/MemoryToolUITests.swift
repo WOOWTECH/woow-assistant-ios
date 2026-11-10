@@ -153,7 +153,7 @@ final class MemoryToolUITests: XCTestCase {
     private func requestReview(_ prompt: String, operation: String, quote: String,
                                before: String?, after: String?, keywords: String?, pending: Bool = false) {
         let draft = app.textFields["chat.draft"].firstMatch
-        writeASCII(prompt, into: draft)
+        writeASCII(prompt, into: draft, scroll: false)
         tap("chat.dismissKeyboard")
         XCTAssertEqual(draft.value as? String, prompt)
         tap("chat.send")
@@ -311,9 +311,23 @@ final class MemoryToolUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["\(section).status"].firstMatch.waitForExistence(timeout: 5))
     }
 
-    private func writeASCII(_ text: String, into field: XCUIElement, chunkSize: Int = 16) {
-        revealLearningElement(field, in: app)
-        ready(field); field.tap()
+    private func writeASCII(_ text: String, into field: XCUIElement, chunkSize: Int = 16, scroll: Bool = true) {
+        if scroll { revealLearningElement(field, in: app) }
+        ready(field)
+        if !scroll {
+            // Same composer as the four 856e8ec profile-tool failures: it is
+            // outside the messages ScrollView, so inspect its native bounds.
+            XCTAssertEqual(field.identifier, "chat.draft")
+            let frame = field.frame
+            XCTAssertFalse(frame.isEmpty)
+            XCTAssertTrue(app.frame.contains(frame))
+            let navigation = app.buttons["navigation.chat"].firstMatch
+            ready(navigation)
+            XCTAssertLessThanOrEqual(frame.maxY, navigation.frame.minY)
+            let keyboard = app.keyboards.firstMatch
+            if keyboard.exists { XCTAssertLessThanOrEqual(frame.maxY, keyboard.frame.minY) }
+        }
+        field.tap()
         prepareLatinKeyboard()
         var remaining = text[...]
         var entered = ""

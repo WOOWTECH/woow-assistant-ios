@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "source_commit": "30bcaf1518b621f91acc72c1b871529a2ab34f41",
+  "run_id": 42856652362,
+  "job_id": 129971405044,
+  "artifact_id": 13787075841,
+  "method": "SkillExecutionUITests.testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+  "device": "iPhone 16 Pro Max",
+  "runtime": "iOS 18.5 (22F77)",
+  "total": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "duration_seconds": 132.538,
+  "case_deadline_seconds": 240,
+  "failure": {
+    "file": "Tests/WoowAssistantUITests/SkillExecutionUITests.swift",
+    "line": 715,
+    "message": "Files must deliver the selected source or expose an enabled, hittable Open confirmation within 15 seconds.",
+    "stage": "native multi-selection confirmation query",
+    "exact_cell_guard_passed": true,
+    "native_cell_tapped_seconds": 102.81,
+    "file_visibly_selected": true,
+    "native_confirmation_tapped": false,
+    "importer_callback_reached": false,
+    "read_approval_reached": false,
+    "assembly_reached": false,
+    "export_reached": false
+  },
+  "confirmed_cause": {
+    "native_confirmation_label": "打開",
+    "old_allowed_labels": [
+      "開啟",
+      "Open"
+    ],
+    "native_navigation_identifier": "FullDocumentManagerViewControllerNavigationBar",
+    "session_log_mismatch_lines": [
+      22703,
+      22704
+    ],
+    "frame_105": "Exact synthetic PDF is selected with a blue checkmark; blue 打開 button is visible at the top right.",
+    "frame_118": "Same selected file and confirmation remain while the unmatched predicate times out.",
+    "assessment": "The exact cell tap correctly selected the file. The helper excluded the observed Traditional Chinese confirmation label; no Open tap was issued, so callback/product assembly behavior remains untested."
+  },
+  "fix": {
+    "file": "Tests/WoowAssistantUITests/SkillExecutionUITests.swift",
+    "scope": "allowsMultipleSelection branch only",
+    "allowed_labels": [
+      "打開",
+      "開啟",
+      "Open"
+    ],
+    "existing_selection_geometry_unchanged": true,
+    "existing_enabled_hittable_guard_unchanged": true,
+    "at_most_one_confirmation_tap_unchanged": true,
+    "actual_callback_and_exact_filename_assertions_unchanged": true,
+    "read_review_order_result_export_assertions_unchanged": true,
+    "case_deadline_seconds": 240,
+    "confirmation_wait_seconds": 15,
+    "retry": false,
+    "direct_URL_or_preselection": false,
+    "validation": {
+      "swift_parse": "passed",
+      "diff_check": "passed",
+      "rest_of_file_byte_identical_to_HEAD": true,
+      "recorded_AX_and_video_inspected": true,
+      "native_UI_after_fix": "not_run"
+    },
+    "candidate_file_sha256": "3422d40f2677387ac025c493bf3a87efdbeab5484a4739c069c7b0f40be14d85"
+  },
+  "prior_failure_retained": "docs/evidence/pdf-assembly-multiselect-74f7b71.json",
+  "local_evidence_directory": "/tmp/woow-30-assembly-large",
+  "evidence": [
+    {
+      "file": "test-summary.json",
+      "bytes": 1637,
+      "sha256": "68b820e45928570da7f7eadde818a86aa107a82106f8295cd2c48132b92719e5"
+    },
+    {
+      "file": "ios-tests.log",
+      "bytes": 875754,
+      "sha256": "89f830fcabcf625539d29c363b719280560a094225631f4d7071884391045388"
+    },
+    {
+      "file": "Session-WoowAssistantUITests-2026-11-10_171915-konS4x.log",
+      "bytes": 4062191,
+      "sha256": "f82ee5475478cf023e0e7267f0f936ef1b453b569b017ec535878b91755e31ff"
+    },
+    {
+      "file": "frame-105.png",
+      "bytes": 245944,
+      "sha256": "9558346eb2e5631b4fff1bcbbd38e48158c5accfb798114055e199df35637af4"
+    },
+    {
+      "file": "frame-118.png",
+      "bytes": 247726,
+      "sha256": "137ebcdf5e248e2b2de82d93ed7df84d1ea4962bedc2bd2aa0f35f9cdaa140ee"
+    },
+    {
+      "file": "1A297544-0C34-4CCE-AE2B-DF65B0416D0B.mp4",
+      "bytes": 15446313,
+      "sha256": "c0d7f5293944387060b146eacf68a4f7feb417fdf03cef415450b392450f468c"
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "kind": "mcp-local-core-portable-checks",
+  "recorded_at_utc": "2026-11-10T17:24:21.825844+00:00",
+  "git_head": "61a94d6c24b209848460fa125a2f7697d519c215",
+  "working_tree_sources": true,
+  "core_matches_announced_freeze": true,
+  "source_sha256": {
+    "Sources/AssistantModels/RawCommandEnvelope.swift": "afccf73ee49f91da1ff74a61c54076d5807ccd470b1bfde2f973c0cd2ca3a200",
+    "Sources/AssistantMemory/UserProfileChatFlow.swift": "17b2651600ebfea58738ca2e9db0986229e81893512470d7c620cf849d2ed7f4",
+    "Sources/AssistantMCP/MCPLocalTools.swift": "13a1b244cbfc5429dab6de22d47ee79dc98c44a88ecd1d8985c765e6aa426c55",
+    "Sources/AssistantMCP/MCPConversationTypes.swift": "3204dae836ab83a55e9ce92d1a944b11d008cdc96025d36597f4041e5eb2a3a8",
+    "Sources/AssistantMCP/MCPConversationRunner.swift": "81561ad4d39a37fb56578fdf9d0a7add13e50cbe80095f5d57f2d7dc0e2c9256",
+    "Tests/AssistantMCPTests/MCPLocalToolsTests.swift": "5bcc947d681d60fb493f3fc5becc2551bf9df5bf05f09ac0ecaf0836c5afce7f",
+    "scripts/CheckMCPLocalTools.sh": "73b1b31d0571c1a95d7c7c5fdce60b4a86e7323d73ff90e003c5c98a569ad807"
+  },
+  "checker": "scripts/CheckMCPLocalTools.sh",
+  "checker_exit_code": 0,
+  "compiler": "Apple Swift version 5.8.1 (swiftlang-5.8.0.124.5 clang-1403.0.22.11.100)\nTarget: x86_64-apple-darwin22.6.0",
+  "warnings_as_errors": true,
+  "local": {
+    "groups": {
+      "rawEnvelopeAndTypedErrors": 30,
+      "distinctNamespacesAndMixedApproval": 18,
+      "localAndSharedBudgets": 47,
+      "outcomesErrorsAndOutputBounds": 26,
+      "denialAndPostcommitFailures": 12,
+      "cancellationDeadlineAndLeaseLifetime": 12
+    },
+    "passed": 145,
+    "failed": 0
+  },
+  "existing_mcp": {
+    "groups": {
+      "handshake": 168,
+      "catalogsAndTools": 13,
+      "capabilitiesAndLimits": 11,
+      "parserAndErrors": 30,
+      "deadlinesAndCancellation": 12,
+      "conversationCatalog": 10,
+      "conversationApproval": 9,
+      "conversationCommands": 58,
+      "conversationErrors": 15,
+      "modelFailureClassification": 101,
+      "commandCorrection": 41,
+      "correctionCancellation": 8,
+      "conversationBudgets": 7,
+      "conversationCancellation": 7,
+      "authorizedTransport": 8
+    },
+    "passed": 498,
+    "failed": 0
+  },
+  "ordinary_profile_flow": {
+    "passed_groups": 5,
+    "failed_groups": 0
+  },
+  "xctest": {
+    "class": "MCPLocalToolsTests",
+    "methods": [
+      "testRawEnvelopeAndTypedHostErrors",
+      "testLocalNamespaceAndMixedRemoteApproval",
+      "testLocalAndSharedModelRemoteBudgets",
+      "testOutcomeTypesHostFailuresAndByteBounds",
+      "testLocalDenialAndPostcommitFailureRetention",
+      "testCancellationDeadlineLateReviewAndLeaseLifetime"
+    ],
+    "syntax_parse_passed": true,
+    "native_typecheck_executed": false,
+    "native_tests_executed": false,
+    "reason": "CLT toolchain has no XCTest module; no replacement installed."
+  },
+  "limits": {
+    "maximum_model_calls": 12,
+    "maximum_remote_calls": 6,
+    "maximum_local_searches": 1,
+    "maximum_local_mutations_shared": 1,
+    "maximum_seconds": 180,
+    "reserves_followup_model_call_for_local_result": true
+  },
+  "evidence_boundaries": [
+    "Local tests use synthetic model/executor/host callbacks; no encrypted persistence claim.",
+    "Existing transport tests use URLProtocol fixtures, not an external MCP server.",
+    "Host actual utterance/revision/master/generation/persistence are separately checked by parent App harness.",
+    "No native iOS XCTest or UI execution on this CLT host."
+  ],
+  "log_sha256": "8767bee216107ed1fd7f6d678179c36a851d02d5f6471db1fcff60bcc88ecf86"
+}

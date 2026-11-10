@@ -146,8 +146,9 @@ public enum UserProfileChatStep: Equatable, Sendable {
     }
 
     private static func parse(_ text: String) throws -> UserProfileChatStep {
-        var envelope = ProfileChatEnvelope(text)
-        let rawFields = try envelope.fields()
+        guard let rawFields = try? RawCommandEnvelope.fields(in: text) else {
+            throw UserProfileChatError.invalidCommand
+        }
         guard let object = try? JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Any],
               let action = object["action"] as? String else { throw UserProfileChatError.invalidCommand }
         switch action {
@@ -198,57 +199,4 @@ public enum UserProfileChatStep: Equatable, Sendable {
     it does not rewrite the profile snapshot in this task. After the receipt return a finish answer, never another edit.
     These and finish are the only actions. No markdown fences, arrays, batches, extra keys or arbitrary tools.
     """
-}
-
-/// Preserve nested argument bytes and reject repeated envelope keys (including
-/// escaped spellings). Full JSON validity is checked by the caller; the tool's
-/// separate flat-argument parser checks duplicate keys inside arguments.
-private struct ProfileChatEnvelope {
-    let bytes: [UInt8]
-    var offset = 0
-    init(_ text: String) { bytes = Array(text.utf8) }
-    mutating func fields() throws -> [String: String] {
-        guard take(123) else { throw UserProfileChatError.invalidCommand }
-        var result: [String: String] = [:]
-        if !take(125) {
-            while true {
-                let rawKey = try value()
-                guard let key = try? JSONDecoder().decode(String.self, from: Data(rawKey.utf8)),
-                      result[key] == nil, take(58) else { throw UserProfileChatError.invalidCommand }
-                result[key] = try value()
-                if take(125) { break }
-                guard take(44) else { throw UserProfileChatError.invalidCommand }
-            }
-        }
-        space()
-        guard offset == bytes.count else { throw UserProfileChatError.invalidCommand }
-        return result
-    }
-    mutating func value() throws -> String {
-        space()
-        let start = offset
-        var depth = 0, quoted = false, escaped = false
-        while offset < bytes.count {
-            let byte = bytes[offset]
-            if !quoted && depth == 0 && (byte == 44 || byte == 58 || byte == 125) { break }
-            offset += 1
-            if quoted {
-                if escaped { escaped = false }
-                else if byte == 92 { escaped = true }
-                else if byte == 34 { quoted = false }
-            } else if byte == 34 { quoted = true }
-            else if byte == 123 || byte == 91 { depth += 1 }
-            else if byte == 125 || byte == 93 { depth -= 1 }
-        }
-        guard start < offset, !quoted, depth == 0 else { throw UserProfileChatError.invalidCommand }
-        return String(decoding: bytes[start..<offset], as: UTF8.self)
-    }
-    mutating func space() {
-        while offset < bytes.count && [9, 10, 13, 32].contains(bytes[offset]) { offset += 1 }
-    }
-    mutating func take(_ byte: UInt8) -> Bool {
-        space()
-        guard offset < bytes.count, bytes[offset] == byte else { return false }
-        offset += 1; return true
-    }
 }

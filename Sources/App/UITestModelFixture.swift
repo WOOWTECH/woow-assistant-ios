@@ -115,6 +115,40 @@ actor UITestChatModelClient: ChatModelClient {
             return String(decoding: try JSONSerialization.data(withJSONObject: ["action": "finish", "answer": answer]), as: UTF8.self)
         }
         if instructions.hasPrefix("You operate selected MCP tools") {
+            // Closed mixed-capability fixtures; never write or approve data.
+            // The normal App dispatcher still validates the exact current quote.
+            let memoryPrompt = "[fixture:mcp-memory] Remember preference Prefer jasmine tea"
+            let profilePrompt = "[fixture:mcp-profile] Please remember Prefer jasmine tea"
+            let declinedPrompt = "[fixture:mcp-memory-decline] Remember preference Prefer quiet"
+            let current = messages.last?.content ?? ""
+            func command(_ action: String, _ arguments: [String: Any]) throws -> String {
+                String(decoding: try JSONSerialization.data(withJSONObject:
+                    ["action": action, "arguments": arguments]), as: UTF8.self)
+            }
+            if messages.contains(where: { $0.role == "user" && $0.content == memoryPrompt }) {
+                if current.hasPrefix("Host memory_save receipt") {
+                    return #"{"action":"finish","answer":"MCP 記憶流程已完成。"}"#
+                }
+                if current.hasPrefix("MCP execution result") {
+                    return try command("memory_save", ["kind": "preference", "content": "Prefer jasmine tea", "quote": memoryPrompt, "keywords": ["jasmine", "tea"]])
+                }
+                return #"{"action":"call_tool","name":"fixture_echo","arguments":{"text":"hello"}}"#
+            }
+            if messages.contains(where: { $0.role == "user" && $0.content == profilePrompt }) {
+                if current.hasPrefix("Host profile_edit receipt") {
+                    return #"{"action":"call_tool","name":"fixture_echo","arguments":{"text":"hello"}}"#
+                }
+                if current.hasPrefix("MCP execution result") {
+                    return #"{"action":"finish","answer":"MCP 個人檔案流程已完成。"}"#
+                }
+                return try command("profile_edit", ["op": "add", "text": "Prefer jasmine tea", "quote": profilePrompt])
+            }
+            if messages.contains(where: { $0.role == "user" && $0.content == declinedPrompt }) {
+                if current.hasPrefix("Host memory_save receipt") {
+                    return #"{"action":"finish","answer":"MCP 記憶流程已完成。"}"#
+                }
+                return try command("memory_save", ["kind": "preference", "content": "Prefer quiet", "quote": declinedPrompt, "keywords": ["quiet"]])
+            }
             if let result = messages.last?.content, result.hasPrefix("MCP execution result") {
                 let raw = result.components(separatedBy: "\n").dropFirst().joined(separator: "\n")
                 let payload = try JSONSerialization.jsonObject(with: Data(raw.utf8)) as? [String: Any]

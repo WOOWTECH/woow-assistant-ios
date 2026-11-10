@@ -32,8 +32,8 @@ class LiveLearningAppRunnerTests(unittest.TestCase):
                 target.parent.mkdir(parents=True, exist_ok=True)
                 target.write_bytes(data)
             self.report["source_sha256"][path] = hashlib.sha256(data).hexdigest()
-        for name in ("LiveLearningToolAppSmoke.swift", "run_live_learning_app.py"):
-            (self.repo / "scripts" / name).write_text("// fixed synthetic driver\n")
+        for name in (*live.HARNESSES.values(), "run_live_learning_app.py"):
+            (self.repo / "scripts" / name).write_text("// fixed synthetic driver " + name + "\n")
         self.environment = {name: "PRIVATE_CANARY_DO_NOT_ECHO" for name in live.PRIVATE_FIELDS}
         self.save_report()
 
@@ -61,6 +61,40 @@ class LiveLearningAppRunnerTests(unittest.TestCase):
         for path, data in captured.items():
             self.assertEqual(data, (self.snapshot / "source" / path).read_bytes())
             self.assertEqual(hashlib.sha256(data).hexdigest(), hashes[path])
+
+    def test_mcp_mode_requires_private_endpoint_before_any_compile_or_request(self):
+        with patch.dict(live.os.environ, self.environment, clear=True), \
+                patch.object(live.subprocess, "run") as child:
+            with self.assertRaisesRegex(SystemExit, "Missing model test environment"):
+                live.run(self.snapshot, self.output, self.repo, "mcp")
+            with self.assertRaisesRegex(SystemExit, "Unknown live App harness"):
+                live.run(self.snapshot, self.output, self.repo, "unrecognized")
+        child.assert_not_called()
+
+    def test_mcp_harness_is_fixed_and_endpoint_never_reaches_compiler(self):
+        seen = []
+        def child(command, **kwargs):
+            if command[0] == "swiftc":
+                self.assertNotIn(live.MCP_PRIVATE_FIELD, kwargs["env"])
+                self.assertFalse(set(live.PRIVATE_FIELDS) & set(kwargs["env"]))
+                if "-DDEBUG" in command:
+                    source = Path(command[command.index("-o") - 1])
+                    self.assertEqual(source.read_bytes(), (self.repo / "scripts" / live.HARNESSES["mcp"]).read_bytes())
+                    seen.append("mcp_source")
+                return subprocess.CompletedProcess(command, 0, "", "")
+            self.assertNotIn("env", kwargs)  # Executable alone inherits private fields.
+            seen.append("live")
+            return subprocess.CompletedProcess(command, 0, '{"passed":true}', "")
+        environment = dict(self.environment, **{live.MCP_PRIVATE_FIELD: "PRIVATE_CANARY_DO_NOT_ECHO"})
+        output = io.StringIO()
+        with patch.dict(live.os.environ, environment, clear=True), \
+                patch.object(live.subprocess, "run", side_effect=child), contextlib.redirect_stdout(output):
+            self.assertEqual(live.run(self.snapshot, self.output, self.repo, "mcp"), 0)
+        self.assertEqual(seen, ["mcp_source", "live"])
+        self.assertNotIn("PRIVATE_CANARY", output.getvalue())
+        report = json.loads(self.output.read_text())
+        self.assertIn("scripts/LiveMCPLearningAppSmoke.swift", report["source_sha256"])
+        self.assertNotIn("scripts/LiveLearningToolAppSmoke.swift", report["source_sha256"])
 
     def test_each_required_build_typecheck_and_syntax_check_is_mandatory(self):
         for name in sorted(live.REQUIRED_CHECKS):

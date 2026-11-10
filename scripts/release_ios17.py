@@ -31,7 +31,7 @@ UI_SHARDS = {
     "ui-memory-tools": ["MemoryToolUITests"],
     "ui-skills": ["SkillCatalogUITests", "SkillAuthoringUITests", "TranscriptUITests"],
     "ui-documents": ["SkillExecutionUITests", "SkillWorkerSettingsUITests"],
-    "ui-mcp": ["MCPConversationUITests"],
+    "ui-mcp": ["MCPConversationUITests", "MCPLearningUITests"],
 }
 LIVE_UI_CLASSES = {"LiveMCPUITests", "LiveMCPConversationUITests", "LiveModelUITests", "LiveTranscriptUITests"}
 

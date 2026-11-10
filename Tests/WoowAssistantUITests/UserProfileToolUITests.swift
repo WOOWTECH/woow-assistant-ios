@@ -147,7 +147,7 @@ final class UserProfileToolUITests: XCTestCase {
 
     private func requestReview(_ prompt: String, operation: String, before: String?, after: String?) {
         let draft = app.textFields["chat.draft"].firstMatch
-        writeASCII(prompt, into: draft)
+        writeASCII(prompt, into: draft, scroll: false)
         tap("chat.dismissKeyboard")
         XCTAssertEqual(draft.value as? String, prompt)
         tap("chat.send")
@@ -244,9 +244,24 @@ final class UserProfileToolUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["\(section).status"].firstMatch.waitForExistence(timeout: 5))
     }
 
-    private func writeASCII(_ text: String, into field: XCUIElement, chunkSize: Int = 16) {
-        revealLearningElement(field, in: app)
-        ready(field); field.tap()
+    private func writeASCII(_ text: String, into field: XCUIElement, chunkSize: Int = 16, scroll: Bool = true) {
+        if scroll { revealLearningElement(field, in: app) }
+        ready(field)
+        if !scroll {
+            // 856e8ec current AX: draft y=673.7...707.7 was fully visible
+            // above navigation y=788, outside the messages ScrollView (661.7).
+            // A sibling composer cannot be revealed by scrolling messages.
+            XCTAssertEqual(field.identifier, "chat.draft")
+            let frame = field.frame
+            XCTAssertFalse(frame.isEmpty)
+            XCTAssertTrue(app.frame.contains(frame))
+            let navigation = app.buttons["navigation.chat"].firstMatch
+            ready(navigation)
+            XCTAssertLessThanOrEqual(frame.maxY, navigation.frame.minY)
+            let keyboard = app.keyboards.firstMatch
+            if keyboard.exists { XCTAssertLessThanOrEqual(frame.maxY, keyboard.frame.minY) }
+        }
+        field.tap()
         prepareLatinKeyboard()
         var remaining = text[...]
         var entered = ""

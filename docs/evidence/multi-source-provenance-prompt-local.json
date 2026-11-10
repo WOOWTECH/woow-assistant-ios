@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "host_macos": "13.7.8",
+  "host_architecture": "x86_64",
+  "scope": "actual macOS WebKit public HTTPS observations plus production HTTPChatModelClient; no iOS UI",
+  "goal": "Compare documentation purpose of example.com and example.org using both supplied sources; require an exact domain quote from each; do not assert independent publishers.",
+  "roots": [
+    "https://www.iana.org/domains/reserved",
+    "https://www.rfc-editor.org/rfc/rfc2606.txt"
+  ],
+  "before": {
+    "actual_http_model": true,
+    "actual_mac_webkit": true,
+    "cited_sources": 2,
+    "findings": 1,
+    "native_ios_ui": false,
+    "pages": 2,
+    "partial": true,
+    "source_domain_quotes": [
+      true,
+      true
+    ],
+    "limitation_count": 1
+  },
+  "before_limitation_classification": "A publisher-independence caution was placed in limitations, which marks a result partial.",
+  "candidate": {
+    "actual_http_model": true,
+    "actual_mac_webkit": true,
+    "cited_sources": 2,
+    "findings": 1,
+    "native_ios_ui": false,
+    "pages": 2,
+    "partial": false,
+    "source_domain_quotes": [
+      true,
+      true
+    ],
+    "limitation_count": 0
+  },
+  "runner_change": {
+    "baseline_sha256": "42b18e228c30c5c45a0eb7cd30acfa1132c0d06a0b202a33f2b6b0493c3fc419",
+    "candidate_sha256": "045082fa9d6704854efdf44f26d57c176ab87806cb23092ec4ecb0d8bd9a967a",
+    "changed": "system field meaning only; budgets, parser, citations and partial classifier unchanged"
+  },
+  "other_source_sha256": {
+    "Sources/App/BrowserSession.swift": "c0301cc8add3b7973363597646b84b2f9f2882a89f67599886e61df5e31f05fc",
+    "Sources/AssistantModels/HTTPChatModelClient.swift": "94e7ccb5ffc86d0cff2bb6f4a822a55a2ef94ac064d9d39ea76482395c0e1d8c"
+  },
+  "harness_sha256": {
+    "baseline": "81662a69c903e9efabc00467e2342938b56384064cb1e614fa2982ddb5945f61",
+    "candidate": "6a62fe607ec1b5b49f089b8d96dcdbfd3cbf28c19736861dc0d83166f0ce80ee"
+  },
+  "limits": [
+    "One baseline and one candidate execution, not a deterministic statistical claim or proof of the original iOS response cause.",
+    "Only the model instructions clarify unresolved requested work versus interpretation/provenance cautions; partial classifier, citation checks, parser and budgets are unchanged.",
+    "Both runs actually fetched and cited two approved origins with exact domain-containing quotes; raw source/model prose and credentials are not published.",
+    "Native iOS retest remains necessary."
+  ],
+  "core_regression": {
+    "compile": "Swift5 warnings-as-errors",
+    "assertions": 74,
+    "passed": true,
+    "browser": "synthetic observations",
+    "model_transport": "actual loopback HTTP",
+    "log_sha256": "3eb8744bd01a0db9b93b35755131f2124d0dc99a1bfb5179fe99f6e610f3e8f6"
+  }
+}

@@ -48,6 +48,7 @@ public enum MCPConversationEvent: Sendable, Equatable {
 
 public enum MCPConversationStopReason: String, Codable, Sendable {
     case finished, approvalDenied, modelCallLimit, toolCallLimit, repeatedCall, toolError
+    case localCallLimit
 }
 
 public struct MCPConversationResult: Sendable {
@@ -79,6 +80,7 @@ public enum MCPConversationError: String, Error, Sendable, Equatable, LocalizedE
     case invalidInput, invalidCatalog, invalidLimits, invalidCommand, unknownTool, unknownResource
     case inputTooLarge, modelResponseTooLarge, outputTooLarge, invalidExecutionResult
     case modelFailed, approvalFailed, executionFailed, timedOut
+    case localUnavailable, invalidLocalResult, localLeaseExpired
     /// Provider request failures are distinct from the whole-conversation deadline.
     /// HTTP status numbers, bodies and underlying error descriptions are discarded.
     case modelTimedOut, modelTransportFailed, modelHTTPRejected, modelInvalidResponse, modelIncompleteResponse

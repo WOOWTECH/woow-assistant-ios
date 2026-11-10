@@ -182,6 +182,7 @@ targets:
       - target: AssistantModels
       - target: AssistantPersistence
       - target: AssistantMemory
+      - target: AssistantMCP
 
   AssistantPersistenceTests:
     type: bundle.unit-test

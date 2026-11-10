@@ -1,0 +1,25 @@
+PASS rawEnvelopeAndTypedErrors: 30 checks
+PASS distinctNamespacesAndMixedApproval: 18 checks
+PASS localAndSharedBudgets: 47 checks
+PASS outcomesErrorsAndOutputBounds: 26 checks
+PASS denialAndPostcommitFailures: 12 checks
+PASS cancellationDeadlineAndLeaseLifetime: 12 checks
+PASS MCP local: 6 groups, 145 checks; synthetic host/model only
+XCTest unavailable in this toolchain: wrapper syntax parsed; native typecheck/execution required in CI.
+PASS handshake: 168 checks
+PASS catalogsAndTools: 13 checks
+PASS capabilitiesAndLimits: 11 checks
+PASS parserAndErrors: 30 checks
+PASS deadlinesAndCancellation: 12 checks
+PASS conversationCatalog: 10 checks
+PASS conversationApproval: 9 checks
+PASS conversationCommands: 58 checks
+PASS conversationErrors: 15 checks
+PASS modelFailureClassification: 101 checks
+PASS commandCorrection: 41 checks
+PASS correctionCancellation: 8 checks
+PASS conversationBudgets: 7 checks
+PASS conversationCancellation: 7 checks
+PASS authorizedTransport: 8 checks
+PASS MCP: 15 groups, 498 checks; local fixtures only
+Learning chat flow: 5 behavioral groups passed; no model network or persistence implied

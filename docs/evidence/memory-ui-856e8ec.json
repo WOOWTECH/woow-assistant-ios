@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-10T17:24:00Z",
+  "scope": "Original 856e8ec ui-memory current failure; other matrix jobs remain separate.",
+  "run_id": 42853406511,
+  "job_id": 129959885757,
+  "head_sha": "856e8eca5e17a46f030de1a4b85a2236e58c51cd",
+  "artifact_id": 13786736334,
+  "completion": {
+    "completed_ui_count": 17,
+    "counts": {
+      "expectedFailures": 0,
+      "failedTests": 4,
+      "passedTests": 13,
+      "skippedTests": 0,
+      "totalTestCount": 17
+    },
+    "expected_ui_count": 17,
+    "missing_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": [
+      "WoowAssistantUITests/UserProfileToolUITests/testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+      "WoowAssistantUITests/UserProfileToolUITests/testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+      "WoowAssistantUITests/UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "WoowAssistantUITests/UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch"
+    ],
+    "result": "Failed",
+    "unexpected_ui_tests": [],
+    "verified": false
+  },
+  "records": [
+    {
+      "class": "MemoryRaceUITests",
+      "method": "testClearWhileReplyPendingDoesNotRepopulateAndNewChatHidesOldNotes",
+      "outcome": "passed",
+      "seconds": 93.138
+    },
+    {
+      "class": "MemoryUITests",
+      "method": "testMemoryEditPinSearchAndDeletePersist",
+      "outcome": "passed",
+      "seconds": 113.81
+    },
+    {
+      "class": "MemoryUITests",
+      "method": "testOversizedMemoryIsRejectedAndCorrectedTextPersists",
+      "outcome": "passed",
+      "seconds": 98.984
+    },
+    {
+      "class": "MemoryUITests",
+      "method": "testProceduresRequireApprovalAndCanBeRejected",
+      "outcome": "passed",
+      "seconds": 81.638
+    },
+    {
+      "class": "MemoryUITests",
+      "method": "testSegmentsAndPreferencePersistence",
+      "outcome": "passed",
+      "seconds": 53.905
+    },
+    {
+      "class": "MemoryUITests",
+      "method": "testSkillImportFailureReviewAndEnablementPersist",
+      "outcome": "passed",
+      "seconds": 100.361
+    },
+    {
+      "class": "MemoryUITests",
+      "method": "testSkillUpdateRejectionAndRollback",
+      "outcome": "passed",
+      "seconds": 116.526
+    },
+    {
+      "class": "MemoryUITests",
+      "method": "testTwoStepClearCancellationAndModelSettingsIsolation",
+      "outcome": "passed",
+      "seconds": 118.132
+    },
+    {
+      "class": "UserProfileToolUITests",
+      "method": "testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+      "outcome": "failed",
+      "seconds": 95.327
+    },
+    {
+      "class": "UserProfileToolUITests",
+      "method": "testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+      "outcome": "failed",
+      "seconds": 67.774
+    },
+    {
+      "class": "UserProfileToolUITests",
+      "method": "testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "outcome": "failed",
+      "seconds": 112.469
+    },
+    {
+      "class": "UserProfileToolUITests",
+      "method": "testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "outcome": "failed",
+      "seconds": 108.593
+    },
+    {
+      "class": "UserProfileUITests",
+      "method": "testCreateReplaceDeleteAndHistorySurviveRelaunch",
+      "outcome": "passed",
+      "seconds": 108.955
+    },
+    {
+      "class": "UserProfileUITests",
+      "method": "testDuplicateAndCancelledTextNeverPublish",
+      "outcome": "passed",
+      "seconds": 109.155
+    },
+    {
+      "class": "UserProfileUITests",
+      "method": "testMasterSwitchAndTwiceConfirmedClearPersist",
+      "outcome": "passed",
+      "seconds": 125.722
+    },
+    {
+      "class": "UserProfileUITests",
+      "method": "testMultipleSentencesNeverPublish",
+      "outcome": "passed",
+      "seconds": 82.691
+    },
+    {
+      "class": "UserProfileUITests",
+      "method": "testSensitiveTextNeverPublishes",
+      "outcome": "passed",
+      "seconds": 84.71
+    }
+  ],
+  "original_source_sha256": {
+    "Tests/WoowAssistantUITests/UserProfileToolUITests.swift": "f6a047a0b0c487a5d799eaa4296b796fdbc1e7b54e88eda802b7dad877714446",
+    "Tests/WoowAssistantUITests/UserProfileUITests.swift": "d41343a51a90bd7c718359257b1ecdea2df4b79f757a762278e25f4a815304fa",
+    "Tests/WoowAssistantUITests/MemoryUITests.swift": "6517e1a715119b6948d15f28e18cba9eb57154ee1f5d236e47eb1e1f3ab55c4f",
+    "Tests/WoowAssistantUITests/MemoryRaceUITests.swift": "8a3eca91e48906d92d4e267993513b48ea9928500fc25f4b2ccb083a36db95a0",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204"
+  },
+  "candidate_source_sha256": {
+    "Tests/WoowAssistantUITests/UserProfileToolUITests.swift": "ed0f454214d63bcad9970c4a449b360ae0c56654a5432dc76e7af33ec3a6f9af",
+    "Tests/WoowAssistantUITests/MemoryToolUITests.swift": "6a31a4326590bfef5e048b443710fc59a3194bbdca7dc2ea2741efc117362e1f"
+  },
+  "matrix_acceptance": false,
+  "other_jobs_as_observed": [
+    {
+      "job_id": 129959885587,
+      "device": "iPhone SE (3rd generation)",
+      "status": "in_progress",
+      "phase": "Test",
+      "counts": null
+    },
+    {
+      "job_id": 129959885142,
+      "device": "iPhone 16 Pro Max",
+      "status": "completed",
+      "conclusion": "cancelled",
+      "counts": null
+    }
+  ],
+  "runtime": {
+    "matrix_label": "ios26-current",
+    "requested_runtime": "iOS-26-2",
+    "device": "iPhone 17",
+    "os_build_verified": false
+  },
+  "failure": {
+    "source_path": "Tests/WoowAssistantUITests/UserProfileToolUITests.swift",
+    "source_line": 248,
+    "message": "Learning element must meet its visibility requirement above navigation/keyboard: chat.draft",
+    "stage": "Before typing the profile tool request; no model command or review reached",
+    "shared_by_failed_cases": 4
+  },
+  "artifact": {
+    "id": 13786736334,
+    "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42853406511/artifacts/13786736334",
+    "size_bytes": 662721618,
+    "digest": "sha256:19a6a8a821aae601d5f489ea7e25b54726b76d67ac0af83cc2457e75f8158820",
+    "bounded_retrieval": "Only screenshots/manifest.json plus four fixture AX and four fixture screenshots; no full archive downloaded"
+  },
+  "ax_evidence": {
+    "application_window": {
+      "x": 0,
+      "y": 0,
+      "width": 402,
+      "height": 874
+    },
+    "draft": {
+      "x": 16,
+      "y": 673.7,
+      "width": 370,
+      "height": 34
+    },
+    "bottom_navigation": {
+      "x": 8,
+      "y": 788,
+      "width": 77.3,
+      "height": 44
+    },
+    "message_scroll_bottom": 661.7,
+    "keyboard_present": false,
+    "attachments": [
+      {
+        "method": "testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+        "ax": "E2D717AB-1046-4E19-8755-E17F1F1C5007.txt",
+        "screenshot": "AD7CB71C-E7E3-4FCD-9865-75B056EB7011.png"
+      },
+      {
+        "method": "testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+        "ax": "F36388F3-28C0-4C0D-A5A5-97F67655C99E.txt",
+        "screenshot": "4CFAF74C-3DD6-41C2-A5AA-13DE66BC95B8.png"
+      },
+      {
+        "method": "testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+        "ax": "7C54E432-5F4C-4A98-9910-72E3BCEE9E08.txt",
+        "screenshot": "5F1586B4-1629-487B-94AE-D6000051F0FF.png"
+      },
+      {
+        "method": "testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+        "ax": "560AD54C-30D2-4828-8ADD-8BBB12CF3D75.txt",
+        "screenshot": "2FFFE322-DB36-484E-A87F-E9874177E1CC.png"
+      }
+    ]
+  },
+  "determination": "Fixture selected the message ScrollView as the composer's viewport. Chat draft is a separate fully visible sibling below it, so scrolling messages cannot reveal it within that viewport. Source and four AX attachments agree; this failure does not establish a product or model failure.",
+  "candidate_fix": {
+    "path": "Tests/WoowAssistantUITests/UserProfileToolUITests.swift",
+    "description": "Only chat draft bypasses List scrolling. Still require native exists/hittable/enabled, nonempty full frame within app and above navigation and any keyboard, then native tap. Settings/profile editor continue using bounded scrolling.",
+    "native_verified": false,
+    "local_validation": {
+      "swift_frontend_parse": "passed",
+      "git_diff_check": "passed",
+      "release_ios17_readiness": "10/10 passed"
+    },
+    "not_changed": [
+      "App/core",
+      "shared scrolling helper",
+      "test deadlines",
+      "asserted outcomes",
+      "retry policy"
+    ],
+    "same_source_prevention": {
+      "path": "Tests/WoowAssistantUITests/MemoryToolUITests.swift",
+      "reason": "Same composer and identical scrolling call as the four actual profile-tool failures; applies the same full native visibility checks. Its own queued run has not produced an actual result.",
+      "swift_frontend_parse": "passed",
+      "native_verified": false
+    }
+  },
+  "limitations": [
+    "Cancelled Large job has no recovered actual test counts; cancellation is not success or a test failure count.",
+    "SE remains pending in this bounded report; no matrix aggregate is claimed.",
+    "The separate 61a94d6 native and memory-tools runs are not covered by this report.",
+    "The newly added MCPLearningUITests also received the composer visibility correction but is not part of the original run.",
+    "MemoryToolUITests received the same composer visibility correction based on the four original profile-tool failures. The separate queued memory-tools run has no actual result yet; this is not claimed as native validation."
+  ]
+}

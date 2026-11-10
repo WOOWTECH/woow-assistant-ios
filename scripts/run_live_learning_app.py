@@ -18,6 +18,8 @@ from check_profile_chat_app import APP_SOURCES, MODULES
 
 
 PRIVATE_FIELDS = ("WOOW_MODEL_TEST_BASE_URL", "WOOW_MODEL_TEST_MODEL", "WOOW_MODEL_TEST_API_KEY")
+MCP_PRIVATE_FIELD = "WOOW_HA_MCP_TEST_URL"
+HARNESSES = {"ordinary": "LiveLearningToolAppSmoke.swift", "mcp": "LiveMCPLearningAppSmoke.swift"}
 VIEWS = ("ContentView", "UserProfileToolReviewView", "MemoryToolReviewView")
 REQUIRED_CHECKS = {name + "-build" for name, _ in MODULES} | {
     config + suffix for config in ("Debug", "Release") for suffix in ("-typecheck", "-iOS-syntax")}
@@ -87,16 +89,19 @@ def validate_snapshot(root, repo):
         raise SystemExit(SNAPSHOT_ERROR) from None
 
 
-def run(snapshot, output, repo):
+def run(snapshot, output, repo, harness="ordinary"):
     root, repo = snapshot.resolve(), repo.resolve()
-    if any(not os.environ.get(k) for k in PRIVATE_FIELDS):
+    if harness not in HARNESSES:
+        raise SystemExit("Unknown live App harness; no request sent.")
+    required = PRIVATE_FIELDS + ((MCP_PRIVATE_FIELD,) if harness == "mcp" else ())
+    if any(not os.environ.get(k) for k in required):
         raise SystemExit("Missing model test environment fields; no request sent.")
     hashes, captured = validate_snapshot(root, repo)
-    harness_path = "scripts/LiveLearningToolAppSmoke.swift"
+    harness_path = "scripts/" + HARNESSES[harness]
     harness = (repo / harness_path).read_bytes()
     hashes[harness_path] = hashlib.sha256(harness).hexdigest()
     hashes["scripts/run_live_learning_app.py"] = hashlib.sha256((repo / "scripts/run_live_learning_app.py").read_bytes()).hexdigest()
-    build_environment = {k: v for k, v in os.environ.items() if k not in PRIVATE_FIELDS}
+    build_environment = {k: v for k, v in os.environ.items() if k not in (*PRIVATE_FIELDS, MCP_PRIVATE_FIELD)}
     # Old preflight reports contain no binary hashes. Rebuild from the captured
     # verified bytes, instead of trusting possibly stale snapshot dylibs/modules.
     # Compilation shares one 120s budget; no private model fields reach swiftc.
@@ -148,9 +153,10 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--snapshot", type=pathlib.Path, required=True)
     parser.add_argument("--output", type=pathlib.Path, required=True)
+    parser.add_argument("--harness", choices=sorted(HARNESSES), default="ordinary")
     args = parser.parse_args()
     try:
-        return run(args.snapshot, args.output, pathlib.Path(__file__).resolve().parent.parent)
+        return run(args.snapshot, args.output, pathlib.Path(__file__).resolve().parent.parent, args.harness)
     except (OSError, ValueError, TypeError, KeyError, subprocess.TimeoutExpired):
         raise SystemExit("Live App check could not complete; private process output was not printed.") from None
 

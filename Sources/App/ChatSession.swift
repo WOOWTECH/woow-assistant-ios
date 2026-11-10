@@ -249,7 +249,7 @@ final class ChatSession: ObservableObject {
         let learningGeneration = learning.generation
         let profileState = learning.profile
         let memoryState = learning.memory
-        let useProfileTools = mcpConnection == nil && learning.available && learning.memory.preferences.useMemory
+        let useLearningTools = learning.available && learning.memory.preferences.useMemory
         let configuration = savedSettings.configuration
         let id = UUID()
         requestID = id
@@ -267,9 +267,11 @@ final class ChatSession: ObservableObject {
             do {
                 let reply: String
                 if let (connection, tools, resources) = mcpConnection {
-                    reply = try await self?.completeWithMCP(messages: messages, configuration: configuration,
+                    reply = try await self?.completeWithMCP(messages: messages, utterance: prompt,
+                        profileState: profileState, memoryState: memoryState, generation: learningGeneration,
+                        allowsLearning: useLearningTools, configuration: configuration,
                         key: key, client: client, connection: connection, tools: tools, resources: resources, requestID: id) ?? ""
-                } else if useProfileTools {
+                } else if useLearningTools {
                     reply = try await self?.completeWithProfile(messages: messages, utterance: prompt,
                         state: profileState, memoryState: memoryState, generation: learningGeneration, configuration: configuration,
                         key: key, client: client, requestID: id) ?? ""
@@ -349,6 +351,12 @@ final class ChatSession: ObservableObject {
             reason = "等待模型回覆已逾時。"
         case .modelTransportFailed:
             reason = "無法連線至模型服務，請檢查網路。"
+        case .localUnavailable:
+            reason = "本次對話未啟用記憶與個人檔案工具，修改要求已停止。"
+        case .localLeaseExpired:
+            reason = "這次記憶工具操作已失效，修改要求已停止。"
+        case .invalidLocalResult:
+            reason = "本機記憶工具未傳回完整結果，對話已停止。"
         default: return nil
         }
         return reason + "草稿與已收到的工具結果保留；沒有自動重送操作。"
@@ -500,9 +508,20 @@ final class ChatSession: ObservableObject {
         return nil
     }
 
-    private func completeWithMCP(messages: [ModelMessage], configuration: ModelConfiguration,
+    private func completeWithMCP(messages: [ModelMessage], utterance: String,
+                                 profileState: UserProfileState, memoryState: MemoryState,
+                                 generation: UUID, allowsLearning: Bool, configuration: ModelConfiguration,
                                  key: String, client: any ChatModelClient,
                                  connection: any MCPDiscovering, tools: [MCPTool], resources: [MCPResource], requestID: UUID) async throws -> String {
+        let turn = MCPLearningTurn(profile: profileState, memory: memoryState,
+                                   utterance: utterance, generation: generation)
+        let local: MCPLocalHandler?
+        if allowsLearning {
+            local = { [weak self] proposal, lease in
+                guard let self else { throw CancellationError() }
+                return try await self.performMCPLocal(proposal, lease: lease, turn: turn, requestID: requestID)
+            }
+        } else { local = nil }
         let result = try await MCPConversationRunner(client: client).run(
             messages: messages, configuration: configuration, apiKey: key,
             tools: tools, resources: resources, executor: connection,
@@ -515,9 +534,55 @@ final class ChatSession: ObservableObject {
                 }
             }, onEvent: { [weak self] event in
                 await self?.receiveMCP(event, requestID: requestID)
-            })
+            }, handleLocal: local)
         guard result.stopReason == .finished, let answer = result.answer else { throw MCPChatStop(reason: result.stopReason) }
         return answer
+    }
+
+    /// Local learning and the remote MCP connection are separate capabilities.
+    /// Every proposal is validated against this turn's captured user utterance;
+    /// remote catalogs/results cannot supply that authority or replace its IDs.
+    private func performMCPLocal(_ proposal: MCPLocalProposal, lease: MCPLocalLease,
+                                 turn: MCPLearningTurn, requestID: UUID) async throws -> MCPLocalOutcome {
+        try lease.check()
+        guard self.requestID == requestID else { throw CancellationError() }
+        switch proposal.action {
+        case .memorySearch:
+            try validateMemoryRun(turn.memory, generation: turn.generation)
+            let result = try turn.memory.search(argumentsJSON: proposal.argumentsJSON)
+            return .searchResult(json: try result.resultJSON())
+        case .profileEdit:
+            guard learning.available, learning.memory.preferences.useMemory,
+                  learning.generation == turn.generation, learning.profile.revision == turn.profile.revision else {
+                throw UserProfileToolError.staleRevision
+            }
+            let review = try UserProfileToolRequest.parse(proposal.argumentsJSON)
+                .prepare(state: turn.profile, utterances: [turn.utterance])
+            let approved = await approveProfile(review, requestID: requestID)
+            // No suspension between this lease/request check and the store's
+            // generation/master/revision checks plus atomic write.
+            try lease.check()
+            guard self.requestID == requestID else { throw CancellationError() }
+            guard approved else { return .declined }
+            let receipt = try learning.commitProfileTool(review, expectedGeneration: turn.generation)
+            profileReceipt = receipt
+            profileReceiptRequestID = requestID
+            let data = try JSONEncoder().encode(receipt)
+            return .committedReceipt(json: String(decoding: data, as: UTF8.self))
+        case .memorySave, .memoryEdit:
+            try validateMemoryRun(turn.memory, generation: turn.generation)
+            let review = try turn.memory.prepare(toolName: proposal.action.rawValue,
+                                                 argumentsJSON: proposal.argumentsJSON)
+            let approved = await approveMemory(review, requestID: requestID)
+            try lease.check()
+            guard self.requestID == requestID else { throw CancellationError() }
+            guard approved else { return .declined }
+            let receipt = try learning.commitMemoryTool(review, expectedGeneration: turn.generation,
+                                                        conversationID: conversationID)
+            memoryReceipt = receipt
+            memoryReceiptRequestID = requestID
+            return .committedReceipt(json: try receipt.resultJSON())
+        }
     }
 
     private func receiveMCP(_ event: MCPConversationEvent, requestID: UUID) {
@@ -604,6 +669,22 @@ final class ChatSession: ObservableObject {
     }
 }
 
+/// Mutable search candidates belong to exactly one MainActor conversation.
+/// Captured snapshots are never refreshed from model or remote-tool output.
+@MainActor private final class MCPLearningTurn {
+    let profile: UserProfileState
+    var memory: MemoryToolRun
+    let utterance: String
+    let generation: UUID
+
+    init(profile: UserProfileState, memory: MemoryState, utterance: String, generation: UUID) {
+        self.profile = profile
+        self.memory = MemoryToolRun(state: memory, utterances: [utterance])
+        self.utterance = utterance
+        self.generation = generation
+    }
+}
+
 private enum ProfileChatStop: Error {
     case declined
     var message: String { "你已拒絕這次個人檔案修改；尚未儲存，訊息草稿已保留。" }
@@ -620,6 +701,7 @@ private struct MCPChatStop: Error {
         switch reason {
         case .approvalDenied: return "你已拒絕這次呼叫，MCP 對話已停止；草稿與先前工具結果保留。"
         case .toolError: return "工具回報錯誤，已停止；請檢視工具結果。草稿保留，不會自動重試。"
+        case .localCallLimit: return "本次對話的記憶搜尋或修改額度已用完，已停止；草稿與先前結果保留。"
         default: return "已達 MCP 執行限制或偵測到重複呼叫；草稿與已收到的工具結果保留。"
         }
     }

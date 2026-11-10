@@ -705,8 +705,10 @@ final class SkillExecutionUITests: XCTestCase {
             // immediately or enable its own confirmation after selection.
             // Wait for actual readiness; never retap the file or a disabled
             // confirmation. Both waits remain inside the same 240-second case.
+            // 30bcaf1 iOS 18.5 AX exposes this confirmation as「打開」.
+            // Keep the query inside the native Files navigation bar.
             let open = nativeFilesNavigation.buttons.matching(
-                NSPredicate(format: "label IN %@", ["開啟", "Open"])).firstMatch
+                NSPredicate(format: "label IN %@", ["打開", "開啟", "Open"])).firstMatch
             let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
                 selected.exists || (open.exists && open.isEnabled && open.isHittable)
             }, object: nil)
