@@ -1,0 +1,19 @@
+{
+  "observed_at": "2026-11-10T23:08:47.857068+00:00",
+  "repository_secret_names_query_success": true,
+  "signing_secret_names_present": {
+    "IOS_SIGNING_CERTIFICATE_BASE64": false,
+    "IOS_SIGNING_CERTIFICATE_PASSWORD": false,
+    "IOS_PROVISION_PROFILE_BASE64": false,
+    "IOS_TEAM_ID": false,
+    "IOS_KEYCHAIN_PASSWORD": false
+  },
+  "secret_values_read": false,
+  "local_valid_signing_identity_count": 0,
+  "usb_inventory_success": true,
+  "usb_ios_device_count": 0,
+  "limits": [
+    "USB inventory does not establish Wi-Fi pairing availability",
+    "No credentials exported; no device interaction or signing attempted"
+  ]
+}
