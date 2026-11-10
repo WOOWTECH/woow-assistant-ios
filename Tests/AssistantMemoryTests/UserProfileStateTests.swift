@@ -12,9 +12,9 @@ enum UserProfileChecks {
             count += 1
             if !value() { throw Failure(name: name) }
         }
-        mutating func rejects(_ expected: UserProfileError, _ action: () throws -> Void) throws {
-            do { try action(); throw Failure(name: "Expected \(expected.rawValue)") }
-            catch let error as UserProfileError { try expect(error == expected, "Rejection category: \(expected.rawValue)") }
+        mutating func rejects(_ expected: UserProfileError, fixture: String = "", _ action: () throws -> Void) throws {
+            do { try action(); throw Failure(name: "Expected \(expected.rawValue) [\(fixture)]") }
+            catch let error as UserProfileError { try expect(error == expected, "Rejection category: \(expected.rawValue) [\(fixture)]") }
         }
         mutating func malformed<T: Decodable>(_ type: T.Type, _ object: Any) throws {
             let data = try JSONSerialization.data(withJSONObject: object)
@@ -108,28 +108,28 @@ enum UserProfileChecks {
             try c.expect(single.snapshot().entries[0].text == value, "Allowed non-secret sentence preserved")
             try c.expect(single.snapshot().message!.role == "user", "Arbitrary source text stays reference data")
         }
-        for value in ["", " \n\r ", String(repeating: "字", count: 161), String(repeating: "😀", count: 81),
+        for (index, value) in ["", " \n\r ", String(repeating: "字", count: 161), String(repeating: "😀", count: 81),
                       "A\nB", "A\rB", "A\r\nB", "一。二。", "Really!?", "U.S.", "一！二？",
                       "password: dummy1234", "我的密碼是123456", "验证码 １ ２ ３ ４", "123456是我的密码",
                       "安全问题: abcd", "安全問題: abcd", "one-time code is 1234", "security question: abcd",
                       "动态码1234", "1234是我的otp", "pin: 1234", "4111 1111 1111 1111", "A123456789",
                       "sk-" + String(repeating: "x", count: 20), "AIza" + String(repeating: "x", count: 30),
                       "AQ." + String(repeating: "x", count: 20), "Bearer dummyfixture1234",
-                      "https://example.invalid/mcp?token=dummy"] {
+                      "https://example.invalid/mcp?token=dummy"].enumerated() {
             let before = state
-            try c.rejects(.invalidSentence) { try state.add(text: value, now: date) }
+            try c.rejects(.invalidSentence, fixture: "add.invalid.\(index)") { try state.add(text: value, now: date) }
             try c.expect(state == before, "Invalid/sensitive add changes nothing")
         }
         try state.add(text: "Tea", now: date)
         let before = state
-        for replacement in [" ", "password dummy1234", "Two. Sentences.", String(repeating: "😀", count: 81)] {
-            try c.rejects(.invalidSentence) { try state.replace(segment: "Tea", replacement: replacement, now: date) }
+        for (index, replacement) in [" ", "password dummy1234", "Two. Sentences.", String(repeating: "😀", count: 81)].enumerated() {
+            try c.rejects(.invalidSentence, fixture: "replace.invalid.\(index)") { try state.replace(segment: "Tea", replacement: replacement, now: date) }
             try c.expect(state == before, "Rejected replace preserves active row, history and revision")
         }
         // Validate the complete result, not only the replacement fragment.
         var joined = UserProfileState()
         try joined.add(text: "passphrase: abcd", now: date)
-        try c.rejects(.invalidSentence) { try joined.replace(segment: "passphrase", replacement: "password", now: date) }
+        try c.rejects(.invalidSentence, fixture: "replace.joined-secret") { try joined.replace(segment: "passphrase", replacement: "password", now: date) }
         for invalidDate in [Date(timeIntervalSince1970: .nan), Date(timeIntervalSince1970: .infinity)] {
             try c.rejects(.invalidState) { try state.add(text: "Coffee", now: invalidDate) }
             try c.rejects(.invalidState) { try state.replace(segment: "Tea", replacement: "Coffee", now: invalidDate) }
@@ -140,6 +140,34 @@ enum UserProfileChecks {
         try copy.replace(segment: "Tea", replacement: "Tea", now: date.addingTimeInterval(-1))
         try c.expect(copy.entries.count == 2 && state == before, "No-op replacement preserves pinned history and value isolation")
         _ = try JSONDecoder().decode(UserProfileState.self, from: JSONEncoder().encode(copy))
+        return c.count
+    }
+
+    static func lineBreaks() throws -> Int {
+        var c = Check(), state = UserProfileState()
+        try state.add(text: "Original", now: date)
+        let before = state
+        let object = try JSONSerialization.jsonObject(with: JSONEncoder().encode(state)) as! [String: Any]
+        for (name, separator) in [("lf", "\n"), ("cr", "\r"), ("crlf", "\r\n"),
+                                  ("lfcr", "\n\r"), ("crcrlf", "\r\r\n")] {
+            let text = "A" + separator + "B"
+            try c.rejects(.invalidSentence, fixture: "linebreak.\(name).add") { try state.add(text: text, now: date) }
+            try c.expect(state == before, "Line break add preserves value and revision")
+            try c.rejects(.invalidSentence, fixture: "linebreak.\(name).replace") {
+                try state.replace(segment: "Original", replacement: text, now: date)
+            }
+            try c.expect(state == before, "Line break replace preserves row/history/revision")
+            var changed = object
+            var rows = object["entries"] as! [[String: Any]]
+            rows[0]["text"] = text; changed["entries"] = rows
+            let encoded = try JSONSerialization.data(withJSONObject: changed)
+            try c.rejects(.invalidState, fixture: "linebreak.\(name).decode") {
+                _ = try JSONDecoder().decode(UserProfileState.self, from: encoded)
+            }
+        }
+        var edges = UserProfileState()
+        try edges.add(text: "\r\nA B\r\n", now: date)
+        try c.expect(edges.snapshot().entries[0].text == "A B", "Pinned edge trimming remains allowed")
         return c.count
     }
 
@@ -189,6 +217,7 @@ enum UserProfileChecks {
             for (name, run) in [("history/snapshot", UserProfileChecks.historyAndSnapshot),
                                 ("capacity/matching", UserProfileChecks.capacityAndMatching),
                                 ("safety/transactions", UserProfileChecks.safetyAndTransactions),
+                                ("CR/LF code-unit validation", UserProfileChecks.lineBreaks),
                                 ("malformed storage", UserProfileChecks.malformedStorage)] {
                 let count = try run(); total += count; print("\(name): \(count)")
             }
@@ -201,6 +230,7 @@ final class UserProfileStateTests: XCTestCase {
     func testHistoryAndFrozenContext() throws { XCTAssertGreaterThan(try UserProfileChecks.historyAndSnapshot(), 0) }
     func testCapacityAndExactUniqueMatching() throws { XCTAssertGreaterThan(try UserProfileChecks.capacityAndMatching(), 0) }
     func testSafetyAndTransactionalMutations() throws { XCTAssertGreaterThan(try UserProfileChecks.safetyAndTransactions(), 0) }
+    func testCRAndLFRejectedAcrossAddReplaceAndDecode() throws { XCTAssertGreaterThan(try UserProfileChecks.lineBreaks(), 0) }
     func testMalformedCodableStateRejected() throws { XCTAssertGreaterThan(try UserProfileChecks.malformedStorage(), 0) }
 }
 #endif

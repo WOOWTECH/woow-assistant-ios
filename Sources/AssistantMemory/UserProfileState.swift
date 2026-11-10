@@ -180,7 +180,9 @@ private enum UserProfileRules {
 
     static func valid(_ text: String) -> Bool {
         !trim(text).isEmpty && text.utf16.count <= UserProfileState.maximumTextUTF16Count
-            && !text.contains("\n") && !text.contains("\r")
+            // Kotlin checks code units. CRLF is one Swift Character: checking
+            // either Character can miss it, so avoid substring/overload semantics.
+            && !text.utf16.contains(0x0A) && !text.utf16.contains(0x0D)
             && text.unicodeScalars.filter { "。！？.!?".unicodeScalars.contains($0) }.count <= 1
             && !sensitive(text)
     }

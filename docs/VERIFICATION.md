@@ -1,5 +1,11 @@
 # Verification — 2026-11-10
 
+## Profile newline regression and native-toolbar test correction
+
+At `cdf10d1`, [42825863580](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42825863580) stopped in portable-core validation before iOS tests: the profile safety method expected `invalid_sentence` but an input was accepted. The three matrix jobs retained that failure. Profile validation now checks CR/LF UTF-16 code units explicitly, avoiding Swift's combined-CRLF Character matching, and covers add/replace/decode transaction boundaries. Local **199 state / 58 real LearningStore encryption assertions** passed; new native acceptance is still required.
+
+The same source built the actual App for live profile [42825870498](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42825870498) and multi-source [42825876107](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42825876107). Each UI method failed **0/1, zero skips**, before its model request: the test tried to scroll the Form to reveal its keyboard toolbar (`profile.editor.done` / `multiResearch.keyboardDone`). Toolbar actions now require the actual control to be enabled, hittable and inside the App window, followed by one native tap; only Form rows use scrolling. Model, source, citation, persistence and deadline assertions remain unchanged. These failures are not model or feature acceptance passes.
+
 ## Native picker experiments preserve failed acceptance results
 
 The fresh-peer current simulator at `d464176` [42819390644](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42819390644) still failed **0/1, zero skips** in actual UIKit open mode, with the same provider resolver errors and no App callback. Its newly created UUID was removed afterward. [Evidence](evidence/file-provider-fresh-d464176.json). A fresh simulator alone did not resolve this observation.

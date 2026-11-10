@@ -449,7 +449,7 @@ final class LiveModelUITests: XCTestCase {
         executionTimeAllowance = 300
         let app = try launchLiveApp()
         navigate(to: "browser", in: app)
-        tapLearningButton("browser.multiResearch", in: app)
+        tapToolbarButton("browser.multiResearch", in: app)
         let inputs = [
             ("multiResearch.goal", "Compare the documentation purpose of example.com and example.org using both supplied sources. Quote an exact passage from each source that includes example.com or example.org. Do not claim these publishers are independent."),
             ("multiResearch.rootText1", "https://www.iana.org/domains/reserved"),
@@ -462,7 +462,7 @@ final class LiveModelUITests: XCTestCase {
             input.tap(); input.typeText(text)
             // Check the actual UI input before authorizing these specific roots.
             XCTAssertTrue(input.value as? String == text, "Research input must match the typed source or question.")
-            tapLearningButton("multiResearch.keyboardDone", in: app)
+            tapToolbarButton("multiResearch.keyboardDone", in: app)
         }
         tapLearningButton("multiResearch.start", in: app)
         XCTAssertTrue(app.buttons["multiResearch.cancel"].waitForExistence(timeout: 10))
@@ -486,7 +486,7 @@ final class LiveModelUITests: XCTestCase {
         }
         XCTAssertFalse(app.staticTexts["uitest.banner"].exists)
         // No source text, generated prose, endpoint or credentials are logged.
-        tapLearningButton("multiResearch.close", in: app)
+        tapToolbarButton("multiResearch.close", in: app)
         navigate(to: "memory", in: app)
         selectLearningSegment("skills", in: app)
         XCTAssertTrue(app.staticTexts["skills.empty"].exists)
@@ -506,8 +506,8 @@ final class LiveModelUITests: XCTestCase {
         let sentence = "My preferred profile color is " + value + "."
         text.tap(); text.typeText(sentence)
         XCTAssertTrue(text.value as? String == sentence, "The profile must contain the actual typed sentence.")
-        tapLearningButton("profile.editor.done", in: app)
-        tapLearningButton("profile.editor.save", in: app)
+        tapToolbarButton("profile.editor.done", in: app)
+        tapToolbarButton("profile.editor.save", in: app)
         let item = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND label == %@", "profile.item.", sentence)).firstMatch
         XCTAssertTrue(item.waitForExistence(timeout: 10))
         XCTAssertFalse(app.staticTexts["profile.error"].exists)
@@ -582,6 +582,20 @@ final class LiveModelUITests: XCTestCase {
             let state = app.staticTexts[identifier]
             print("Live browser phase \(identifier): \(state.exists ? state.label : "not-visible")")
         }
+    }
+
+    /// Navigation/keyboard toolbars are outside the Form's scrolling viewport.
+    /// Require the actual native control to be visible and tappable; scrolling
+    /// the Form cannot reveal a toolbar and must not be used as a fallback.
+    private func tapToolbarButton(_ identifier: String, in app: XCUIApplication) {
+        let button = app.buttons.matching(identifier: identifier).firstMatch
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: button)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
+        let frame = button.frame
+        XCTAssertFalse(frame.isEmpty)
+        XCTAssertTrue(app.frame.contains(frame), "Native toolbar control must be inside the App window.")
+        button.tap()
     }
 
     private func tapLearningButton(_ identifier: String, in app: XCUIApplication) {
