@@ -3,6 +3,13 @@ import Foundation
 /// Manual browsing accepts ordinary query strings, fragments and login endpoints.
 /// Research/DOM planners keep their separate, narrower WebsiteOrigin policy.
 public enum BrowserManualNavigationPolicy {
+    public static func resolve(address: String) -> URL? {
+        guard address.utf8.count <= 8192,
+              case let .allow(url) = BrowserPolicy.evaluate(address: address),
+              allows(url) else { return nil }
+        return url
+    }
+
     public static func allows(_ url: URL) -> Bool {
         guard url.baseURL == nil, url.scheme?.lowercased() == "https",
               url.absoluteString.utf8.count <= 8192 else { return false }

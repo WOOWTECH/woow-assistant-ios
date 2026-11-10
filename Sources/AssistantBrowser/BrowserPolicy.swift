@@ -25,12 +25,26 @@ public enum BrowserURLDecision: Sendable, Equatable {
 }
 
 public enum BrowserPolicy {
+    /// Validate the original address as well as Foundation's parsed destination.
+    /// Some iOS 17 Foundation versions silently discard empty/overflowing ports.
+    /// Callers receiving text must not lose that evidence by constructing URL first.
+    public static func evaluate(address: String) -> BrowserURLDecision {
+        guard let url = URL(string: address) else { return .block(reason: Denial.authority) }
+        let raw = evaluate(url, address: address)
+        if case .block = raw { return raw }
+        return evaluate(url)
+    }
+
     /// A URL-only navigation policy for the URL Foundation has already parsed.
     /// This does not resolve DNS: an allowed name may resolve to a private address,
     /// change through DNS rebinding, or lead to private redirects/subresources.
     /// It is not a DNS/SSRF boundary. A gateway must separately validate resolved
     /// destinations at connection time and every redirect, and enforce egress rules.
     public static func evaluate(_ url: URL) -> BrowserURLDecision {
+        evaluate(url, address: url.absoluteURL.absoluteString)
+    }
+
+    private static func evaluate(_ url: URL, address: String) -> BrowserURLDecision {
         guard let scheme = url.scheme?.lowercased(), ["https", "http"].contains(scheme) else {
             return .block(reason: Denial.scheme)
         }
@@ -38,7 +52,6 @@ public enum BrowserPolicy {
         // Inspect the serialized authority as well as the scheme. Foundation and
         // browsers differ on legacy numeric hosts, escaped hosts and malformed ports.
         // Do not inspect the path/query for '@', IP addresses or escaped characters.
-        let address = url.absoluteURL.absoluteString
         guard let separator = address.range(of: "://"),
               address[..<separator.lowerBound].lowercased() == scheme else {
             return .block(reason: Denial.missingHost)

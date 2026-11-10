@@ -107,7 +107,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
 
     func openAddress() {
         guard !isRunning, !isInteracting else { return }
-        guard let url = URL(string: address), manualPermitted(url) else {
+        guard let url = manualAddressURL(), manualPermitted(url) else {
             error = "請使用公開 HTTPS 網址，不可把帳密放在網址中。"; return
         }
         answer = nil
@@ -879,6 +879,18 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         if BrowserLoginFixture.enabled?.allows(url) == true { return true }
         #endif
         return BrowserManualNavigationPolicy.allows(url) && (!fixtureMode || url.host == "research.example.invalid")
+    }
+
+    private func manualAddressURL() -> URL? {
+        #if DEBUG
+        // Only the exact fixture URL may use HTTP loopback. A lossy parse must
+        // not turn a malformed address into a permitted local fixture request.
+        if let url = URL(string: address), url.absoluteString == address,
+           BrowserUploadFixture.enabled?.allows(url) == true || BrowserLoginFixture.enabled?.allows(url) == true {
+            return url
+        }
+        #endif
+        return BrowserManualNavigationPolicy.resolve(address: address)
     }
 
     func prepareManualPopup(_ request: URLRequest) {

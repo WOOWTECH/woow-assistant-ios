@@ -149,9 +149,9 @@ final class BrowserPolicyTests: XCTestCase {
         ], reason: "The web address has an invalid host name.")
     }
 
-    func testMalformedInputsAreRejectedByFoundationOrPolicy() {
-        // URL(string:) accepts different malformed inputs on different OS versions.
-        // A nil URL is a parser rejection, not evidence that BrowserPolicy ran.
+    func testMalformedRawInputsAreRejectedBeforeLossyFoundationParsing() {
+        // iOS 17 Foundation can erase invalid ports. The text-entry boundary
+        // must reject the original input even when the parsed URL looks valid.
         let groups: [(String, [String])] = [
             ("The web address has an invalid host name.", [
                 "https://example..com/", "https://.example.com/", "https://example.com../",
@@ -173,9 +173,14 @@ final class BrowserPolicyTests: XCTestCase {
         for (reason, addresses) in groups {
             for address in addresses {
                 if let url = URL(string: address) {
-                    XCTAssertEqual(BrowserPolicy.evaluate(url), .block(reason: reason), address)
+                    XCTAssertEqual(BrowserPolicy.evaluate(address: address), .block(reason: reason), address)
+                    if url.absoluteString == address {
+                        XCTAssertEqual(BrowserPolicy.evaluate(url), .block(reason: reason), address)
+                    }
                 } else {
-                    XCTAssertNil(URL(string: address), "Foundation rejected \(address)")
+                    guard case .block = BrowserPolicy.evaluate(address: address) else {
+                        XCTFail("Invalid raw address was accepted: \(address)"); continue
+                    }
                 }
             }
         }
@@ -198,6 +203,7 @@ final class BrowserPolicyTests: XCTestCase {
         for address in addresses {
             let url = try XCTUnwrap(URL(string: address), address, file: file, line: line)
             XCTAssertEqual(BrowserPolicy.evaluate(url), .allow(url), address, file: file, line: line)
+            XCTAssertEqual(BrowserPolicy.evaluate(address: address), .allow(url), address, file: file, line: line)
         }
     }
 
@@ -205,6 +211,7 @@ final class BrowserPolicyTests: XCTestCase {
         for address in addresses {
             let url = try XCTUnwrap(URL(string: address), address, file: file, line: line)
             XCTAssertEqual(BrowserPolicy.evaluate(url), .block(reason: reason), address, file: file, line: line)
+            XCTAssertEqual(BrowserPolicy.evaluate(address: address), .block(reason: reason), address, file: file, line: line)
         }
     }
 }

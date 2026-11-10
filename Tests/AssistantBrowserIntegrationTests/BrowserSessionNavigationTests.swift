@@ -8,6 +8,19 @@ import AssistantBrowser
 /// Real, locally rendered WebKit documents. Failure/late delegate callbacks
 /// below are explicitly synthetic; no external request or model is involved.
 final class BrowserSessionNavigationTests: XCTestCase {
+    @MainActor func testMalformedAddressDoesNotStartANormalizedNavigation() {
+        let browser = BrowserSession(dataStore: .nonPersistent())
+        for address in ["https://example.com:/", "https://example.com:999999999999999999999999/"] {
+            browser.address = address
+            browser.openAddress()
+            XCTAssertNotNil(browser.error)
+            XCTAssertNil(browser.current)
+            XCTAssertNil(browser.webView.url)
+            XCTAssertFalse(browser.webView.isLoading)
+            XCTAssertEqual(browser.address, address)
+        }
+    }
+
     @MainActor func testSearchBeyondExcerptDoesNotClaimAbsenceFromWholePage() async throws {
         let host = try Host()
         defer { host.close() }

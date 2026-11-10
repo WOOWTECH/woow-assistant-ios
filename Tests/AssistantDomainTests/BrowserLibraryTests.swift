@@ -2,6 +2,15 @@ import XCTest
 @testable import AssistantBrowser
 
 final class BrowserLibraryTests: XCTestCase {
+    func testManualAddressRejectsMalformedPortsWithoutChangingTheDestination() {
+        for authority in ["example.com:", "example.com:999999999999999999999999", "example.com:0", "example.com:65536", "[2606:4700::1111]:", "[2606:4700::1111]:999999999999999999999999"] {
+            XCTAssertNil(BrowserManualNavigationPolicy.resolve(address: "https://\(authority)/"))
+        }
+        for address in ["https://example.com/path?next=host:999999999999999999999999#part", "https://example.com:443/", "https://example.com:00080/", "https://[2606:4700::1111]:65535/"] {
+            XCTAssertEqual(BrowserManualNavigationPolicy.resolve(address: address), URL(string: address))
+        }
+    }
+
     func testManualNavigationDoesNotRelaxResearchPolicy() throws {
         for address in ["https://example.com/login?return=%2Faccount", "https://example.com/#section", "https://example.com/checkout"] {
             let url = URL(string: address)!
