@@ -130,36 +130,55 @@ import Foundation
 @main
 enum SkillExecutionNativePickerChecks {
     struct Failure: Error {}
-    static func require(_ condition: Bool) throws { if !condition { throw Failure() } }
+    private static var checks = 0
+    static func require(_ condition: Bool) throws {
+        checks += 1
+        if !condition { throw Failure() }
+    }
     static func main() throws {
         let id = UUID(uuidString: "A1111111-2222-4333-8444-555555555555")!
         let control = ["app", "-UITestMode", "-UITestSkillExecution", "-UITestNamespace", id.uuidString]
-        let treatment = control + ["-UITestPDFUIKitPicker"]
+        let openFlag = "-UITestPDFUIKitPicker"
+        let copyFlag = "-UITestPDFUIKitCopyPicker"
         func configuration(_ arguments: [String], fixture: UUID? = nil) -> PDFNativePickerExperiment.Configuration? {
             PDFNativePickerExperiment.configuration(arguments: arguments, fixtureNamespace: fixture)
         }
-        try require(configuration(treatment) == nil)
-        try require(configuration(treatment, fixture: UUID()) == nil)
-        let rejected: [[String]] = [
-            ["app"], ["-UITestPDFUIKitPicker"],
-            treatment.filter { $0 != "-UITestMode" }, treatment.filter { $0 != "-UITestSkillExecution" },
-            treatment + ["-UITestMode"], treatment + ["-UITestSkillExecution"],
-            treatment + ["-UITestNamespace", id.uuidString], treatment + ["-UITestPDFUIKitPicker"],
-            treatment + ["-LiveModelUITest"], treatment + ["-LiveMCPUITest"],
-            Array(control.dropLast()) + ["../personal", "-UITestPDFUIKitPicker"],
-            Array(control.dropLast()) + [id.uuidString.lowercased(), "-UITestPDFUIKitPicker"],
-            ["-UITestMode", "-UITestSkillExecution", "-UITestPDFUIKitPicker", "-UITestNamespace"]
-        ]
-        for arguments in rejected { try require(configuration(arguments, fixture: id) == nil) }
+        for flag in [openFlag, copyFlag] {
+            let treatment = control + [flag]
+            try require(configuration(treatment) == nil)
+            try require(configuration(treatment, fixture: UUID()) == nil)
+            let rejected: [[String]] = [
+                ["app"], [flag],
+                treatment.filter { $0 != "-UITestMode" }, treatment.filter { $0 != "-UITestSkillExecution" },
+                treatment + ["-UITestMode"], treatment + ["-UITestSkillExecution"],
+                treatment + ["-UITestNamespace", id.uuidString], treatment + [flag],
+                treatment + ["-LiveModelUITest"], treatment + ["-LiveMCPUITest"],
+                Array(control.dropLast()) + ["../personal", flag],
+                Array(control.dropLast()) + [id.uuidString.lowercased(), flag],
+                ["-UITestMode", "-UITestSkillExecution", flag, "-UITestNamespace"]
+            ]
+            for arguments in rejected { try require(configuration(arguments, fixture: id) == nil) }
+        }
+        for flags in [[openFlag, copyFlag], [copyFlag, openFlag], ["-UITestPDFUIKitCopyPicker=1"]] {
+            try require(configuration(control + flags, fixture: id) == nil)
+        }
         #if DEBUG
-        try require(configuration(control, fixture: id)?.usesUIKit == false)
-        try require(configuration(treatment, fixture: id)?.usesUIKit == true)
-        try require(configuration(treatment, fixture: id)?.namespace == id)
-        print("PASS DEBUG UIKit picker requires exact fixture namespace and unique test flags; default stays SwiftUI")
+        let original = configuration(control, fixture: id)
+        let open = configuration(control + [openFlag], fixture: id)
+        let copy = configuration(control + [copyFlag], fixture: id)
+        try require(original?.mode == .swiftUI && original?.usesUIKit == false)
+        try require(original?.source == "swiftui" && original?.mode.asCopy == false)
+        try require(open?.mode == .uikitOpen && open?.usesUIKit == true)
+        try require(open?.source == "uikit" && open?.mode.asCopy == false)
+        try require(copy?.mode == .uikitImportCopy && copy?.usesUIKit == true)
+        try require(copy?.source == "uikit-copy" && copy?.mode.asCopy == true)
+        try require(open?.namespace == id && copy?.namespace == id)
+        print("PASS DEBUG \(checks) checks: namespace gates, mutually exclusive open/copy modes; default stays SwiftUI")
         #else
         try require(configuration(control, fixture: id) == nil)
-        try require(configuration(treatment, fixture: id) == nil)
-        print("PASS Release ignores UIKit experiment and mode observation flags")
+        try require(configuration(control + [openFlag], fixture: id) == nil)
+        try require(configuration(control + [copyFlag], fixture: id) == nil)
+        print("PASS Release \(checks) checks: ignores open/copy experiments and mode observation flags")
         #endif
     }
 }
@@ -220,6 +239,24 @@ final class SkillExecutionUITests: XCTestCase {
     private var stem: String { "SkillExecution-\(namespace)" }
     private var exportStem: String { stem + "-文字" }
 
+    private enum PickerArm {
+        case swiftUI, uikitOpen, uikitImportCopy
+        var launchFlag: String? {
+            switch self {
+            case .swiftUI: return nil
+            case .uikitOpen: return "-UITestPDFUIKitPicker"
+            case .uikitImportCopy: return "-UITestPDFUIKitCopyPicker"
+            }
+        }
+        var expectedObservation: String? {
+            switch self {
+            case .swiftUI: return nil
+            case .uikitOpen: return "source=uikit mode=open allowsMultipleSelection=false"
+            case .uikitImportCopy: return "source=uikit-copy mode=import allowsMultipleSelection=false"
+            }
+        }
+    }
+
     override func setUpWithError() throws {
         #if !targetEnvironment(simulator)
         throw XCTSkip("Synthetic Files tests require an isolated iOS simulator.")
@@ -242,17 +279,24 @@ final class SkillExecutionUITests: XCTestCase {
     }
 
     func testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText() {
-        assertNativePDFRead(fixtureWriteMode: "coordinated", useUIKitPicker: true)
+        assertNativePDFRead(fixtureWriteMode: "coordinated", picker: .uikitOpen)
     }
 
-    private func assertNativePDFRead(fixtureWriteMode: String?, useUIKitPicker: Bool = false) {
-        launchFixture(fromCatalog: true, fixtureWriteMode: fixtureWriteMode, useUIKitPicker: useUIKitPicker)
+    func testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText() {
+        // The OS may read/write while importing the selected file. The runtime
+        // audit below measures App operations, not provider/system I/O.
+        print("SKILL_PICKER_COPY_EXPERIMENT namespace=\(namespace) 系統匯入副本可能先讀寫檔案；App 讀取與 PDF 擷取仍須分別核准。")
+        assertNativePDFRead(fixtureWriteMode: "coordinated", picker: .uikitImportCopy)
+    }
+
+    private func assertNativePDFRead(fixtureWriteMode: String?, picker: PickerArm = .swiftUI) {
+        launchFixture(fromCatalog: true, fixtureWriteMode: fixtureWriteMode, picker: picker)
         chooseSyntheticPDF()
         assertAudit(selections: 1, reads: 0, extractionAttempts: 0, results: 0)
-        if useUIKitPicker {
+        if let expectedObservation = picker.expectedObservation {
             XCTAssertEqual(app.staticTexts["skillExecution.uitest.fixture"].value as? String,
-                           "source=uikit mode=open allowsMultipleSelection=false",
-                           "The actual presented public UIKit picker must be observed in single-file open mode.")
+                           expectedObservation,
+                           "The actual public UIKit picker must match this arm's mode and allow only one file.")
         }
         XCTAssertFalse(app.staticTexts["skillExecution.fingerprint"].exists,
                        "Implementation fingerprint must stay inside collapsed source details.")
@@ -446,11 +490,11 @@ final class SkillExecutionUITests: XCTestCase {
         XCTAssertFalse(nativeCancel.exists)
     }
 
-    private func launchFixture(fromCatalog: Bool, fixtureWriteMode: String? = nil, useUIKitPicker: Bool = false) {
+    private func launchFixture(fromCatalog: Bool, fixtureWriteMode: String? = nil, picker: PickerArm = .swiftUI) {
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW",
             "-UITestMode", "-UITestNamespace", namespace, "-UITestResetStorage", "-UITestSkillExecution"]
         if let fixtureWriteMode { app.launchArguments += ["-UITestSkillFixtureWriteMode", fixtureWriteMode] }
-        if useUIKitPicker { app.launchArguments.append("-UITestPDFUIKitPicker") }
+        if let flag = picker.launchFlag { app.launchArguments.append(flag) }
         app.launchEnvironment = [:]
         app.launch()
         tap("navigation.memory")

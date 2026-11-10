@@ -1,0 +1,125 @@
+{
+  "version": 1,
+  "sourceRevision": "ca3e72ada5d92210a9f3828e22cacbc1b76d48d3",
+  "run": 42806373840,
+  "job": 129796451858,
+  "artifact": 13763842496,
+  "runURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42806373840",
+  "artifactCreatedUTC": "2026-11-10T12:13:34Z",
+  "runtime": "iOS 26.2 (23C54)",
+  "device": "iPhone 17 simulator, arm64",
+  "arm": "DEBUG UIKit open-in-place; coordinated synthetic fixture creation",
+  "test": "SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+  "result": {
+    "started": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "durationSeconds": 122.419
+  },
+  "failure": {
+    "file": "SkillExecutionUITests.swift",
+    "line": 513,
+    "message": "Files selection must reach the real importer callback."
+  },
+  "syntheticNamespace": "F378FB9C-DD4C-49D1-98F3-94A1975C51E9",
+  "observations": [
+    {
+      "utc": "2026-11-10T12:11:07.247530Z",
+      "kind": "fixture-created",
+      "mode": "coordinated",
+      "source": "App stdout",
+      "line": 32998
+    },
+    {
+      "utc": "2026-11-10T12:11:17.895423Z",
+      "kind": "public-picker-mode-probe",
+      "source": "uikit",
+      "mode": "open",
+      "allowsMultipleSelection": false,
+      "trace": "SKILL_PDF_PICKER_PRESENTATION",
+      "appStdoutLine": 61115
+    },
+    {
+      "kind": "native-thumbnail-tap",
+      "caseElapsedSeconds": 85.33,
+      "exactSyntheticFilenameMatched": true,
+      "thumbnailFrame": {
+        "x": 38.7,
+        "y": 216.0,
+        "width": 65.0,
+        "height": 84.0
+      },
+      "testLogLine": 3016
+    },
+    {
+      "utc": "2026-11-10T12:11:40.093333Z",
+      "kind": "bookmarkable-string-resolution-failed",
+      "errorDomain": "NSFileProviderErrorDomain",
+      "code": -1005,
+      "underlyingDomain": "NSFileProviderResolverErrorDomain",
+      "underlyingCode": -1012,
+      "itemIdentifier": "did=3",
+      "appStdoutLine": 119733
+    },
+    {
+      "utc": "2026-11-10T12:11:40.093600Z",
+      "kind": "DocumentManager-internal-empty-items-message",
+      "appStdoutLine": 119734,
+      "isAppDelegateCallbackEvidence": false
+    }
+  ],
+  "completeAppStdout": {
+    "bytes": 16016728,
+    "sha256": "432e3ea1f0a664225ea41e0a79c7bb62180f38dd413bf444f0a6ebd03ffbcd93",
+    "pickerPresentationTraceCount": 1,
+    "importerCallbackTraceCount": 0,
+    "fixtureBaselineTraceCount": 1
+  },
+  "afterErrorAccessibilitySnapshots": [
+    {
+      "utc": "2026-11-10T12:11:43.202Z",
+      "attachment": "EC2A6E40-5D03-4AD4-83D4-A9C931ABED88.txt",
+      "auditLine": 210,
+      "nativeFilesNavigationLine": 252,
+      "exactSyntheticPDFCellLine": 286
+    },
+    {
+      "utc": "2026-11-10T12:11:58.877Z",
+      "attachment": "A4EAAB8A-EC4C-4DFF-BA92-96E11FB63B39.txt",
+      "auditLine": 210,
+      "nativeFilesNavigationLine": 252,
+      "exactSyntheticPDFCellLine": 286
+    }
+  ],
+  "appAuditAtBothSnapshots": {
+    "selections": 0,
+    "reads": 0,
+    "extractionAttempts": 0,
+    "results": 0
+  },
+  "fixtureInventory": {
+    "baselineUTC": "2026-11-10T12:11:07.238029Z",
+    "postTestUTC": "2026-11-10T12:13:18.501594Z",
+    "statusAtBothSamples": "valid",
+    "bytesAtBothSamples": 8372,
+    "deviceAtBothSamples": 16777229,
+    "inodeAtBothSamples": 3553064,
+    "sha256AtBothSamples": "1a45a4d4963a8527a8b99d4927783a37866b017a68edba03632014246e101f73",
+    "modifiedSecondsAtBothSamples": 1794312667,
+    "modifiedNanosecondsAtBothSamples": 237078458,
+    "sameIdentity": true,
+    "sameHash": true,
+    "sameSize": true,
+    "provesPresenceAtEarlierPickerFailure": false
+  },
+  "conclusion": "Explicit UIKit open-in-place with coordinated fixture creation still reproduced the provider bookmark/materialization failure. This wrapper change did not repair the failed selection.",
+  "limits": [
+    "The mode is independently recorded by the App probe; the later UI assertion for that mode was not reached because selection failed first.",
+    "The internal empty-items message is not an App success-empty callback; no App importer callback trace appeared.",
+    "Neither App read approval nor PDF extraction approval was reached. App audit counters do not measure provider or OS I/O.",
+    "Matching before/after fixture samples do not establish continuous presence at the intervening error instant.",
+    "The same-head SwiftUI control and SE arms were unfinished at this checkpoint; this is not a completed paired causal comparison.",
+    "No import-copy result, production picker change, root-cause repair or full functional pass is claimed."
+  ]
+}

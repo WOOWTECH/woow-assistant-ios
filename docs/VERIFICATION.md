@@ -1,5 +1,12 @@
 # Verification — 2026-11-10
 
+## UIKit open-in-place reproduced the native picker failure
+
+At `ca3e72a`, current iOS 26.2 [42806373840](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42806373840) executed the explicit UIKit open-in-place case and failed **0/1, zero skips**. The App independently observed actual picker mode `open`, then the exact synthetic PDF was tapped. FileProvider reported `-1005` with resolver `-1012`; no App importer callback arrived and neither App approval was reached. Fixture identity/hash matched before and after, which does not prove uninterrupted availability at the failure instant. [Bounded evidence](evidence/file-provider-uikit-ca3e72a.json).
+
+A separate DEBUG-only import-copy arm now uses the system's `asCopy:true` with the same actual returned URL, one-file check, two App approvals and exact PDF text assertions. Its test explicitly acknowledges that the OS may copy/read before the App read approval. Production/default remains SwiftUI. Local DEBUG **40** / Release **36** checks and iOS syntax parse passed; the actual import-copy case must still run on iOS 26.2. No picker repair is claimed from compilation or a changed test entry point.
+
+
 ## iOS 17 method failures separated from runner bootstrap failures
 
 The newer core run `2fce6cf` executed **144 methods: 142 passed, 2 failed**. One was the transcript transport-cancellation acknowledgement repaired in `9a53e61`; the other did not find the expected synthetic Cookie record before deletion. It does not prove `removeData` failed. The new observation preserves the original 15-second limit and all deletion assertions, distinguishing a missing publication from returned names/types that fail the predicate.

@@ -3,10 +3,25 @@ import Foundation
 /// The experiment can only attach to an already validated synthetic fixture.
 /// Parsing these arguments never resolves a directory or selects a file.
 enum PDFNativePickerExperiment {
+    enum Mode: Equatable {
+        case swiftUI, uikitOpen, uikitImportCopy
+
+        var source: String {
+            switch self {
+            case .swiftUI: return "swiftui"
+            case .uikitOpen: return "uikit"
+            case .uikitImportCopy: return "uikit-copy"
+            }
+        }
+        var usesUIKit: Bool { self != .swiftUI }
+        var asCopy: Bool { self == .uikitImportCopy }
+    }
+
     struct Configuration {
         let namespace: UUID
-        let usesUIKit: Bool
-        var source: String { usesUIKit ? "uikit" : "swiftui" }
+        let mode: Mode
+        var usesUIKit: Bool { mode.usesUIKit }
+        var source: String { mode.source }
     }
 
     static func configuration(arguments: [String], fixtureNamespace: UUID?) -> Configuration? {
@@ -18,9 +33,16 @@ enum PDFNativePickerExperiment {
               !arguments.contains(where: { $0.hasPrefix("-Live") }),
               let index = arguments.firstIndex(of: "-UITestNamespace"), arguments.indices.contains(index + 1),
               arguments[index + 1] == fixtureNamespace.uuidString else { return nil }
-        let switches = arguments.filter { $0 == "-UITestPDFUIKitPicker" }.count
-        guard switches <= 1 else { return nil }
-        return Configuration(namespace: fixtureNamespace, usesUIKit: switches == 1)
+        let openFlag = "-UITestPDFUIKitPicker"
+        let copyFlag = "-UITestPDFUIKitCopyPicker"
+        let openCount = arguments.filter { $0 == openFlag }.count
+        let copyCount = arguments.filter { $0 == copyFlag }.count
+        guard openCount + copyCount <= 1,
+              !arguments.contains(where: {
+                  $0.hasPrefix("-UITestPDFUIKit") && $0 != openFlag && $0 != copyFlag
+              }) else { return nil }
+        let mode: Mode = copyCount == 1 ? .uikitImportCopy : openCount == 1 ? .uikitOpen : .swiftUI
+        return Configuration(namespace: fixtureNamespace, mode: mode)
         #else
         return nil
         #endif
@@ -35,8 +57,9 @@ import UIKit
 import Darwin
 #endif
 
-/// Both arms return the original delegate URLs to the same caller's count,
-/// selection and approval checks. Neither arm reads/copies a selected file.
+/// All arms return the original delegate URLs to the same caller's count,
+/// selection and approval checks. App code does not read/copy here; the opt-in
+/// import arm asks the OS picker to make a copy before the App's read approval.
 @MainActor struct PDFImportPresentation: ViewModifier {
     @Binding var isPresented: Bool
     let experiment: PDFNativePickerExperiment.Configuration?
@@ -65,9 +88,9 @@ import Darwin
 
     #if DEBUG
     @ViewBuilder private func presentation(_ content: Content) -> some View {
-        if experiment?.usesUIKit == true {
+        if let experiment, experiment.usesUIKit {
             content.sheet(isPresented: $isPresented) {
-                PDFNativePicker { outcome in
+                PDFNativePicker(asCopy: experiment.mode.asCopy) { outcome in
                     isPresented = false
                     // Cancellation matches fileImporter: dismiss without a
                     // success/empty callback or a prepared execution plan.
@@ -82,15 +105,16 @@ import Darwin
 }
 
 #if DEBUG
-/// Explicit open-in-place control. No directoryURL, preselection, bookmark
-/// recreation, URL substitution, automatic retry or fallback to another picker.
+/// Explicit open/import-copy experiment. No directoryURL, preselection,
+/// bookmark recreation, URL substitution, automatic retry or picker fallback.
 @MainActor private struct PDFNativePicker: UIViewControllerRepresentable {
+    let asCopy: Bool
     let onCompletion: (Result<[URL], Error>?) -> Void
 
     func makeCoordinator() -> Coordinator { Coordinator(onCompletion: onCompletion) }
 
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
-        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.pdf], asCopy: false)
+        let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.pdf], asCopy: asCopy)
         picker.allowsMultipleSelection = false
         picker.delegate = context.coordinator
         return picker
