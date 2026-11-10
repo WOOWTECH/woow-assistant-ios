@@ -332,7 +332,25 @@ final class MemoryUITests: XCTestCase {
         }
         tap("\(prefix).editor.clear")
         XCTAssertEqual(editor.value as? String, "")
-        editor.typeText(text)
+        if prefix == "memory" {
+            // 776 SE recording: clear left an empty focused editor, but one
+            // synthesized 60-character/sec burst lost "er" and displaced a
+            // space in "Prefer jasmine tea". Observe each native character's
+            // delivery before sending the next; never retry, repair or retap.
+            var entered = ""
+            for character in text {
+                editor.typeText(String(character))
+                entered.append(character)
+                let received = XCTNSPredicateExpectation(
+                    predicate: NSPredicate(format: "value == %@", entered), object: editor)
+                let outcome = XCTWaiter.wait(for: [received], timeout: 5)
+                XCTAssertEqual(outcome, .completed,
+                    "Every native character must produce the exact accumulated memory text.")
+                guard outcome == .completed else { return }
+            }
+        } else {
+            editor.typeText(text)
+        }
         XCTAssertEqual(editor.value as? String, text)
     }
 

@@ -53,7 +53,9 @@ final class BrowserLearningUITests: XCTestCase {
         reveal(answer)
         XCTAssertEqual(answer.label, "WOOW_WEB_GUIDE: five sections reviewed.")
         let learning = app.staticTexts["browser.learning"]
-        reveal(learning)
+        // SE's AX row extends 3.5pt below the screen even though both lines of
+        // text are visible. Read the full static label; this never taps the row.
+        revealLearningElement(learning, in: app, visibility: .readableText)
         XCTAssertEqual(learning.label, "已判定任務完成；技能草稿已加入待確認，核准後才能使用。")
         XCTAssertFalse(fixtureHeading.exists, "Background DOM content must stay outside the modal accessibility tree.")
         tap("browser.research.close")
@@ -141,7 +143,7 @@ final class BrowserLearningUITests: XCTestCase {
         reveal(replayAnswer)
         XCTAssertEqual(replayAnswer.label, "WOOW_WEB_GUIDE: five sections reviewed.")
         let replayLearning = app.staticTexts["browser.learning"]
-        reveal(replayLearning)
+        revealLearningElement(replayLearning, in: app, visibility: .readableText)
         XCTAssertEqual(replayLearning.label, "路線核對與成果判定完成；未重複產生技能。")
         tap("browser.research.close")
     }
@@ -372,7 +374,14 @@ final class BrowserLearningUITests: XCTestCase {
     }
 
     private func enter(_ text: String, into field: XCUIElement) {
-        waitFor(field, predicate: "exists == true AND hittable == true")
+        // SE's website.note lookup failed to resolve the TextField visible in
+        // the recording and final AX. Use native existence polling
+        // before asking for hittability, within the same five-second budget.
+        let deadline = Date().addingTimeInterval(5)
+        XCTAssertTrue(field.waitForExistence(timeout: 5))
+        if !field.isHittable {
+            waitFor(field, predicate: "hittable == true", timeout: max(0, deadline.timeIntervalSinceNow))
+        }
         if field.elementType == .textView {
             // iOS 17 AX/screenshot confirms an unobscured multiline goal
             // editor, but element.tap() did not focus it. Target the visible

@@ -365,6 +365,7 @@ import WebKit
 }
 #else
 import XCTest
+import CoreGraphics
 
 /// Simulator-only manual browser upload, through WebKit's iOS 17 native Files
 /// chooser. No model actions, JavaScript file injection, pasteboard, or real files.
@@ -462,10 +463,25 @@ final class BrowserUploadUITests: XCTestCase {
     private func openNativeDocumentPicker() {
         let input = app.webViews.buttons.matching(NSPredicate(format: "label CONTAINS %@", "選擇測試檔案")).firstMatch
         requireHittable(input, message: "The actual input[type=file] must be accessible in WKWebView.")
+        // 776 iOS 26 event/movie: AX tap chose (236,408), to the right of
+        // the visible Choose File button, and the form remained on screen.
+        // The file input AX frame includes the filename area. Target its
+        // leading native button once, using that element's current geometry.
+        let frame = input.frame
+        let visible = app.webViews.firstMatch.frame.intersection(app.frame)
+        let offset = CGVector(dx: min(44, frame.width * 0.2), dy: frame.height / 2)
+        let point = CGPoint(x: frame.minX + offset.dx, y: frame.minY + offset.dy)
+        guard frame.width > 0, frame.height > 0, point.x.isFinite, point.y.isFinite,
+              frame.contains(point), visible.insetBy(dx: 2, dy: 2).contains(point) else {
+            XCTFail("The native file-input button must be visible inside WKWebView before its single tap.")
+            return
+        }
+        print("UPLOAD_INPUT_TAP x=\(point.x) y=\(point.y) width=\(frame.width) height=\(frame.height)")
         let presentationStarted = ProcessInfo.processInfo.systemUptime
-        input.tap()
+        input.coordinate(withNormalizedOffset: .zero).withOffset(offset).tap()
         var observedCancel = false
         var observedSourceAction = false
+        var sourceAction: XCUIElement?
         let chooserReady = XCTNSPredicateExpectation(predicate: NSPredicate { [weak self] _, _ in
             guard let self else { return false }
             let cancel = self.nativeCancel
@@ -475,7 +491,8 @@ final class BrowserUploadUITests: XCTestCase {
             }
             if let files = self.chooseFilesAction {
                 observedSourceAction = true
-                return files.isHittable
+                sourceAction = files
+                return true
             }
             return false
         }, object: nil)
@@ -488,7 +505,7 @@ final class BrowserUploadUITests: XCTestCase {
         print("UPLOAD_CHOOSER_READY ready=\(readiness == .completed) elapsedMs=\(elapsedMilliseconds) cancelSeen=\(observedCancel) sourceSeen=\(observedSourceAction)")
         XCTAssertEqual(readiness, .completed,
                        "WebKit must present the native file-source menu or Files picker.")
-        if let files = chooseFilesAction, files.isHittable { files.tap() }
+        if let sourceAction { sourceAction.tap() }
         requireHittable(nativeCancel, message: "The native Files document picker must actually open.")
     }
 
@@ -499,11 +516,14 @@ final class BrowserUploadUITests: XCTestCase {
     private var chooseFilesAction: XCUIElement? {
         let names = ["選擇檔案", "選擇檔案⋯", "選擇檔案…", "Choose File", "Choose Files", "Choose File…", "Browse…"]
         let predicate = NSPredicate(format: "label IN %@", names)
-        // Menus/popovers vary by simulator OS; inspect only known action labels.
-        let candidates = app.sheets.buttons.matching(predicate).allElementsBoundByIndex
-            + app.popovers.buttons.matching(predicate).allElementsBoundByIndex
-            + app.buttons.matching(predicate).allElementsBoundByIndex
-        return candidates.first(where: { $0.exists && $0.isHittable })
+        // Resolving every app button crossed remote WebKit AX at the 776
+        // readiness deadline and failed with "Interrupted by waiter". Inspect
+        // only native presentation containers and the one expected action.
+        for buttons in [app.sheets.buttons, app.popovers.buttons, app.menus.buttons] {
+            let candidate = buttons.matching(predicate).firstMatch
+            if candidate.exists && candidate.isHittable { return candidate }
+        }
+        return nil
     }
 
     private func selectSyntheticFile() {
