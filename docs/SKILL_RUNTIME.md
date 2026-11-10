@@ -96,6 +96,18 @@ The acceptance workflow runs this isolation policy with additional explicit no-s
 
 ## Repeatable validation
 
+The iOS Skills XCTest target is hosted by the actual WoowAssistant App as of
+`2dd7b69`, with generated `TEST_HOST`/`BUNDLE_LOADER` verified in Debug and Release.
+The earlier unhosted coordinated-file test reached PDFKit and stalled in a system
+process wait. Without changing its assertions or the PDF reader, the hosted SE
+18.5 and iPhone 17 / 26.2 runs each passed all 34 selected skill, memory and
+persistence cases; the coordinated-read case took 0.089/0.091 seconds. Separate
+native picker runs passed the full PDF selection/extraction flow, while earlier
+FileProvider bookmark failures and native export failures remain unresolved.
+This corrects the XCTest execution context; it is not proof of a production
+PDFKit fix, full original-skill parity or iOS 17 UI acceptance. Run URLs and
+revision-specific failures are retained in [VERIFICATION.md](VERIFICATION.md).
+
 On macOS CLT Swift 5.8, use the exact same assertions as the new XCTest file via its standalone mode:
 
 ```sh

@@ -4,13 +4,15 @@
 
 `1bc4549` [17.5 workspace 42779156342](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42779156342) 已完成 38 項原生／hosted 測試，全數通過、零略過（Domain 27、hosted 11）。介面測試啟動器等待 AX-loaded notification 逾時，五項 UI 案例都未執行；摘要的 38 通過／1 失敗中，失敗項目是 runner 初始化錯誤。報告 `test_exit_code=65`，兩個驗收旗標均為 false，不能當成瀏覽器完整介面通過。已保存 report、測試日誌與摘要，沒有改用別的版本填補 iOS 17 介面缺口。
 
-`8f89d9e` [17.0.1 startup 42777363564](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42777363564) 已結束，未執行 App 測試：21A342 runtime 在 5 分 56 秒後回報 terminal `Data Migration Failed`。流程沒有把 simctl 的退出碼 0 當成功；診斷 help 逾時、device-state inventory 缺失亦有保存，專用 simulator 已刪除。最低版本的基本介面仍未驗證；先前核心 114/114 通過屬另一輪獨立證據。[17.5 workspace 42779156342](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42779156342) 包含書籤標籤等待與網站資料清除修正，另行驗證中。
+`8f89d9e` [17.0.1 startup 42777363564](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42777363564) 已結束，未執行 App 測試：21A342 runtime 在 5 分 56 秒後回報 terminal `Data Migration Failed`。流程沒有把 simctl 的退出碼 0 當成功；診斷 help 逾時、device-state inventory 缺失亦有保存，專用 simulator 已刪除。最低版本的基本介面仍未驗證；先前核心 114/114 通過屬另一輪獨立證據。包含書籤標籤等待與網站資料清除修正的 17.5 workspace 結果見上段，UI 未執行。
 
-`08ebb8f` [iOS 17.5 full 42762808616](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762808616) 實際啟動 17.5／21F79，測試於 80 分鐘期限中止。已完成日誌為原生 98 通過、介面 40 通過／3 失敗／10 即時服務略過；hosted 未執行，兩項基本介面案例只有開始紀錄。失敗包含書籤改名後標籤斷言，以及兩項 PDF 匯出的 App teardown 終止失敗。摘要為空，不能算完整驗收；報告 `test_timed_out=true`、`selected_tests_succeeded=false`、`runtime_tested=false`。07:19 UTC 已保存原始 artifact；runner cleanup 卡住超過 30 分鐘後於 07:52 請求取消，最終 cancellation 標籤不改變測試逾時。後續 [17.0.1 startup 42777363564](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42777363564)（`8f89d9e`）只驗證基本介面 class，待結果。摘要與附件匯出改為獨立 `always()` 步驟，讓摘要失敗時仍嘗試保存原生畫面，兩者失敗均保留。
+`08ebb8f` [iOS 17.5 full 42762808616](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762808616) 實際啟動 17.5／21F79，測試於 80 分鐘期限中止。已完成日誌為原生 98 通過、介面 40 通過／3 失敗／10 即時服務略過；hosted 未執行，兩項基本介面案例只有開始紀錄。失敗包含書籤改名後標籤斷言，以及兩項 PDF 匯出的 App teardown 終止失敗。摘要為空，不能算完整驗收；報告 `test_timed_out=true`、`selected_tests_succeeded=false`、`runtime_tested=false`。07:19 UTC 已保存原始 artifact；runner cleanup 卡住超過 30 分鐘後於 07:52 請求取消，最終 cancellation 標籤不改變測試逾時。後續只選基本介面 class 的 17.0.1 startup 在 boot 階段失敗，詳見上段。摘要與附件匯出改為獨立 `always()` 步驟，讓摘要失敗時仍嘗試保存原生畫面，兩者失敗均保留。
 
-查核日期：2026-11-10。整合提交 `d160a24` 已通過 Release 裝置編譯；17.0.1／17.5 模擬器均已啟動並實際執行 App 與 XCTest，但驗收尚未全數通過。`1153d5a` 修正已重現的原始網址連接埠檢查，其原生與 hosted 回歸案例已在三種 iOS 18.5／26.2 模擬器，以及 iOS 17.0.1 通過。最新 `1b0f3d8` 的 iOS 17.0.1 核心／hosted 驗證為 114/114、零略過；沒有選入 UI，完整介面重測仍在進行。目前尚無真機驗收、distribution 簽章成功或可安裝發行包。
+查核日期：2026-11-10。整合提交 `d160a24` 已通過 Release 裝置編譯；17.0.1／17.5 模擬器均曾啟動並實際執行 App 與 XCTest，但驗收尚未全數通過。`1153d5a` 修正已重現的原始網址連接埠檢查，其原生與 hosted 回歸案例已在三種 iOS 18.5／26.2 模擬器，以及 iOS 17.0.1 通過。`1b0f3d8` 的 iOS 17.0.1 核心／hosted 驗證為 114/114、零略過；沒有選入 UI，完整介面驗收仍未通過。目前尚無真機驗收、distribution 簽章成功或可安裝發行包。
 
 ## 已確認的環境與缺口
+
+2026-11-10 08:55 UTC 再次唯讀核對：本機仍為 0 valid signing identities，USB inventory 未見 iPhone／iPad；repository secret 名稱仍只有模型與 HA 兩項。未提供或確認此 App 的 Apple Team、相符簽章資料及可測試的 iOS 17 真機。
 
 | 查核項目 | 本次實際結果 |
 | --- | --- |
@@ -181,10 +183,10 @@ Both runs exposed the same invalid-port normalization and browser/PDF UI failure
 
 The iOS AppIcon is rendered from the unchanged WOOW Android vector recorded in Configuration/Brand/SOURCE.json, with its original geometry and colors, into an opaque 1024-pixel asset. `swift scripts/render_app_icon.swift` reproduces it; no new logo is designed.
 
-啟動失敗診斷增量：`release_ios17.py` 分開保存 boot 程序退出碼與終止狀態；即使程序退出 0，明確的 `Data Migration Failed` 也不會啟動 XCTest。只有乾淨 GitHub-hosted macOS、且實際 help 支援指定裝置旗標時，才在刪除本次 simulator 前蒐集其診斷，help 與蒐集共用 90 秒上限。沒有重試 boot、替換 OS 或清除其他裝置。模擬診斷失敗／逾時／cleanup 失敗的測試通過；真實診斷蒐集仍待 hosted 執行。
+啟動失敗診斷增量：`release_ios17.py` 分開保存 boot 程序退出碼與終止狀態；即使程序退出 0，明確的 `Data Migration Failed` 也不會啟動 XCTest。只有乾淨 GitHub-hosted macOS、且實際 help 支援指定裝置旗標時，才在刪除本次 simulator 前蒐集其診斷，help 與蒐集共用 90 秒上限。沒有重試 boot、替換 OS 或清除其他裝置。模擬診斷失敗／逾時／cleanup 失敗的測試通過；實際 17.0.1 startup 的診斷 help 逾時，未取得完整 simulator 診斷包，缺失已保留在報告。
 
 實際上傳工具驗證：[transporter-check 42764461574](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42764461574)（`024aba9`）在 GitHub-hosted Intel macOS 成功驗證官方套件、安裝至 `/usr/local/itms`，並啟動回報 `iTMSTransporter, version 4.3.0`。未提供帳號、API Key 或 IPA，沒有執行上傳。
 
-最新 App `c8ff84a` 的 [unsigned Release 42765470430](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42765470430) 通過：實際產物 build 14、九個二進位檔、最低 iOS 17.0、Release ATS 與隱私 manifest 檢查均符合。包含手動技能寫作的新 App 程式；仍為 unsigned、不可安裝、未上傳，不代替真機或 UI 驗證。
+較早 App `c8ff84a` 的 [unsigned Release 42765470430](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42765470430) 通過：實際產物 build 14、九個二進位檔、最低 iOS 17.0、Release ATS 與隱私 manifest 檢查均符合。包含手動技能寫作的新 App 程式；仍為 unsigned、不可安裝、未上傳，不代替真機或 UI 驗證。最新 build 19 結果見本文開頭。
 
 `1b0f3d8` [iOS 17.0.1 core 42769127673](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769127673) 實際通過 114/114 原生／hosted 案例，零失敗／略過／預期失敗。runtime inventory 為 17.0.1（21A342），iPhone 15 x86_64 simulator；host macOS 15.7.9、Xcode 16.4（16F6）。七個 target 的案例數為 48／6／15／5／25／4／11。三層原始網址驗證、五項技能寫作 bridge 與 WebKit 實際下載／Cookie 清除均通過。報告 `test_scope=core`、`selected_tests_succeeded=true`、`runtime_tested=false`；UI 未選入，不是完整 App 或真機驗收。啟動成功；optional inventory unavailable 與 shutdown incomplete 已保留，專用 simulator 刪除成功。07:13 UTC 唯讀重查 repository secret 名稱，仍只有模型與 HA 兩項，尚無 Apple 簽章／ASC 資料。
