@@ -5,12 +5,14 @@ No fallback to iOS 18/26. --download uses Apple's supported installer only.
 A disposable simulator is created and deleted; physical devices are untouched.
 """
 import argparse
+from datetime import datetime, timezone
 import json
 import os
 import platform
 from pathlib import Path
 import subprocess
 import sys
+import time
 import uuid
 
 from release_ios import ReleaseError, generate_project, run, version, verify_settings
@@ -38,7 +40,7 @@ def inventory(output, name):
     return payload
 
 
-def ensure_runtime(output, requested, download):
+def ensure_runtime(output, requested, download, progress=None):
     payload = inventory(output, "runtimes-before.json")
     try:
         return select_runtime(payload, requested)
@@ -46,6 +48,8 @@ def ensure_runtime(output, requested, download):
         if not download:
             raise ReleaseError("缺少指定 runtime。請預裝後重試，或在 hosted runner 使用 --download。") from None
     # Keep the actual installer failure as evidence; these arguments contain no secrets.
+    if progress:
+        progress("downloading_runtime")
     with (output / "runtime-download.log").open("wb") as log:
         try:
             completed = subprocess.run(["xcodebuild", "-downloadPlatform", "iOS", "-buildVersion", requested],
@@ -53,6 +57,8 @@ def ensure_runtime(output, requested, download):
             (output / "runtime-download-status.json").write_text(json.dumps({"exit_code": completed.returncode}) + "\n")
         except subprocess.TimeoutExpired:
             (output / "runtime-download-status.json").write_text('{"timed_out": true}\n')
+    if progress:
+        progress("checking_installed_runtime")
     payload = inventory(output, "runtimes-after.json")
     try:
         return select_runtime(payload, requested)
@@ -66,25 +72,49 @@ def execute(output, requested, download):
     output.mkdir(parents=True, exist_ok=False)
     report = {"requested_runtime": requested, "runtime_tested": False,
               "deployment_target": "17.0", "physical_devices_used": False,
-              "host_architecture": platform.machine(), "host_macos": platform.mac_ver()[0]}
+              "host_architecture": platform.machine(), "host_macos": platform.mac_ver()[0],
+              "phase_history": []}
+    started = time.monotonic()
+
+    def save_report():
+        temporary = output / "report.json.tmp"
+        temporary.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+        temporary.replace(output / "report.json")
+
+    def checkpoint(phase):
+        # Persist before starting a slow operation, so a runner termination does
+        # not erase the last known phase. Log only fixed phase/OS metadata.
+        report["phase"] = phase
+        event = {"phase": phase, "requested_runtime": requested,
+                 "at": datetime.now(timezone.utc).isoformat(),
+                 "elapsed_seconds": round(time.monotonic() - started, 1)}
+        report["phase_history"].append(event)
+        save_report()
+        print(json.dumps(event), flush=True)
+
     simulator = None
     try:
+        checkpoint("preflight")
         report["xcode"] = run(["xcodebuild", "-version"], "需要完整 Xcode").decode().strip()
-        runtime = ensure_runtime(output, requested, download)
+        checkpoint("checking_runtime")
+        runtime = ensure_runtime(output, requested, download, checkpoint)
         report["selected_runtime"] = runtime
         root = Path(__file__).resolve().parents[1]
+        checkpoint("generating_project")
         project = generate_project(root, output)
         common = ["xcodebuild", "-project", str(project), "-scheme", "WoowAssistant",
                   "-sdk", "iphonesimulator", "-derivedDataPath", str(output / "DerivedData")]
+        checkpoint("checking_build_settings")
         settings = json.loads(run(common + ["-destination", "generic/platform=iOS Simulator",
                                   "-showBuildSettings", "-json"], "檢查最低系統設定"))
         verify_settings(settings)
+        checkpoint("creating_simulator")
         simulator = run(["xcrun", "simctl", "create", "Woow-iOS17-" + uuid.uuid4().hex,
                          "com.apple.CoreSimulator.SimDeviceType.iPhone-15", runtime["identifier"]],
                         "建立此次驗證專用 Simulator").decode().strip()
         # Validate before using the identifier for any mutation.
         uuid.UUID(simulator)
-        report["phase"] = "booting"
+        checkpoint("booting")
         # Newly installed runtimes can spend several minutes preparing their
         # shared caches. Keep bounded boot output rather than hiding the cause.
         try:
@@ -94,7 +124,7 @@ def execute(output, requested, download):
             devices = json.loads(run(["xcrun", "simctl", "list", "devices", "--json"], "取得測試裝置狀態"))
             own = [item for group in devices.get("devices", {}).values() for item in group if item.get("udid") == simulator]
             report["simulator_state"] = [{key: item.get(key) for key in ("state", "isAvailable", "availabilityError")} for item in own]
-        report["phase"] = "testing"
+        checkpoint("testing")
         with (output / "tests.log").open("wb") as log:
             result = subprocess.run(common + ["-destination", "platform=iOS Simulator,id=" + simulator,
                 "-resultBundlePath", str(output / "Tests.xcresult"), "-parallel-testing-enabled", "NO",
@@ -104,9 +134,9 @@ def execute(output, requested, download):
         if result.returncode:
             raise ReleaseError("iOS 17 建置／XCTest 失敗；請查看 tests.log 與 Tests.xcresult。")
         report["runtime_tested"] = True
-        report["phase"] = "passed"
+        checkpoint("passed")
     finally:
-        (output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n")
+        save_report()
         if simulator:
             # Only the simulator created by this invocation is removed.
             subprocess.run(["xcrun", "simctl", "shutdown", simulator], capture_output=True, timeout=60)

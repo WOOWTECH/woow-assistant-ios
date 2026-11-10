@@ -76,7 +76,7 @@ python3 scripts/release_ios17.py --os 17.0.1 --download --output build/ios17
 
 每次 build／runtime run 的 output 目錄必須不存在，避免沿用舊產物。成功退出 0；前置條件／建置／驗證失敗退出 1。`release_ios.py preflight --signed` 會實際暫存匯入、驗證並清理；不能只靠 secret 存在就宣告簽章可用。一般編譯及簽章子程序的原始輸出不回顯，以避免洩漏簽章資料；錯誤會指出失敗階段與退出碼，必要時由 owner 在安全環境另行診斷。
 
-`release_ios17.py` 保留 `report.json`、`runtimes-before.json`，下載後另有 `runtimes-after.json`、`runtime-download.log`、`runtime-download-status.json`。只有 XCTest 成功才設定 `runtime_tested: true`；版本由 simctl 的 `version` 精確比對，不能只比 identifier（例如 suffix `iOS-17-0` 可能實際是 17.0.1）。17.0、17.0.1、17.5 的證據必須分開記錄。預設為 17.0.1；若承諾精確 17.0，也要選 17.0 成功實跑。17.5 成功不能填補 17.0／17.0.1 的缺口。
+`release_ios17.py` 保留 `report.json`、`runtimes-before.json`，下載後另有 `runtimes-after.json`、`runtime-download.log`、`runtime-download-status.json`。每個耗時階段開始前會原子更新報告並即時輸出階段、UTC 時間與已用秒數；若 runner 中斷，已完成的 checkpoint 仍保留在磁碟。這不代表中斷後 GitHub 必定能完成 artifact 上傳。只有 XCTest 成功才設定 `runtime_tested: true`；版本由 simctl 的 `version` 精確比對，不能只比 identifier（例如 suffix `iOS-17-0` 可能實際是 17.0.1）。17.0、17.0.1、17.5 的證據必須分開記錄。預設為 17.0.1；若承諾精確 17.0，也要選 17.0 成功實跑。17.5 成功不能填補 17.0／17.0.1 的缺口。
 
 母任務擁有的 `ios.yml` 若要加入持續最低版本檢查，請增加獨立 job，避免現有 matrix 的 runtime 選擇被混淆：
 
@@ -108,7 +108,7 @@ minimum-ios17:
 
 ## 測試與待補輸入
 
-本機已通過 20 個 Python tests，包含真實子程序的 secrets 環境隔離、錯誤輸出隔離、缺少 secrets 的 CLI 失敗，以及 profile／身分匹配、簽章清理、framework 設定隔離、最低版本與 runtime 選擇；另驗證 ad-hoc seal 與不同 leaf certificate 不能通過 distribution 驗證。ATS 測試以真實 XML／binary plist 驗證拒絕 Debug loopback 設定、全域例外、空字典與錯誤型別，並驗證 unsigned／signed 無 ATS 的通過回報。簽章匯入清理、Mach-O 及產物憑證測試使用合成資料與替代命令；不代表真實 iOS 編譯或簽章已成功。shell 語法、YAML 解析及 actionlint 1.7.12 已通過。
+本機已通過 24 個 Python tests，包含真實子程序的 secrets 環境隔離、錯誤輸出隔離、缺少 secrets 的 CLI 失敗，以及 profile／身分匹配、簽章清理、framework 設定隔離、最低版本、隱私 manifest 與 runtime 選擇；另驗證 ad-hoc seal 與不同 leaf certificate 不能通過 distribution 驗證。ATS 測試以真實 XML／binary plist 驗證拒絕 Debug loopback 設定、全域例外、空字典與錯誤型別，並驗證 unsigned／signed 無 ATS 的通過回報。簽章匯入清理、Mach-O 及產物憑證測試使用合成資料與替代命令；不代表真實 iOS 編譯或簽章已成功。實際本機 CLI 的缺少 Xcode 失敗路徑另確認退出 1、即時 preflight 訊息與 `runtime_tested: false` 的完整報告，沒有遺留半寫入的暫存報告。shell 語法、YAML 解析及 actionlint 1.7.12 已通過。
 
 已實際下載並核對固定 XcodeGen 2.44.1 的 SHA-256，在本機暫存目錄產生真實專案，套用合成簽章設定後以 `plutil -lint` 驗證，確認 App 有 profile、其他 target 沒有 App profile。首次產生因 session 缺少 `USER` 失敗；只在驗證子程序補入 OS 帳號名稱後成功，未修改系統設定。此為專案產生／設定驗證，不是 Xcode 編譯。
 
@@ -124,6 +124,10 @@ minimum-ios17:
 行為來源固定於 Mika `/tmp/woow-mika-memory-reference` 的 `0c172724`（本機短 SHA `0c17272`）；已對照 `core/.../memory/MemoryStore.kt` 的 unavailable 拒寫、更新需重新批准與 undo 行為。發佈檢查不驗證這些產品行為，也不代表 Mika parity；相關 app／memory 測試仍由其 owner 的實作與 XCTest 證據決定。
 
 ## Additional recorded results
+
+`39a13b0` [unsigned-device 42753499130](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42753499130) passed the actual Release build and packaged privacy-manifest audit: nine binaries, minimum OS 17.0, Xcode/SDK 26.2, `native_documents_enabled`, `ats_key_absent`, and `required_reason_entries_verified` all true. It remains unsigned, not installable, not runtime-tested and not uploaded for distribution.
+
+Read-only reuse research found the related Apporo project's [signing configuration](https://github.com/WOOWTECH/Woow_apporo_ha_ios/blob/38e218afe425a1ae79353453058b2a3661fc6b66/Configuration/HomeAssistant.xcconfig) identifying team `W4UWZ8NP2P`; `QMQYCKL255` in older forks is upstream Home Assistant's team. Prior Omnigent Apporo Smart review records confirm another App Store submission existed, but provide no signing material for this bundle. No team has been copied into this project's build settings. The owner's intended team/distribution method and this App's matching profile/certificate remain unconfirmed.
 
 Integrated `d160a24` [unsigned-device 42748369961](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748369961) passed: nine binaries, minimum OS 17.0, Xcode/SDK 26.2, `native_documents_enabled: true`, `ats_key_absent: true`. The report explicitly records `signature_verified: false`, `runtime_tested: false`, `uploaded: false`, and `unsigned-device-build-not-installable`.
 
