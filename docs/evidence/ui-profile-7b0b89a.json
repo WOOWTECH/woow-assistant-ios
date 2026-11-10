@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-10T21:19:05.619621+00:00",
+  "source_commit": "7b0b89ab9c4d6c37b82eabececec9c71fb3998fe",
+  "run_id": 42895988211,
+  "job_id": 130109135463,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42895988211",
+  "job_conclusion": "success",
+  "scope": "ui-profile current: five manual-profile and four reviewed-profile-tool native fixture methods",
+  "runtime": {
+    "device_name": "iPhone 17",
+    "runtime_build": "23C54",
+    "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+    "runtime_version": "26.2"
+  },
+  "portable": {
+    "total": 203,
+    "unique": 203,
+    "started": 203,
+    "unique_started": 203,
+    "passed": 203,
+    "failed": 0,
+    "skipped": 0
+  },
+  "ui": {
+    "source_expected": 9,
+    "started": 9,
+    "unique_started": 9,
+    "completed": 9,
+    "unique_completed": 9,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "each_source_method_started_and_completed_once": true,
+    "runner_restart_messages": 0,
+    "method_completion_columns": [
+      "qualified_method",
+      "outcome",
+      "seconds"
+    ],
+    "method_completions": [
+      [
+        "WoowAssistantUITests/UserProfileToolUITests/testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+        "passed",
+        198.972
+      ],
+      [
+        "WoowAssistantUITests/UserProfileToolUITests/testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+        "passed",
+        109.368
+      ],
+      [
+        "WoowAssistantUITests/UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+        "passed",
+        164.311
+      ],
+      [
+        "WoowAssistantUITests/UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+        "passed",
+        164.866
+      ],
+      [
+        "WoowAssistantUITests/UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch",
+        "passed",
+        140.252
+      ],
+      [
+        "WoowAssistantUITests/UserProfileUITests/testDuplicateAndCancelledTextNeverPublish",
+        "passed",
+        134.567
+      ],
+      [
+        "WoowAssistantUITests/UserProfileUITests/testMasterSwitchAndTwiceConfirmedClearPersist",
+        "passed",
+        176.012
+      ],
+      [
+        "WoowAssistantUITests/UserProfileUITests/testMultipleSentencesNeverPublish",
+        "passed",
+        135.02
+      ],
+      [
+        "WoowAssistantUITests/UserProfileUITests/testSensitiveTextNeverPublishes",
+        "passed",
+        118.258
+      ]
+    ]
+  },
+  "xcresult_summary_counts": {
+    "totalTestCount": 9,
+    "passedTests": 9,
+    "failedTests": 0,
+    "skippedTests": 0
+  },
+  "completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 9,
+      "passedTests": 9,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 9,
+    "completed_ui_count": 9,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/UserProfileUITests.swift": "f7f39e9d366940c2f031e69604a4f174788e2e0ae16b716225f33719a62779df",
+    "Tests/WoowAssistantUITests/UserProfileToolUITests.swift": "cc40c0d9aef8ee89bdfe1d5dc744f787fd6041edb94e7c53d7c1a84a0ce1f409",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+    "Sources/App/UserProfileView.swift": "d65f453f9142d744a00ac10bf4f286a24807025474b6e8035b0d891db71f94a5",
+    "Sources/App/LearningStore.swift": "a370fdb4472902433ef204791e7c4665390faaa400a79fc8bf19e389423cbe25",
+    "scripts/release_ios17.py": "9768cc17c85c6dc69a31921b20ebae20202eb9235ff057af599a0fe4afe10117",
+    "project.yml": "8b9d7f3cca0b08f3271d50558d1d0aa7949be40544f0c170ee95117193157bc2"
+  },
+  "test_method_sha256": {
+    "UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch": "a6a204ba3c81fcb650f4dab831bda92621407a4f363c57eadb13ec9765f85a9f",
+    "UserProfileUITests/testSensitiveTextNeverPublishes": "f9fba54a4dfab75127f86482aa1953ea87b61c15bb3f30beb685e4f1b9550bb2",
+    "UserProfileUITests/testMultipleSentencesNeverPublish": "c9a9aecdc2a4dd6fc1e0a08792af469e5c5d4efa774f6110220f9641c6b62946",
+    "UserProfileUITests/testDuplicateAndCancelledTextNeverPublish": "0c24a03f887711621d866e9c53c1b6300c2f9cc2fc3d103b5c63eb73aeac31cc",
+    "UserProfileUITests/testMasterSwitchAndTwiceConfirmedClearPersist": "802746560d16b48e47698472b52b50561d754cae753ce0b326841077e1ca5e50",
+    "UserProfileToolUITests/testApprovedChatAdditionPersistsInProfileAfterRelaunch": "f843f0108fa547fa18b2e42f6964bdf824af07fcb1f218ef5a997906f80897c7",
+    "UserProfileToolUITests/testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry": "6ff2a9e84f024dfb03f5363209c3ae739729e8ce4caaf2e71379a397b08967a1",
+    "UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch": "7fd04c7dc4a8e96b0889adc787ce9924850146f49755470298084c3fd948e568",
+    "UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch": "cbcd9b253f05ad972467d7320ddb28cdf835f6bc09789b16ab617f16c50584d6"
+  },
+  "test_method_hash_definition": "Exact source from each test declaration to before the next function declaration, trailing whitespace stripped.",
+  "artifact": {
+    "id": 13803732267,
+    "size_bytes": 414662284,
+    "digest": "sha256:0b794818f8ae3ead35e3a113d76f8883dc4304605b3fcbf6aa617fbf8383d15a",
+    "inspected_metadata": [
+      "test-summary.json",
+      "test-simulator.json",
+      "ui-shard-completion.json"
+    ]
+  },
+  "comparison_to_prior_4f": {
+    "report": "docs/evidence/ui-profile-4f26118.json",
+    "prior_xcresult": {
+      "passed": 6,
+      "failed": 3,
+      "skipped": 0,
+      "total": 9
+    },
+    "current_prior_failure_methods": [
+      "UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch"
+    ],
+    "all_three_current_methods_passed": true,
+    "root_cause_proven": false
+  },
+  "limits": [
+    "Native UI fixture evidence, not actual external model acceptance.",
+    "Nine UI methods and 203 portable tests are separate suites, not the full native test suite.",
+    "This run validates committed 7b0b89a App bytes and cannot validate the later profile-lineage or multi-source-reference changes in 1abc6d7.",
+    "Prior 4f failures remain recorded. The new passing run does not prove the earlier history timing, hit area or launch root causes.",
+    "No retry was requested; nine unique starts and no runner restart messages were observed.",
+    "No private environment, credentials, raw logs, live AX trees or signed artifact URLs are included."
+  ]
+}

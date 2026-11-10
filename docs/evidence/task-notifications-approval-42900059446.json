@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "run_id": 42900059446,
+  "job_id": 130123348593,
+  "artifact_id": 13802614636,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42900059446",
+  "commit": "50d25f1da9a61d58911a545dc4aa64bbe7ca19dc",
+  "conclusion": "failure",
+  "artifact_sha256": "6e9cb0a53c0e41e551735c37d29d7fc64d5341f7acf392aa0be4c833b8676c45",
+  "approval_test_source_sha256": "1d8f62cd73351667bb2f1a22c5c3539cc5510340632019bf0921c165bc4c1341",
+  "test_summary": {
+    "devicesAndConfigurations": [
+      {
+        "device": {
+          "architecture": "arm64",
+          "deviceId": "C74CB64F-B5B3-46D8-AB61-A00F2CDDD255",
+          "deviceName": "Woow-CI-d9d53e000f914a108154b398e0bf53b5",
+          "modelName": "iPhone 17",
+          "osBuildNumber": "23C54",
+          "osVersion": "26.2",
+          "platform": "iOS Simulator"
+        },
+        "expectedFailures": 0,
+        "failedTests": 1,
+        "passedTests": 1,
+        "skippedTests": 0,
+        "testPlanConfiguration": {
+          "configurationId": "1",
+          "configurationName": "Test Scheme Action"
+        }
+      }
+    ],
+    "environmentDescription": "WoowAssistant · Built with macOS 15.8.2",
+    "expectedFailures": 0,
+    "failedTests": 1,
+    "finishTime": 1794345001.721,
+    "passedTests": 1,
+    "result": "Failed",
+    "skippedTests": 0,
+    "startTime": 1794344692.225,
+    "statistics": [],
+    "testFailures": [
+      {
+        "failureText": "Failed to get matching snapshot: No matches found for Elements matching predicate '\"mcp.status\" IN identifiers' from input {(\n    StaticText, label: '對話',\n    StaticText, identifier: 'chat.status', label: '模型已設定',\n    StaticText, identifier: 'chat.historyNotice', label: '對話紀錄僅保留於本次 App 工作階段，關閉程序後不會保存。',\n    StaticText, identifier: 'uitest.banner', label: 'UI 測試模式：固定回覆，不會呼叫網路。',\n    StaticText, identifier: 'notifications.routeObservation', label: '通知導頁測試觀測', value: generation=42886BE...,\n    StaticText, label: '對話',\n    StaticText, label: '瀏覽器',\n    StaticText, label: '工具',\n    StaticText, label: '資料',\n    StaticText, label: '設定'\n)}\nPossibly caused by runtime issues:\nAutomation type mismatch: computed Other from legacy attributes vs StaticText from modern attribute. Input attributes and values: {\n    \"XC_kAXXCAttributeAutomationType\" = 48;\n    \"XC_kAXXCAttributeElementBaseType\" = UILabel;\n    \"XC_kAXXCAttributeElementType\" = UILabel;\n    \"XC_kAXXCAttributeTraits\" = 8590000128;\n}\nSee test report attachments for more detail.",
+        "targetName": "WoowAssistantUITests",
+        "testIdentifier": 1,
+        "testIdentifierString": "NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval()",
+        "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval",
+        "testName": "testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval()"
+      }
+    ],
+    "title": "Test - WoowAssistant",
+    "topInsights": [],
+    "totalTestCount": 2
+  },
+  "completion_gate": {
+    "verified": false,
+    "counts": {
+      "totalTestCount": 2,
+      "passedTests": 1,
+      "failedTests": 1,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Failed",
+    "expected_ui_count": 2,
+    "completed_ui_count": 2,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": [
+      "WoowAssistantUITests/NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval"
+    ]
+  },
+  "bounded_log_markers": [
+    "Test Case '-[WoowAssistantUITests.NotificationApprovalUITests testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval]' started.",
+    "NOTIFICATION_APPROVAL authorizationBefore=notDetermined authorizationAfter=authorized",
+    "Test Case '-[WoowAssistantUITests.NotificationApprovalUITests testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval]' failed (42.358 seconds).",
+    "Test Case '-[WoowAssistantUITests.NotificationUITests testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable]' started.",
+    "NOTIFICATION_SETTINGS enabled=1 systemPromptObserved=0",
+    "NOTIFICATION_SETTINGS actualSystemBanner=1 audibleSoundVerified=0",
+    "NOTIFICATION_SETTINGS actualBannerTap=1 rootChatVisible=1",
+    "NOTIFICATION_SETTINGS relaunchEnabled=1 disablePersisted=1 systemPermissionRetained=1",
+    "Test Case '-[WoowAssistantUITests.NotificationUITests testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable]' passed (46.288 seconds)."
+  ],
+  "approval_observations": {
+    "3B607B71-1EFB-420D-AF95-CA48DF15489B.txt": "stage=fixtureConnection;before=none;after=none",
+    "FA2F64B2-CC6C-4F2B-8D0C-ED9CBD19764D.txt": "before=none\nafter=none"
+  },
+  "failure_stage": "fixtureConnection/missing mcp.status after connect tap",
+  "failure_screenshot": {
+    "artifact_attachment": "E576E6BA-1D80-4579-A566-6A8230F661FD.png",
+    "file": "task-notifications-approval-42900059446-failure.png",
+    "sha256": "e78eb168d1791363637a5a5dfb892787988c7d086b43286f31e25373c863bf92"
+  },
+  "stages": {
+    "native_app_build": "success",
+    "native_test_target_compilation": "success",
+    "public_notification_authorization": "authorized",
+    "original_settings_case": "passed",
+    "new_approval_case": "failed",
+    "prompt_sent": false,
+    "pending_proposal_uuid_observed": false,
+    "approval_banner_observed": false,
+    "default_open_callback_observed": false,
+    "explicit_approval": false,
+    "single_call_result_observed": false,
+    "audible_sound_verified": false
+  },
+  "diagnosis": "After the native mcp.connect tap at t=35.46, the screenshot and AX snapshot show root Chat selected and mcp.status absent. The test skipped the Form viewport helper because isHittable was true. This is consistent with a covered/offscreen row tapping another control; attribution to the precise hit target remains an inference. No prompt, proposal or approval banner was reached.",
+  "proposed_fix": "f49c8f7 always reveals Form/List controls before their native tap. Fixed Chat/header controls use direct native taps. Verify the current-device retry before claiming this failure resolved.",
+  "fix_scope": "NotificationApprovalUITests.swift only; product sources and shared helpers remain frozen",
+  "native_retry_validation": "pending separate corrected run"
+}

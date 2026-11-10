@@ -1,6 +1,53 @@
 # Verification — 2026-11-11
 
 
+## Combined native regression and device compilation completed
+
+At `1abc6d7`, [42902018558](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902018558)
+passed **286/286 native and hosted methods, zero skips**, on iPhone 17 / iOS 26.2 /
+23C54. The separate portable execution passed 207/207; these totals are not
+additive unique coverage. Actual starts, completions and xcresult counts agree.
+The nine new multi-source reference methods and ten existing LearningRun App
+methods with expanded lineage/cancellation assertions all passed.
+[Exact methods, source hashes and limits](evidence/native-current-1abc6d7.json).
+The separate profile and learning UI checks remain distinct acceptance.
+
+At `f49c8f7`, [42902524475](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902524475)
+completed unsigned Release device build **57** with Xcode/SDK 26.2. The release
+verifier checked nine binaries, minimum iOS 17.0, native document settings and
+required-reason entries; ATS exceptions were absent. The downloaded report ZIP
+matches its GitHub digest. This is **not an installable signed build**, physical
+runtime acceptance or App Store upload. [Build proof](evidence/unsigned-device-f49c8f7.json).
+
+## PDF question and profile UI completed; actual reference behavior verified locally
+
+At `ae381fc`, [42900646333](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42900646333)
+passed the complete actual-model PDF question UI case on iOS 18.5, **1/1, zero skips**,
+in 275.255 seconds. Four real model calls produced two verified page citations.
+Native export cancellation preserved the answer and citations, and returning to
+the original extraction preserved its exact text and operation audit at second 264.
+The 300-second allowance and 285-second cleanup boundary were unchanged; private
+configuration and the owned simulator were cleaned. [Fixed phases and counts](evidence/live-document-query-ae381fc-ios18.json).
+The exact iOS 17.0.1 continuation is a separate acceptance run.
+
+At `7b0b89a`, [42895988211](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42895988211)
+passed all **9/9 profile UI methods, zero skips**, on iPhone 17 / iOS 26.2 / 23C54.
+The actual per-method log and xcresult agree; the original `4f26118` failures remain
+preserved. This run predates the later replacement-lineage product fix.
+[Exact methods and source hashes](evidence/ui-profile-7b0b89a.json).
+
+The production multi-source runner, HTTP client and actual macOS WebKit passed
+three real-model reference cases: saved preference, current-request precedence and
+citation isolation. All nine citations match actual observed ranges from both
+approved public roots. Saved entries were synthetic; no user vault was captured.
+An additional synthetic forged-command replay was rejected without network access.
+The first attempt failed without an HTTP subtype; a bounded diagnostic observed
+HTTP 400 and a model-selection mismatch with the existing CI configuration. Changing
+only that model selection produced three valid completions. Five client attempts
+were used across all attempts, within the shared twelve-call ceiling. This does
+not establish a provider-wide defect or native iOS UI acceptance.
+[Complete bounded evidence and preserved attempts](evidence/multi-source-references-live-fixture.json).
+
 ## Exact iOS 17 startup completed after prebuild
 
 At `e963698`, [42893709163](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42893709163)

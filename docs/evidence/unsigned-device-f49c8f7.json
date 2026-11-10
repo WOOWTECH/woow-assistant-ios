@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "source_commit": "f49c8f77ff7963f1993daf652069affc0e79c983",
+  "run_id": 42902524475,
+  "job_id": 130131962348,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902524475",
+  "job_conclusion": "success",
+  "observed_at_utc": "2026-11-10T21:27:04.728010+00:00",
+  "report": {
+    "xcode": "Xcode 26.2\nBuild version 17C52",
+    "iphoneos_sdk": "26.2",
+    "build_number": "57",
+    "bundle_id": "io.woowtech.assistant",
+    "minimum_os": "17.0",
+    "platform": "iphoneos",
+    "verified_binary_count": 9,
+    "signature_verified": false,
+    "ats_key_absent": true,
+    "native_documents_enabled": true,
+    "required_reason_entries_verified": true,
+    "artifact_kind": "unsigned-device-build-not-installable",
+    "runtime_tested": false,
+    "uploaded": false
+  },
+  "artifact": {
+    "id": 13804072759,
+    "size_bytes": 39288,
+    "sha256": "09af4251e79e40fef595d9178bf87cda2df493aca46f19fa196aeeea76ba5ff0",
+    "downloaded_and_hash_verified": true,
+    "inspected_file": "report.json"
+  },
+  "limits": [
+    "Nine device binaries were checked for iOS platform and minimum deployment version by the release verifier.",
+    "No signed or installable package was produced; no physical-device execution or App Store upload occurred."
+  ],
+  "source_sha256": {
+    "scripts/release_ios.py": "d0519df1a4c5823b44cecb37dfc94bb47590e22ba2df2cc3d52f40eb76398638",
+    "project.yml": "209f262d5ae09bf5c453d7e5119e5c79fca7bdf3eacb3180e70f9e28c0747ddc",
+    ".github/workflows/release-ios.yml": "386448192437531cd1e1ba2e1327562dc311da5068d26f5e2d4709e33c0fd330"
+  }
+}

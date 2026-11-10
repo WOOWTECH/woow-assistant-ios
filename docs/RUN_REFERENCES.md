@@ -84,4 +84,18 @@ assuming a model counter or a few task yields prove completion.
 
 The final reports above come from an isolated `ae381fc` checkout plus the frozen
 reference changes. The later independent PDF-pair fixture update is validated
-separately; native acceptance of the combined tree remains required.
+separately. The combined `1abc6d7` tree subsequently passed 286/286 native/hosted
+methods on iOS 26.2, including all 19 reference-related methods; the separate
+portable execution passed 207/207. See [native evidence](evidence/native-current-1abc6d7.json).
+
+
+The actual-model follow-up passes three cases on macOS with real public WebKit
+observations and synthetic saved references: a saved formatting preference, a
+contrary current request, and separation of references from citation evidence.
+Nine cited ranges match the observed sources exactly. The separately labeled
+forged-citation replay uses a synthetic command over those observations with zero
+network requests. The first unsuccessful attempt, HTTP-400 diagnostic and corrected
+model-selection run are preserved in [the evidence chain](evidence/multi-source-references-live-fixture.json).
+This does not exercise user-vault capture or native iOS UI. The optional checker
+requires explicit `--live`; compiling or running its seven report/budget tests
+makes no model request.

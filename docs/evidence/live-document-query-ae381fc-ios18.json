@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "run_id": 42900646333,
+  "job_id": 130125409089,
+  "source_commit": "ae381fc0909ac8e395155a1acebb24dfbad625f7",
+  "ui_source_sha256": "6af6e92babd78e91f248427d07fb58612bee6bc317bc10963f7137a62eeba267",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42900646333",
+  "job_conclusion": "success",
+  "runtime_observed_in_job": "iOS-18-5",
+  "method": "LiveDocumentQueryUITests.testRealModelAnswersFromApprovedPDFAndExportCancellationPreservesResult",
+  "counts": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "counts_basis": "The fixed verify_live_ui.py output from the actual xcresult agrees with the normal passed-method completion line.",
+  "fixed_xcresult_verification": {
+    "expectedFailures": 0,
+    "expectedTests": 1,
+    "failedTests": 0,
+    "passedTests": 1,
+    "skippedTests": 0,
+    "totalTestCount": 1,
+    "code": "PASSED"
+  },
+  "duration_seconds": 275.255,
+  "case_allowance_seconds": 300,
+  "driver_cleanup_reserve_boundary_seconds": 285,
+  "phases_seconds_since_setup": {
+    "selected": 65,
+    "extracted": 89,
+    "question_input_started": 116,
+    "question_input_delivered": 131,
+    "question_keyboard_dismissed": 136,
+    "question_verified": 136,
+    "model_started": 167,
+    "verified": 201,
+    "export_presented": 222,
+    "export_cancel_tapped": 236,
+    "export_callback_verified": 241,
+    "retained_answer_verified": 245,
+    "retained_citations_verified": 246,
+    "export_cancelled": 247,
+    "extraction_preserved": 264
+  },
+  "actual_query_audit": {
+    "modelCalls": 4,
+    "searches": 1,
+    "reads": 2,
+    "results": 1,
+    "citations": 2,
+    "corrections": 0
+  },
+  "xctest_event_seconds": {
+    "keyboard_done_tap": 134.99,
+    "query_start_tap": 166.98,
+    "export_tap": 217.03,
+    "query_close_tap": 248.41,
+    "tear_down_start": 265.99
+  },
+  "reached_and_asserted": [
+    "actual_native_Files_import_copy_callback_for_this_namespace_PDF",
+    "separate_read_approval_then_separate_extraction_approval",
+    "actual_two_page_Apple_PDFKit_extraction_with_original_page_markers_and_namespace",
+    "unchanged_full_question_entered_via_native_editor_and_exactly_verified_after_keyboard_dismissal",
+    "zero_query_audit_and_disabled_start_before_explicit_configured_destination_approval",
+    "actual_configured_model_with_one_search_two_reads_and_two_validated_citations",
+    "exact_requested_markers_with_original_page_numbers_and_answered_question",
+    "actual_native_exporter_Cancel_action_followed_by_dismissal_and_exact_cancellation_callback_status",
+    "exact_answer_and_both_exact_citations_retained_after_cancellation",
+    "unchanged_query_audit_after_export",
+    "query_sheet_closed_and_exact_original_extraction_retained",
+    "final_extraction_audit_selections1_reads1_attempts1_results1"
+  ],
+  "wait_and_snapshot_followup": {
+    "previous_failed_evidence": "live-document-query-7b0b89a-ios18.json",
+    "observed": "The old Done readiness failure was passed in this run; the actual Done tap, keyboard disappearance and exact question assertion completed. The unchanged native actions continued through the entire E2E case.",
+    "snapshot_scope": "The scoped CollectionView, unique Form check, static-text readback and visible geometry checks executed successfully for the query audit and both citation groups on this iOS 18.5 invocation.",
+    "limits": "This run does not establish that the initial Done AX query again exceeded 10 seconds, nor that duplicate wrapper IDs were present. Those boundary behaviors have separate local regression checks; this single E2E success is not an isolated timing benchmark or universal reliability claim."
+  },
+  "comparison_with_517": {
+    "previous_failed_evidence": "live-document-query-517d0d1-ios18.json",
+    "previous_counts": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0
+    },
+    "previous_export_cancelled_phase_seconds": 303,
+    "current_export_cancelled_phase_seconds": 247,
+    "previous_extraction_preserved": false,
+    "current_extraction_preserved": true,
+    "meaning": "The prior run exceeded the case allowance during post-cancel readback and never closed the query. This run completed cancellation, exact retained readback and closing/extraction checks within the unchanged budget. The runs are not a controlled performance experiment."
+  },
+  "cleanup_steps": {
+    "Clear private runner configuration": "success",
+    "Delete only this run's simulator": "success"
+  },
+  "previous_failed_evidence": [
+    "live-document-query-4f26118-ios18.json",
+    "live-document-query-517d0d1-ios18.json",
+    "live-document-query-7b0b89a-ios18.json"
+  ],
+  "limitations": [
+    "This proves one real iOS 18.5 PDF question/answer/export-cancel E2E invocation, not the full original tool catalog or another OS/device matrix.",
+    "Setup-relative phase integers and XCTest relative event times have different origins and are reported separately.",
+    "The fixed audit is for this UI query. Other real model probes in the workflow are separate.",
+    "No new model error occurred in this case; it does not diagnose other teams' service failures.",
+    "No endpoint, credentials, model/source prose, AX dump, screenshot or private artifact bundle was downloaded or included.",
+    "No product or test source edits, retries or dispatches were made during this monitoring task; prior failed evidence remains intact."
+  ]
+}
