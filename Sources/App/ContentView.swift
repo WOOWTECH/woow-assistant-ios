@@ -182,6 +182,10 @@ private struct ChatView: View {
                 Text("本次對話曾儲存個人檔案；可到資料頁查看目前內容。")
                     .font(.caption).accessibilityIdentifier("chat.profileReceipt")
             }
+            if session.memoryReceipt != nil {
+                Text("本次對話曾儲存記憶修改；可在資料頁查看目前內容。")
+                    .font(.caption).accessibilityIdentifier("chat.memoryReceipt")
+            }
             if !session.mcpSteps.isEmpty {
                 Button("檢視工具結果（\(session.mcpSteps.count)）") { showsMCPResults = true }
                     .font(.caption).accessibilityIdentifier("chat.mcpResults")
@@ -270,6 +274,12 @@ private struct ChatView: View {
                 decline: { session.resolveProfileReview(id: review.id, approved: false) })
                 .interactiveDismissDisabled()
         }
+        .sheet(item: Binding(get: { session.pendingMemoryReview }, set: { _ in })) { review in
+            MemoryToolReviewView(review: review,
+                approve: { session.resolveMemoryReview(id: review.id, approved: true) },
+                decline: { session.resolveMemoryReview(id: review.id, approved: false) })
+                .interactiveDismissDisabled()
+        }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
@@ -297,13 +307,22 @@ private struct LearningChatNotes: View {
                     .accessibilityIdentifier("chat.learningError")
             }
             ForEach(Array(store.notes.enumerated()), id: \.element.memoryID) { index, note in
-                HStack {
+                VStack(alignment: .leading, spacing: 4) {
                     Text(store.noteText(note)).font(.caption)
                         .accessibilityIdentifier("chat.memoryNote.\(index)")
-                    if note.undoToken != nil {
-                        Button("撤銷") { store.undo(note) }
-                            .font(.caption).accessibilityIdentifier("chat.undoMemory.\(index)")
+                    HStack {
+                        if store.canReviewMemory(note) {
+                            Button("批准") { store.approvePendingMemory(note) }
+                                .accessibilityIdentifier("chat.approveMemory.\(index)")
+                            Button("拒絕") { store.rejectPendingMemory(note) }
+                                .accessibilityIdentifier("chat.rejectMemory.\(index)")
+                        }
+                        if note.undoToken != nil {
+                            Button("撤銷") { store.undo(note) }
+                                .accessibilityIdentifier("chat.undoMemory.\(index)")
+                        }
                     }
+                    .font(.caption)
                 }
             }
         }

@@ -1,0 +1,166 @@
+{
+  "schema_version": 1,
+  "source_revision": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+  "run_id": 42847908760,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42847908760",
+  "artifact_id": 13780524484,
+  "runtime": "17.0.1",
+  "runtime_build": "21A342",
+  "xcode": "16.4",
+  "host_architecture": "arm64",
+  "scope": "ui-documents",
+  "expected_ui_methods": 12,
+  "actual_method_starts": 0,
+  "synthetic_bootstrap_failures": 1,
+  "boot_succeeded": true,
+  "test_exit_code": 65,
+  "prelaunch": {
+    "elapsed_seconds": 0.844,
+    "process_alive": true,
+    "handshake_verified": false
+  },
+  "original_budgets": {
+    "maximum_case_seconds": 300,
+    "build_test_seconds": 1800
+  },
+  "bounded_retrieval": {
+    "whole_zip_downloaded": false,
+    "selected_log_bytes": 1133025,
+    "files": [
+      {
+        "local_path": "/tmp/woow-docs17-stack-index/testmanagerd.log",
+        "archive_entry": "runner-diagnostics/0_Test_Woow-iOS17-6334cf2f731343c697316e473d2d264b_Diagnostics/Woow-iOS17-6334cf2f731343c697316e473d2d264b_49A070D2-1AAE-4E15-95D9-E52DF9C98F59/testmanagerd.log",
+        "bytes": 1632,
+        "sha256": "05cb95c3ee8b5a458e964c72c32654463eef1638a3e97d30141a652ef571cda3"
+      },
+      {
+        "local_path": "/tmp/woow-docs17-stack-index/launchd.log",
+        "archive_entry": "runner-diagnostics/0_Test_Woow-iOS17-6334cf2f731343c697316e473d2d264b_Diagnostics/simctl_diagnostics/49A070D2-1AAE-4E15-95D9-E52DF9C98F59/launchd_sim/launchd.log",
+        "bytes": 1131393,
+        "sha256": "53c9a7c18311dbd76d81c1f77b12d0f37bc2925ca0eca479d82b528c728ef0bb"
+      }
+    ]
+  },
+  "timeline_utc": [
+    {
+      "at": "2026-11-10T15:55:56.517475Z",
+      "event": "selected_service_xpcproxy_spawned",
+      "pid": 8290,
+      "source": "launchd.log:3897"
+    },
+    {
+      "at": "2026-11-10T15:58:18.208Z",
+      "event": "control_socket_connected",
+      "source": "testmanagerd.log:6"
+    },
+    {
+      "at": "2026-11-10T15:58:18.219Z",
+      "event": "control_session_initiated",
+      "source": "testmanagerd.log:7"
+    },
+    {
+      "at": "2026-11-10T16:00:27.818114Z",
+      "event": "same_service_running_state_logged",
+      "pid": 8290,
+      "source": "launchd.log:4065"
+    },
+    {
+      "at": "2026-11-10T16:00:31.576Z",
+      "event": "control_protocol_120_second_timeout",
+      "source": "testmanagerd.log:9"
+    },
+    {
+      "at": "2026-11-10T16:00:32.978Z",
+      "event": "session_reports_control_timeout",
+      "source": "Session-WoowAssistantUITests-2026-11-10_155818-QPrju0.log:58"
+    },
+    {
+      "at": "2026-11-10T16:02:26.593959Z",
+      "event": "runner_prints_running_tests",
+      "pid": 19096,
+      "source": "tests.log:4279"
+    },
+    {
+      "at": "2026-11-10T16:05:40.014683Z",
+      "event": "runningboard_terminates_runner_initialization_assertion",
+      "pid": 19096,
+      "source": "launchd.log:5461"
+    },
+    {
+      "at": "2026-11-10T16:06:15.894Z",
+      "event": "coordinator_reports_sigkill_before_test_execution",
+      "source": "Session-WoowAssistantUITests-2026-11-10_155818-QPrju0.log:124"
+    },
+    {
+      "at": "2026-11-10T16:15:54Z",
+      "event": "later_xcodebuild_failure_report_not_time_of_runner_death",
+      "source": "tests.log"
+    }
+  ],
+  "observed_termination": {
+    "namespace": "OS_REASON_RUNNINGBOARD",
+    "code": "0x2182BAAD",
+    "assertion": "XCTRunner Initialization"
+  },
+  "measured_spawn_to_running_state_seconds": 271.300639,
+  "classification": "infrastructure_bootstrap_failure_before_any_ui_method",
+  "not_established": [
+    "The 271-second launchd log interval does not prove the executable remained xpcproxy throughout.",
+    "No target-process stack was preserved; the daemon blocking function and causal link to runner initialization remain unknown.",
+    "Prelaunch process liveness did not prove control/AX readiness."
+  ],
+  "next_experiment": {
+    "opt_in_input": "ios17_sample_bootstrap",
+    "default": false,
+    "requires": [
+      "GitHub-hosted macOS",
+      "explicit prelaunch",
+      "exact owned fresh simulator",
+      "allowlisted non-Live UI selectors"
+    ],
+    "public_identity": [
+      "exact service PID returned by selected-simulator launchctl kickstart -p",
+      "libproc PID/UID/PPID/start-time/executable",
+      "exact runtime launchd_sim and service paths",
+      "exact selected-simulator runner container"
+    ],
+    "schedule_seconds": {
+      "daemon_early_after_prelaunch": 15,
+      "daemon_later_after_prelaunch": 75,
+      "runner_after_running_tests_if_no_method_started": 20
+    },
+    "maximum_samples": 3,
+    "each_sample_seconds": 3,
+    "each_sample_command_max_seconds": 15,
+    "each_raw_sample_max_bytes": 2097152,
+    "no_deadline_increase": true,
+    "one_xcodebuild_invocation": true,
+    "no_readiness_sleep_or_retry": true,
+    "no_target_signals": true,
+    "stops_on": [
+      "first actual method start",
+      "xcodebuild exit",
+      "original build/test deadline"
+    ],
+    "artifact_content": "fixed metadata and filtered stack frames only; no raw sample headers, environment, argv, queue labels or binary-image paths",
+    "perturbs_target_timing": true,
+    "actual_ios_sample_validated": false
+  },
+  "local_validation": {
+    "watchdog_unit_tests_passed": 22,
+    "all_script_tests_passed": 175,
+    "python_compile": true,
+    "yaml_parse": true,
+    "ui_inventory": true,
+    "public_libproc_self_process_read_executed": true,
+    "sampling_on_personal_host": false
+  },
+  "implementation_sha256": {
+    "scripts/ios17_bootstrap_watchdog.py": "e679edc03e0465d5e0665ef9ce7691de860bbd2714efc788096b352a8358e0b7",
+    "scripts/test_release_ios17_bootstrap_watchdog.py": "7c72288c8c98a272784e36eec8fc7fd1ecfa76a38426d1bed387cb64c8343f8d"
+  },
+  "primary_references": [
+    "https://developer.apple.com/library/archive/documentation/Performance/Conceptual/CodeSpeed/Articles/DiagnosingSlowness.html",
+    "macOS public libproc.h and sys/proc_info.h; launchctl(1) kickstart -p; sample(1)"
+  ]
+}

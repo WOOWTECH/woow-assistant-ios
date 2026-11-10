@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "source_commit": "2d7da7073f2e6b64aefce0674a4ac62ee9c48485",
+  "run_id": 42854821854,
+  "job_id": 129964873632,
+  "artifact_id": 13785286135,
+  "method": "SkillExecutionUITests.testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText",
+  "device": "iPhone SE (3rd generation)",
+  "runtime": "iOS 18.5 (22F77)",
+  "total": 1,
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "duration_seconds": 182.785,
+  "case_deadline_seconds": 240,
+  "presentation": {
+    "source": "user-copy",
+    "mode": "import",
+    "allowsMultipleSelection": false
+  },
+  "callbacks": [
+    {
+      "app_stdout_line": 154324,
+      "outcome": "success",
+      "count": 1
+    }
+  ],
+  "observed_audits": [
+    {
+      "selections": 0,
+      "reads": 0,
+      "extractionAttempts": 0,
+      "results": 0
+    },
+    {
+      "selections": 1,
+      "reads": 0,
+      "extractionAttempts": 0,
+      "results": 0
+    },
+    {
+      "selections": 1,
+      "reads": 1,
+      "extractionAttempts": 0,
+      "results": 0
+    },
+    {
+      "selections": 1,
+      "reads": 1,
+      "extractionAttempts": 1,
+      "results": 1
+    }
+  ],
+  "timeline_seconds": {
+    "tap_user_copy": 56.99,
+    "native_cancel_query": 70.58,
+    "post_readiness_activity": 71.18,
+    "tap_native_thumbnail": 82.31,
+    "selected_filename_assertion": 85.87,
+    "tap_read_approval": 109.82,
+    "tap_extraction_approval": 140.2,
+    "result_text_assertions": 174.05,
+    "final_audit_assertion": 181.09,
+    "teardown": 181.38
+  },
+  "required_assertions": {
+    "native_selection_and_real_callback": true,
+    "separate_read_and_extraction_approvals": true,
+    "no_result_before_extraction_approval": true,
+    "actual_two_page_PDFKit_summary": true,
+    "both_exact_page_markers": true,
+    "both_page_separators": true,
+    "same_namespace_in_extracted_text": true,
+    "final_audit_1_1_1_1": true,
+    "no_remaining_approval_button": true
+  },
+  "historical_baseline": {
+    "source_commit": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+    "run_id": 42847890878,
+    "job_id": 129940229247,
+    "artifact_id": 13781780353,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "duration_seconds": 137.528,
+    "failure": "Initial native Files readiness exceeded the prior 45-second bound before file selection.",
+    "report": "docs/evidence/file-provider-user-copy-readiness-74f7b71-se.json"
+  },
+  "limits": [
+    "This run validates the public user-copy flow on this SE/iOS 18.5 simulator only.",
+    "Readiness completed within the old 45-second bound on this host; success does not prove the 60-second bound caused the improvement or establish the old delay root cause.",
+    "The 74f7b71 iOS 26.2 Current read failure remains unresolved; this does not establish all-platform copy reliability.",
+    "No product changes, test retry, direct URL injection, skipped assertions or case-deadline increase were used."
+  ],
+  "tested_UI_source_sha256": "72128bbfff95c93d1b46ace5c19a44b6ee92d6b933d2b113e96b967c5200f401",
+  "local_evidence_directory": "/tmp/woow-2d-user-copy-se",
+  "evidence": [
+    {
+      "file": "test-summary.json",
+      "bytes": 1004,
+      "sha256": "63e9bc8ba917e8536d66c6fc74b3929de1508a070e75127d8a1cc57235f6b620"
+    },
+    {
+      "file": "ios-tests.log",
+      "bytes": 904464,
+      "sha256": "540dd3534f72b27c02dc7b8a1843feb3fff02dc80ab2851430b80215e8f92fe4"
+    },
+    {
+      "file": "skill-pdf-fixture-evidence.json",
+      "bytes": 1074,
+      "sha256": "e2b04d3b360b7d90e7560e56c58d31c597b027ac28ee55dc3b90429181dfe75d"
+    },
+    {
+      "file": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+      "bytes": 40820126,
+      "sha256": "24e5797a108860ec1c0a5d78e7ca3f0a37b9e00dc29f6be8629b11f2a7dc6797"
+    }
+  ]
+}

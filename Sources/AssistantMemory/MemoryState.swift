@@ -73,6 +73,14 @@ public struct MemoryState: Codable, Equatable, Sendable {
         memories[index] = memories[index].changing(status: .active); revision = UUID()
     }
 
+    /// Read-only eligibility for an undo card. Exercise the real undo rules on
+    /// a disposable value so stale, capacity and duplicate checks cannot drift.
+    /// Neither the live revision nor its RAM token is changed or consumed.
+    public func canUndo(token: UUID) -> Bool {
+        var copy = self
+        return (try? copy.undo(token: token)) == true
+    }
+
     /// A late undo must not remove a subsequently edited or approved memory.
     @discardableResult
     public mutating func undo(token: UUID) throws -> Bool {
@@ -133,6 +141,31 @@ public struct MemoryState: Codable, Equatable, Sendable {
         }
         self = copy // All-or-nothing, even if a later operation exceeds capacity.
         return notes
+    }
+
+    /// Only validated MemoryToolReview values reach this sourceful entry point
+    /// from outside AssistantMemory. Explicit tools work with autoRemember off.
+    /// The host still persists a disposable state before publishing its note.
+    mutating func applyToolOperation(_ operation: MemoryOperation, baseRevision: UUID,
+                                     conversationID: String?, now: Date) throws -> MemoryNote {
+        guard preferences.useMemory else { throw MemoryToolError.disabled }
+        guard revision == baseRevision else { throw MemoryToolError.staleRevision }
+        guard now.timeIntervalSince1970.isFinite, (conversationID?.utf16.count ?? 0) <= 256 else {
+            throw MemoryError.invalidState
+        }
+        var copy = self
+        let note: MemoryNote
+        switch operation {
+        case .add(let kind, let content, let keywords, let quote):
+            note = try copy.add(kind: kind, content: content, keywords: keywords,
+                source: .init(type: "user_said", quote: quote, conversationID: conversationID, at: now), now: now)
+        case .update(let id, let content, let keywords, let quote):
+            note = try copy.edit(id: id, content: content, keywords: keywords,
+                source: .init(type: "user_said", quote: quote, conversationID: conversationID, at: now), now: now)
+        case .forget(let id): note = try copy.delete(id: id)
+        }
+        self = copy
+        return note
     }
 
     private mutating func add(kind: MemoryKind, content: String, keywords: [String], source: MemorySource, now: Date) throws -> MemoryNote {

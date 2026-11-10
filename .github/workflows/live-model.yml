@@ -12,7 +12,7 @@ on:
       ui_scope:
         description: Live App UI coverage (native probes always run)
         type: choice
-        options: [all, browser, browser-learning, browser-interaction, multi-source, user-profile, profile-tool, skill-authoring, self-configuration, browser-transcript, transcript-files, transcript-formats]
+        options: [all, browser, browser-learning, browser-interaction, multi-source, user-profile, profile-tool, memory-tools, skill-authoring, self-configuration, browser-transcript, transcript-files, transcript-formats]
         default: all
 
 permissions:
@@ -158,6 +158,8 @@ jobs:
             ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelRecallsManualProfileAfterRelaunchAndMasterSwitchDisablesIt)
           elif [ '${{ inputs.ui_scope }}' = 'profile-tool' ]; then
             ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelProfileEditRequiresReviewAndPersistsAfterRelaunch)
+          elif [ '${{ inputs.ui_scope }}' = 'memory-tools' ]; then
+            ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelSavesOrdinaryMemoryAndUndoSurvivesRelaunch)
           elif [ '${{ inputs.ui_scope }}' = 'skill-authoring' ]; then
             ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelReadsOriginalSkillAndReviewedSaveSurvivesRelaunch)
           elif [ '${{ inputs.ui_scope }}' = 'self-configuration' ]; then

@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "run_id": 42853412343,
+  "job_id": 129959906863,
+  "artifact_id": 13784293503,
+  "source_commit": "856e8eca5e17a46f030de1a4b85a2236e58c51cd",
+  "result": "success",
+  "device": {
+    "name": "iPhone SE (3rd generation)",
+    "runtime": "iOS 18.5",
+    "architecture": "arm64"
+  },
+  "native_ui": {
+    "unique_completed": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "class": "WoowAssistantUITests.BrowserLoginUITests",
+    "method": "testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+    "duration_seconds": 105.218
+  },
+  "observed_fixed_markers": {
+    "LOGIN_KEYBOARD_INTRO_PRESENTED": true,
+    "LOGIN_NATIVE_LATIN_KEYBOARD_SELECTED": true,
+    "LOGIN_PASSWORD_TARGET_VERIFIED": true,
+    "LOGIN_NATIVE_ACCOUNT_VERIFIED": true
+  },
+  "portable_swift_tests": {
+    "unique_completed": 161,
+    "passed": 161,
+    "failed": 0,
+    "skipped": 0,
+    "source": "Final workflow portable-phase case lines and suite summary; counted separately from native UI."
+  },
+  "covered_assertions": [
+    "Native account/password typing followed by real form POST and authenticated protected HTTP response.",
+    "A new tab makes another authenticated HTTP request without another login.",
+    "App relaunch uses the persistent cookie with a new synthetic server process and zero new login POSTs.",
+    "Native logout expires the cookie and a fresh protected request is denied."
+  ],
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/BrowserLoginUITests.swift": "fb0a567e575632b77bdb3587bbe7eb4e21e2e04f7b5e9c96d253a786ddac6592"
+  },
+  "files_sha256": {
+    "test-summary.json": "20da2dba8f5832affa623b2ec8efafa43505a05af05701a9525ba7e96ffcc176",
+    "ios-tests.log": "0a711ac797a390f90441aac3988719a3df2507a5dd4c978a23a7937c2c877ecc"
+  },
+  "follow_up_code_edits": false,
+  "limits": [
+    "One selected native UI case on iOS18 compact; not a full UI suite or three-device same-source claim.",
+    "Existing earlier failed runs remain historical evidence; this success does not replace them.",
+    "Synthetic local account only; no external OAuth, MFA, real account or live credential claim."
+  ]
+}

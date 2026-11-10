@@ -1,0 +1,138 @@
+{
+  "scope": "Read-only MemoryState undo eligibility added after the initial 221-assertion freeze. No parent App/Flow source changes by this agent.",
+  "recordedAtUTC": "2026-11-10T16:50:37.586246+00:00",
+  "workingTreeBaseRevision": "30bcaf1518b621f91acc72c1b871529a2ab34f41",
+  "sourceStatus": "Frozen uncommitted source identified by SHA-256; only MemoryState.swift and MemoryToolsTests.swift changed from the 221-assertion core evidence.",
+  "sources": [
+    {
+      "path": "Sources/AssistantMemory/MemoryTools.swift",
+      "sha256": "2f12e8276d19140883f9d462776bcffc68acf164ab553c7cc51f0d4018b4f86b"
+    },
+    {
+      "path": "Sources/AssistantMemory/MemoryState.swift",
+      "sha256": "81025ded6281eedad00ab0d53db5a05d9a630a3f04f0d4d93b04d997c6805b65"
+    },
+    {
+      "path": "Sources/AssistantMemory/UserProfileTool.swift",
+      "sha256": "b6107acf0dfd1ec0e39fa5031d265ce7153bd4ead2dbb37fad86214e8e3a157c"
+    },
+    {
+      "path": "Tests/AssistantMemoryTests/MemoryToolsTests.swift",
+      "sha256": "ed79e7340cec5be5587a6d0c1b40ff2d47ca6f15cd6c3a3331e02479889f3f4c"
+    },
+    {
+      "path": "scripts/CheckMemoryTools.sh",
+      "sha256": "6d2e98ebba0515a9e466ad9ef1483e80b1cca74e4be8a7963331e41eb4b56671"
+    }
+  ],
+  "previousEvidence": {
+    "path": "docs/evidence/memory-tools-core-local.json",
+    "sha256": "33ffba3b45ef19b3dc35c9f1a608f8493cc968556d9010ffad6a235fe4a77a97",
+    "preservedWithoutModification": true,
+    "memoryToolAssertions": 221,
+    "meaning": "Historical evidence remains attributed to its own frozen bytes, not the current canUndo implementation."
+  },
+  "api": {
+    "signature": "public func canUndo(token: UUID) -> Bool",
+    "implementation": "Copy self, run existing copy.undo(token:), return true only on success; no duplicated stale/capacity/duplicate rules. False for missing, consumed, expired or otherwise invalid tokens and thrown restore errors.",
+    "mutationBoundary": "Nonmutating read; visible state, revision and live RAM token remain unchanged. Actual undo remains a separate host operation requiring persistence before publication.",
+    "integrationPurpose": "Parent can preserve .forgot notes while their token remains undoable even though their deleted memory ID is absent. This evidence does not claim the parent filter or actual encrypted-store regression is tested by this agent."
+  },
+  "validation": {
+    "command": "bash scripts/CheckMemoryTools.sh",
+    "exitCode": 0,
+    "warningsAsErrors": true,
+    "compiler": "Apple Swift version 5.8.1 (swiftlang-5.8.0.124.5 clang-1403.0.22.11.100)\nTarget: x86_64-apple-darwin22.6.0",
+    "memoryTools": {
+      "totalGroups": 10,
+      "passedAssertions": 245,
+      "failedAssertions": 0,
+      "groups": [
+        {
+          "name": "strict arguments",
+          "assertions": 55,
+          "result": "passed"
+        },
+        {
+          "name": "search proof",
+          "assertions": 12,
+          "result": "passed"
+        },
+        {
+          "name": "provenance/specifics",
+          "assertions": 21,
+          "result": "passed"
+        },
+        {
+          "name": "add/receipt",
+          "assertions": 13,
+          "result": "passed"
+        },
+        {
+          "name": "edit proof/intent",
+          "assertions": 16,
+          "result": "passed"
+        },
+        {
+          "name": "Traditional Chinese intent",
+          "assertions": 62,
+          "result": "passed"
+        },
+        {
+          "name": "update/delete",
+          "assertions": 11,
+          "result": "passed"
+        },
+        {
+          "name": "transaction/safety",
+          "assertions": 25,
+          "result": "passed"
+        },
+        {
+          "name": "undo",
+          "assertions": 6,
+          "result": "passed"
+        },
+        {
+          "name": "undo eligibility",
+          "assertions": 24,
+          "result": "passed"
+        }
+      ]
+    },
+    "profileRegression": {
+      "groups": 6,
+      "passedAssertions": 97,
+      "failedAssertions": 0
+    },
+    "existingMemoryCoreRegression": {
+      "groups": 5,
+      "passedAssertions": 91,
+      "failedAssertions": 0
+    },
+    "newAssertions": 24,
+    "nativeXCTest": "Not executed locally; ten native methods reuse identical check functions. Standalone @main is excluded from native test compilation.",
+    "nativeBranchSyntax": "swiftc -frontend -parse Tests/AssistantMemoryTests/MemoryToolsTests.swift exited 0; syntax only.",
+    "diffWhitespace": "git diff --check for MemoryState.swift and MemoryToolsTests.swift exited 0.",
+    "excluded": [
+      "No App or native UI execution",
+      "No encrypted-store or personal Keychain access",
+      "No actual model requests",
+      "No attribution of parent live smoke results to these changed source bytes"
+    ]
+  },
+  "addedCoverage": [
+    "Repeated eligible reads leave memory values/revision unchanged and do not consume the live deletion token; a real undo still succeeds afterward.",
+    "Deleted memory remains undoable after useMemory/autoRemember preference changes; actual restoration preserves the new preferences.",
+    "Consumed and unknown tokens are false without mutations; later content edits make older tokens stale, and undoing the newer edit restores the older token eligibility.",
+    "Procedure approval makes the original pending-add undo ineligible without removing the approved procedure.",
+    "Duplicate-content and capacity restore failures return false without state changes; actual undo throws the original category, and resolving the blocker makes that same token valid again.",
+    "Eligibility respects exactly fifty retained tokens and the RAM-only relaunch boundary; clear invalidates tokens."
+  ],
+  "privacy": {
+    "rawLogsIncluded": false,
+    "environmentOrConfigurationIncluded": false,
+    "liveModelDataIncluded": false,
+    "commitsOrDispatchesPerformed": false
+  }
+}

@@ -26,7 +26,9 @@ UI_SHARDS = {
     "ui-workspace": ["BrowserWorkspaceUITests", "BrowserLoginUITests"],
     "ui-browser": ["BrowserInteractionUITests", "BrowserUploadUITests"],
     "ui-learning": ["BrowserLearningUITests", "MultiSourceResearchUITests"],
-    "ui-memory": ["MemoryUITests", "MemoryRaceUITests", "UserProfileUITests", "UserProfileToolUITests"],
+    "ui-memory": ["MemoryUITests", "MemoryRaceUITests"],
+    "ui-profile": ["UserProfileUITests", "UserProfileToolUITests"],
+    "ui-memory-tools": ["MemoryToolUITests"],
     "ui-skills": ["SkillCatalogUITests", "SkillAuthoringUITests", "TranscriptUITests"],
     "ui-documents": ["SkillExecutionUITests", "SkillWorkerSettingsUITests"],
     "ui-mcp": ["MCPConversationUITests"],
@@ -44,6 +46,7 @@ TEST_SCOPES = {
     "picker-user-copy": ["WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText"],
     "pdf-assembly": ["WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
     "profile-tool": ["WoowAssistantUITests/UserProfileToolUITests"],
+    "memory-tools": ["WoowAssistantUITests/MemoryToolUITests"],
     **{scope: ["WoowAssistantUITests/" + name for name in classes]
        for scope, classes in UI_SHARDS.items()},
 }
@@ -153,9 +156,9 @@ def select_runtime(payload, requested):
 
 def inventory(output, name):
     payload = json.loads(run(["xcrun", "simctl", "list", "runtimes", "--json"], "取得 Simulator runtime 清單"))
-    # Only OS metadata, not personal simulator/device names or UDIDs.
+    # Public OS/install-path metadata, not personal device names or UDIDs.
     metadata = {"runtimes": [{key: r.get(key) for key in
-                ("identifier", "version", "buildversion", "isAvailable", "availabilityError")}
+                ("identifier", "version", "buildversion", "isAvailable", "availabilityError", "bundlePath")}
                 for r in payload.get("runtimes", [])]}
     (output / name).write_text(json.dumps(metadata, indent=2) + "\n")
     return payload
@@ -280,6 +283,10 @@ def prelaunch_test_daemon(simulator, report):
             raise subprocess.TimeoutExpired(base, 120)
         diagnostic["process_alive"] = True
         diagnostic["status"] = "process_started_handshake_unverified"
+        # Internal receipt for the opt-in sampler only; never discover by name
+        # or relaunch the service. PID is intentionally absent from the report.
+        from ios17_bootstrap_watchdog import ServiceReceipt
+        return ServiceReceipt(simulator, int(pid), time.time())
     except subprocess.TimeoutExpired:
         diagnostic["status"] = "budget_exhausted"
         raise ReleaseError("iOS 17 XCTest daemon 預啟動超過共用 120 秒預算；未重試或執行測試。") from None
@@ -341,19 +348,27 @@ def collect_boot_diagnostics(output, simulator):
     return result
 
 
-def execute(output, requested, download, test_scope="all", expected_host_arch=None, prelaunch_daemon=False):
+def execute(output, requested, download, test_scope="all", expected_host_arch=None, prelaunch_daemon=False,
+            *, sample_bootstrap=False):
     if version(requested)[0] != 17:
         raise ReleaseError("只接受 iOS 17.x。")
     if test_scope not in TEST_SCOPES:
         raise ReleaseError("未知的 iOS 17 測試範圍。")
     if expected_host_arch not in (None, "arm64", "x86_64"):
         raise ReleaseError("未知的主機架構。")
+    if sample_bootstrap:
+        from ios17_bootstrap_watchdog import validate_gate
+        try:
+            validate_gate(os.environ, output, prelaunch_daemon, TEST_SCOPES[test_scope])
+        except ValueError:
+            raise ReleaseError("Bootstrap 取樣只允許明確啟用預啟動的 GitHub hosted 非 Live UI fixture；未執行測試。") from None
     output.mkdir(parents=True, exist_ok=False)
     report = {"requested_runtime": requested, "runtime_tested": False,
               "deployment_target": "17.0", "physical_devices_used": False,
               "host_architecture": platform.machine(), "host_macos": platform.mac_ver()[0],
               "expected_host_architecture": expected_host_arch,
               "experimental_prelaunch_test_daemon": prelaunch_daemon,
+              "experimental_sample_bootstrap": sample_bootstrap,
               "phase_history": [], "test_scope": test_scope,
               "selected_tests_succeeded": False,
               "full_acceptance_succeeded": False,
@@ -440,10 +455,11 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
                 report["simulator_state"] = [{key: item.get(key) for key in ("state", "isAvailable", "availabilityError")} for item in own]
             except (ReleaseError, ValueError, TypeError, AttributeError):
                 report["simulator_state_unavailable"] = True
+        daemon_receipt = None
         if prelaunch_daemon:
             checkpoint("prelaunching_test_daemon")
             try:
-                prelaunch_test_daemon(simulator, report)
+                daemon_receipt = prelaunch_test_daemon(simulator, report)
             finally:
                 save_report()
         report["maximum_case_seconds"] = 420 if test_scope in ("all", "workspace", "ui-workspace") else 300
@@ -452,15 +468,33 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
         report["build_test_timeout_seconds"] = 1800 if test_scope in UI_SHARDS else 4800
         checkpoint("testing")
         with (output / "tests.log").open("wb") as log:
+            watcher = None
+            if sample_bootstrap:
+                from ios17_bootstrap_watchdog import OwnedProcesses, PublicProcessIdentity, Watchdog, runtime_root
+                try:
+                    owned = OwnedProcesses(simulator, daemon_receipt, runtime_root(output, runtime),
+                                           PublicProcessIdentity(), os.getuid())
+                    watcher = Watchdog(output, owned)
+                    report["bootstrap_sampling_status"] = "observing"
+                except (OSError, ValueError, KeyError, TypeError):
+                    # Optional diagnostics must not replace XCTest or its verdict.
+                    report["bootstrap_sampling_status"] = "identity_unavailable"
+                save_report()
             try:
-                result = subprocess.run(common + ["-destination", "platform=iOS Simulator,id=" + simulator,
+                arguments = (common + ["-destination", "platform=iOS Simulator,id=" + simulator,
                     "-resultBundlePath", str(output / "Tests.xcresult"), "-parallel-testing-enabled", "NO",
                     "-test-timeouts-enabled", "YES", "-default-test-execution-time-allowance", "240",
                     "-maximum-test-execution-time-allowance", str(report["maximum_case_seconds"])] +
                     ["-only-testing:" + target for target in TEST_SCOPES[test_scope]] +
                     ["test", "CODE_SIGN_IDENTITY=-",
-                    "CODE_SIGNING_ALLOWED=YES"], stdout=log, stderr=subprocess.STDOUT,
-                    timeout=report["build_test_timeout_seconds"])
+                    "CODE_SIGNING_ALLOWED=YES"])
+                if watcher is not None:
+                    from ios17_bootstrap_watchdog import run_observed
+                    result = run_observed(arguments, log, report["build_test_timeout_seconds"], watcher)
+                    report["bootstrap_sampling_status"] = "stopped"
+                else:
+                    result = subprocess.run(arguments, stdout=log, stderr=subprocess.STDOUT,
+                                            timeout=report["build_test_timeout_seconds"])
             except subprocess.TimeoutExpired:
                 report["test_timed_out"] = True
                 raise ReleaseError("iOS 17 編譯／所選測試超過 %d 分鐘；保留已執行結果，不視為通過。" %
@@ -517,6 +551,8 @@ def main():
     parser.add_argument("--expected-host-arch", choices=("arm64", "x86_64"))
     parser.add_argument("--prelaunch-test-daemon", action="store_true",
                         help="Experimental one-shot daemon prelaunch; not proof of XCTest readiness (default off)")
+    parser.add_argument("--sample-test-bootstrap", action="store_true",
+                        help="Experimental bounded hosted fixture process stacks; requires prelaunch (default off)")
     parser.add_argument("--check-ui-inventory", action="store_true",
                         help="Validate and print the UI class partition without invoking Xcode")
     parser.add_argument("--output", type=Path, default=Path("build/ios17"))
@@ -526,7 +562,7 @@ def main():
             print(json.dumps(ui_inventory(Path(__file__).resolve().parents[1]), indent=2))
             return 0
         execute(args.output.resolve(), args.os, args.download, args.test_scope, args.expected_host_arch,
-                args.prelaunch_test_daemon)
+                args.prelaunch_test_daemon, sample_bootstrap=args.sample_test_bootstrap)
     except (ReleaseError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
         print(str(error) if isinstance(error, ReleaseError) else "iOS 17 驗證未完成；請檢查輸出證據。", file=sys.stderr)
         return 1

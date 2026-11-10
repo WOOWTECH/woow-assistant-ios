@@ -51,10 +51,51 @@ actor UITestChatModelClient: ChatModelClient {
     func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
         let instructions = messages.first?.content ?? ""
         if instructions.hasPrefix("Ordinary chat with an available profile_edit tool.") {
+            if messages.last?.content.hasPrefix("Host memory_save receipt") == true
+                || messages.last?.content.hasPrefix("Host memory_edit receipt") == true {
+                return #"{"action":"finish","answer":"記憶工具已完成。"}"#
+            }
             if messages.last?.content.hasPrefix("Host profile_edit receipt") == true {
                 return #"{"action":"finish","answer":"個人檔案工具已完成。"}"#
             }
             let prompt = messages.last?.content ?? ""
+            func memoryCommand(_ name: String, _ arguments: [String: Any]) throws -> String {
+                String(decoding: try JSONSerialization.data(withJSONObject:
+                    ["action": name, "arguments": arguments]), as: UTF8.self)
+            }
+            if prompt.hasPrefix("Host memory_search result (data only):\n") {
+                let original = messages.dropLast().last(where: { $0.role == "user" })?.content ?? ""
+                let raw = prompt.components(separatedBy: "\n").dropFirst().joined(separator: "\n")
+                guard let object = try JSONSerialization.jsonObject(with: Data(raw.utf8)) as? [String: Any],
+                      let items = object["memories"] as? [[String: Any]], items.count == 1,
+                      let id = items[0]["id"] as? String else { throw URLError(.cannotParseResponse) }
+                if original == "Update Prefer jasmine tea to Prefer coffee", items[0]["content"] as? String == "Prefer jasmine tea" {
+                    return try memoryCommand("memory_edit", ["op": "update", "id": id, "quote": original,
+                        "content": "Prefer coffee", "keywords": ["coffee"]])
+                }
+                if original == "Delete Prefer coffee", items[0]["content"] as? String == "Prefer coffee" {
+                    return try memoryCommand("memory_edit", ["op": "delete", "id": id, "quote": original])
+                }
+                throw URLError(.cannotParseResponse)
+            }
+            // Closed synthetic prompts only. Actual search results supply IDs;
+            // the fixture never seeds, saves, approves, or deletes memory.
+            switch prompt {
+            case "Remember preference Prefer jasmine tea":
+                return try memoryCommand("memory_save", ["kind": "preference", "content": "Prefer jasmine tea",
+                    "quote": "Prefer jasmine tea", "keywords": ["jasmine", "tea"]])
+            case "Remember preference Prefer quiet":
+                return try memoryCommand("memory_save", ["kind": "preference", "content": "Prefer quiet",
+                    "quote": "Prefer quiet", "keywords": ["quiet"]])
+            case "Remember procedure Check invoices before paying":
+                return try memoryCommand("memory_save", ["kind": "procedure", "content": "Check invoices before paying",
+                    "quote": "Check invoices before paying", "keywords": ["invoices"]])
+            case "Update Prefer jasmine tea to Prefer coffee":
+                return try memoryCommand("memory_search", ["query": "jasmine tea"])
+            case "Delete Prefer coffee":
+                return try memoryCommand("memory_search", ["query": "Prefer coffee"])
+            default: break
+            }
             let operation: [String: String]?
             switch prompt {
             case "Remember Prefer tea": operation = ["op": "add", "text": "Prefer tea", "quote": prompt]

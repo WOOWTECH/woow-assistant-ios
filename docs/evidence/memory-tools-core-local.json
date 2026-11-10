@@ -1,0 +1,261 @@
+{
+  "scope": "Pure memory_search/save/edit core and shared profile parser/grounding regression. Local CLT execution of the same assertions exposed by native XCTest.",
+  "recordedAtUTC": "2026-11-10T16:43:10.881478+00:00",
+  "workingTreeBaseRevision": "30bcaf1518b621f91acc72c1b871529a2ab34f41",
+  "sourceStatus": "Frozen uncommitted implementation identified by SHA-256; base revision alone does not contain it. No App/Flow validation is attributed to this core checker.",
+  "sources": [
+    {
+      "path": "Sources/AssistantMemory/MemoryTools.swift",
+      "sha256": "2f12e8276d19140883f9d462776bcffc68acf164ab553c7cc51f0d4018b4f86b"
+    },
+    {
+      "path": "Sources/AssistantMemory/MemoryState.swift",
+      "sha256": "73f6a2cc9fd9dbaa1fbf66c2e2f441a0bf9c9916e298e5a9d25a09ab3d9e6ea7"
+    },
+    {
+      "path": "Sources/AssistantMemory/UserProfileTool.swift",
+      "sha256": "b6107acf0dfd1ec0e39fa5031d265ce7153bd4ead2dbb37fad86214e8e3a157c"
+    },
+    {
+      "path": "Tests/AssistantMemoryTests/MemoryToolsTests.swift",
+      "sha256": "27ef25d1bd57bcd83cb476093258a620789d74df422ecca364c938f04c270631"
+    },
+    {
+      "path": "scripts/CheckMemoryTools.sh",
+      "sha256": "6d2e98ebba0515a9e466ad9ef1483e80b1cca74e4be8a7963331e41eb4b56671"
+    }
+  ],
+  "dependenciesAndRegressionSources": [
+    {
+      "path": "Sources/AssistantMemory/MemorySafety.swift",
+      "sha256": "8a0fdbef488712c96d840aa1b0c55e62b5e07f6035cec6532ebf754f66b09074"
+    },
+    {
+      "path": "Sources/AssistantMemory/MemoryTypes.swift",
+      "sha256": "d155ccd1b9274c84f5540f9a0c92b7e3a09d502184707ace6bb194caca3d9fad"
+    },
+    {
+      "path": "Sources/AssistantMemory/MemoryContext.swift",
+      "sha256": "37850875953b46eae9c0862dafdab1c8c81bd58f551c2799cf9644eb14129ca2"
+    },
+    {
+      "path": "Sources/AssistantMemory/MemoryExtractor.swift",
+      "sha256": "d6f15fea1e8f75ffb3ab6f3f777ab2792cf16bd1baa9b886c0ccc318aadee404"
+    },
+    {
+      "path": "Sources/AssistantMemory/UserProfileState.swift",
+      "sha256": "ae70a9a17e20aed0e29f4196e63102169c2d3b7048b3c8566bfb20f7289bbbdf"
+    },
+    {
+      "path": "Tests/AssistantMemoryTests/UserProfileToolTests.swift",
+      "sha256": "9b667e01baf76155fedc2dbbfda75488fb84ab4acc5efb4eb6e35ef5fab936b7"
+    },
+    {
+      "path": "Tests/AssistantMemoryTests/MemoryChecks.swift",
+      "sha256": "85dbdd3575a3a02ba7124c2454603924447f28600fb1b479777a0c3f7f274881"
+    },
+    {
+      "path": "scripts/MemoryCoreChecks.swift",
+      "sha256": "78edcc67ebf4806d0e94e1cc92054c2b5c8bc30c0a2a8c13a4239f5ede236c65"
+    },
+    {
+      "path": "scripts/CheckUserProfileTool.sh",
+      "sha256": "b93b0c090bd5a2a1d1ec7e6e2e59dc5848275f1aa36d803098c8dc316d7bc6e2"
+    }
+  ],
+  "validation": {
+    "command": "bash scripts/CheckMemoryTools.sh",
+    "exitCode": 0,
+    "compiler": "Apple Swift version 5.8.1 (swiftlang-5.8.0.124.5 clang-1403.0.22.11.100)\nTarget: x86_64-apple-darwin22.6.0",
+    "warningsAsErrors": true,
+    "memoryTools": {
+      "groups": [
+        {
+          "name": "strict arguments",
+          "assertions": 55,
+          "result": "passed"
+        },
+        {
+          "name": "search proof",
+          "assertions": 12,
+          "result": "passed"
+        },
+        {
+          "name": "provenance/specifics",
+          "assertions": 21,
+          "result": "passed"
+        },
+        {
+          "name": "add/receipt",
+          "assertions": 13,
+          "result": "passed"
+        },
+        {
+          "name": "edit proof/intent",
+          "assertions": 16,
+          "result": "passed"
+        },
+        {
+          "name": "Traditional Chinese intent",
+          "assertions": 62,
+          "result": "passed"
+        },
+        {
+          "name": "update/delete",
+          "assertions": 11,
+          "result": "passed"
+        },
+        {
+          "name": "transaction/safety",
+          "assertions": 25,
+          "result": "passed"
+        },
+        {
+          "name": "undo",
+          "assertions": 6,
+          "result": "passed"
+        }
+      ],
+      "totalGroups": 9,
+      "passedAssertions": 221,
+      "failedAssertions": 0
+    },
+    "profileRegression": {
+      "groups": 6,
+      "passedAssertions": 97,
+      "failedAssertions": 0
+    },
+    "existingMemoryCoreRegression": {
+      "groups": 5,
+      "passedAssertions": 91,
+      "failedAssertions": 0,
+      "modelBoundary": "Fake model only"
+    },
+    "nativeXCTest": "Not executed locally. MemoryToolsTests has nine native test methods calling the identical check functions; MEMORY_TOOLS_STANDALONE excludes XCTest and supplies the sole @main.",
+    "nativeBranchSyntax": "swiftc -frontend -parse Tests/AssistantMemoryTests/MemoryToolsTests.swift exited 0; syntax only, not native SDK typecheck or execution.",
+    "scriptSyntax": "bash -n scripts/CheckMemoryTools.sh exited 0",
+    "trackedDiffWhitespace": "git diff --check on the two modified tracked core files exited 0",
+    "profileStandaloneCompatibility": "Existing CheckUserProfileTool.sh compiles Sources/AssistantMemory/*.swift and includes MemoryTools.swift; independently executed its 97 assertions successfully after shared parser refactor.",
+    "excluded": [
+      "No real model requests",
+      "No App/UI or native runtime acceptance",
+      "No encrypted-store persistence or Keychain access",
+      "No parent Flow behavior tests run by this agent"
+    ]
+  },
+  "api": {
+    "run": "MemoryToolRun(state: MemoryState, utterances: [String]) captures immutable snapshot and utterances plus public baseRevision.",
+    "search": "mutating search(argumentsJSON: String) throws -> MemoryToolSearchResult; resultJSON() emits ok/memories[id,kind,content]. Only this method sets latest candidate IDs, replacing even with an empty result.",
+    "prepare": "prepare(toolName: String, argumentsJSON: String) throws -> MemoryToolReview; no mutation, network or disk writes.",
+    "review": [
+      "id",
+      "baseRevision",
+      "toolName",
+      "op: add/update/delete",
+      "targetID",
+      "quote",
+      "before/after: kind/content/keywords/status",
+      "kind",
+      "keywords"
+    ],
+    "apply": "MemoryToolReview.apply(to: inout MemoryState, conversationID: String? = nil, now: Date) throws -> MemoryToolReceipt",
+    "receipt": "Host-only MemoryNote includes existing RAM undo token/pendingID. resultJSON/Encodable exclude note and emit pinned success fields. Host must persist the complete candidate snapshot before publication or reporting success."
+  },
+  "limits": {
+    "queryUTF16": [
+      1,
+      100
+    ],
+    "contentUTF16": [
+      1,
+      200
+    ],
+    "quoteMaximumUTF16": 1000,
+    "normalizedQuoteMinimumUTF16": 2,
+    "idMaximumUTF16": 200,
+    "keywordCountMaximum": 8,
+    "keywordUTF16": [
+      1,
+      30
+    ],
+    "searchActiveMaximum": 8,
+    "stateCapacity": 500,
+    "undoRAMMaximum": 50,
+    "rawLengthsBeforeNormalization": true,
+    "reason": "Upstream optional nullable string has no reason-specific length or nonblank limit. Accepted as metadata only; never grounding or authority. Host must bound raw model response bytes.",
+    "arguments": "Strict tool-specific keys/types; duplicate decoded keys including escaped equivalents, unknown fields, wrong types, malformed/trailing JSON and required nulls are rejected. Original raw argument bytes must be preserved."
+  },
+  "pinnedReference": {
+    "revision": "0c172724f3f0c96f7345262588072f6e95db1138",
+    "localRoot": "/tmp/woow-mika-memory-reference",
+    "sources": [
+      {
+        "path": "core/src/main/kotlin/com/wangzan101/mika/core/general/MemoryTools.kt",
+        "sha256": "108d413d6b41b549fd93edf870c8f2352624e218f3e02a79efc89e85b895d5cf"
+      },
+      {
+        "path": "core/src/main/kotlin/com/wangzan101/mika/core/memory/UserUtterances.kt",
+        "sha256": "8dc19476cbe8cf6ff2694a41325369041971ab3337f76ffe3e9bf9e30a7f9765"
+      },
+      {
+        "path": "core/src/main/kotlin/com/wangzan101/mika/core/memory/NumberText.kt",
+        "sha256": "cd528b2d9d98d2c17bc022d4e0887003b1b32f480f67911fcae8843e10621591"
+      },
+      {
+        "path": "core/src/main/kotlin/com/wangzan101/mika/core/memory/MemoryStore.kt",
+        "sha256": "8fd2c536dca28e052c62f43ed66321f85192a3010a44d88b526f075168d0c80f"
+      },
+      {
+        "path": "core/src/main/kotlin/com/wangzan101/mika/core/tool/Args.kt",
+        "sha256": "f2dbb8d5391de4cd47ba77a036a1e7832f2409f9ed1e2835f84a8137dd8316b2"
+      },
+      {
+        "path": "core/src/main/kotlin/com/wangzan101/mika/core/tool/ToolDef.kt",
+        "sha256": "497114fdb79ba4fa1083961a8eba314e77b9a5583310fa934e87c9ad7ac8c4df"
+      }
+    ],
+    "preserved": [
+      "Current quote membership uses case-sensitive NFKC substring comparison and at least two UTF16 units. Specific values use quote plus all current utterances.",
+      "Edit requires explicit operation intent in quote, no corresponding negation in any FULL matching current message, a latest-search candidate, and exact quoted ID boundaries when multiple candidates exist.",
+      "Save/update use user_said provenance. Explicit tools require useMemory but work with autoRemember off. Procedure writes/updates remain pending until separately approved.",
+      "Omitted update keywords preserve existing words; explicit [] clears them. Delete yields forgot note; undo is RAM-only, bounded to fifty, and absent after Codable relaunch."
+    ],
+    "deltas": [
+      {
+        "name": "Required iOS proposal review",
+        "detail": "Pinned tools apply directly after validation. iOS prepares immutable review, binds state revision, requires host approval and atomic persistence before publishing. Parsing alone grants no write authority."
+      },
+      {
+        "name": "Current-only first version",
+        "detail": "Pinned memory_save accepts one narrowly host-registered previous confirmation. This API intentionally does not expose that exception; only current-run user utterances are accepted."
+      },
+      {
+        "name": "Traditional Chinese localization",
+        "detail": "Adds 刪除/刪掉/刪了/忘記/別記/不要記/取消記憶/改為/編輯 and corresponding 別/無需/無須 and other negations to Mika literal patterns. Full-message negations additionally cover cancelling memory and negated do-not-remember phrases. Sixty-two assertions exercise positive and negative cases including clipped-quote bypass."
+      },
+      {
+        "name": "Inherited iOS state protections",
+        "detail": "Existing duplicate-content rejection and late-undo protection remain. Reviews additionally reject stale/replayed state, and JSON parser rejects raw duplicate keys."
+      }
+    ]
+  },
+  "hostContract": [
+    "Capture snapshot after context markUsed. Validate live generation, master switch, availability and revision before every search/prepare and again at commit.",
+    "Host supplies only current actual user words; website, tool, assistant, old-turn and saved-memory text cannot be inferred to be utterances. The String array cannot independently authenticate provenance.",
+    "Host owns one search, one mutation across profile/memory, three foreground structured model calls including format correction/final, and a ninety-second deadline including review. Core deliberately still replaces latest-search candidates on each search.",
+    "Apply to a disposable value, atomically persist full encrypted snapshot preserving all other fields, then publish state/note/receipt. Core success alone proves no disk write.",
+    "Any separate automatic extraction is outside the foreground three-call budget and must retain/supersede explicit-operation notes correctly; not exercised by this core evidence."
+  ],
+  "heuristicLimits": [
+    "Specifics detect quoted strings, normalized ASCII digit runs, Latin identifiers of at least three characters and pinned Simplified Chinese Han place suffixes. Unquoted Chinese names/places without matching suffixes can escape detection.",
+    "Number normalization is matching normalization, not numeric interpretation. No grammar allowlist or semantic entailment proof is introduced.",
+    "Literal intent/negation and sensitive-data detection are bounded heuristics, not proof of consent or complete secret detection. Explicit host review remains required."
+  ],
+  "privacy": {
+    "rawLogsIncluded": false,
+    "environmentOrConfigurationIncluded": false,
+    "liveInputOrModelContentIncluded": false,
+    "personalKeychainAccessed": false,
+    "commitsOrDispatchesPerformed": false
+  }
+}

@@ -97,5 +97,39 @@
     "reached_file_tap": false,
     "actual_image_count": "not independently extracted",
     "evidence_directory": "/tmp/woow-74-assembly-large"
+  },
+  "same_source_compact_failure": {
+    "job_id": 129940252572,
+    "artifact_id": 13782943759,
+    "device": "iPhone SE (3rd generation)",
+    "runtime": "iOS 18.5 (22F77)",
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "duration_seconds": 83.526,
+    "failure_file_line": 662,
+    "failure_message": "The exact selected PDF must expose one fully visible thumbnail inside its Files cell.",
+    "reached_file_tap": false,
+    "exact_cell_count": 1,
+    "exact_filename_text_count": 1,
+    "actual_image_count": "not independently extracted",
+    "importer_callback_reached": false,
+    "source_read_approval_reached": false,
+    "page_order_review_reached": false,
+    "assembly_reached": false,
+    "export_reached": false,
+    "assessment": "Same pre-fix thumbnail guard failure; no post-30bcaf1 success or importer behavior inferred.",
+    "evidence_directory": "/tmp/woow-74-assembly-se",
+    "evidence": [
+      {
+        "file": "test-summary.json",
+        "sha256": "a6bb44445d851017eaf8e3096f6fe9c944f918da7132a6c848dca1fae5cb1ea4"
+      },
+      {
+        "file": "ios-tests.log",
+        "sha256": "8c76d52e09c31f2c77f98485221bab3ae7693ac253b1b4d291ccee7cfaceb313"
+      }
+    ]
   }
 }

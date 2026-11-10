@@ -96,7 +96,12 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
             try change(&next)
             try persist(memory: next, skills: skills)
             memory = next
-            notes = notes.filter { note in memory.memories.contains { $0.id == note.memoryID } }
+            notes = notes.filter { note in
+                if note.kind == .forgot, let token = note.undoToken {
+                    return memory.canUndo(token: token)
+                }
+                return memory.memories.contains { $0.id == note.memoryID }
+            }
             error = nil; notice = nil
             return true
         } catch { self.error = Self.message(error); return false }
@@ -133,6 +138,43 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
         error = nil
         notice = "個人檔案已儲存，下一次對話任務開始時生效。"
         return receipt
+    }
+
+    func commitMemoryTool(_ review: MemoryToolReview, expectedGeneration: UUID,
+                          conversationID: String) throws -> MemoryToolReceipt {
+        guard available else { throw LearningFileError.notLoaded }
+        guard generation == expectedGeneration else { throw MemoryToolError.staleRevision }
+        var next = memory
+        let receipt = try review.apply(to: &next, conversationID: conversationID, now: Date())
+        do { try persist(memory: next, skills: skills) }
+        catch { self.error = Self.message(error); throw error }
+        memory = next
+        notes = [receipt.note]
+        error = nil; notice = nil
+        return receipt
+    }
+
+    func canReviewMemory(_ note: MemoryNote) -> Bool {
+        available && memory.memories.contains { $0.id == note.pendingID && $0.status == .pending }
+    }
+
+    func approvePendingMemory(_ note: MemoryNote) {
+        guard canReviewMemory(note) else { return }
+        if mutateMemory({ try $0.approve(id: note.memoryID) }) {
+            notes.removeAll { $0.memoryID == note.memoryID }
+            notice = "已批准這條操作偏好，後續任務可以參考。"
+        }
+    }
+
+    func rejectPendingMemory(_ note: MemoryNote) {
+        guard canReviewMemory(note) else { return }
+        if mutateMemory({ state in
+            if let token = note.undoToken, try state.undo(token: token) { return }
+            _ = try state.delete(id: note.memoryID)
+        }) {
+            notes.removeAll { $0.memoryID == note.memoryID }
+            notice = "已拒絕這條操作偏好；有可用撤銷紀錄時恢復修改前內容。"
+        }
     }
 
     @discardableResult
@@ -242,7 +284,8 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
 
     func rememberAfterReply(utterance: String, conversationID: String,
                             expectedGeneration: UUID, client: any ChatModelClient,
-                            configuration: ModelConfiguration, apiKey: String) {
+                            configuration: ModelConfiguration, apiKey: String,
+                            preservingToolNotes: [MemoryNote] = []) {
         // A user may clear/edit data while the MAIN reply is still in flight,
         // before extraction even exists. Its old utterance cannot repopulate data.
         guard generation == expectedGeneration else { return }
@@ -262,7 +305,13 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
                     var next = self.memory
                     let notes = try next.apply(plan: plan)
                     try self.persist(memory: next, skills: self.skills)
-                    self.memory = next; self.notes = notes; self.error = nil
+                    self.memory = next
+                    // A later extraction cannot discard the reviewed tool's
+                    // undo card; newer changes to the same ID supersede it.
+                    self.notes = preservingToolNotes.filter { previous in
+                        !notes.contains { $0.memoryID == previous.memoryID }
+                    } + notes
+                    self.error = nil
                 }
                 self.extractionID = nil; self.extraction = nil; self.isLearning = false
             } catch {

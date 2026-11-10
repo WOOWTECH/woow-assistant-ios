@@ -641,6 +641,112 @@ final class LiveModelUITests: XCTestCase {
         // Fixed booleans only: no model text, endpoint, key, screenshots or AX dumps.
     }
 
+    func testRealModelSavesOrdinaryMemoryAndUndoSurvivesRelaunch() throws {
+        var app = try launchLiveApp()
+        let sentence = "Prefer jasmine tea"
+        let prompt = "Save this ordinary memory with memory_save: Prefer jasmine tea. Use kind preference, content and quote exactly \"Prefer jasmine tea\", and keywords [\"jasmine\",\"tea\"]. Let me review, then finish after approval."
+        func item(in application: XCUIApplication) -> XCUIElement {
+            application.staticTexts.matching(NSPredicate(
+                format: "identifier BEGINSWITH %@ AND label == %@", "memory.item.", sentence)).firstMatch
+        }
+        func openMemory(in application: XCUIApplication) {
+            navigate(to: "memory", in: application)
+            XCTAssertFalse(application.staticTexts["memory.unavailable"].firstMatch.exists)
+            XCTAssertFalse(application.staticTexts["memory.error"].firstMatch.exists)
+            let segment = application.buttons["memory.segment.memories"].firstMatch
+            waitUntilHittable(segment)
+            if segment.value as? String != "已選取" { segment.tap() }
+            let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "已選取"), object: segment)
+            XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 5), .completed)
+        }
+        func assertEmpty(in application: XCUIApplication) {
+            let empty = application.staticTexts["memory.empty"].firstMatch
+            revealLearningElement(empty, in: application, visibility: .readableText)
+            XCTAssertTrue(empty.label == "尚未儲存記憶。")
+            XCTAssertFalse(item(in: application).exists)
+            XCTAssertFalse(application.staticTexts.matching(NSPredicate(
+                format: "identifier BEGINSWITH %@", "memory.item.")).firstMatch.exists)
+        }
+        func reviewLabel(_ identifier: String, equals expected: String) {
+            let label = app.staticTexts[identifier].firstMatch
+            revealLearningElement(label, in: app, visibility: .readableText)
+            // Boolean comparisons keep unexpected model-provided text private.
+            XCTAssertTrue(label.label == expected, "Memory review did not match the explicit synthetic request.")
+        }
+
+        openMemory(in: app); assertEmpty(in: app)
+        navigate(to: "chat", in: app)
+        enterDraft(prompt, in: app)
+        XCTAssertTrue(app.textFields["chat.draft"].value as? String == prompt,
+                      "The exact request must reach the native input before the real HTTP call.")
+        app.buttons["chat.send"].tap()
+        let operation = app.staticTexts["memoryTool.operation"].firstMatch
+        let profileReview = app.staticTexts["profileTool.operation"].firstMatch
+        let error = app.staticTexts["chat.error"].firstMatch
+        let answer = app.staticTexts["chat.message.1.assistant"].firstMatch
+        let proposed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            operation.exists || profileReview.exists || error.exists || answer.exists
+        }, object: nil)
+        let proposalResult = XCTWaiter.wait(for: [proposed], timeout: 95)
+        print("Live memory-tool phase=proposal;review=\(operation.exists);profileReview=\(profileReview.exists);error=\(error.exists);answer=\(answer.exists)")
+        XCTAssertEqual(proposalResult, .completed)
+        XCTAssertFalse(error.exists)
+        XCTAssertFalse(profileReview.exists)
+        XCTAssertTrue(operation.exists, "Actual memory_save review is required; prose is not a saved memory.")
+        reviewLabel("memoryTool.operation", equals: "新增")
+        reviewLabel("memoryTool.kind", equals: "偏好")
+        reviewLabel("memoryTool.quote", equals: sentence)
+        reviewLabel("memoryTool.after", equals: sentence)
+        reviewLabel("memoryTool.keywords", equals: "jasmine、tea")
+        XCTAssertFalse(app.staticTexts["memoryTool.before"].firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["memoryTool.pendingNotice"].firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["chat.memoryReceipt"].firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["chat.memoryNote.0"].firstMatch.exists)
+        tapToolbarButton("memoryTool.approve", in: app)
+        let completed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            error.exists || answer.exists
+        }, object: nil)
+        let completionResult = XCTWaiter.wait(for: [completed], timeout: 95)
+        let receipt = app.staticTexts["chat.memoryReceipt"].firstMatch
+        let note = app.staticTexts["chat.memoryNote.0"].firstMatch
+        print("Live memory-tool phase=completion;receipt=\(receipt.exists);note=\(note.exists);error=\(error.exists);answer=\(answer.exists)")
+        XCTAssertEqual(completionResult, .completed)
+        XCTAssertFalse(error.exists, "A receipt cannot hide a failed post-approval model turn.")
+        XCTAssertTrue(answer.exists && !answer.label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        XCTAssertTrue(receipt.exists && receipt.label == "本次對話曾儲存記憶修改；可在資料頁查看目前內容。")
+        XCTAssertTrue(note.exists && note.label == "記住了：" + sentence)
+        XCTAssertFalse(app.staticTexts["chat.memoryNote.1"].firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["chat.learningError"].firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["chat.profileReceipt"].firstMatch.exists)
+
+        openMemory(in: app)
+        let saved = item(in: app)
+        revealLearningElement(saved, in: app, visibility: .readableText)
+        XCTAssertTrue(saved.label == sentence && saved.identifier.hasPrefix("memory.item."))
+        XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@", "memory.item.")).count == 1)
+        navigate(to: "chat", in: app)
+        let undo = app.buttons["chat.undoMemory.0"].firstMatch
+        waitUntilHittable(undo); undo.tap()
+        let removed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: note)
+        XCTAssertEqual(XCTWaiter.wait(for: [removed], timeout: 5), .completed)
+        XCTAssertFalse(undo.exists)
+        XCTAssertFalse(app.staticTexts["chat.learningError"].firstMatch.exists)
+        openMemory(in: app); assertEmpty(in: app)
+        app.terminate()
+        app = try launchLiveApp() // Same encrypted namespace, no fixture or seed.
+        XCTAssertFalse(app.staticTexts["chat.memoryReceipt"].firstMatch.exists)
+        XCTAssertFalse(app.staticTexts["chat.memoryNote.0"].firstMatch.exists)
+        openMemory(in: app); assertEmpty(in: app)
+        selectLearningSegment("pending", in: app)
+        let pendingEmpty = app.staticTexts["memory.pending.empty"].firstMatch
+        revealLearningElement(pendingEmpty, in: app, visibility: .readableText)
+        XCTAssertTrue(pendingEmpty.label == "沒有待確認的內容。")
+        XCTAssertFalse(item(in: app).exists)
+        XCTAssertFalse(app.staticTexts["uitest.banner"].firstMatch.exists)
+        print("Live memory-tool phase=relaunch;itemAbsent=\(!item(in: app).exists);pendingEmpty=\(pendingEmpty.label == "沒有待確認的內容。")")
+        // No raw replies, model configuration, screenshots or AX attachments.
+    }
+
     private func openPublicIANA(in app: XCUIApplication) {
         navigate(to: "browser", in: app)
         let address = app.textFields["browser.address"]

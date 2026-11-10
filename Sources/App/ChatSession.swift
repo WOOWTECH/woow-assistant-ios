@@ -1,6 +1,7 @@
 import AssistantModels
 import AssistantMCP
 import AssistantMemory
+import AssistantPersistence
 import Combine
 import Foundation
 
@@ -52,6 +53,10 @@ final class ChatSession: ObservableObject {
     @Published private(set) var profileReceipt: UserProfileToolReceipt?
     private var profileReceiptRequestID: UUID?
     private var profileApprovalContinuation: CheckedContinuation<Bool, Never>?
+    @Published private(set) var pendingMemoryReview: MemoryToolReview?
+    @Published private(set) var memoryReceipt: MemoryToolReceipt?
+    private var memoryReceiptRequestID: UUID?
+    private var memoryApprovalContinuation: CheckedContinuation<Bool, Never>?
     private var mcpPhase = "idle"
     private var mcpModelCalls = 0
     private var mcpFormatCorrections = 0
@@ -139,6 +144,7 @@ final class ChatSession: ObservableObject {
 
     var chatStatus: String {
         if pendingProfileReview != nil { return "等待你核對個人檔案修改…" }
+        if pendingMemoryReview != nil { return "等待你核對記憶修改…" }
         if pendingMCPApproval != nil { return "等待你核准 MCP 工具…" }
         if isSubmitting && isMCPRun { return "正在使用 MCP 處理對話…" }
         if isSubmitting { return "正在等待模型回覆…" }
@@ -165,6 +171,8 @@ final class ChatSession: ObservableObject {
                 entries = []
                 profileReceipt = nil
                 profileReceiptRequestID = nil
+                memoryReceipt = nil
+                memoryReceiptRequestID = nil
                 conversationID = UUID().uuidString
                 learning.resetConversationPresentation()
             }
@@ -194,6 +202,8 @@ final class ChatSession: ObservableObject {
             entries = []
             profileReceipt = nil
             profileReceiptRequestID = nil
+            memoryReceipt = nil
+            memoryReceiptRequestID = nil
             conversationID = UUID().uuidString
             learning.resetConversationPresentation()
             chatError = nil
@@ -238,6 +248,7 @@ final class ChatSession: ObservableObject {
         let messages = window.messages
         let learningGeneration = learning.generation
         let profileState = learning.profile
+        let memoryState = learning.memory
         let useProfileTools = mcpConnection == nil && learning.available && learning.memory.preferences.useMemory
         let configuration = savedSettings.configuration
         let id = UUID()
@@ -260,7 +271,7 @@ final class ChatSession: ObservableObject {
                         key: key, client: client, connection: connection, tools: tools, resources: resources, requestID: id) ?? ""
                 } else if useProfileTools {
                     reply = try await self?.completeWithProfile(messages: messages, utterance: prompt,
-                        state: profileState, generation: learningGeneration, configuration: configuration,
+                        state: profileState, memoryState: memoryState, generation: learningGeneration, configuration: configuration,
                         key: key, client: client, requestID: id) ?? ""
                 } else {
                     reply = try await client.complete(messages: messages, configuration: configuration, apiKey: key)
@@ -279,7 +290,8 @@ final class ChatSession: ObservableObject {
                 // Deliver first. A separate, bounded extraction call receives only
                 // the user's own utterance, never the model reply or MCP/web content.
                 self.learning.rememberAfterReply(utterance: prompt, conversationID: self.conversationID,
-                    expectedGeneration: learningGeneration, client: client, configuration: configuration, apiKey: key)
+                    expectedGeneration: learningGeneration, client: client, configuration: configuration, apiKey: key,
+                    preservingToolNotes: self.memoryReceiptRequestID == id ? [self.memoryReceipt?.note].compactMap { $0 } : [])
             } catch {
                 guard let self, self.requestID == id else { return }
                 if mcpConnection != nil {
@@ -297,8 +309,12 @@ final class ChatSession: ObservableObject {
                         ? "模型仍未提供可用的單一步驟指令，已停止；草稿與先前工具結果保留。" : nil)
                     ?? (mcpConnection == nil ? "傳送失敗，草稿已保留。請檢查模型設定或網路後重試。"
                         : "MCP 對話未完成，草稿與已收到的工具結果保留；請先確認已送出操作，不會自動重試。")
-                self.finish(id: id, error: self.profileReceiptRequestID != id ? message
-                    : "個人檔案已儲存，但後續模型回覆未完成；請先查看已保存內容，避免重複修改。草稿保留。")
+                if self.memoryReceiptRequestID == id {
+                    self.finish(id: id, error: "記憶修改已儲存，但後續模型回覆未完成；請先查看保存結果或撤銷，避免重複修改。草稿保留。")
+                } else {
+                    self.finish(id: id, error: self.profileReceiptRequestID != id ? message
+                        : "個人檔案已儲存，但後續模型回覆未完成；請先查看已保存內容，避免重複修改。草稿保留。")
+                }
             }
         }
         deadline = Task { [weak self] in
@@ -308,9 +324,13 @@ final class ChatSession: ObservableObject {
             guard let self, self.requestID == id else { return }
             self.request?.cancel()
             if mcpConnection != nil { self.updateMCPDiagnostics(failure: "hostDeadline") }
-            self.finish(id: id, error: self.profileReceiptRequestID != id
-                ? "等待超過 \(seconds) 秒，已停止等待；草稿已保留，可重試。"
-                : "個人檔案已儲存，但後續回覆等待超過 \(seconds) 秒；請先查看保存內容。草稿保留。")
+            if self.memoryReceiptRequestID == id {
+                self.finish(id: id, error: "記憶修改已儲存，但後續回覆等待超過 \(seconds) 秒；請先查看保存結果或撤銷。草稿保留。")
+            } else {
+                self.finish(id: id, error: self.profileReceiptRequestID != id
+                    ? "等待超過 \(seconds) 秒，已停止等待；草稿已保留，可重試。"
+                    : "個人檔案已儲存，但後續回覆等待超過 \(seconds) 秒；請先查看保存內容。草稿保留。")
+            }
         }
     }
 
@@ -352,15 +372,16 @@ final class ChatSession: ObservableObject {
     /// a profile review is invalidated immediately, and late proposals recheck
     /// generation/master-switch state before they can even be shown.
     func invalidateProfileReview() {
-        guard pendingProfileReview != nil else { return }
+        guard pendingProfileReview != nil || pendingMemoryReview != nil else { return }
         cancel()
     }
 
     private func completeWithProfile(messages: [ModelMessage], utterance: String,
-                                     state: UserProfileState, generation: UUID,
+                                     state: UserProfileState, memoryState: MemoryState, generation: UUID,
                                      configuration: ModelConfiguration, key: String,
                                      client: any ChatModelClient, requestID: UUID) async throws -> String {
         let flow = try UserProfileChatFlow(messages: messages)
+        var memoryRun = MemoryToolRun(state: memoryState, utterances: [utterance])
         defer { flow.cancel() }
         while true {
             let step = try await flow.advance(client: client, configuration: configuration, apiKey: key)
@@ -385,6 +406,56 @@ final class ChatSession: ObservableObject {
                 profileReceipt = receipt // Retained even if the next model call fails.
                 profileReceiptRequestID = requestID
                 try flow.recordCommitted(entryID: receipt.id)
+            case .memorySearch(let arguments):
+                try validateMemoryRun(memoryRun, generation: generation)
+                let found = try memoryRun.search(argumentsJSON: arguments)
+                try flow.recordMemorySearchResult(found.resultJSON())
+            case .proposedMemoryChange(let toolName, let arguments):
+                try validateMemoryRun(memoryRun, generation: generation)
+                let review = try memoryRun.prepare(toolName: toolName, argumentsJSON: arguments)
+                let approved = await approveMemory(review, requestID: requestID)
+                try Task.checkCancellation()
+                guard self.requestID == requestID else { throw CancellationError() }
+                guard approved else { throw MemoryChatStop.declined }
+                try flow.validateReview()
+                let receipt = try learning.commitMemoryTool(review, expectedGeneration: generation,
+                    conversationID: conversationID)
+                memoryReceipt = receipt
+                memoryReceiptRequestID = requestID
+                try flow.recordMemoryCommitted(toolName: toolName, resultJSON: receipt.resultJSON())
+            }
+        }
+    }
+
+    private func validateMemoryRun(_ run: MemoryToolRun, generation: UUID) throws {
+        guard learning.available, learning.memory.preferences.useMemory,
+              learning.generation == generation, learning.memory.revision == run.baseRevision else {
+            throw MemoryToolError.staleRevision
+        }
+    }
+
+    func resolveMemoryReview(id: UUID, approved: Bool) {
+        guard pendingMemoryReview?.id == id else { return }
+        pendingMemoryReview = nil
+        let continuation = memoryApprovalContinuation
+        memoryApprovalContinuation = nil
+        continuation?.resume(returning: approved)
+    }
+
+    private func approveMemory(_ review: MemoryToolReview, requestID: UUID) async -> Bool {
+        guard self.requestID == requestID, !Task.isCancelled else { return false }
+        return await withTaskCancellationHandler {
+            await withCheckedContinuation { continuation in
+                guard self.requestID == requestID, !Task.isCancelled else {
+                    continuation.resume(returning: false); return
+                }
+                memoryApprovalContinuation = continuation
+                pendingMemoryReview = review
+            }
+        } onCancel: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self, self.requestID == requestID, let review = self.pendingMemoryReview else { return }
+                self.resolveMemoryReview(id: review.id, approved: false)
             }
         }
     }
@@ -416,6 +487,13 @@ final class ChatSession: ObservableObject {
     }
 
     private static func profileFailureMessage(_ error: Error) -> String? {
+        if error is LearningFileError {
+            return "學習資料無法儲存，這次修改未發布；原有資料與草稿保留，請確認裝置儲存狀態後再試。"
+        }
+        if let stopped = error as? MemoryChatStop { return stopped.message }
+        if error is MemoryToolError || error is MemoryError {
+            return "記憶工具未通過來源、目標或資料狀態檢查，已停止；草稿保留。已完成的儲存會另外顯示。"
+        }
         if error is UserProfileToolError || error is UserProfileError || error is UserProfileChatError {
             return "個人檔案工具未通過檢查或已超過執行限制，已停止；草稿保留。已完成的儲存會另外顯示。"
         }
@@ -498,6 +576,8 @@ final class ChatSession: ObservableObject {
         mcpDiagnostics = nil
         profileReceipt = nil
         profileReceiptRequestID = nil
+        memoryReceipt = nil
+        memoryReceiptRequestID = nil
         chatError = nil; chatNotice = "已開啟新對話；已確認的記憶與技能保留。"
     }
 
@@ -505,6 +585,7 @@ final class ChatSession: ObservableObject {
         guard requestID == id else { return }
         if let pending = pendingMCPApproval { resolveMCPApproval(id: pending.id, approved: false) }
         if let pending = pendingProfileReview { resolveProfileReview(id: pending.id, approved: false) }
+        if let pending = pendingMemoryReview { resolveMemoryReview(id: pending.id, approved: false) }
         requestID = nil
         isSubmitting = false
         isMCPRun = false
@@ -526,6 +607,11 @@ final class ChatSession: ObservableObject {
 private enum ProfileChatStop: Error {
     case declined
     var message: String { "你已拒絕這次個人檔案修改；尚未儲存，訊息草稿已保留。" }
+}
+
+private enum MemoryChatStop: Error {
+    case declined
+    var message: String { "你已拒絕這次記憶修改；尚未儲存，訊息草稿已保留。" }
 }
 
 private struct MCPChatStop: Error {

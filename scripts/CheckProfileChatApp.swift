@@ -71,6 +71,18 @@ private actor ScriptedModel: ChatModelClient {
     }
 }
 
+#if DEBUG
+// Observation only: all responses still come from the actual App UI fixture.
+private actor RecordingUIModel: ChatModelClient {
+    private let client = UITestChatModelClient()
+    private(set) var requests: [[ModelMessage]] = []
+    func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
+        requests.append(messages)
+        return try await client.complete(messages: messages, configuration: configuration, apiKey: apiKey)
+    }
+}
+#endif
+
 @MainActor private final class Environment {
     let root: URL
     let file: URL
@@ -164,7 +176,8 @@ private enum CheckProfileChatApp {
     }
     @MainActor static func group(_ name: String, _ body: () async throws -> Void) async throws {
         let before = assertions
-        try await body()
+        do { try await body() }
+        catch let error as CheckFailure { throw CheckFailure(check: name + ": " + error.check) }
         groups[name] = assertions - before
     }
 
@@ -488,7 +501,491 @@ private enum CheckProfileChatApp {
             "model_calls_after_oversized_rejection": callsAfterRejection]
     }
 
+    // These commands are synthetic model output only. The actual App parses,
+    // grounds, searches, reviews and persists them; no test writes a receipt.
+    static func memoryCommand(_ action: String, _ arguments: [String: Any]) throws -> String {
+        String(decoding: try JSONSerialization.data(withJSONObject:
+            ["action": action, "arguments": arguments], options: [.sortedKeys]), as: UTF8.self)
+    }
+    static func memorySave(_ content: String = text, quote: String = utterance,
+                           kind: String = "preference") throws -> String {
+        try memoryCommand("memory_save", ["kind": kind, "content": content, "quote": quote])
+    }
+    static func memoryEdit(_ id: UUID, quote: String, content: String? = nil) throws -> String {
+        var args: [String: Any] = ["op": content == nil ? "delete" : "update", "id": id.uuidString, "quote": quote]
+        if let content { args["content"] = content }
+        return try memoryCommand("memory_edit", args)
+    }
+    @MainActor static func memoryReview(_ session: ChatSession) async throws -> MemoryToolReview {
+        try await until("Pending actual ordinary memory review") { session.pendingMemoryReview != nil || !session.isSubmitting }
+        guard let value = session.pendingMemoryReview else { throw CheckFailure(check: "Memory command must reach actual review") }
+        return value
+    }
+    @MainActor static func memoryReceipt(_ session: ChatSession) throws -> MemoryToolReceipt {
+        guard let value = session.memoryReceipt else { throw CheckFailure(check: "Actual memory receipt required") }
+        return value
+    }
+    @MainActor static func hostJSON(_ messages: [ModelMessage], prefix: String) throws -> [String: Any] {
+        guard let body = messages.last?.content, body.hasPrefix(prefix + "\n"),
+              let value = try JSONSerialization.jsonObject(with: Data(body.dropFirst(prefix.count + 1).utf8)) as? [String: Any]
+        else { throw CheckFailure(check: "Actual host result has expected JSON envelope") }
+        return value
+    }
+    @MainActor static func approveMemory(_ session: ChatSession, task running: Task<Void, Never>) async throws -> MemoryToolReceipt {
+        let pending = try await memoryReview(session)
+        session.resolveMemoryReview(id: pending.id, approved: true)
+        await running.value
+        try check(session.chatError == nil && session.pendingMemoryReview == nil && session.draft.isEmpty,
+                  "Approved ordinary memory turn completes without an error")
+        return try memoryReceipt(session)
+    }
+
+    @MainActor static func memorySaveSearchEditUndo() async throws {
+        let env = try Environment(); defer { try? env.close() }
+        try check(!env.store.memory.preferences.autoRemember && env.store.memory.preferences.useMemory,
+                  "Explicit ordinary tools are exercised with automatic extraction off")
+        let gate = ModelGate(), model = ScriptedModel([.init(try memorySave()), .init(finished, gate: gate)])
+        let session = env.session(model), bytes = try env.bytes()
+        var publications = 0, durable = false
+        let subscription = session.$memoryReceipt.compactMap { $0 }.sink { receipt in
+            publications += 1
+            durable = env.reopen().memory.memories.first?.id == receipt.id
+        }
+        defer { subscription.cancel() }
+        let running = try start(session), pending = try await memoryReview(session)
+        try check(pending.quote == utterance && pending.after?.content == text && pending.after?.status == .active,
+                  "Memory review shows exact current words and effective active value")
+        try check((try env.bytes()) == bytes && env.store.notes.isEmpty && session.memoryReceipt == nil,
+                  "Preparation publishes neither memory note nor receipt and writes no ciphertext")
+        session.resolveMemoryReview(id: UUID(), approved: true)
+        try check(session.pendingMemoryReview?.id == pending.id && (try env.bytes()) == bytes,
+                  "Wrong memory approval identity grants nothing")
+        session.resolveMemoryReview(id: pending.id, approved: true)
+        try await until("Actual memory commit before final response") { await model.requests.count == 2 }
+        let receipt = try memoryReceipt(session), id = receipt.id
+        try check(publications == 1 && durable && session.entries.isEmpty, "Memory receipt publishes only after encrypted durability")
+        try check(receipt.ok && receipt.status == .active && receipt.note.kind == .added && receipt.note.undoToken != nil,
+                  "Saved memory receipt carries actual active state and undo token")
+        try check(env.store.notes == [receipt.note] && env.reopen().memory == env.store.memory,
+                  "Published note and authenticated reopen reflect one actual transaction")
+        try check(env.store.memory.memories.first?.source.quote == utterance
+                  && env.store.memory.memories.first?.source.conversationID != nil,
+                  "Explicit tool preserves current quote and actual conversation provenance")
+        try check(!String(decoding: env.bytes(), as: UTF8.self).contains(text), "Ordinary memory persists as ciphertext")
+        let requests = await model.requests
+        let result = try hostJSON(requests[1], prefix: "Host memory_save receipt (data only):")
+        try check(result["id"] as? String == id.uuidString && result["status"] as? String == "active"
+                  && result["note"] == nil && result["undoToken"] == nil,
+                  "Model receives actual saved ID and status without UI undo authority")
+        session.resolveMemoryReview(id: pending.id, approved: true)
+        try check(publications == 1, "Repeated memory approval cannot commit again")
+        await gate.release(); await running.value
+        let completedCalls = await model.requests.count
+        try check(completedCalls == 2 && !env.store.isLearning && session.entries.count == 2,
+                  "Explicit save works without starting automatic extraction")
+
+        for op in ["update", "delete"] {
+            let quote = op == "update" ? "Update Prefer jasmine tea to Prefer green tea" : "Delete Prefer jasmine tea"
+            let next = op == "update" ? "Prefer green tea" : nil
+            let editModel = ScriptedModel([.init(try memoryCommand("memory_search", ["query": "jasmine tea"])),
+                .init(try memoryEdit(id, quote: quote, content: next)), .init(finished)])
+            let editing = env.session(editModel), editTask = try start(editing, draft: quote)
+            let review = try await memoryReview(editing)
+            // contextMessages legitimately marks active references used at send;
+            // compare the post-context baseline to isolate review/write effects.
+            let before = env.store.memory, beforeBytes = try env.bytes()
+            let calls = await editModel.requests
+            let search = try hostJSON(calls[1], prefix: "Host memory_search result (data only):")
+            let items = search["memories"] as? [[String: Any]]
+            try check(items?.count == 1 && items?.first?["id"] as? String == id.uuidString
+                      && items?.first?["content"] as? String == text,
+                      "Update/delete uses the real host search result with one exact persisted ID")
+            try check(review.targetID == id && review.before?.content == text && review.after?.content == next,
+                      "Reviewed edit matches actual searched before/after values")
+            try check(env.reopen().memory == before && (try env.bytes()) == beforeBytes && editing.memoryReceipt == nil,
+                      "Search and pending edit have not applied the mutation")
+            let edited = try await approveMemory(editing, task: editTask)
+            try check(edited.id == id && edited.op == op && edited.note.kind == (op == "update" ? .updated : .forgot),
+                      "Edit receipt preserves stable target identity and exact operation")
+            try check(env.reopen().memory.memories.first?.content == next && env.store.notes == [edited.note],
+                      "Actual edited/deleted state and undo card follow encrypted transaction")
+            let finalCalls = await editModel.requests
+            let editReceipt = try hostJSON(finalCalls[2], prefix: "Host memory_edit receipt (data only):")
+            try check(finalCalls.count == 3 && editReceipt["id"] as? String == id.uuidString
+                      && editReceipt["op"] as? String == op, "Search/edit/final answer uses exactly three real calls")
+            let undoNote: MemoryNote
+            if op == "delete" {
+                try check(editReceipt["deleted"] as? Bool == true, "Deletion has an actual deletion receipt")
+                let previousPreference = env.store.memory.preferences.learnSkills
+                try check(env.store.updatePreferences { $0.learnSkills = !previousPreference },
+                          "Persist unrelated preference change after actual tool deletion")
+                try check(env.reopen().memory.memories.isEmpty
+                          && env.reopen().memory.preferences.learnSkills == !previousPreference,
+                          "Preference transaction preserves deletion and persists the changed preference")
+                try check(env.store.notes.contains(edited.note),
+                          "Preference change must retain deleted memory undo card despite absent record ID")
+                guard let visibleNote = env.store.notes.first(where: { $0.undoToken == edited.note.undoToken }) else {
+                    throw CheckFailure(check: "Deletion undo must remain reachable from actual published notes")
+                }
+                undoNote = visibleNote
+            } else { undoNote = edited.note }
+            env.store.undo(undoNote)
+            try check(env.store.error == nil && env.reopen().memory.memories.first?.content == text
+                      && env.reopen().memory.memories.first?.id == id, "Actual App undo durably restores the exact original record")
+            try check(env.store.notes.isEmpty, "Successful undo removes its presentation card")
+            let undoneBytes = try env.bytes()
+            env.store.undo(edited.note)
+            try check((try env.bytes()) == undoneBytes && env.store.error != nil, "Replayed undo cannot change the restored record")
+        }
+        try check(env.reopen().profile.entries.isEmpty && env.reopen().skills == env.store.skills,
+                  "Ordinary memory tools preserve sibling encrypted profile and skill state")
+    }
+
+    @MainActor static func memoryProcedureReview() async throws {
+        for accept in [false, true] {
+            let env = try Environment(); defer { try? env.close() }
+            let content = "整理資料先列來源", quote = "以後整理資料先列來源"
+            let session = env.session(ScriptedModel([.init(try memorySave(content, quote: quote, kind: "procedure")), .init(finished)]))
+            let receipt = try await approveMemory(session, task: start(session, draft: quote))
+            try check(receipt.status == .pending && receipt.note.pendingID == receipt.id && env.store.canReviewMemory(receipt.note),
+                      "Approving a procedure write leaves a separately reviewable pending procedure")
+            try check(env.reopen().memory.memories.first?.status == .pending
+                      && env.store.memory.context(goal: content).usedIDs.isEmpty,
+                      "Encrypted pending procedure is excluded from model context")
+            if !accept {
+                env.store.rejectPendingMemory(receipt.note)
+                try check(env.store.error == nil && env.reopen().memory.memories.isEmpty && env.store.notes.isEmpty,
+                          "Rejecting a newly written procedure durably removes it")
+                continue
+            }
+            env.store.approvePendingMemory(receipt.note)
+            try check(env.reopen().memory.memories.first?.status == .active && env.store.notes.isEmpty,
+                      "Separate procedure approval activates and persists it")
+            try check(env.store.memory.context(goal: content).usedIDs == [receipt.id], "Only approved procedure enters future context")
+            for reapprove in [false, true] {
+                let updated = "整理資料先核對來源", updateQuote = "更新為整理資料先核對來源"
+                let model = ScriptedModel([.init(try memoryCommand("memory_search", ["query": "整理資料"])),
+                    .init(try memoryEdit(receipt.id, quote: updateQuote, content: updated)), .init(finished)])
+                let editing = env.session(model)
+                let changed = try await approveMemory(editing, task: start(editing, draft: updateQuote))
+                try check(changed.status == .pending && env.store.canReviewMemory(changed.note)
+                          && env.reopen().memory.memories.first?.status == .pending,
+                          "Tool update of an active procedure requires separate reapproval")
+                try check(env.store.memory.context(goal: updated).usedIDs.isEmpty,
+                          "Updated procedure cannot enter context while reapproval is pending")
+                if reapprove { env.store.approvePendingMemory(changed.note) }
+                else { env.store.rejectPendingMemory(changed.note) }
+                try check(env.store.error == nil && env.reopen().memory.memories.first?.id == receipt.id
+                          && env.reopen().memory.memories.first?.content == (reapprove ? updated : content)
+                          && env.reopen().memory.memories.first?.status == .active,
+                          "Reapproval persists new procedure; rejection restores the earlier approved procedure")
+                try check(env.store.notes.isEmpty, "Resolved procedure review removes its pending card")
+            }
+        }
+    }
+
+    @MainActor static func memoryRefusalAndFences() async throws {
+        for action in ["decline", "cancel", "background", "masterOff", "generation", "revision"] {
+            let env = try Environment(); defer { try? env.close() }
+            let model = ScriptedModel([.init(try memorySave())]), session = env.session(model)
+            let running = try start(session), pending = try await memoryReview(session)
+            switch action {
+            case "decline": session.resolveMemoryReview(id: pending.id, approved: false)
+            case "cancel": session.cancel()
+            case "background": session.invalidateProfileReview()
+            case "masterOff":
+                env.store.onUserChange = { [weak session] in session?.invalidateProfileReview() }
+                try check(env.store.updatePreferences { $0.useMemory = false }, "Memory master off persists during pending review")
+            case "generation":
+                env.store.cancelLearning(); session.resolveMemoryReview(id: pending.id, approved: true)
+            default:
+                // A second real transaction advances revision without changing
+                // generation, so this specifically exercises the revision gate.
+                let otherQuote = "Remember Prefer quiet hotels"
+                let other = try MemoryToolRun(state: env.store.memory, utterances: [otherQuote]).prepare(
+                    toolName: "memory_save", argumentsJSON: #"{"kind":"preference","content":"Prefer quiet hotels","quote":"Remember Prefer quiet hotels"}"#)
+                _ = try env.store.commitMemoryTool(other, expectedGeneration: env.store.generation, conversationID: "synthetic-concurrent")
+                session.resolveMemoryReview(id: pending.id, approved: true)
+            }
+            let before = env.store.memory, bytes = try env.bytes(), notes = env.store.notes
+            await running.value
+            session.resolveMemoryReview(id: pending.id, approved: true)
+            try check(session.memoryReceipt == nil && session.pendingMemoryReview == nil && !session.isSubmitting,
+                      action + " rejects ordinary memory commit and clears continuation")
+            try check(env.store.memory == before && env.reopen().memory == before && (try env.bytes()) == bytes && env.store.notes == notes,
+                      action + " cannot write or overwrite concurrent memory/notes")
+            try check(session.entries.isEmpty && session.draft == utterance,
+                      action + " keeps actual draft without inventing a final answer")
+            let calls = await model.requests.count
+            try check(calls == 1, action + " emits no fabricated host receipt or continuation call")
+        }
+        let env = try Environment(); defer { try? env.close() }
+        let run = MemoryToolRun(state: env.store.memory, utterances: [utterance])
+        let prepared = try run.prepare(toolName: "memory_save", argumentsJSON:
+            #"{"kind":"preference","content":"Prefer jasmine tea","quote":"Please remember Prefer jasmine tea"}"#)
+        let generation = env.store.generation
+        _ = try env.store.commitMemoryTool(prepared, expectedGeneration: generation, conversationID: "synthetic")
+        let saved = env.store.memory, bytes = try env.bytes()
+        do {
+            _ = try env.store.commitMemoryTool(prepared, expectedGeneration: generation, conversationID: "synthetic")
+            throw CheckFailure(check: "Memory transaction replay must reject")
+        } catch let error as MemoryToolError { try check(error == .staleRevision, "Actual transaction rejects replayed memory revision") }
+        try check(env.reopen().memory == saved && (try env.bytes()) == bytes, "Replayed memory transaction leaves disk unchanged")
+        try check(env.store.updatePreferences { $0.useMemory = false }, "Disable memory for independent commit gate")
+        let disabled = try env.bytes()
+        do {
+            _ = try env.store.commitMemoryTool(prepared, expectedGeneration: env.store.generation, conversationID: "synthetic")
+            throw CheckFailure(check: "Disabled memory transaction must reject")
+        } catch let error as MemoryToolError { try check(error == .disabled, "Commit checks master switch even with current generation") }
+        try check((try env.bytes()) == disabled, "Disabled direct transaction writes no ciphertext")
+    }
+
+    @MainActor static func memorySearchGrounding() async throws {
+        for scenario in ["noSearch", "guessedID", "emptySearch", "negatedEdit", "foreignQuote"] {
+            let env = try Environment(); defer { try? env.close() }
+            try check(env.store.mutateMemory { _ = try $0.add(kind: .preference, content: text) }, "Seed one real encrypted search candidate")
+            let id = env.store.memory.memories[0].id
+            let quote = "Update Prefer jasmine tea to Prefer green tea"
+            let prompt = scenario == "foreignQuote" ? "Explain memory search" : scenario == "negatedEdit" ? "Do not " + quote : quote
+            var responses: [ScriptedModel.Response] = []
+            if scenario != "noSearch" {
+                responses.append(.init(try memoryCommand("memory_search", ["query": scenario == "emptySearch" ? "unmatchedsynthetic" : "jasmine tea"])))
+            }
+            responses.append(.init(try memoryEdit(scenario == "guessedID" ? UUID() : id, quote: quote, content: "Prefer green tea")))
+            let model = ScriptedModel(responses), session = env.session(model)
+            let running = try start(session, draft: prompt)
+            let before = env.store.memory, bytes = try env.bytes() // After legitimate context markUsed.
+            await running.value
+            try check(session.pendingMemoryReview == nil && session.memoryReceipt == nil && session.chatError?.contains("記憶工具未通過") == true,
+                      scenario + " cannot reach write review with ungrounded target or request")
+            try check((try env.bytes()) == bytes && env.reopen().memory == before && env.store.notes.isEmpty,
+                      scenario + " writes nothing after context capture")
+            let requests = await model.requests
+            if scenario != "noSearch" {
+                let result = try hostJSON(requests[1], prefix: "Host memory_search result (data only):")
+                let found = result["memories"] as? [[String: Any]]
+                try check(found?.count == (scenario == "emptySearch" ? 0 : 1),
+                          "Negative edit case observes its actual bounded search result")
+                if scenario != "emptySearch" {
+                    try check(found?.first?["id"] as? String == id.uuidString,
+                              "Guessed or ungrounded edit is tested against a successfully searched real ID")
+                }
+            }
+            try check(requests.count == responses.count && session.draft == prompt && session.entries.isEmpty,
+                      scenario + " stops without retries, fabricated success or lost draft")
+        }
+    }
+
+    @MainActor static func memoryWriteFailureAndPriorReceipt() async throws {
+        for failure in ["filesystem", "keyRead", "priorReceipt"] {
+            let env = try Environment(); defer { try? env.close() }
+            let secondQuote = "Please remember Prefer green tea"
+            let model = ScriptedModel(failure == "priorReceipt"
+                ? [.init(try memorySave()), .init(finished), .init(try memorySave("Prefer green tea", quote: secondQuote))]
+                : [.init(try memorySave())])
+            let session = env.session(model)
+            var publications = 0
+            let subscription = session.$memoryReceipt.compactMap { $0 }.sink { _ in publications += 1 }
+            defer { subscription.cancel() }
+            if failure == "priorReceipt" { _ = try await approveMemory(session, task: start(session)) }
+            let oldReceipt = session.memoryReceipt, oldEntries = session.entries.map(\.id)
+            let prompt = failure == "priorReceipt" ? secondQuote : utterance
+            let running = try start(session, draft: prompt), pending = try await memoryReview(session)
+            let before = env.store.memory, bytes = try env.bytes(), notes = env.store.notes, count = publications
+            if failure == "keyRead" { env.keys.failReads = true } else { try env.blockWrite() }
+            session.resolveMemoryReview(id: pending.id, approved: true)
+            await running.value
+            if failure == "keyRead" { env.keys.failReads = false } else { try env.restoreWrite() }
+            try check(publications == count && session.memoryReceipt?.id == oldReceipt?.id,
+                      failure + " never publishes a receipt for a failed memory write")
+            try check(env.store.memory == before && env.reopen().memory == before && (try env.bytes()) == bytes && env.store.notes == notes,
+                      failure + " preserves ciphertext, published memory and any earlier undo card")
+            try check(session.chatError?.contains("學習資料無法儲存") == true && session.chatError?.contains("後續模型回覆未完成") == false,
+                      failure + " reports actual storage failure, not a network error or a committed new write")
+            try check(session.entries.map(\.id) == oldEntries && session.draft == prompt && session.pendingMemoryReview == nil,
+                      failure + " retains draft/history and cleans up review")
+            let calls = await model.requests.count
+            try check(calls == (failure == "priorReceipt" ? 3 : 1), failure + " emits no continuation receipt after failed persistence")
+        }
+    }
+
+    @MainActor static func memoryPostCommitAndLateCancellation() async throws {
+        for action in ["disconnect", "cancel"] {
+            let env = try Environment(); defer { try? env.close() }
+            let gate = ModelGate(), model = ScriptedModel([.init(try memorySave()), .init(nil, gate: gate)])
+            let session = env.session(model), running = try start(session), pending = try await memoryReview(session)
+            session.resolveMemoryReview(id: pending.id, approved: true)
+            try await until("Memory receipt committed before disconnected final reply") { await model.requests.count == 2 }
+            let receipt = try memoryReceipt(session), bytes = try env.bytes()
+            if action == "cancel" { session.cancel() }
+            await gate.release(); await running.value
+            try check(session.memoryReceipt?.id == receipt.id && env.store.notes == [receipt.note] && (try env.bytes()) == bytes,
+                      action + " after commit preserves real saved memory receipt and undo card")
+            try check(env.reopen().memory.memories.map(\.content) == [text] && session.entries.isEmpty && session.draft == utterance,
+                      action + " preserves one durable memory without fabricating a completed reply")
+            if action == "disconnect" {
+                try check(session.chatError?.contains("記憶修改已儲存") == true, "Post-commit memory error acknowledges actual saved side effect")
+            }
+            env.store.undo(receipt.note)
+            try check(env.store.error == nil && env.reopen().memory.memories.isEmpty, "Post-commit disconnect/cancel still permits real durable undo")
+        }
+        for phase in ["beforeSearch", "afterSearch", "beforeSave"] {
+            let env = try Environment(); defer { try? env.close() }
+            try check(env.store.mutateMemory { _ = try $0.add(kind: .preference, content: text) }, "Seed late-response memory candidate")
+            let gate = ModelGate(), id = env.store.memory.memories[0].id
+            let quote = "Update Prefer jasmine tea to Prefer green tea"
+            let search = try memoryCommand("memory_search", ["query": "jasmine tea"])
+            let responses: [ScriptedModel.Response]
+            if phase == "beforeSave" { responses = [.init(try memorySave("Prefer green tea", quote: quote), gate: gate)] }
+            else if phase == "beforeSearch" { responses = [.init(search, gate: gate)] }
+            else { responses = [.init(search), .init(try memoryEdit(id, quote: quote, content: "Prefer green tea"), gate: gate)] }
+            let model = ScriptedModel(responses), session = env.session(model), running = try start(session, draft: quote)
+            try await until("Delayed memory response reached actual client") { await model.requests.count == responses.count }
+            let before = env.store.memory, bytes = try env.bytes()
+            session.cancel()
+            await gate.release(); await running.value // Join the original task, not just isSubmitting.
+            try check(session.pendingMemoryReview == nil && session.memoryReceipt == nil && session.entries.isEmpty && session.draft == quote,
+                      phase + " late response cannot resurrect a cancelled memory flow")
+            try check(env.reopen().memory == before && (try env.bytes()) == bytes && env.store.notes.isEmpty,
+                      phase + " late response cannot write or publish a note")
+            let calls = await model.requests.count
+            try check(calls == responses.count, phase + " cancellation prevents any following model call")
+        }
+    }
+
+    @MainActor static func memoryNotesThroughExtraction() async throws {
+        for outcome in ["newMemory", "empty", "failure", "cancel"] {
+            let env = try Environment(); defer { try? env.close() }
+            try check(env.store.updatePreferences { $0.autoRemember = true }, "Enable actual background extraction")
+            let quote = "我喜歡喝茶，也喜歡散步", content = "我喜歡喝茶"
+            let extracted = #"{"ops":[{"op":"add","kind":"preference","content":"我喜歡散步","quote":"喜歡散步"}]}"#
+            let gate = ModelGate()
+            let reply = outcome == "failure" ? nil : outcome == "empty" ? #"{"ops":[]}"# : extracted
+            let model = ScriptedModel([.init(try memorySave(content, quote: quote)), .init(finished), .init(reply, gate: gate)])
+            let session = env.session(model)
+            let receipt = try await approveMemory(session, task: start(session, draft: quote))
+            try await until("Actual background extractor started") { await model.requests.count == 3 }
+            guard let extraction = Mirror(reflecting: env.store).children.first(where: { $0.label == "extraction" })?.value as? Task<Void, Never> else {
+                throw CheckFailure(check: "Observe actual background extraction task")
+            }
+            let before = env.store.memory, bytes = try env.bytes()
+            try check(env.store.isLearning && env.store.notes == [receipt.note], "Tool undo card exists while actual extraction is pending")
+            if outcome == "cancel" { env.store.cancelLearning() }
+            await gate.release(); await extraction.value
+            try check(!env.store.isLearning && session.memoryReceipt?.id == receipt.id && session.entries.count == 2,
+                      outcome + " extraction cannot erase actual chat receipt or delivered reply")
+            try check(env.store.notes.contains(receipt.note), outcome + " background extraction preserves reviewed tool undo card")
+            if outcome == "newMemory" {
+                try check(env.reopen().memory.memories.map(\.content) == [content, "我喜歡散步"] && env.store.notes.count == 2,
+                          "Actual extractor adds a different durable record without replacing the tool card")
+            } else {
+                try check(env.reopen().memory == before && (try env.bytes()) == bytes && env.store.notes == [receipt.note],
+                          outcome + " extraction leaves committed memory and ciphertext unchanged")
+            }
+            let calls = await model.requests
+            try check(calls.count == 3 && calls[2].count == 2 && calls[2][0].content.hasPrefix("Propose durable personal memories"),
+                      "Third call is the actual separate MemoryExtractor, not a fabricated tool continuation")
+            env.store.undo(receipt.note)
+            try check(env.store.error == nil && env.reopen().memory.memories.map(\.content) == (outcome == "newMemory" ? ["我喜歡散步"] : []),
+                      outcome + " original tool undo remains effective after background extraction")
+        }
+    }
+
     #if DEBUG
+    @MainActor static func actualUIFixtureMemoryEdits() async throws {
+        let env = try Environment(); defer { try? env.close() }
+        let client = RecordingUIModel(), session = env.session(client)
+        let cases: [(String, MemoryToolOperation, String, String?, Bool, [String])] = [
+            ("Remember preference Prefer jasmine tea", .add, "Prefer jasmine tea", text, true, [text]),
+            ("Remember preference Prefer quiet", .add, "Prefer quiet", "Prefer quiet", false, [text]),
+            ("Update Prefer jasmine tea to Prefer coffee", .update, "Update Prefer jasmine tea to Prefer coffee", "Prefer coffee", true, ["Prefer coffee"]),
+            ("Delete Prefer coffee", .delete, "Delete Prefer coffee", nil, true, []),
+        ]
+        var savedID: UUID?
+        for (prompt, operation, quote, replacement, approved, expected) in cases {
+            let callOffset = await client.requests.count
+            let oldReceipt = session.memoryReceipt
+            let running = try start(session, draft: prompt), pending = try await memoryReview(session)
+            let before = env.store.memory, bytes = try env.bytes(), notes = env.store.notes
+            try check(pending.op == operation && pending.quote == quote && pending.after?.content == replacement,
+                      "Actual memory UI fixture supplies exact operation, quote and proposed content")
+            try check(env.reopen().memory == before && (try env.bytes()) == bytes
+                      && session.memoryReceipt?.id == oldReceipt?.id && env.store.notes == notes,
+                      "Actual fixture proposal cannot write or publish before approval")
+            if operation != .add {
+                let requests = await client.requests
+                let found = try hostJSON(requests[callOffset + 1], prefix: "Host memory_search result (data only):")
+                let items = found["memories"] as? [[String: Any]]
+                try check(items?.count == 1 && items?.first?["id"] as? String == savedID?.uuidString
+                          && pending.targetID == savedID && pending.before?.content == before.memories.first?.content,
+                          "Actual fixture edit ID comes from the sole real host search result")
+            }
+            session.resolveMemoryReview(id: pending.id, approved: approved)
+            await running.value
+            try check(env.reopen().memory.memories.map(\.content) == expected,
+                      "Actual memory fixture operation survives authenticated encrypted reopen")
+            let requests = await client.requests
+            if approved {
+                let receipt = try memoryReceipt(session)
+                if operation == .add { savedID = receipt.id }
+                try check(receipt.id == savedID && env.store.notes == [receipt.note]
+                          && session.entries.last?.content == "記憶工具已完成。" && session.chatError == nil && session.draft.isEmpty,
+                          "Actual fixture final answer follows one real durable receipt and undo card")
+                let tool = operation == .add ? "memory_save" : "memory_edit"
+                let result = try hostJSON(requests.last!, prefix: "Host " + tool + " receipt (data only):")
+                try check(result["id"] as? String == savedID?.uuidString
+                          && requests.count - callOffset == (operation == .add ? 2 : 3),
+                          "Actual fixture continuation uses the committed ID with bounded search/write/final calls")
+                if operation == .update {
+                    try check(env.reopen().memory.memories.first?.keywords == ["coffee"],
+                              "Actual update fixture persists its grounded replacement keywords")
+                }
+                if operation == .delete {
+                    guard let card = env.store.notes.first(where: { $0.undoToken == receipt.note.undoToken }) else {
+                        throw CheckFailure(check: "Actual fixture deletion has a user-reachable undo card")
+                    }
+                    env.store.undo(card)
+                    try check(env.store.error == nil && env.reopen().memory.memories.first?.id == savedID
+                              && env.reopen().memory.memories.first?.content == "Prefer coffee" && env.store.notes.isEmpty,
+                              "Actual fixture deletion can be durably undone through its published card")
+                }
+            } else {
+                try check((try env.bytes()) == bytes && env.store.notes == notes
+                          && session.memoryReceipt?.id == oldReceipt?.id && session.chatError?.contains("拒絕") == true,
+                          "Actual fixture refusal preserves existing encrypted data, receipt and undo card")
+                try check(requests.count - callOffset == 1 && session.draft == prompt,
+                          "Actual refusal emits no committed receipt or final model call")
+            }
+        }
+        for approveProcedure in [false, true] {
+            let fresh = try Environment(); defer { try? fresh.close() }
+            let model = RecordingUIModel(), other = fresh.session(model)
+            let prompt = "Remember procedure Check invoices before paying", content = "Check invoices before paying"
+            let running = try start(other, draft: prompt), pending = try await memoryReview(other), bytes = try fresh.bytes()
+            try check(pending.quote == content && pending.kind == .procedure && pending.after?.status == .pending
+                      && fresh.store.notes.isEmpty && fresh.reopen().memory.memories.isEmpty,
+                      "Actual procedure fixture proposes a separately pending procedure without implicit approval")
+            try check((try fresh.bytes()) == bytes, "Actual procedure review does not write the vault")
+            other.resolveMemoryReview(id: pending.id, approved: true)
+            await running.value
+            let receipt = try memoryReceipt(other)
+            try check(receipt.status == .pending && fresh.reopen().memory.memories.first?.content == content
+                      && fresh.store.canReviewMemory(receipt.note) && fresh.store.memory.context(goal: content).usedIDs.isEmpty,
+                      "Actual fixture write approval persists pending procedure excluded from future context")
+            try check(other.entries.last?.content == "記憶工具已完成。" && other.chatError == nil,
+                      "Actual procedure fixture final answer follows durable write receipt")
+            if approveProcedure { fresh.store.approvePendingMemory(receipt.note) }
+            else { fresh.store.rejectPendingMemory(receipt.note) }
+            try check(fresh.store.error == nil && fresh.store.notes.isEmpty,
+                      "Actual procedure separate approval/refusal resolves its pending card")
+            try check(fresh.reopen().memory.memories.map(\.content) == (approveProcedure ? [content] : [])
+                      && fresh.store.memory.context(goal: content).usedIDs == (approveProcedure ? [receipt.id] : []),
+                      "Actual fixture procedure becomes usable only after separate approval; rejection removes it")
+            let requests = await model.requests
+            try check(requests.count == 2, "Procedure approval/refusal adds no fabricated fixture model calls")
+        }
+    }
+
     @MainActor static func actualUIFixtureEdits() async throws {
         let env = try Environment(); defer { try? env.close() }
         let session = env.session(UITestChatModelClient())
@@ -533,8 +1030,16 @@ private enum CheckProfileChatApp {
             try await group("groundingAndOrdinaryChat", groundingAndOrdinary)
             try await group("priorReceiptAndFailedNewWrite", priorReceiptAndFailedNewWrite)
             try await group("twentyTurnContextWindow", twentyTurnContextWindow)
+            try await group("memorySaveSearchEditUndo", memorySaveSearchEditUndo)
+            try await group("memoryProcedureReview", memoryProcedureReview)
+            try await group("memoryRefusalAndFences", memoryRefusalAndFences)
+            try await group("memorySearchGrounding", memorySearchGrounding)
+            try await group("memoryWriteFailureAndPriorReceipt", memoryWriteFailureAndPriorReceipt)
+            try await group("memoryPostCommitAndLateCancellation", memoryPostCommitAndLateCancellation)
+            try await group("memoryNotesThroughExtraction", memoryNotesThroughExtraction)
             #if DEBUG
             try await group("actualUIFixtureEdits", actualUIFixtureEdits)
+            try await group("actualUIFixtureMemoryEdits", actualUIFixtureMemoryEdits)
             #endif
             let data = try JSONSerialization.data(withJSONObject: ["passed": assertions, "failed": 0,
                 "groups": groups, "long_chat": longChatObservation,
@@ -580,9 +1085,33 @@ final class ProfileChatAppIntegrationTests: XCTestCase {
     @MainActor func testTwentyTurnContextWindowRejectsOversizedCurrentInput() async throws {
         try await CheckProfileChatApp.twentyTurnContextWindow()
     }
+    @MainActor func testMemorySaveSearchEditAndDurableUndo() async throws {
+        try await CheckProfileChatApp.memorySaveSearchEditUndo()
+    }
+    @MainActor func testMemoryProcedureApprovalRejectionAndReapproval() async throws {
+        try await CheckProfileChatApp.memoryProcedureReview()
+    }
+    @MainActor func testMemoryRefusalCancellationRevisionAndMasterSwitch() async throws {
+        try await CheckProfileChatApp.memoryRefusalAndFences()
+    }
+    @MainActor func testMemorySearchAndCurrentUtteranceGrounding() async throws {
+        try await CheckProfileChatApp.memorySearchGrounding()
+    }
+    @MainActor func testMemoryWriteFailureNeverPublishesReceipt() async throws {
+        try await CheckProfileChatApp.memoryWriteFailureAndPriorReceipt()
+    }
+    @MainActor func testMemoryPostCommitReceiptAndLateCancellation() async throws {
+        try await CheckProfileChatApp.memoryPostCommitAndLateCancellation()
+    }
+    @MainActor func testMemoryToolNotesSurviveActualBackgroundExtraction() async throws {
+        try await CheckProfileChatApp.memoryNotesThroughExtraction()
+    }
     #if DEBUG
     @MainActor func testActualUIFixtureEdits() async throws {
         try await CheckProfileChatApp.actualUIFixtureEdits()
+    }
+    @MainActor func testActualUIFixtureMemoryEdits() async throws {
+        try await CheckProfileChatApp.actualUIFixtureMemoryEdits()
     }
     #endif
 }

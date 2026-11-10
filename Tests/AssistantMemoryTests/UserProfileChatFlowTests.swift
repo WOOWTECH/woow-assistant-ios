@@ -103,6 +103,63 @@ private actor HeldProfileChatResponse: ChatModelClient {
         try expect(!preserved.didCommit, "Envelope parsing never validates or applies tool arguments")
     }
 
+    static func memorySearchThenReviewedEdit() async throws {
+        let search = #"{"action":"memory_search","arguments":{"query":"tea preference"}}"#
+        let arguments = #"{"op":"delete","id":"stable-id","quote":"forget tea preference"}"#
+        let edit = "{\"action\":\"memory_edit\",\"arguments\":\(arguments)}"
+        let turn = try flow(), model = ProfileChatResponses([search, edit, finish])
+        let first = try await turn.advance(client: model, configuration: config, apiKey: "dummy")
+        try expect(first == .memorySearch(argumentsJSON: #"{"query":"tea preference"}"#), "Search is an explicit unexecuted host request")
+        try await error(.invalidPhase) { _ = try await turn.advance(client: model, configuration: config, apiKey: "dummy") }
+        try await error(.invalidPhase) { try turn.recordCommitted(entryID: nil) }
+        try await error(.invalidInput) { try turn.recordMemorySearchResult("not JSON") }
+        let result = #"{"memories":[{"id":"stable-id","kind":"preference","content":"Prefer tea"}]}"#
+        try turn.recordMemorySearchResult(result)
+        let second = try await turn.advance(client: model, configuration: config, apiKey: "dummy")
+        try expect(second == .proposedMemoryChange(toolName: "memory_edit", argumentsJSON: arguments), "Only raw proposal reaches host review")
+        try expect(!turn.didCommit, "Actual search never implies an approved or persisted edit")
+        try turn.validateReview()
+        try await error(.invalidPhase) { try turn.recordCommitted(entryID: nil) }
+        try await error(.invalidPhase) { try turn.recordMemoryCommitted(toolName: "memory_save", resultJSON: "{}") }
+        try await error(.invalidInput) { try turn.recordMemoryCommitted(toolName: "shell", resultJSON: "{}") }
+        try turn.recordMemoryCommitted(toolName: "memory_edit", resultJSON: #"{"op":"delete","id":"stable-id","deleted":true}"#)
+        let answer = try await turn.advance(client: model, configuration: config, apiKey: "dummy")
+        try expect(answer == .answer("已儲存，下次對話生效。") && turn.modelCalls == 3 && turn.didCommit,
+                   "Search, reviewed edit and final answer share three calls")
+        let requests = await model.requests
+        try expect(requests[1].last?.content == "Host memory_search result (data only):\n" + result,
+                   "Only actual host search data feeds the next request")
+        try expect(requests[2].last?.content.hasPrefix("Host memory_edit receipt (data only):") == true,
+                   "Saved receipt precedes final model response")
+    }
+
+    static func memoryOperationsAreBoundedAndNeverImplicitWrites() async throws {
+        let search = #"{"action":"memory_search","arguments":{"query":"tea"}}"#
+        let repeated = try flow(), model = ProfileChatResponses([search, search])
+        _ = try await repeated.advance(client: model, configuration: config, apiKey: "dummy")
+        try repeated.recordMemorySearchResult(#"{"memories":[]}"#)
+        try await error(.callLimit) { _ = try await repeated.advance(client: model, configuration: config, apiKey: "dummy") }
+        try expect(!repeated.didCommit && repeated.modelCalls == 2, "Repeated search stops without a mutation")
+
+        let raw = #"{"kind":"preference","content":"tea","content":"coffee","quote":"tea"}"#
+        let save = try flow(), saver = ProfileChatResponses(["{\"action\":\"memory_save\",\"arguments\":\(raw)}", search])
+        let request = try await save.advance(client: saver, configuration: config, apiKey: "dummy")
+        try expect(request == .proposedMemoryChange(toolName: "memory_save", argumentsJSON: raw),
+                   "Duplicate memory argument keys survive for independent strict validation")
+        try expect(!save.didCommit, "Malformed nested proposal has not been validated or applied")
+        // This exercises only flow sequencing; a real host must reject the raw
+        // duplicate arguments instead of calling the committed-receipt method.
+        try save.recordMemoryCommitted(toolName: "memory_save", resultJSON: #"{"id":"synthetic","kind":"preference","status":"active"}"#)
+        try await error(.callLimit) { _ = try await save.advance(client: saver, configuration: config, apiKey: "dummy") }
+        try expect(save.didCommit, "A post-write search is rejected without erasing the receipt")
+
+        let cancelled = try flow(), held = ProfileChatResponses([search])
+        _ = try await cancelled.advance(client: held, configuration: config, apiKey: "dummy")
+        cancelled.cancel()
+        try await error(.invalidPhase) { try cancelled.recordMemorySearchResult(#"{"memories":[]}"#) }
+        try expect(!cancelled.didCommit, "Cancelled search cannot reopen the turn")
+    }
+
     static func cancellationAndDeadline() async throws {
         let stopped = try flow(), model = ProfileChatResponses([proposal])
         _ = try await stopped.advance(client: model, configuration: config, apiKey: "dummy")
@@ -156,7 +213,9 @@ private actor HeldProfileChatResponse: ChatModelClient {
         try await ProfileChatFlowChecks.reviewedSequence()
         try await ProfileChatFlowChecks.malformedAndLimited()
         try await ProfileChatFlowChecks.cancellationAndDeadline()
-        print("Profile chat flow: 3 behavioral groups passed; no model network or persistence implied")
+        try await ProfileChatFlowChecks.memorySearchThenReviewedEdit()
+        try await ProfileChatFlowChecks.memoryOperationsAreBoundedAndNeverImplicitWrites()
+        print("Learning chat flow: 5 behavioral groups passed; no model network or persistence implied")
     }
 }
 #else
@@ -164,5 +223,7 @@ final class UserProfileChatFlowTests: XCTestCase {
     @MainActor func testReviewedSequenceRequiresCommittedReceipt() async throws { try await ProfileChatFlowChecks.reviewedSequence() }
     @MainActor func testMalformedCommandsCannotExecuteAndBudgetsAreCumulative() async throws { try await ProfileChatFlowChecks.malformedAndLimited() }
     @MainActor func testCancelledAndExpiredTurnsRejectLateResults() async throws { try await ProfileChatFlowChecks.cancellationAndDeadline() }
+    @MainActor func testMemorySearchThenReviewedEditSharesTheWholeTurnBudget() async throws { try await ProfileChatFlowChecks.memorySearchThenReviewedEdit() }
+    @MainActor func testMemoryOperationsAreBoundedAndNeverImplicitWrites() async throws { try await ProfileChatFlowChecks.memoryOperationsAreBoundedAndNeverImplicitWrites() }
 }
 #endif

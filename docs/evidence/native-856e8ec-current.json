@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "run_id": 42853401159,
+  "job_id": 129959865535,
+  "artifact_id": 13784026136,
+  "source_commit": "856e8eca5e17a46f030de1a4b85a2236e58c51cd",
+  "result": "success",
+  "device": {
+    "name": "iPhone 17",
+    "runtime": "iOS 26.2",
+    "architecture": "arm64"
+  },
+  "native": {
+    "unique_completed": 193,
+    "passed": 193,
+    "failed": 0,
+    "skipped": 0,
+    "targets": {
+      "AssistantDomainTests": 53,
+      "AssistantModelsTests": 11,
+      "AssistantMCPTests": 15,
+      "AssistantMemoryTests": 19,
+      "AssistantSkillsTests": 70,
+      "AssistantPersistenceTests": 4,
+      "AssistantBrowserIntegrationTests": 21
+    }
+  },
+  "profile_chat_hosted_methods": [
+    {
+      "method": "testActualUIFixtureEdits",
+      "result": "passed",
+      "duration": "0.320 seconds"
+    },
+    {
+      "method": "testActualWriteFailureDoesNotPublishReceipt",
+      "result": "passed",
+      "duration": "0.049 seconds"
+    },
+    {
+      "method": "testApprovalAndDurableReceipt",
+      "result": "passed",
+      "duration": "0.133 seconds"
+    },
+    {
+      "method": "testEncryptedTransactionRevisionGenerationAndMasterSwitch",
+      "result": "passed",
+      "duration": "0.097 seconds"
+    },
+    {
+      "method": "testGroundingAndOrdinaryChat",
+      "result": "passed",
+      "duration": "0.590 seconds"
+    },
+    {
+      "method": "testLateProposalsCannotWrite",
+      "result": "passed",
+      "duration": "0.069 seconds"
+    },
+    {
+      "method": "testPostCommitFailureRetainsReceipt",
+      "result": "passed",
+      "duration": "0.114 seconds"
+    },
+    {
+      "method": "testPriorReceiptAndFailedNewWrite",
+      "result": "passed",
+      "duration": "0.068 seconds"
+    },
+    {
+      "method": "testRefusalCancellationAndCommitFences",
+      "result": "passed",
+      "duration": "0.103 seconds"
+    },
+    {
+      "method": "testTwentyTurnContextWindowRejectsOversizedCurrentInput",
+      "result": "passed",
+      "duration": "0.021 seconds"
+    }
+  ],
+  "portable_swift_tests": {
+    "unique_completed": 161,
+    "passed": 161,
+    "failed": 0,
+    "skipped": 0,
+    "source": "Final workflow job log; portable Swift test phase before 16:35:11 UTC, unique completed case lines matched suite summary."
+  },
+  "files_sha256": {
+    "test-summary.json": "70b44f341830283b315ea8d73c2db6e83f58058f682ba3a73af28a0f4aa59ed6",
+    "ios-tests.log": "ee23cd53a7b9368b33db6840c9eea32aef120b04d4df0abc8a34f898adee3c35"
+  },
+  "limits": [
+    "No new ordinary memory groups or new memory fixture group were present in source 856.",
+    "Skipped attachment exports without matching files are not skipped tests.",
+    "Portable and native counts are separate suites, not combined into unique cross-platform methods."
+  ]
+}

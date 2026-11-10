@@ -1,0 +1,306 @@
+{
+  "schema_version": 1,
+  "source_revision": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+  "run_id": 42847901710,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42847901710",
+  "scope": "ui-learning",
+  "matrix_passed": false,
+  "total_case_executions": 15,
+  "passed": 13,
+  "failed": 2,
+  "skipped": 0,
+  "expected_failures": 0,
+  "variants": [
+    {
+      "variant": "se",
+      "job_id": 129940270323,
+      "artifact_id": 13784820135,
+      "summary": {
+        "result": "Failed",
+        "totalTestCount": 5,
+        "passedTests": 3,
+        "failedTests": 2,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "actual_starts": 5,
+      "actual_completions": 5,
+      "each_method_executed_once": true,
+      "methods": [
+        {
+          "name": "WoowAssistantUITests.BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+          "outcome": "failed",
+          "seconds": 44.388
+        },
+        {
+          "name": "WoowAssistantUITests.BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+          "outcome": "failed",
+          "seconds": 69.891
+        },
+        {
+          "name": "WoowAssistantUITests.BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch",
+          "outcome": "passed",
+          "seconds": 164.446
+        },
+        {
+          "name": "WoowAssistantUITests.MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+          "outcome": "passed",
+          "seconds": 96.342
+        },
+        {
+          "name": "WoowAssistantUITests.MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads",
+          "outcome": "passed",
+          "seconds": 38.198
+        }
+      ],
+      "bounded_evidence": {
+        "whole_zip_downloaded": false,
+        "local_directory": "/tmp/woow-74-learning-se",
+        "files": {
+          "test-summary.json": {
+            "bytes": 2516,
+            "sha256": "d04389661699a200d304e88dd12075c3629ebe89dddcacf84b569b67e4ab52c2"
+          },
+          "ios-tests.log": {
+            "bytes": 966256,
+            "sha256": "3a5831678d4574a6e5ecd3804753df91f34c45b075dd3db6178e076cd788d90c"
+          },
+          "ui-shard-completion.json": {
+            "bytes": 584,
+            "sha256": "eafd3a9bcd0e81bc574f8f431b8fab3fbd4159ee77cb6962b55a3a8930c8aa33"
+          }
+        }
+      }
+    },
+    {
+      "variant": "large",
+      "job_id": 129940269209,
+      "artifact_id": 13783655837,
+      "summary": {
+        "result": "Passed",
+        "totalTestCount": 5,
+        "passedTests": 5,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "actual_starts": 5,
+      "actual_completions": 5,
+      "each_method_executed_once": true,
+      "methods": [
+        {
+          "name": "WoowAssistantUITests.BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+          "outcome": "passed",
+          "seconds": 119.835
+        },
+        {
+          "name": "WoowAssistantUITests.BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+          "outcome": "passed",
+          "seconds": 95.962
+        },
+        {
+          "name": "WoowAssistantUITests.BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch",
+          "outcome": "passed",
+          "seconds": 140.926
+        },
+        {
+          "name": "WoowAssistantUITests.MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+          "outcome": "passed",
+          "seconds": 73.681
+        },
+        {
+          "name": "WoowAssistantUITests.MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads",
+          "outcome": "passed",
+          "seconds": 34.773
+        }
+      ],
+      "bounded_evidence": {
+        "whole_zip_downloaded": false,
+        "local_directory": "/tmp/woow-74-learning-large",
+        "files": {
+          "test-summary.json": {
+            "bytes": 985,
+            "sha256": "69d505876399bb37b7839ea3a652fab6279b1c76d6f43636dd2db977c6eb143e"
+          },
+          "ios-tests.log": {
+            "bytes": 1001345,
+            "sha256": "be4ac2b0441e8241eb3b72b321187c01510f55e0f13b1428c1c764afa3b5b638"
+          },
+          "ui-shard-completion.json": {
+            "bytes": 331,
+            "sha256": "9c9c07fb37ea2555fe1ce5a8ea32c3c7808da6de8c7e131e9b9ddc7e5494be6b"
+          }
+        }
+      }
+    },
+    {
+      "variant": "current",
+      "job_id": 129940268560,
+      "artifact_id": 13782043901,
+      "summary": {
+        "result": "Passed",
+        "totalTestCount": 5,
+        "passedTests": 5,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "actual_starts": 5,
+      "actual_completions": 5,
+      "each_method_executed_once": true,
+      "methods": [
+        {
+          "name": "WoowAssistantUITests.BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+          "outcome": "passed",
+          "seconds": 103.612
+        },
+        {
+          "name": "WoowAssistantUITests.BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+          "outcome": "passed",
+          "seconds": 137.185
+        },
+        {
+          "name": "WoowAssistantUITests.BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch",
+          "outcome": "passed",
+          "seconds": 145.208
+        },
+        {
+          "name": "WoowAssistantUITests.MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+          "outcome": "passed",
+          "seconds": 74.767
+        },
+        {
+          "name": "WoowAssistantUITests.MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads",
+          "outcome": "passed",
+          "seconds": 41.984
+        }
+      ],
+      "bounded_evidence": {
+        "whole_zip_downloaded": false,
+        "local_directory": "/tmp/woow-74-learning-current",
+        "files": {
+          "test-summary.json": {
+            "bytes": 970,
+            "sha256": "3ec2f5ba56467825ae78f04fe7690a27fd560afb13cfd37129567ef48843b559"
+          },
+          "ios-tests.log": {
+            "bytes": 1052499,
+            "sha256": "b330ce4fa664f6b70765f914ca34c1930e7dbc524310b25016cf8cae904f9005"
+          },
+          "ui-shard-completion.json": {
+            "bytes": 331,
+            "sha256": "9c9c07fb37ea2555fe1ce5a8ea32c3c7808da6de8c7e131e9b9ddc7e5494be6b"
+          }
+        }
+      }
+    }
+  ],
+  "multi_source_only": {
+    "actual_executions": 6,
+    "passed": 6,
+    "skipped": 0,
+    "real_webkit_fixture": true,
+    "live_model_evidence": false
+  },
+  "se_failure_diagnosis": [
+    {
+      "method": "testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+      "source_line": 417,
+      "actual_step": "initial configureModel -> navigation.settings before any settings edit, website research or cancellation",
+      "test_log_lines": [
+        2820,
+        2845
+      ],
+      "failure": "five-second compound exists/hittable waiter timeout",
+      "observations": [
+        "The settings button is visible at video frame timestamps 24.781667 and 32.485 seconds, spanning the failed lookup.",
+        "The failed query attachment contains only the query chain, with no resolved element.",
+        "Final fixture AX contains exactly navigation.settings at x295,y615,width72,height44; screenshot agrees."
+      ],
+      "classification": "AX lookup/readiness harness failure; no evidence that cancellation/product behavior was executed or defective",
+      "repair_candidate": "Use native waitForExistence then hittability within the same original five-second deadline; one tap only; preserve cancellation and persistence assertions."
+    },
+    {
+      "method": "testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+      "source_line": 355,
+      "actual_step": "enterGoal -> keyboard dismissal before any knowledge save/relaunch",
+      "test_log_lines": [
+        2910,
+        2954
+      ],
+      "failure": "five-second keyboard firstMatch.exists == false waiter timeout",
+      "observations": [
+        "Actual Done tap coordinate (317.25,385.25) is inside the displayed keyboard toolbar button.",
+        "Video frame at 50.851667 seconds shows the keyboard; frame at 53.280 seconds shows it dismissed.",
+        "The absence waiter begins at test elapsed 54.12 seconds and retries the exists query until 58.42; final AX has no Keyboard and goal text is preserved."
+      ],
+      "classification": "AX absence-query harness failure; actual native keyboard dismissal occurred before the waiter began",
+      "repair_candidate": "On iOS18+ use public XCUIElement.waitForNonExistence(timeout:5). On iOS17 use established XCTNSPredicateExpectation polling of a fresh app.keyboards.count == 0 query with the same five seconds. No second tap; retain exact text, knowledge, evidence and relaunch assertions."
+    }
+  ],
+  "selected_fixture_attachments": {
+    "07712B8A-0D1E-42D6-BF99-3E8707FF3239.txt": {
+      "bytes": 4807,
+      "sha256": "34903429ad5689e457f9a35b9697b17162432d3d4bfdd7b8858658f645aea3dd"
+    },
+    "791E19D7-74A2-4991-A443-FD9FEE04FD81.png": {
+      "bytes": 113529,
+      "sha256": "657041378b4c2603947234ae01ca4a291bf1e10625b7338247c30654df5ef30e"
+    },
+    "44FFC9B2-9D7A-49E9-937A-BDC005A0AA0C.txt": {
+      "bytes": 11868,
+      "sha256": "0e99eb514274a0ed4c583ff03c0499f034f6d24fcb69cd7c940b1354fbcfcfae"
+    },
+    "E366D757-6E19-4DA3-8B79-B72A878AE155.png": {
+      "bytes": 87167,
+      "sha256": "4042a900dc15006f918c06ed2bf38619f7587bdb200fed79138d920e688a1590"
+    },
+    "DE3440B3-8349-45F0-B874-766EDF38C127.txt": {
+      "bytes": 196,
+      "sha256": "ef2799614747664076da0d892ef15503b807c50b05b22bd32df80e29a19204d8"
+    },
+    "07CCF69C-A748-4C8A-AE7A-3FFA1159B74D.mp4": {
+      "bytes": 3037146,
+      "sha256": "73c31bad63797a780a0eb457e85aa301a80e810f000c36ea72e6773dd8f00449"
+    },
+    "483541E5-FE08-44E9-9320-784B816F82B3.mp4": {
+      "bytes": 3428992,
+      "sha256": "bd87bb7016ab3d843fc74ef42ea937610726df01e2067dc6cdf4c6648ebfca3b"
+    },
+    "FCD02F45-DFEA-4908-9CDB-078838861F32": {
+      "bytes": 1903,
+      "sha256": "000e8fc54906f61df619f226910fc3305f1340562770789f08449265501576c2"
+    }
+  },
+  "repair_file": "Tests/WoowAssistantUITests/BrowserLearningUITests.swift",
+  "repair_sha256": "8d6bad8e401fc8b94cf94015ef2029a151eea29f78876fb28420f4f7f2236a8f",
+  "local_validation": {
+    "swift_parse": true,
+    "diff_check": true,
+    "xctest_typecheck_available_locally": false,
+    "native_retest_passed": false
+  },
+  "public_api_reference": {
+    "url": "https://developer.apple.com/documentation/xcuiautomation/xcuielement/waitfornonexistence(timeout:)",
+    "apple_docc_metadata": {
+      "iOS": {
+        "introducedAt": null
+      },
+      "Xcode": {
+        "introducedAt": "16.3"
+      }
+    },
+    "api_added_release_notes": "https://developer.apple.com/documentation/xcode-release-notes/xcode-16-release-notes",
+    "framework_move_release_notes": "https://developer.apple.com/documentation/xcode-release-notes/xcode-16_3-release-notes",
+    "sdk_header_available_locally": false,
+    "conclusion": "Current official metadata does not specify an iOS introduced version. Xcode16.3 is the XCUIAutomation framework move, not sufficient evidence of iOS17 runtime support. No confirmed iOS18-only restriction is claimed.",
+    "conservative_runtime_guard": "iOS18.0+",
+    "ios17_fallback": "XCTNSPredicateExpectation + XCTWaiter, fresh app.keyboards.count == 0; same five-second bound; no new API call on iOS17",
+    "actual_ios17_native_execution_verified": false
+  },
+  "limitations": [
+    "Both SE failures remain recorded; native rerun must establish whether the harness repairs succeed.",
+    "No App source or test timeout changed.",
+    "Fixture multi-source success does not certify a live provider."
+  ]
+}

@@ -352,7 +352,18 @@ final class BrowserLearningUITests: XCTestCase {
         XCTAssertTrue(app.buttons["browser.start"].waitForExistence(timeout: 5))
         enter(text, into: goalField)
         tap("browser.goal.done")
-        waitFor(app.keyboards.firstMatch, predicate: "exists == false")
+        // SE 74's video shows dismissal at 53.280s, before the 54.12s
+        // predicate check; its exists query retried until the waiter expired.
+        // Retain five seconds and the exact goal check below. Never tap Done
+        // again. Xcode's API introduction alone is not iOS 17 runtime proof;
+        // keep that runtime on established XCTest polling of a fresh query.
+        if #available(iOS 18.0, *) {
+            XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
+        } else {
+            let keyboardAbsent = XCTNSPredicateExpectation(
+                predicate: NSPredicate { [self] _, _ in app.keyboards.count == 0 }, object: nil)
+            XCTAssertEqual(XCTWaiter.wait(for: [keyboardAbsent], timeout: 5), .completed)
+        }
         reveal(app.buttons["browser.start"])
         XCTAssertEqual(goalField.value as? String, text)
     }
@@ -411,10 +422,22 @@ final class BrowserLearningUITests: XCTestCase {
         if field.elementType == .textView { XCTAssertEqual(field.value as? String, text) }
     }
 
-    private func tap(_ identifier: String, scroll: Bool = false) {
+    private func tap(_ identifier: String, scroll: Bool = false,
+                     file: StaticString = #filePath, line: UInt = #line) {
         let button = app.buttons[identifier]
         if scroll { reveal(button) }
-        else { waitFor(button, predicate: "exists == true AND hittable == true") }
+        else {
+            // SE 74's initial settings button was visible throughout, but the
+            // compound predicate produced only an unresolved AX query chain.
+            // Native existence polling avoids that nested exists retry. Share
+            // the original five-second budget with the hittability check.
+            let deadline = Date().addingTimeInterval(5)
+            XCTAssertTrue(button.waitForExistence(timeout: 5), file: file, line: line)
+            if !button.isHittable {
+                waitFor(button, predicate: "hittable == true",
+                        timeout: max(0, deadline.timeIntervalSinceNow), file: file, line: line)
+            }
+        }
         button.tap()
     }
 

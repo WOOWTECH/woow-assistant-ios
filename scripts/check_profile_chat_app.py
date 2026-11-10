@@ -79,7 +79,8 @@ def main():
         for name, _ in MODULES
     }
     apps = [copy("Sources/App/" + name + ".swift") for name in APP_SOURCES]
-    views = [copy("Sources/App/ContentView.swift"), copy("Sources/App/UserProfileToolReviewView.swift")]
+    views = [copy("Sources/App/ContentView.swift"), copy("Sources/App/UserProfileToolReviewView.swift"),
+             copy("Sources/App/MemoryToolReviewView.swift")]
     harness = None if args.typecheck_only else copy("scripts/CheckProfileChatApp.swift")
     for name, deps in MODULES:
         run(name + "-build", ["swiftc", "-swift-version", "5", "-parse-as-library",

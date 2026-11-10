@@ -6,7 +6,7 @@
   "scope": "native",
   "run_id": 42847878172,
   "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42847878172",
-  "status": "TWO_VARIANTS_PASSED_ONE_QUEUED",
+  "status": "TWO_VARIANTS_PASSED_ONE_CANCELLED",
   "matrix_passed": false,
   "completed_variants": [
     {
@@ -250,15 +250,7 @@
       }
     }
   ],
-  "pending_variants": [
-    {
-      "variant": "ios18-compact",
-      "job_id": 129940187078,
-      "status": "queued",
-      "conclusion": null,
-      "functional_result": "not_yet_available"
-    }
-  ],
+  "pending_variants": [],
   "completed_variant_totals": {
     "variants": 2,
     "native_case_executions": 338,
@@ -276,9 +268,20 @@
     "conclusion": "The prior compound-expression typechecking failure cleared on both completed variants. All five actual PDF assembly native methods passed on each; no assertions were removed."
   },
   "limitations": [
-    "SE is queued; this is not full matrix acceptance.",
+    "SE job was cancelled; this is not full matrix acceptance. Cancellation is neither a functional pass nor a functional failure.",
     "Native/hosted methods were exercised; no UI cases were selected in this scope. PDF picker/export and learning UI are separate runs.",
     "Counts describe source 74f7b71, not the later uncommitted profile_edit integration or ChatContextWindow files.",
     "Actual synthetic PDF raster/geometry results do not establish compatibility with every arbitrary PDF."
+  ],
+  "updated_at_utc": "2026-11-10T17:03:15.000663+00:00",
+  "cancelled_variants": [
+    {
+      "variant": "ios18-compact",
+      "job_id": 129940187078,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "functional_result": "not_established",
+      "cancellation_reason": "unknown; not inferred"
+    }
   ]
 }

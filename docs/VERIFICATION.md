@@ -1,5 +1,35 @@
 # Verification — 2026-11-11
 
+## Ordinary memory tools: local transactions and real-model App checks
+
+Ordinary chat now dispatches `memory_search`, `memory_save` and `memory_edit` through the production memory state, with actual search-result IDs, current-utterance grounding and explicit native review before atomic encrypted writes. Pending procedures still need activation approval. The tools share the profile flow's three foreground calls, one search, one mutation and 90-second budget; post-answer automatic extraction is a separate background call. MCP-mode integration remains absent. [Behavior and deliberate Mika differences](MEMORY_TOOLS.md).
+
+Core checks pass **245 memory-tool assertions / ten groups**, plus the existing **97 profile-tool / 91 memory-state** assertions. A real App regression first failed when preference changes removed a deleted-memory undo card; filtering against actual undo eligibility fixes it. The same targeted case now passes **84/84**. Final production App logic and isolated AES-GCM checks pass **468 Debug / 395 Release**, including 44 actual fixture-client checks. No iOS SDK is used locally. [Before/after App evidence and source hashes](evidence/memory-chat-app-local.json), [core baseline](evidence/memory-tools-core-local.json), [undo eligibility correction](evidence/memory-tools-can-undo-local.json).
+
+A separate real-model run used the production HTTP client and App logic for **29 actual model calls, zero model errors, 57.745 seconds**: profile add, ordinary-memory save, actual search followed by delete and undo, pending-procedure approval, and 20 conversation turns retaining all 40 messages. An oversized prompt preserves draft/history without another request. Every committed stage is read back from the real isolated encrypted file. Two earlier failed probes are retained: the first was unclassified; the second produced a review whose exact text/quote assertions failed. Adding explicit quotes to the synthetic request left those strict assertions unchanged; the original returned strings were not retained, so no punctuation cause is claimed. This macOS run predates the later undo-card fix, uses synthetic records and test-driven approvals, and does not establish native UI or physical-device acceptance. [Hashed source and bounded live evidence](evidence/live-learning-tools-app-local.json).
+
+At `856e8ec`, [42853401159](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42853401159) passed **193/193 native/hosted methods, zero skips**, on iPhone 17 / iOS 26.2, including **10/10 profile App integration methods**. Portable Swift tests independently passed **161/161**. This source predates the new ordinary-memory tools. [Unique actual completions and runtime evidence](evidence/native-856e8ec-current.json).
+
+The current inventory partitions all **78 non-Live UI methods** exactly once: memory 8, profile 9, memory tools 6, and the other existing shards. All **18 live methods** remain separately selected. Six new memory fixture cases and one new real-model case require iOS acceptance; inventory counts and local parsing are not executed UI results.
+
+## SE user-selected PDF copy completed end to end
+
+At `2d7da70`, [42854821854](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42854821854) passed **1/1, zero skips**, in 182.785 seconds on iPhone SE / iOS 18.5. The actual Files picker delivered exactly one success callback; the App audit progressed through separate read/extract approvals to the completed result, with both exact page markers and separator verified. The picker was ready within the former 45-second bound in this run, so the new 60-second ceiling is not established as the reason for success. [Complete actual callback/audit/output evidence](evidence/file-provider-user-copy-2d7da70-se.json). This does not pass the separate open-in-place or multi-file assembly paths.
+
+## Three-device learning retest retains two compact failures
+
+At `74f7b71`, [42847901710](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42847901710) completed **13/15 UI methods, zero skips**: current iOS 26.2 and Large iOS 18.5 each passed 5/5; SE passed 3/5. Both multi-source methods passed on every device. SE failed during a settings-control query and a keyboard-disappearance wait; fixture video and accessibility evidence show the target control visible and the keyboard already dismissed. The test-helper repair retains five-second waits, one native tap, exact text, cancellation/no-late-learning and save/relaunch assertions. [Original per-method evidence](evidence/ui-learning-74f7b71.json). Native retesting is required for the repair.
+
+## SE native login retest completed
+
+At `856e8ec`, [42853412343](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42853412343) passed **1/1 native login UI, zero skips**, in 105.218 seconds on iPhone SE / iOS 18.5. Real form POST, authenticated protected requests, cookie reuse in another tab, relaunch with no new login POST, and logout denial all passed. The QuickPath test helper uses one public snapshot to locate the real native Continue control; password/login assertions are unchanged. This validates the synthetic local account flow, not external OAuth/MFA compatibility. [Actual completion evidence](evidence/browser-login-856e8ec-se.json).
+
+## Exact iOS 17 bootstrap diagnostics: bounded sampling experiment
+
+Deeper public diagnostic logs from the failed `74f7b71` document run show about **271 seconds between testmanagerd's xpcproxy spawn and executable-running event**. RunningBoard later terminated the UI runner when its `XCTRunner Initialization` assertion expired. These establish the bootstrap timeline, not the underlying scheduling/exec cause. [Bounded original events](evidence/ios17-bootstrap-stall-74f7b71.json).
+
+An opt-in hosted-fixture experiment now samples only the invocation's owned daemon/runner identities at most three times. Each command is bounded to 15 seconds, strips raw headers/arguments/paths, discards changed identities and stops when an actual test starts. It neither restarts the targets, retries XCTest nor extends the original test deadline. All **190 Python script tests** pass locally, including the sampling gates, cleanup and live-runner snapshot validation; actual iOS 17 sampling remains unverified until its CI run. The selected document suite still requires all twelve real methods to complete.
+
 ## Reviewed profile tool and bounded chat history: local integration complete
 
 Ordinary chat now offers one reviewed `profile_edit` per turn. The host checks the exact current utterance, stale state and master switch, then atomically persists before returning a receipt. Review rejection and failed persistence cannot publish success; a later model failure retains the actual committed receipt. Duplicate JSON argument keys remain visible to the strict parser. This is an additional explicit user review compared with Mika's prompt-authorized profile tool.
