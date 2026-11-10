@@ -367,18 +367,21 @@ final class BrowserLoginUITests: XCTestCase {
         tap(confirm)
         // 1747c20 SE/Large: removeData completed after 18.8/19.9 s and the
         // synthetic cookie count was zero, while fetchDataRecords was still
-        // pending at the old combined 30 s deadline. Wait for each WebKit
-        // callback separately; do not retry deletion or infer success from
-        // an enabled button. The empty list and real HTTP checks remain required.
+        // pending at the old combined 30 s deadline. 0df511b SE then recorded
+        // removeCompleted at 30.719 s with zero synthetic cookies. Share the
+        // existing 60 s total across both callbacks instead of imposing a
+        // separate 30 s cutoff on each. Do not retry deletion or infer success
+        // from an enabled button; the empty list and real HTTP checks remain.
+        let removalDeadline = ProcessInfo.processInfo.systemUptime + 60
         let empty = app.staticTexts["browser.sites.empty"]
         let removed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             empty.exists || (clear.exists && clear.isEnabled)
         }, object: nil)
-        XCTAssertEqual(XCTWaiter.wait(for: [removed], timeout: 30), .completed,
+        XCTAssertEqual(XCTWaiter.wait(for: [removed], timeout: max(0, removalDeadline - ProcessInfo.processInfo.systemUptime)), .completed,
                        "Wait for the selected-site removeData callback.")
         XCTAssertFalse(app.staticTexts["browser.library.error"].exists,
                        "Stopping-page failure must not be mistaken for successful deletion.")
-        XCTAssertTrue(empty.waitForExistence(timeout: 30),
+        XCTAssertTrue(empty.waitForExistence(timeout: max(0, removalDeadline - ProcessInfo.processInfo.systemUptime)),
                       "Wait for the post-deletion WebKit website-record refresh to show an empty list.")
         tap(app.buttons["browser.library.close"])
         openInNewTab(protectedURL)
