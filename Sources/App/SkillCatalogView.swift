@@ -101,6 +101,14 @@ private struct SkillCatalogDetail: View {
 
     var body: some View {
         List {
+            if entry.id == "documents" {
+                Section("實際文件處理") {
+                    NavigationLink { SkillExecutionView() } label: { Text("選取 PDF 並擷取文字") }
+                        .accessibilityIdentifier("catalog.documents.execute")
+                    Text("在裝置上處理你選取的 PDF；逐步核准，不會自動上傳文件。")
+                        .font(.caption)
+                }
+            }
             Section("iOS 文字改寫 · 非完整原版功能") {
                 Text(verbatim: entry.adaptationScope).accessibilityIdentifier("catalog.adaptation.scope")
                 NavigationLink {

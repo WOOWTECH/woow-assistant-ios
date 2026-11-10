@@ -24,14 +24,19 @@ final class BrowserWorkspace: ObservableObject {
     private var sessions: [UUID: BrowserSession] = [:]
     private var vault: EncryptedLearningFile?
     let websiteDataStore: WKWebsiteDataStore
+    let downloads: BrowserDownloadManager
+    #if DEBUG
+    private var uploadFixtureStarted = false
+    #endif
 
-    init() {
+    init(dataStore injectedDataStore: WKWebsiteDataStore? = nil,
+         arguments: [String] = ProcessInfo.processInfo.arguments) {
         var dataStore = WKWebsiteDataStore.default()
         var scope = "personal"
         var reset = false
         var invalidTestScope = false
         #if DEBUG
-        let args = ProcessInfo.processInfo.arguments
+        let args = arguments
         if args.contains("-UITestMode") || args.contains("-LiveModelUITest") || args.contains("-LiveBrowserUITest") {
             let flag = args.contains("-LiveModelUITest") ? "-LiveModelUITestNamespace" : "-UITestNamespace"
             if let index = args.firstIndex(of: flag), args.indices.contains(index + 1), let id = UUID(uuidString: args[index + 1]) {
@@ -45,7 +50,13 @@ final class BrowserWorkspace: ObservableObject {
             } else { invalidTestScope = true; dataStore = .nonPersistent() }
         }
         #endif
+        if let injectedDataStore { dataStore = injectedDataStore }
         websiteDataStore = dataStore
+        let downloadRoot = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        let downloadDirectory = downloadRoot.appendingPathComponent("BrowserDownloads/" + (invalidTestScope ? UUID().uuidString : scope), isDirectory: true)
+        if reset { try? FileManager.default.removeItem(at: downloadDirectory) }
+        downloads = BrowserDownloadManager(directory: downloadDirectory)
         selected = BrowserSession(dataStore: dataStore)
         do {
             guard !invalidTestScope else { throw BrowserLibraryError.invalidState }
@@ -72,6 +83,20 @@ final class BrowserWorkspace: ObservableObject {
     }
 
     func activateSelected() {
+        #if DEBUG
+        if !uploadFixtureStarted, let fixture = BrowserUploadFixture.enabled {
+            uploadFixtureStarted = true
+            Task { [weak self] in
+                do {
+                    let url = try await fixture.start()
+                    guard let self else { return }
+                    while self.isClearingWebsiteData { try await Task.sleep(nanoseconds: 50_000_000) }
+                    self.open(url)
+                } catch { self?.error = "測試上傳頁面未能啟動。" }
+            }
+            return
+        }
+        #endif
         guard !isClearingWebsiteData, selected.loadedURL == nil, !selected.address.isEmpty, selected.manualLoadDiagnostics == nil else { return }
         selected.openAddress()
     }
@@ -85,17 +110,19 @@ final class BrowserWorkspace: ObservableObject {
     private func makeSession(id: UUID, configuration: WKWebViewConfiguration? = nil) -> BrowserSession {
         if let session = sessions[id] { return session }
         let session = BrowserSession(dataStore: websiteDataStore, configuration: configuration)
+        session.downloads = downloads
         session.canPresentUI = { [weak self] in self?.library.selectedID == id && self?.isClearingWebsiteData == false }
         session.address = library.tabs.first(where: { $0.id == id })?.url?.absoluteString ?? ""
         session.onPageFinished = { [weak self] url, title in
             _ = self?.update { try $0.visit(tab: id, url: url, title: title) }
         }
-        session.onCreateWindow = { [weak self] configuration, _ in
+        session.onCreateWindow = { [weak self] configuration, request in
             guard let self, self.library.selectedID == id, !self.isClearingWebsiteData else { return nil }
             var newID: UUID?
             guard self.update({ newID = try $0.addTab() }), let newID else { return nil }
             self.selected.cancelInteraction()
             let popup = self.makeSession(id: newID, configuration: configuration)
+            popup.prepareManualPopup(request)
             self.selected = popup
             return popup.webView
         }
@@ -149,14 +176,25 @@ final class BrowserWorkspace: ObservableObject {
     func removeWebsiteData(_ records: [WKWebsiteDataRecord]) {
         guard !isClearingWebsiteData else { return }
         isClearingWebsiteData = true
-        for session in sessions.values { session.cancel() }
-        // Drop every live page before deleting its store so scripts cannot
-        // immediately write the removed cookies/localStorage back.
-        sessions.removeAll()
-        selected = makeSession(id: library.selectedID)
-        websiteDataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: records) { [weak self] in
+        for item in downloads.items where item.status.isActive { downloads.cancel(id: item.id) }
+        let oldSessions = Array(sessions.values)
+        for session in oldSessions { session.cancel() }
+        Task { [weak self] in
+            var ready = true
+            for session in oldSessions {
+                if await !session.discardPageForDataRemoval() { ready = false }
+            }
             guard let self else { return }
-            self.isClearingWebsiteData = false; self.refreshWebsiteRecords()
+            self.sessions.removeAll()
+            self.selected = self.makeSession(id: self.library.selectedID)
+            guard ready else {
+                self.error = "網頁尚未完全停止，網站資料未清除；請重試。"
+                self.isClearingWebsiteData = false; return
+            }
+            self.websiteDataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: records) { [weak self] in
+                guard let self else { return }
+                self.isClearingWebsiteData = false; self.refreshWebsiteRecords()
+            }
         }
     }
 }

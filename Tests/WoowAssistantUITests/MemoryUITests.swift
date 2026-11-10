@@ -35,7 +35,7 @@ final class MemoryUITests: XCTestCase {
         select("pending")
         XCTAssertTrue(app.staticTexts["memory.pending.empty"].exists)
         reveal(app.staticTexts["memory.browserPending"])
-        XCTAssertTrue(app.staticTexts["memory.browserPending"].label.contains("尚未實作"))
+        XCTAssertTrue(app.staticTexts["memory.browserPending"].label.contains("瀏覽器的網站頁面"))
         select("memories")
         for name in ["useMemory", "autoRemember", "learnSkills"] {
             let toggle = app.switches["memory.toggle.\(name)"]

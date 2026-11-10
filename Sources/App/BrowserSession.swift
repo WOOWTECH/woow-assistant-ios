@@ -14,6 +14,12 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     var onCreateWindow: ((WKWebViewConfiguration, URLRequest) -> WKWebView?)?
     var onCloseWindow: (() -> Void)?
     var canPresentUI: () -> Bool = { true }
+    var downloads: BrowserDownloadManager?
+    private var navigationIntent = BrowserNavigationIntent()
+    private var discardCompletion: CheckedContinuation<Bool, Never>?
+    private var discardTimeout: Task<Void, Never>?
+    private var discardNavigation: WKNavigation?
+    private var discardingPage = false
     @Published private(set) var loadedURL: URL?
     @Published private(set) var pageTitle = "新分頁"
     @Published var pageDialog: BrowserPageDialog?
@@ -85,7 +91,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         websiteDataStore = dataStore
         suppliedConfiguration = configuration
         #if DEBUG
-        fixtureMode = ProcessInfo.processInfo.arguments.contains("-UITestMode") && !ProcessInfo.processInfo.arguments.contains("-UITestBrowserNetwork")
+        fixtureMode = ProcessInfo.processInfo.arguments.contains("-UITestMode") && !ProcessInfo.processInfo.arguments.contains("-UITestBrowserNetwork") && BrowserUploadFixture.enabled == nil
         #else
         fixtureMode = false
         #endif
@@ -100,12 +106,14 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             error = "請使用公開 HTTPS 網址，不可把帳密放在網址中。"; return
         }
         status = "正在載入…"
+        navigationIntent.beginManual(url)
         preparePageNavigation()
         if fixtureMode { loadFixture(url: url); return }
         trackedNavigation = webView.load(URLRequest(url: url))
     }
 
     func cancel() {
+        navigationIntent.invalidate()
         resolveDialog(nil)
         cancelInteraction()
         invalidatePageObservation()
@@ -120,6 +128,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     func beginResearch(using chat: ChatSession) {
         guard !isRunning, !isInteracting, current != nil, !goal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         invalidateControls()
+        navigationIntent.invalidate()
         error = nil; answer = nil; actions = []; learningStatus = nil
         do {
             let access = try chat.modelAccess()
@@ -278,6 +287,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     private func navigate(to url: URL) async throws -> WebObservation {
+        navigationIntent.invalidate()
         guard permitted(url), origin == nil || Self.origin(url) == origin else { throw WebResearchError.unsafeNavigation }
         // Hosted WebContent cold startup was measured at 57.481s. Only the
         // first navigation without an observation gets this bounded allowance;
@@ -307,6 +317,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
                 intent: route.originalGoal, expectedContentHash: route.contentHash)
             guard plan.steps.count <= 13 else { throw WebResearchError.invalidCommand }
             let id = UUID(), generation = store.generation
+            navigationIntent.invalidate()
             runID = id; isRunning = true; origin = Self.origin(route.origin.url)
             goal = route.originalGoal
             actions = []; answer = nil; error = nil; learningStatus = nil; status = "正在逐步核對網頁路線…"
@@ -487,14 +498,15 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func cancelInteraction() {
+        navigationIntent.invalidate()
         interactionRunID = nil; interactionWork?.cancel(); interactionWork = nil
         storedDOMExecutor?.cancel(); isInteracting = false; postAllowance = nil
         invalidateControls()
         interactionStatus = "已取消；尚未核准的動作不會執行，已送出的動作無法撤回。"
     }
 
-    func goBack() { manualNavigation { webView.goBack() } }
-    func goForward() { manualNavigation { webView.goForward() } }
+    func goBack() { manualNavigation(to: webView.backForwardList.backItem?.url) { webView.goBack() } }
+    func goForward() { manualNavigation(to: webView.backForwardList.forwardItem?.url) { webView.goForward() } }
     func reloadPage() {
         guard !isRunning, !isInteracting, let url = webView.url else { return }
         interactionStatus = "頁面已重新整理；先前的提案已取消。"
@@ -502,11 +514,13 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             invalidateControls(); current = nil; status = "正在載入…"
             preparePageNavigation(); loadFixture(url: url)
         }
-        else { manualNavigation { webView.reload() } }
+        else { manualNavigation(to: webView.url) { webView.reload() } }
     }
-    private func manualNavigation(_ operation: () -> WKNavigation?) {
+    private func manualNavigation(to target: URL?, _ operation: () -> WKNavigation?) {
         guard !isRunning, !isInteracting else { return }
         invalidateControls(); error = nil; current = nil
+        if let target { navigationIntent.beginManual(target) }
+        else { navigationIntent.invalidate() }
         preparePageNavigation()
         trackedNavigation = operation()
         if trackedNavigation != nil { status = "正在載入…" }
@@ -516,6 +530,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         interactionGate.reject(); interactionProposal = nil; controlSnapshot = nil; postAllowance = nil
     }
     private func startInteraction(status: String) -> UUID {
+        navigationIntent.invalidate()
         let id = UUID(); interactionRunID = id; isInteracting = true
         interactionError = nil; interactionStatus = status
         return id
@@ -532,6 +547,10 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        if discardingPage {
+            decisionHandler(navigationAction.request.url?.absoluteString == "about:blank" ? .allow : .cancel)
+            return
+        }
         let postPermitted: Bool
         if let allowance = postAllowance, !isRunning, navigationAction.targetFrame?.isMainFrame == true,
            navigationAction.request.url == allowance.url, navigationAction.request.httpMethod == "POST", Date() < allowance.expires {
@@ -546,10 +565,21 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             if !isRunning, navigationAction.targetFrame?.isMainFrame == true { failManualLoad(.policyRejected) }
             return
         }
+        if !automated, [.linkActivated, .formSubmitted, .backForward, .reload, .formResubmitted].contains(navigationAction.navigationType),
+           navigationAction.targetFrame?.isMainFrame != false {
+            navigationIntent.beginManual(url)
+        }
+        if navigationAction.shouldPerformDownload {
+            let authorized = !automated && downloads != nil && navigationAction.targetFrame?.isMainFrame != false
+                && navigationIntent.authorizeDownload(url)
+            decisionHandler(authorized ? .download : .cancel)
+            return
+        }
         decisionHandler(.allow)
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        guard !discardingPage else { return }
         guard let navigation else { return }
         if requestedNavigationPending {
             // Ignore callbacks from the load superseded by a newer request.
@@ -573,19 +603,54 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         traceLoad(.committed)
     }
 
+    func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+        guard let navigation, trackedNavigation === navigation, !isRunning, !isInteracting, let url = webView.url else { return }
+        navigationIntent.recordManualRedirect(url)
+    }
+
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
                  decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-        guard navigationResponse.canShowMIMEType, let url = navigationResponse.response.url,
+        if discardingPage {
+            decisionHandler(navigationResponse.response.url?.absoluteString == "about:blank" ? .allow : .cancel)
+            return
+        }
+        guard let url = navigationResponse.response.url,
               isRunning || isInteracting ? permitted(url) : manualPermitted(url),
               origin == nil || Self.origin(url) == origin else {
             decisionHandler(.cancel)
             if !isRunning, navigationResponse.isForMainFrame { failManualLoad(.responseRejected) }
             return
         }
+        if BrowserDownloadPolicy.isAttachment(navigationResponse.response) || !navigationResponse.canShowMIMEType {
+            let authorized = !isRunning && !isInteracting && downloads != nil && navigationResponse.isForMainFrame
+                && navigationIntent.authorizeDownload(url)
+            decisionHandler(authorized ? .download : .cancel)
+            if !authorized, !isRunning { failManualLoad(.responseRejected) }
+            return
+        }
         decisionHandler(.allow)
     }
 
+    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
+        acceptDownload(download, source: navigationAction.request.url)
+    }
+    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
+        acceptDownload(download, source: navigationResponse.response.url)
+    }
+    private func acceptDownload(_ download: WKDownload, source: URL?) {
+        let approved = navigationIntent.consumeDownload(source) && !isRunning && !isInteracting
+        guard let downloads else { download.cancel(nil); return }
+        if downloads.accept(download, sourceURL: source, allowsDownload: approved) != nil {
+            requestedNavigationPending = false; trackedNavigation = nil
+            status = "下載已開始，可在下載項目查看進度。"; error = nil
+        }
+    }
+
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        if discardingPage {
+            if let navigation, navigation === discardNavigation { finishDiscard(webView.url?.absoluteString == "about:blank") }
+            return
+        }
         guard let navigation, trackedNavigation === navigation else { return }
         canGoBack = webView.canGoBack; canGoForward = webView.canGoForward
         loadedURL = webView.url
@@ -627,6 +692,10 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
     private func failed(_ navigation: WKNavigation?, error underlying: Error) {
+        if discardingPage {
+            if let navigation, navigation === discardNavigation { finishDiscard(false) }
+            return
+        }
         guard let navigation, trackedNavigation === navigation else { return }
         if expectedNavigation === navigation { navigationFinished = false; expectedNavigation = nil }
         invalidatePageObservation(); requestedNavigationPending = false
@@ -731,7 +800,39 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         return !fixtureMode || url.host == "research.example.invalid"
     }
     private func manualPermitted(_ url: URL) -> Bool {
-        BrowserManualNavigationPolicy.allows(url) && (!fixtureMode || url.host == "research.example.invalid")
+        #if DEBUG
+        if BrowserUploadFixture.enabled?.allows(url) == true { return true }
+        #endif
+        return BrowserManualNavigationPolicy.allows(url) && (!fixtureMode || url.host == "research.example.invalid")
+    }
+
+    func prepareManualPopup(_ request: URLRequest) {
+        if let url = request.url, manualPermitted(url) { navigationIntent.beginManual(url) }
+    }
+
+    /// Wait for a committed blank document before deleting shared website data.
+    /// stopLoading alone does not stop an existing page's timers/storage writes.
+    func discardPageForDataRemoval() async -> Bool {
+        cancel()
+        guard let view = storedWebView else { return true }
+        guard discardCompletion == nil else { return false }
+        return await withCheckedContinuation { continuation in
+            discardingPage = true; discardCompletion = continuation
+            view.uiDelegate = nil
+            discardTimeout = Task { [weak self] in
+                do { try await Task.sleep(nanoseconds: 10_000_000_000) } catch { return }
+                self?.finishDiscard(false)
+            }
+            discardNavigation = view.loadHTMLString("<!doctype html><html><body></body></html>", baseURL: nil)
+            if discardNavigation == nil { finishDiscard(false) }
+        }
+    }
+    private func finishDiscard(_ success: Bool) {
+        guard let completion = discardCompletion else { return }
+        discardCompletion = nil; discardTimeout?.cancel(); discardTimeout = nil
+        discardNavigation = nil
+        if success { storedWebView?.navigationDelegate = nil; storedWebView?.uiDelegate = nil }
+        completion.resume(returning: success)
     }
 
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,

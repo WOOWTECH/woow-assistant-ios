@@ -15,7 +15,7 @@ public enum BrowserManualNavigationPolicy {
     /// is public. The library is separately encrypted and never model context.
     public static func libraryURL(_ url: URL) -> URL? {
         guard allows(url), var parts = URLComponents(url: url, resolvingAgainstBaseURL: false) else { return nil }
-        let sensitive = ["code", "token", "key", "secret", "password", "passwd", "credential", "signature", "session", "authorization", "assertion", "samlresponse"]
+        let sensitive = ["code", "token", "key", "secret", "password", "passwd", "credential", "signature", "session", "authorization", "assertion", "samlresponse", "apikey", "accesstoken", "refreshtoken", "idtoken", "sessionid", "clientsecret"]
         guard !(parts.queryItems ?? []).contains(where: { item in
             let name = item.name.lowercased().replacingOccurrences(of: "-", with: "_")
             return sensitive.contains { name == $0 || name.hasSuffix("_" + $0) || name.hasPrefix($0 + "_") }

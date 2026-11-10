@@ -13,6 +13,7 @@ struct BrowserLibraryView: View {
     @State private var confirmHistory = false
     @State private var deleteSite: WKWebsiteDataRecord?
     @State private var confirmSite = false
+    @State private var showDownloads = false
     var body: some View {
         NavigationStack {
             VStack {
@@ -29,6 +30,8 @@ struct BrowserLibraryView: View {
             }
             .navigationTitle("瀏覽資料")
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { dismiss() }.accessibilityIdentifier("browser.library.close") } }
+            .toolbar { ToolbarItem(placement: .navigationBarLeading) { Button("下載") { showDownloads = true }.accessibilityIdentifier("browser.downloads.open") } }
+            .sheet(isPresented: $showDownloads) { BrowserDownloadsView(manager: workspace.downloads) }
             .alert("修改書籤名稱", isPresented: $showRename) {
                 TextField("名稱", text: $renameTitle).accessibilityIdentifier("browser.bookmark.name")
                 Button("儲存") { if let id = renameID { workspace.renameBookmark(id, title: renameTitle) }; renameID = nil }
@@ -37,7 +40,7 @@ struct BrowserLibraryView: View {
             .confirmationDialog("清除瀏覽歷史？書籤與網站登入資料會保留。", isPresented: $confirmHistory, titleVisibility: .visible) {
                 Button("清除歷史", role: .destructive) { workspace.clearHistory() }.accessibilityIdentifier("browser.history.confirmClear")
             }
-            .confirmationDialog("清除此網站的資料？可能需要重新登入，所有分頁將暫停。", isPresented: $confirmSite, titleVisibility: .visible, presenting: deleteSite) { record in
+            .confirmationDialog("清除此網站的資料？可能需要重新登入，所有分頁與下載將停止。", isPresented: $confirmSite, titleVisibility: .visible, presenting: deleteSite) { record in
                 Button("清除網站資料", role: .destructive) { workspace.removeWebsiteData([record]); deleteSite = nil }
                     .accessibilityIdentifier("browser.sites.confirmClear")
             }

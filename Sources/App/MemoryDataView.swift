@@ -82,7 +82,9 @@ struct MemoryDataView: View {
                     Section {
                         Button("Mika 內建技能目錄（6）") { sheet = .catalog }
                             .accessibilityIdentifier("skills.catalog.open")
-                        Text("閱讀完整原文與授權；僅可匯入有明確限制的 iOS 文字改寫，仍需核准。")
+                        NavigationLink { SkillExecutionView() } label: { Text("選取 PDF 並擷取文字") }
+                            .accessibilityIdentifier("skills.documents.execute")
+                        Text("閱讀完整原文與授權、匯入 iOS 文字技能，或選取 PDF 執行文件處理；每個執行步驟仍需核准。")
                             .font(.footnote).foregroundStyle(.secondary)
                     }
                 }
@@ -97,8 +99,10 @@ struct MemoryDataView: View {
                 Section("其他資料") {
                     Button("網站知識與路線（\(store.websites.lessons.count)／\(store.routes.routes.count)）") { sheet = .websites }
                         .accessibilityIdentifier("memory.websites")
-                    Text("網站登入資料：瀏覽器整合尚未實作，尚無可管理的網站登入清單。")
+                    Text("網站登入資料由 WebKit 儲存，可在瀏覽器的網站頁面查看與清除。")
                         .accessibilityIdentifier("memory.browserPending")
+                    Button("到瀏覽器管理網站資料") { onOpenBrowser() }
+                        .accessibilityIdentifier("memory.manageWebsites")
                     Text("網頁路線以實際讀取與完成判定建立；目前只支援公開網站的導覽與核對。")
                         .accessibilityIdentifier("memory.routesPending")
                 }
