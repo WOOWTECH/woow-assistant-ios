@@ -61,7 +61,12 @@ final class BrowserWorkspaceUITests: XCTestCase {
         XCTAssertTrue(bookmark.label.contains("My saved page"))
         chooseSection("歷史"); XCTAssertEqual(history.count, 1)
         app.buttons["browser.history.clear"].tap()
-        app.buttons["browser.history.confirmClear"].tap()
+        // iOS 26 exposes the single confirmation action as nested Buttons
+        // with the same identifier, label and frame. Scope to the sheet so
+        // its first match still names the exact destructive action.
+        let confirmClear = app.sheets.buttons["browser.history.confirmClear"].firstMatch
+        XCTAssertEqual(confirmClear.label, "清除歷史")
+        confirmClear.tap()
         XCTAssertTrue(app.staticTexts["browser.history.empty"].waitForExistence(timeout: 5))
         chooseSection("書籤"); XCTAssertTrue(bookmark.label.contains("My saved page"))
         launch(reset: false)
