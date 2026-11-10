@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "scope": "Two distinct synthetic PDF sources through existing explicit copy/read/review/assembly/export-cancel flow",
+  "base_revision": "50d25f1da9a61d58911a545dc4aa64bbe7ca19dc",
+  "status": "local_checks_passed_native_UI_pending",
+  "source_sha256": {
+    "Sources/App/SkillExecutionUITestSupport.swift": "87cb6c06a942150b59426a403b816a60866b30b3a93da7c0261f17e1252bf81d",
+    "Sources/App/SkillPDFAssemblySession.swift": "3c7353d3656aaf0351f9c7bc5bf633f23cc36185e21bb629585516ae0642aa7d",
+    "Sources/App/SkillPDFAssemblyView.swift": "224ec63b16dac2d8bc4bc2e221ec337aeddc9e23c1d94a7ea46bc0c86d10e81f",
+    "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift": "ad60181080ee8a9a2f6cd6733344535671824c39b4b8216576f7302da2328280",
+    "scripts/check_pdf_assembly_pair.py": "d66529f16f7399bc44ec73fed95bf89d8168628be692242ac8fd5baa591d5064"
+  },
+  "selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyImportsTwoDistinctPDFsAndInterleavesApprovedPages",
+  "new_case_execution_time_allowance_seconds": 300,
+  "existing_case_budgets_changed": false,
+  "fixture": {
+    "flag": "-UITestSkillAssemblyPair",
+    "debug_only": true,
+    "requires_exact_single_mode_skill_flag_and_canonical_namespace": true,
+    "live_rejected_before_directory_access": true,
+    "experiment_and_write_mode_flags_rejected": true,
+    "files": 2,
+    "pages_per_file": 2,
+    "bytes_per_file_limit": 131072,
+    "source_roles": [
+      "A",
+      "B"
+    ],
+    "distinct_actual_byte_digests": true,
+    "writes_do_not_overwrite_existing_files": true
+  },
+  "implementation": [
+    "Seeder creates real two-page CoreGraphics/CoreText PDFs. It never selects native files, supplies picker callback URLs or authorizes a runtime read.",
+    "UI uses existing explicit import-copy button and one native multi-selection presentation: select each exact synthetic cell once, then Open once.",
+    "Actual picker observation must say user-copy/import/multiple, one callback and two sources; filenames establish source indices regardless of callback URL order.",
+    "Existing per-source approval buttons are each tapped. First real read receipt must leave the second source awaiting consent, with no assembly result.",
+    "Native Select All/delete/type checks the exact order A2,B1,A1; all three review rows precede the separate existing assembly approval.",
+    "DEBUG observation validates actual output PDF page markers, real runtime receipt digests, both unchanged original fixtures and output digest. It never substitutes or modifies the runtime result.",
+    "Native export cancellation must preserve the exact receipt and output digest; fixture originals are rechecked when export finishes."
+  ],
+  "local_validation": {
+    "native_picker_or_exporter_UI_test": false,
+    "uses_stubs": false,
+    "source_snapshot_sha256": {
+      "Sources/App/SkillExecutionUITestSupport.swift": "87cb6c06a942150b59426a403b816a60866b30b3a93da7c0261f17e1252bf81d",
+      "Sources/App/SkillPDFAssemblySession.swift": "3c7353d3656aaf0351f9c7bc5bf633f23cc36185e21bb629585516ae0642aa7d",
+      "Sources/App/SkillPDFAssemblyView.swift": "224ec63b16dac2d8bc4bc2e221ec337aeddc9e23c1d94a7ea46bc0c86d10e81f",
+      "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift": "ad60181080ee8a9a2f6cd6733344535671824c39b4b8216576f7302da2328280",
+      "scripts/check_pdf_assembly_pair.py": "d66529f16f7399bc44ec73fed95bf89d8168628be692242ac8fd5baa591d5064",
+      "Sources/AssistantSkills/BundledSkillCatalog.swift": "7f2314d60f904b457f83f20947ce800c61224d42968725de4f89d382992de43e",
+      "Sources/AssistantSkills/DocumentQueryRuntime.swift": "0498f703c7f3fe742cd62a08b75dfc0a87730f9ce6c665297b4dce460b90e9bb",
+      "Sources/AssistantSkills/DocumentTextTools.swift": "4fc688fcc85464387dd53fda21b396bea230010cbdc78abea253340cfadaecfc",
+      "Sources/AssistantSkills/SelfConfigurationRuntime.swift": "813abaa88284192c2e4372d5e84d31f6082fd0c4919d781c1e519ddfb04e245d",
+      "Sources/AssistantSkills/SelfConfigurationStore.swift": "10107071276deafab8d5e57ef537e1b4fea22de376a131804245777257c0deb1",
+      "Sources/AssistantSkills/SkillAuthoringBridge.swift": "afb2b96a33b7827858c3a95a1628bfa315d2730cc94b8a97e8df18e5f0789110",
+      "Sources/AssistantSkills/SkillDocument.swift": "f8f816f022a6570bd7e5f9c367e9c2ef10323af0de00686668a24779b0204039",
+      "Sources/AssistantSkills/SkillExecutionDependencies.swift": "655ee489aedf4c06d97035443329671aaac8884d9f9ea9a0fbabeae6a8a40d3e",
+      "Sources/AssistantSkills/SkillExecutionPDF.swift": "503699512b828faabfafb456e4c28033227f6b7df4b6f6678055c1f8e77a8bbf",
+      "Sources/AssistantSkills/SkillExecutionRuntime.swift": "ed414d76a87749f934dcf5ee51b61a1722c2ac967d020f5af4efb79c58b3d650",
+      "Sources/AssistantSkills/SkillExecutionTypes.swift": "748fe7c152690ebaf7803785161fc72c8a0d4486c32593eea9f769dbf175193d",
+      "Sources/AssistantSkills/SkillExecutionWorker.swift": "daf86d6884c4d3aaf67db774dd133b6201d05da77e65237f7b1970f4d0d89684",
+      "Sources/AssistantSkills/SkillLearning.swift": "83a44eb4ab4495905efc75d2ca040ed050a0da5cee4d196fecc5c57e9649902b",
+      "Sources/AssistantSkills/SkillLearningSafety.swift": "96fe72ad19a1bc3806d86fff3063bf0ba5d65f53dda00b8812b5ae368168dce0",
+      "Sources/AssistantSkills/SkillPDFAssemblyNative.swift": "91f69b7137f7e8cf684aeec849c8170eb98cf915c4ebfee92db71e0da2e6f6da",
+      "Sources/AssistantSkills/SkillPDFAssemblyRuntime.swift": "9652e1062c2419dd0ced80fb9af14754b95100179d445c0db6f555addea20e43",
+      "Sources/AssistantSkills/SkillPDFAssemblyTypes.swift": "aeb8e474cfd9d3ef67f55a0d76fa20083dbb5da1f315c8f86f82000d4f75f428",
+      "Sources/AssistantSkills/SkillRetrieval.swift": "47f3499031ba9cda5c96fce503fec797432e12b651e412c816b433323b5824ca",
+      "Sources/AssistantSkills/SkillSensitiveContent.swift": "6d1627820b2dddf7504f008ecd2db8b32227f204b857f737dc639f8b651b11f0",
+      "Sources/AssistantSkills/SkillTaskEvidence.swift": "4ff23d2fb36fa9ef6897837de6a1756d8b3d4ad5e35bb6edd51f362d39f316df",
+      "Sources/AssistantSkills/SkillToolCommand.swift": "5bff3061b948d2766df99dbaedb3bd2596185f7f26304487bda755780c60a164",
+      "Sources/AssistantSkills/SkillToolSession.swift": "f2c1e77316c9847daa12e7efa87cb3c3b46a382788b43422c4ca4b209df32226",
+      "Sources/AssistantSkills/SkillToolTypes.swift": "9c3496eea3a24e58e7c24ebe4dad7c65473b9122a5751078b0cf7eefe8c7aef0",
+      "Sources/AssistantSkills/SkillTypes.swift": "e050e01d760d68bc4d43030218a417b00a5d744280dfcaf67aec58193e3a113c",
+      "Sources/AssistantSkills/SkillsState.swift": "fea8f8a0ecc3a9ecbbab69df480711ddd21b93f599ecdbf9f9c5c2565673717e",
+      "Sources/AssistantSkills/TranscriptCommand.swift": "0f98ef1c25d766fd82e25f6fe4f2fe4a5a41acfe1d94bef7578d414f9c37a75c",
+      "Sources/AssistantSkills/TranscriptFileAccess.swift": "4c5fa61ac0bb91b17e0f9a2bad92c4a85e262dfeab2a2c1649125c7a2086c168",
+      "Sources/AssistantSkills/TranscriptRuntime.swift": "8dd8b7e66b0397a5cf1c58e94450a6a9706a8651874b976e2ac938c34ad0d131",
+      "Sources/AssistantSkills/TranscriptTypes.swift": "051814db9e18752ba445f8c515e61e24a92c938786ca99a7f49bd5c024d26428",
+      "Sources/AssistantSkills/TranscriptWebSource.swift": "635984c44e580d9f9c9c02477200fde44bdbd77217830fecabc4371f7ab37e01",
+      "Sources/AssistantSkills/Resources/MikaBundledSkills.json": "e7389c7c3b39d0dd0bb133d0d7f8733cd1ecfbd3a2e2eb4b66d28b43850a9176"
+    },
+    "debug_passed": 48,
+    "debug_app_logic_typecheck": true,
+    "debug_ios17_syntax_parse": true,
+    "release_passed": 24,
+    "release_app_logic_typecheck": true,
+    "release_ios17_syntax_parse": true,
+    "live_sources_match_snapshot": true
+  },
+  "actual_local_assertions": {
+    "debug": 48,
+    "release": 24,
+    "native_runtime_uses_actual_PDFKit_and_file_reads": true,
+    "runtime_selected_source_order": "B,A; explicit order 2:2,1:1,2:1",
+    "negative_cases": [
+      "inactive/invalid/duplicate/Live/mixed gates before IO",
+      "unread second source cannot prepare",
+      "missing/wrong source receipt digest",
+      "empty/oversized output",
+      "actual PDF wrong page order",
+      "actual PDF duplicated page omitting B",
+      "changed original bytes",
+      "existing malformed file not overwritten",
+      "symbolic link rejected and target unchanged"
+    ],
+    "existing_fixture_regression": {
+      "passed": true,
+      "groups": 2,
+      "log_sha256": "fb02706000183dc0c9fbe1dd899c54429df79281f221ef562dce9fc80729ff89",
+      "covers": "Original single-file synthetic PDF, live gates, DEBUG/Release, idempotence, link/size/metadata rejection and unchanged baseline schema"
+    }
+  },
+  "limitations": [
+    "Local host is macOS13 Intel CLT Swift5.8 without Xcode/iOS SDK. Exact App Session/FileDocument types and Debug/Release iOS17 syntax passed; iOS SwiftUI View and XCTest UI branch still require CI compilation.",
+    "Native two-file Files selection and exporter cancellation have not run yet. The prior f28d0bb three passed cases selected only one two-page PDF each.",
+    "The new case declares 300 seconds from the start; existing 240-second cases and callback limits remain unchanged. Whether two-file native interactions fit must be measured by CI.",
+    "The DEBUG output observer is restricted to the validated pair fixture; production behavior and all existing picker modes remain unchanged."
+  ]
+}

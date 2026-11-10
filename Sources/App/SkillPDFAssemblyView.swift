@@ -42,12 +42,13 @@ struct SkillPDFAssemblyView: View {
     #if DEBUG
     @State private var pickerObservation = "unobserved"
     @State private var importerCallbacks = 0
+    @State private var importerOutcome = "none"
     #endif
 
     private var pickerExperiment: PDFNativePickerExperiment.Configuration? {
         #if DEBUG
         return PDFNativePickerExperiment.assemblyConfiguration(arguments: ProcessInfo.processInfo.arguments,
-                                                               fixtureNamespace: model.uiTestFixture?.namespace)
+                                                               fixtureNamespace: model.uiTestFixture?.namespace ?? model.uiTestPair?.namespace)
         #else
         return nil
         #endif
@@ -73,6 +74,10 @@ struct SkillPDFAssemblyView: View {
                         .font(.caption).accessibilityIdentifier("pdfAssembly.uitest.fixture")
                         .accessibilityValue(pickerObservation + " callbacks=\(importerCallbacks)")
                 }
+                if model.uiTestPair != nil {
+                    Text("測試雙檔已建立")
+                        .font(.caption).accessibilityIdentifier("pdfAssembly.uitest.pair")
+                }
                 #endif
             }
             if !model.sources.isEmpty {
@@ -81,9 +86,17 @@ struct SkillPDFAssemblyView: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("來源 \(index + 1)：\(source.filename)")
                                 .accessibilityIdentifier("pdfAssembly.source.\(index + 1)")
+                                #if DEBUG
+                                .accessibilityValue(model.uiTestPair == nil ? "" :
+                                    pickerObservation + " callbacks=\(importerCallbacks) outcome=\(importerOutcome) sources=\(model.sources.count)")
+                                #endif
                             if let receipt = model.receipts.first(where: { $0.id == source.id }) {
                                 Text("已讀取 \(receipt.pageCount) 頁，\(receipt.byteCount) 位元組")
                                     .accessibilityIdentifier("pdfAssembly.receipt.\(index + 1)")
+                                    #if DEBUG
+                                    .accessibilityValue(model.uiTestPair == nil ? "" :
+                                        "sources=\(model.sources.count) reads=\(model.receipts.count)")
+                                    #endif
                             } else {
                                 Text(source.disclosure).font(.caption)
                                 Button("核准讀取此文件") { orderFocused = false; model.read(source.id) }
@@ -124,6 +137,9 @@ struct SkillPDFAssemblyView: View {
                 Section("新 PDF") {
                     Text("已產生 \(result.pageCount) 頁，\(result.data.count) 位元組")
                         .accessibilityIdentifier("pdfAssembly.result")
+                        #if DEBUG
+                        .accessibilityValue(model.uiTestPair == nil ? "" : model.uiTestPairOutput)
+                        #endif
                     Text(result.notice).font(.caption)
                     Button("儲存 PDF") { beginExport(result) }
                         .disabled(exporting).accessibilityIdentifier("pdfAssembly.export")
@@ -162,7 +178,7 @@ struct SkillPDFAssemblyView: View {
         }))
         .onChange(of: choosingFile) { _, presented in
             #if DEBUG
-            if presented { importerCallbacks = 0; pickerObservation = "unobserved" }
+            if presented { importerCallbacks = 0; pickerObservation = "unobserved"; importerOutcome = "none" }
             recordPickerEvent("bindingChanged presented=\(presented)")
             #endif
         }
@@ -194,6 +210,7 @@ struct SkillPDFAssemblyView: View {
         case .success(let urls): category = urls.isEmpty ? "empty" : urls.count == 1 ? "one" : "multiple"
         case .failure: category = "failure"
         }
+        importerOutcome = category
         recordPickerEvent("completion outcome=\(category)")
         #endif
         switch outcome {
@@ -219,6 +236,9 @@ struct SkillPDFAssemblyView: View {
     }
     private func finishExport(_ message: String) {
         if exportPlanID == model.result?.plan.id { exportStatus = message }
+        #if DEBUG
+        model.observeUITestPairOutput()
+        #endif
         exportDocument = nil; exportPlanID = nil
     }
     private func resetExport() {

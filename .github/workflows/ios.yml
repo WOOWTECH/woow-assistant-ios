@@ -25,7 +25,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, picker-uikit, picker-uikit-copy, picker-user-copy, pdf-assembly, pdf-assembly-uikit, pdf-assembly-copy, profile-tool, memory-tools, pdf-export, authoring, skill-settings, transcript, memory-ui, memory-rollback, learning, browser, core, native, startup, ui-startup, ui-notifications, ui-workspace, ui-browser, ui-learning, ui-memory, ui-profile, ui-memory-tools, ui-skills, ui-documents, ui-mcp]
+        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, picker-uikit, picker-uikit-copy, picker-user-copy, pdf-assembly, pdf-assembly-uikit, pdf-assembly-copy, pdf-assembly-multi, profile-tool, memory-tools, pdf-export, authoring, skill-settings, transcript, memory-ui, memory-rollback, learning, browser, core, native, startup, ui-startup, ui-notifications, ui-workspace, ui-browser, ui-learning, ui-memory, ui-profile, ui-memory-tools, ui-skills, ui-documents, ui-mcp]
         default: all
 
 permissions:
@@ -122,7 +122,7 @@ jobs:
         # login/tab/relaunch/logout flow; other cases retain their own limits.
         # Single-method picker experiments need bounded bootstrap feedback.
         # Other scopes retain their previous limit; this does not retry a case.
-        timeout-minutes: ${{ contains(fromJSON('["picker-direct","picker-coordinated","picker-uikit","picker-uikit-copy","picker-user-copy","pdf-assembly","pdf-assembly-uikit","pdf-assembly-copy","ui-notifications"]'), inputs.test_scope) && 20 || 55 }}
+        timeout-minutes: ${{ contains(fromJSON('["picker-direct","picker-coordinated","picker-uikit","picker-uikit-copy","picker-user-copy","pdf-assembly","pdf-assembly-uikit","pdf-assembly-copy","pdf-assembly-multi","ui-notifications"]'), inputs.test_scope) && 20 || 55 }}
         run: |
           simulator_options=()
           if [ "$WOOW_FRESH_SIMULATOR" = true ]; then simulator_options+=(--fresh); fi
@@ -183,6 +183,9 @@ jobs:
               ;;
             pdf-assembly-copy)
               test_filters=(-only-testing:WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult)
+              ;;
+            pdf-assembly-multi)
+              test_filters=(-only-testing:WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyImportsTwoDistinctPDFsAndInterleavesApprovedPages)
               ;;
             profile-tool)
               test_filters=(-only-testing:WoowAssistantUITests/UserProfileToolUITests)
@@ -250,7 +253,7 @@ jobs:
             xcrun xcresulttool export diagnostics --path build/Tests.xcresult --output-path build/diagnostics
           fi
       - name: Verify every selected shard case completed without skips
-        if: always() && github.event_name == 'workflow_dispatch' && (startsWith(inputs.test_scope, 'ui-') || contains(fromJSON('["native","picker-user-copy","pdf-assembly","pdf-assembly-uikit","pdf-assembly-copy","profile-tool","memory-tools"]'), inputs.test_scope))
+        if: always() && github.event_name == 'workflow_dispatch' && (startsWith(inputs.test_scope, 'ui-') || contains(fromJSON('["native","picker-user-copy","pdf-assembly","pdf-assembly-uikit","pdf-assembly-copy","pdf-assembly-multi","profile-tool","memory-tools"]'), inputs.test_scope))
         env:
           VALIDATION_SCOPE: ${{ inputs.test_scope }}
         run: |

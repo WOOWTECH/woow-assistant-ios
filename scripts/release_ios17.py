@@ -32,7 +32,7 @@ UI_SHARDS = {
     "ui-profile": ["UserProfileUITests", "UserProfileToolUITests"],
     "ui-memory-tools": ["MemoryToolUITests"],
     "ui-skills": ["SkillCatalogUITests", "SkillAuthoringUITests", "TranscriptUITests"],
-    "ui-documents": ["SkillExecutionUITests", "SkillWorkerSettingsUITests"],
+    "ui-documents": ["SkillExecutionUITests", "SkillWorkerSettingsUITests", "SkillPDFAssemblyMultiFileUITests"],
     "ui-mcp": ["MCPConversationUITests", "MCPLearningUITests"],
 }
 LIVE_UI_CLASSES = {"LiveMCPUITests", "LiveMCPConversationUITests", "LiveModelUITests", "LiveTranscriptUITests",
@@ -57,6 +57,7 @@ DOCUMENT_SCOPES = {
         "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
         "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenMultiPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
         "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+        "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyImportsTwoDistinctPDFsAndInterleavesApprovedPages",
         "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
     ],
 }
@@ -73,6 +74,7 @@ TEST_SCOPES = {
     "pdf-assembly": ["WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
     "pdf-assembly-uikit": ["WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenMultiPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
     "pdf-assembly-copy": ["WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
+    "pdf-assembly-multi": ["WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyImportsTwoDistinctPDFsAndInterleavesApprovedPages"],
     "profile-tool": ["WoowAssistantUITests/UserProfileToolUITests"],
     "memory-tools": ["WoowAssistantUITests/MemoryToolUITests"],
     **DOCUMENT_SCOPES,

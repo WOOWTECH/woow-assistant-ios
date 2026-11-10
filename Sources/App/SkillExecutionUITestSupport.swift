@@ -27,6 +27,11 @@ enum SkillExecutionUITestSupport {
                                 }) throws -> Fixture? {
         #if DEBUG
         guard arguments.contains("-UITestSkillExecution") else { return nil }
+        // The two-source fixture has its own Assembly-only entry. Never turn
+        // this flag into a single-file/Live fixture or touch Documents first.
+        guard !arguments.contains(where: { $0.hasPrefix("-UITestSkillAssemblyPair") }) else {
+            throw Failure.invalidNamespace
+        }
         let local = arguments.filter { $0 == "-UITestMode" }.count
         let live = arguments.filter { $0 == "-LiveModelUITest" }.count
         let namespaceFlag = local == 1 ? "-UITestNamespace" : "-LiveModelUITestNamespace"
@@ -114,6 +119,139 @@ enum SkillExecutionUITestSupport {
     }
 
     #if DEBUG
+    struct AssemblyPairFixture {
+        struct Source {
+            let role: String
+            let url: URL
+            let sha256: String
+            var filename: String { url.lastPathComponent }
+        }
+        let namespace: UUID
+        let sources: [Source]
+    }
+
+    /// Creates two real PDFs only for the isolated, non-Live Assembly case.
+    /// Creation never supplies picker URLs, read grants or a runtime result.
+    static func seedAssemblyPairIfRequested(arguments: [String] = ProcessInfo.processInfo.arguments,
+                                           documentsDirectory: () throws -> URL = {
+        try FileManager.default.url(for: .documentDirectory, in: .userDomainMask,
+                                    appropriateFor: nil, create: true)
+    }) throws -> AssemblyPairFixture? {
+        let flag = "-UITestSkillAssemblyPair"
+        guard arguments.contains(where: { $0.hasPrefix(flag) }) else { return nil }
+        guard arguments.filter({ $0 == flag }).count == 1,
+              arguments.filter({ $0.hasPrefix(flag) }).count == 1,
+              arguments.filter({ $0 == "-UITestMode" }).count == 1,
+              arguments.filter({ $0 == "-UITestSkillExecution" }).count == 1,
+              arguments.filter({ $0 == "-UITestNamespace" }).count == 1,
+              !arguments.contains(where: {
+                  $0.hasPrefix("-Live") || $0.hasPrefix("-UITestPDF") || $0.hasPrefix("-UITestSkillFixtureWriteMode")
+              }),
+              let position = arguments.firstIndex(of: "-UITestNamespace"), arguments.indices.contains(position + 1),
+              let namespace = UUID(uuidString: arguments[position + 1]),
+              namespace.uuidString == arguments[position + 1] else { throw Failure.invalidNamespace }
+        let directory = try documentsDirectory()
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        var sources: [AssemblyPairFixture.Source] = []
+        for role in ["A", "B"] {
+            let filename = "SkillAssembly-\(role)-\(namespace.uuidString).pdf"
+            let url = directory.appendingPathComponent(filename)
+            let title = "WOOW_ASSEMBLY_\(role)_\(namespace.uuidString)"
+            if !FileManager.default.fileExists(atPath: url.path) {
+                let buffer = NSMutableData()
+                var bounds = CGRect(x: 0, y: 0, width: 612, height: 792)
+                guard let consumer = CGDataConsumer(data: buffer),
+                      let context = CGContext(consumer: consumer, mediaBox: &bounds, nil) else { throw Failure.cannotCreatePDF }
+                let font = CTFontCreateWithName("Helvetica" as CFString, 18, nil)
+                let attributes = [NSAttributedString.Key(kCTFontAttributeName as String): font]
+                for page in 1...2 {
+                    context.beginPDFPage(nil); context.textMatrix = .identity
+                    context.textPosition = CGPoint(x: 40, y: 700)
+                    CTLineDraw(CTLineCreateWithAttributedString(NSAttributedString(
+                        string: "WOOW_ASSEMBLY_\(role)_PAGE_\(page)", attributes: attributes)), context)
+                    context.textPosition = CGPoint(x: 40, y: 660)
+                    CTLineDraw(CTLineCreateWithAttributedString(NSAttributedString(
+                        string: namespace.uuidString, attributes: attributes)), context)
+                    context.endPDFPage()
+                }
+                context.closePDF()
+                guard let pdf = PDFDocument(data: buffer as Data) else { throw Failure.cannotCreatePDF }
+                pdf.documentAttributes = [PDFDocumentAttribute.titleAttribute: title,
+                                          PDFDocumentAttribute.authorAttribute: "Synthetic UI fixture"]
+                guard let data = pdf.dataRepresentation(), data.count <= 128 * 1024 else { throw Failure.cannotCreatePDF }
+                try data.write(to: url, options: .withoutOverwriting)
+            }
+            let bytes = try assemblyPairBytes(url)
+            guard bytes.starts(with: Data("%PDF-".utf8)),
+                  let pdf = PDFDocument(data: bytes), pdf.pageCount == 2,
+                  pdf.documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String == title,
+                  pdf.documentAttributes?[PDFDocumentAttribute.authorAttribute] as? String == "Synthetic UI fixture",
+                  (1...2).allSatisfy({ assemblyPairPage(pdf.page(at: $0 - 1), matches: role, number: $0, namespace: namespace) }) else {
+                throw Failure.existingFile
+            }
+            sources.append(.init(role: role, url: url, sha256: pairDigest(bytes)))
+        }
+        guard Set(sources.map(\.sha256)).count == 2 else { throw Failure.existingFile }
+        return AssemblyPairFixture(namespace: namespace, sources: sources)
+    }
+
+    /// Reads only the two exact fixture paths created above, with a small bound.
+    /// O_NOFOLLOW + descriptor/name identity reject replacement, links and FIFOs.
+    private static func assemblyPairBytes(_ url: URL) throws -> Data {
+        let parent = open(url.deletingLastPathComponent().path, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)
+        guard parent >= 0 else { throw Failure.existingFile }
+        defer { close(parent) }
+        let fd = openat(parent, url.lastPathComponent, O_RDONLY | O_NONBLOCK | O_NOFOLLOW | O_CLOEXEC)
+        guard fd >= 0 else { throw Failure.existingFile }
+        defer { close(fd) }
+        var before = stat()
+        guard fstat(fd, &before) == 0, before.st_mode & S_IFMT == S_IFREG, before.st_nlink == 1,
+              before.st_size > 0, before.st_size <= 128 * 1024 else { throw Failure.existingFile }
+        var bytes = Data(count: Int(before.st_size))
+        let count = bytes.withUnsafeMutableBytes { read(fd, $0.baseAddress, $0.count) }
+        var after = stat(), named = stat()
+        guard count == bytes.count, fstat(fd, &after) == 0,
+              fstatat(parent, url.lastPathComponent, &named, AT_SYMLINK_NOFOLLOW) == 0,
+              named.st_mode & S_IFMT == S_IFREG, named.st_nlink == 1, after.st_nlink == 1,
+              named.st_ino == after.st_ino, named.st_dev == after.st_dev, named.st_size == after.st_size,
+              before.st_ino == after.st_ino, before.st_size == after.st_size,
+              before.st_mtimespec.tv_sec == after.st_mtimespec.tv_sec,
+              before.st_mtimespec.tv_nsec == after.st_mtimespec.tv_nsec,
+              before.st_ctimespec.tv_sec == after.st_ctimespec.tv_sec,
+              before.st_ctimespec.tv_nsec == after.st_ctimespec.tv_nsec else { throw Failure.existingFile }
+        return bytes
+    }
+
+    private static func pairDigest(_ bytes: Data) -> String {
+        SHA256.hash(data: bytes).map { String(format: "%02x", $0) }.joined()
+    }
+
+    private static func assemblyPairPage(_ page: PDFPage?, matches role: String, number: Int, namespace: UUID) -> Bool {
+        guard let text = page?.string, text.utf8.count <= 512 else { return false }
+        // Actual iOS17 PDFKit can insert ASCII layout whitespace within a UUID.
+        // Retain every other character, marker, source role and page number.
+        let compact = text.unicodeScalars.filter { ![9, 10, 13, 32].contains($0.value) }.map(String.init).joined()
+        return compact == "WOOW_ASSEMBLY_\(role)_PAGE_\(number)" + namespace.uuidString
+    }
+
+    /// Observes real receipt hashes and actual output bytes, without modifying
+    /// the plan, grants or result. No selected user URL is read here.
+    static func assemblyPairOutputObservation(_ bytes: Data, receiptDigests: [String: String],
+                                              fixture: AssemblyPairFixture) -> String {
+        guard fixture.sources.count == 2, receiptDigests.count == 2,
+              fixture.sources.allSatisfy({ receiptDigests[$0.filename] == $0.sha256 }),
+              bytes.count <= 20 * 1024 * 1024, bytes.starts(with: Data("%PDF-".utf8)),
+              let pdf = PDFDocument(data: bytes), pdf.pageCount == 3,
+              assemblyPairPage(pdf.page(at: 0), matches: "A", number: 2, namespace: fixture.namespace),
+              assemblyPairPage(pdf.page(at: 1), matches: "B", number: 1, namespace: fixture.namespace),
+              assemblyPairPage(pdf.page(at: 2), matches: "A", number: 1, namespace: fixture.namespace),
+              fixture.sources.allSatisfy({ source in
+                  guard let original = try? assemblyPairBytes(source.url) else { return false }
+                  return pairDigest(original) == source.sha256
+              }) else { return "pair=failed" }
+        return "pair=verified pages=A2,B1,A1 originals=unchanged sha256=" + pairDigest(bytes)
+    }
+
     // Controlled experiment only. The existing direct path remains the control;
     // neither this switch nor the fixture is available to production launches.
     private enum WriteMode: String { case direct, coordinated }

@@ -15,9 +15,21 @@ final class SkillPDFAssemblySession: ObservableObject {
     @Published var orderText = ""
     #if DEBUG
     @Published private(set) var uiTestFixture: SkillExecutionUITestSupport.Fixture?
+    @Published private(set) var uiTestPair: SkillExecutionUITestSupport.AssemblyPairFixture?
+    @Published private(set) var uiTestPairOutput = "pair=none"
+    func observeUITestPairOutput() {
+        guard let pair = uiTestPair, let output = result else { return }
+        let digests = Dictionary(receipts.map { ($0.source.filename, $0.sha256) },
+                                 uniquingKeysWith: { _, _ in "duplicate" })
+        uiTestPairOutput = SkillExecutionUITestSupport.assemblyPairOutputObservation(
+            output.data, receiptDigests: digests, fixture: pair)
+    }
     func seedUITestIfRequested() {
-        guard uiTestFixture == nil else { return }
-        do { uiTestFixture = try SkillExecutionUITestSupport.seedIfRequested() }
+        guard uiTestFixture == nil, uiTestPair == nil else { return }
+        do {
+            if let pair = try SkillExecutionUITestSupport.seedAssemblyPairIfRequested() { uiTestPair = pair }
+            else { uiTestFixture = try SkillExecutionUITestSupport.seedIfRequested() }
+        }
         catch { status = "測試 PDF 無法建立；請檢查測試命名空間與檔案設定。" }
     }
     #endif
@@ -104,6 +116,9 @@ final class SkillPDFAssemblySession: ObservableObject {
                 let output = try await runtime.assemble(grant)
                 guard generation == token, plan?.id == reviewed.id, !Task.isCancelled else { return }
                 result = output; status = "新 PDF 已產生，尚未儲存至檔案。"
+                #if DEBUG
+                observeUITestPairOutput()
+                #endif
             } catch {
                 guard generation == token else { return }
                 report(error)
@@ -116,6 +131,9 @@ final class SkillPDFAssemblySession: ObservableObject {
         if let runtime { Task { await runtime.cancel() } }
         runtime = nil; sources = []; receipts = []; plan = nil; preparedOrder = nil; result = nil
         orderText = ""; status = nil; running = false
+        #if DEBUG
+        uiTestPairOutput = "pair=none"
+        #endif
     }
 
     private func report(_ error: Error) {

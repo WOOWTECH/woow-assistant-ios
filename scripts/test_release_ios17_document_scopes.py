@@ -20,10 +20,10 @@ class DocumentFocusedScopesTests(unittest.TestCase):
         self.assertTrue(read.isdisjoint(output))
         self.assertEqual(read | output, expected)
         self.assertEqual(len(read), 6)
-        self.assertEqual(len(output), 8)
+        self.assertEqual(len(output), 9)
         self.assertEqual(catalog["document_focused_scopes"], groups)
         self.assertEqual(ios17.UI_SHARDS["ui-documents"],
-                         ["SkillExecutionUITests", "SkillWorkerSettingsUITests"])
+                         ["SkillExecutionUITests", "SkillWorkerSettingsUITests", "SkillPDFAssemblyMultiFileUITests"])
         for scope, methods in groups.items():
             self.assertNotIn(scope, ios17.UI_SHARDS)
             self.assertEqual(ios17.selected_ui_tests(catalog, scope), methods)
@@ -100,7 +100,7 @@ class DocumentFocusedScopesTests(unittest.TestCase):
         catalog = ios17.ui_inventory(ROOT)
         workflow = (ROOT / ".github/workflows/ios.yml").read_text()
         selected = []
-        for scope in ("pdf-assembly", "pdf-assembly-uikit", "pdf-assembly-copy"):
+        for scope in ("pdf-assembly", "pdf-assembly-uikit", "pdf-assembly-copy", "pdf-assembly-multi"):
             expected = ios17.selected_ui_tests(catalog, scope)
             self.assertEqual(len(expected), 1)
             self.assertIn(expected[0], catalog["document_focused_scopes"]["documents-output"])
@@ -115,7 +115,7 @@ class DocumentFocusedScopesTests(unittest.TestCase):
             timeout = next(line for line in workflow.splitlines() if "timeout-minutes:" in line and '"pdf-assembly"' in line)
             self.assertIn('"' + scope + '"', timeout)
             self.assertIn("&& 20 || 55", timeout)
-        self.assertEqual(len(set(selected)), 3)
+        self.assertEqual(len(set(selected)), 4)
 
 
 if __name__ == "__main__":
