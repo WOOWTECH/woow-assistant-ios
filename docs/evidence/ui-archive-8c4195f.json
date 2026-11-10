@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-10T22:27:07.060271+00:00",
+  "status": "PARTIAL_PENDING_EXACT17",
+  "source_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+  "scope": "Four actual native archive fixture methods on each requested runtime",
+  "accepted_devices": [
+    {
+      "device_group": "current",
+      "run_id": 42911167014,
+      "job_id": 130161904310,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911167014",
+      "job_conclusion": "success",
+      "source_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "runtime": {
+        "device_name": "iPhone 17",
+        "runtime_version": "26.2",
+        "runtime_build": "23C54",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2"
+      },
+      "portable": {
+        "completed": 212,
+        "unique": 212,
+        "passed": 212,
+        "failed": 0,
+        "skipped": 0
+      },
+      "ui": {
+        "source_expected": 4,
+        "started": 4,
+        "unique_started": 4,
+        "completed": 4,
+        "unique_completed": 4,
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0,
+        "each_source_method_started_and_completed_once": true,
+        "runner_restart_messages": 0,
+        "method_completions": [
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testCancelledRunAndUnsentDraftAreNotClaimedAsSaved",
+            "result": "passed",
+            "seconds": 99.73
+          },
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testChangedModelAllowsViewingButDisablesContinuation",
+            "result": "passed",
+            "seconds": 82.868
+          },
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testDeletionRemainsAbsentAfterRelaunch",
+            "result": "passed",
+            "seconds": 103.876
+          },
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testTwoCompletedConversationsSurviveRelaunchAndOpenExplicitly",
+            "result": "passed",
+            "seconds": 113.981
+          }
+        ]
+      },
+      "xcresult_summary_counts": {
+        "totalTestCount": 4,
+        "passedTests": 4,
+        "failedTests": 0,
+        "skippedTests": 0
+      },
+      "completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 4,
+          "passedTests": 4,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 4,
+        "completed_ui_count": 4,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "artifact": {
+        "id": 13808981188,
+        "size_bytes": 188252028,
+        "digest": "sha256:b29ebf86e3c9d9d7e9dbef39b9faafbf20cdd95f99a3a3a1f4089f6260bc00b5",
+        "inspected_metadata": [
+          "test-summary.json",
+          "test-simulator.json",
+          "ui-shard-completion.json"
+        ]
+      }
+    },
+    {
+      "device_group": "se",
+      "run_id": 42911171619,
+      "job_id": 130161923527,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911171619",
+      "job_conclusion": "success",
+      "source_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "runtime": {
+        "device_name": "iPhone SE (3rd generation)",
+        "runtime_version": "18.5",
+        "runtime_build": "22F77",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-5"
+      },
+      "portable": {
+        "completed": 212,
+        "unique": 212,
+        "passed": 212,
+        "failed": 0,
+        "skipped": 0
+      },
+      "ui": {
+        "source_expected": 4,
+        "started": 4,
+        "unique_started": 4,
+        "completed": 4,
+        "unique_completed": 4,
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0,
+        "each_source_method_started_and_completed_once": true,
+        "runner_restart_messages": 0,
+        "method_completions": [
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testCancelledRunAndUnsentDraftAreNotClaimedAsSaved",
+            "result": "passed",
+            "seconds": 91.112
+          },
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testChangedModelAllowsViewingButDisablesContinuation",
+            "result": "passed",
+            "seconds": 83.306
+          },
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testDeletionRemainsAbsentAfterRelaunch",
+            "result": "passed",
+            "seconds": 153.806
+          },
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testTwoCompletedConversationsSurviveRelaunchAndOpenExplicitly",
+            "result": "passed",
+            "seconds": 114.147
+          }
+        ]
+      },
+      "xcresult_summary_counts": {
+        "totalTestCount": 4,
+        "passedTests": 4,
+        "failedTests": 0,
+        "skippedTests": 0
+      },
+      "completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 4,
+          "passedTests": 4,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 4,
+        "completed_ui_count": 4,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "artifact": {
+        "id": 13808358144,
+        "size_bytes": 14640297,
+        "digest": "sha256:b6c19814f7b9c2f2829e585d25fb4f978d9067e6722280f90aba3e53cc631214",
+        "inspected_metadata": [
+          "test-summary.json",
+          "test-simulator.json",
+          "ui-shard-completion.json"
+        ]
+      }
+    }
+  ],
+  "pending_devices": [
+    {
+      "device_group": "exact17_prebuild",
+      "run_id": 42911189682,
+      "job_id": 130161988591,
+      "last_observed_status": "in_progress",
+      "last_observed_step": "執行指定 iOS 17 runtime 與測試範圍",
+      "last_observed_at": "2026-11-10T22:25:54Z",
+      "actual_method_counts": null,
+      "runtime_metadata": null
+    }
+  ],
+  "accepted_aggregate": {
+    "devices": 2,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "expected_final_devices": 3,
+    "expected_final_methods": 12
+  },
+  "source_sha256": {
+    "Sources/AssistantPersistence/ConversationArchive.swift": "b4abad707307364be3490df1730aef947817f1afdc931deff869d98921db65c1",
+    "Sources/App/ConversationArchiveStore.swift": "8a840b7616a5a1ea100d8686e630fe73fdd9db1bf3c504834a32acbd756bb633",
+    "Sources/App/ConversationArchiveView.swift": "aa6589bcfb57364b08f4e4a4f27a6de5c5bef48c68d68a8383f25d0394e93eba",
+    "Sources/App/ChatSession.swift": "6f01a8f493eff3f5e8b14f6d9fd8b47a63bb7ac55f03aadfa845e65801a355a6",
+    "Sources/App/ContentView.swift": "faf1645f3dc4749e9de27ee1dc1ad441a7a7df809fe8b1d9ffd6e1cf31b69e53",
+    "Sources/App/ModelSettings.swift": "afbeeb5d6d1f5deb860fde17f11dc3be073ba9df319bd0c69d74dc16515cff2c",
+    "Sources/App/UITestModelFixture.swift": "9801e1c6e3193eeed5927d4930ed7dde3cb0b42d12832f27b855bed8a5c98db6",
+    "Sources/App/LearningKeychainStore.swift": "9a6275783caa50300a19802f2e06aa3ecb35f1f1f5ea7c4c50a84e75300460a7",
+    "Sources/AssistantPersistence/EncryptedLearningFile.swift": "a7ba735e6f17c4e67c8313e25292309388df38d36e0d5c7b826a509fd232b4da",
+    "Tests/WoowAssistantUITests/ConversationArchiveUITests.swift": "29bcf5fe5cb84ea6c82d37f9dea7f9c5437dbbd5cadfe2c6906a9f292489fb94",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+    "scripts/CheckConversationArchiveApp.swift": "658dfcc5fa5119003123c4dbe09b676029434cbe9f465e48e629df4f90044052",
+    "project.yml": "7a54d63f88af76e3cb5d925b397c66d46c4b3493befca7816dd49b2e3e3785c6",
+    "scripts/release_ios17.py": "f8869c62446143df7f89de07b3164cc083478c62ee01ef35e29f3070c6233c1f",
+    ".github/workflows/ios.yml": "25f2f3dd94a7d286298aecd8ac2199fdde7891cc42f1989f2d3c118da196c64e",
+    ".github/workflows/release-ios.yml": "543eafc651b1f0bf80dfe91fb81a4e82e2f945f02d226e709502cd21acb83a1a"
+  },
+  "test_method_sha256": {
+    "ConversationArchiveUITests/testTwoCompletedConversationsSurviveRelaunchAndOpenExplicitly": "465aec75e38805dc296faec88a22f1d5e4580c4e644c9e5eafb13890550e808a",
+    "ConversationArchiveUITests/testChangedModelAllowsViewingButDisablesContinuation": "b2220c8e92b461e1ff2237e85ba2005b56abcc07bbed1bdd971c9a3e9338611f",
+    "ConversationArchiveUITests/testDeletionRemainsAbsentAfterRelaunch": "e9d3311d218a2a059e5ec4cf21db679040921c94a3ab66832485adb7edea276e",
+    "ConversationArchiveUITests/testCancelledRunAndUnsentDraftAreNotClaimedAsSaved": "100eb417dc8393a518702af6f818d4d9ca312cdf139940c9fa6380044b9aa342"
+  },
+  "test_method_hash_definition": "Exact source text from the test function declaration to before the next function declaration, with trailing whitespace stripped.",
+  "coverage": [
+    "Native configuration and exact keyboard entry; two real completed conversations saved, relaunch without autoload, explicit open with exact user/assistant text.",
+    "Changed model retains readable history while disabling continuation to the wrong destination.",
+    "Native confirmed deletion remains absent after relaunch.",
+    "Cancelled model run and unsent draft produce no archived row; history control disabled during submission."
+  ],
+  "limits": [
+    "Only current iOS26.2 and SE iOS18.5 are accepted so far; exact17 remains pending, not zero executed or passed.",
+    "Actual native App and encrypted archive with synthetic model fixture; no real provider request or physical device claim.",
+    "Four source-inventoried methods per device; no retry requested and no runner restart observed in completed jobs.",
+    "Counts apply only to source 8c4195f. Full native suite is independently collected by parent.",
+    "No environment, credentials, raw logs, live AX trees, or signed artifact URLs published."
+  ]
+}

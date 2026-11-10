@@ -1,0 +1,231 @@
+{
+  "schema_version": 1,
+  "source_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+  "test_selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
+  "public_flow": "Two explicit single-file copy selections, with Add PDF between presentations. Every native picker has allowsMultipleSelection=false.",
+  "cases": [
+    {
+      "variant": "current",
+      "run_id": 42911177308,
+      "job_id": 130161942764,
+      "artifact_id": 13808531446,
+      "runtime": {
+        "version": "26.2",
+        "build": "23C54"
+      },
+      "result": {
+        "started": 1,
+        "completed": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "expected_failures": 0,
+        "duration_seconds": 127.186
+      },
+      "failure": {
+        "file": "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift",
+        "line": 332,
+        "predicate": "source receipt exists or native Open enabled and hittable",
+        "bound_seconds": 15,
+        "selected_source_index": 2,
+        "stage": "second B file presentation"
+      },
+      "native": {
+        "created": 2,
+        "picked": 1,
+        "app_completions": 1,
+        "failing_presentation_native_picked": 0,
+        "mode": "import",
+        "allowsMultipleSelection": false,
+        "delegatePresent": true,
+        "touch_down_up_point": [
+          201.16666666666669,
+          258.0
+        ],
+        "touch_duration_seconds": 0.05,
+        "touch_matches_thumbnail_center": true,
+        "frame_after_tap": "docs/evidence/pdf-assembly-add-8c4195f-current-selection.png",
+        "frame_sha256": "e5e50afd499ef8f8f145a4ce1b067087625392586436254a73877150d4c61d48",
+        "xctest_event_synthesis_completed": true,
+        "files_remote_process_acknowledged_touch_events_completed": true
+      },
+      "not_reached": [
+        "two accepted sources",
+        "read approvals",
+        "page plan",
+        "assembly approval",
+        "output verification",
+        "export cancellation"
+      ],
+      "fixed_events": [
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6C23547A-F9AB-4895-9350-97ACA934E64C event=bindingChanged ordinal=1 presented=true callbacks=0 sampledAt=1794348985.201436",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=6C23547A-F9AB-4895-9350-97ACA934E64C source=user-copy event=bindingChanged presented=true callbacks=0 sampledAt=1794348985.2023048",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=6C23547A-F9AB-4895-9350-97ACA934E64C source=user-copy mode=unobserved sampledAt=1794348985.208875",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6C23547A-F9AB-4895-9350-97ACA934E64C event=nativeCreated mode=import allowsMultipleSelection=false delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=0 sampledAt=1794348985.235698",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=6C23547A-F9AB-4895-9350-97ACA934E64C source=user-copy mode=import allowsMultipleSelection=false sampledAt=1794348986.180698",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6C23547A-F9AB-4895-9350-97ACA934E64C source=user-copy event=observed mode=import allowsMultipleSelection=false delegatePresent=true inWindow=true dismissing=false sampledAt=1794348986.180729",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6C23547A-F9AB-4895-9350-97ACA934E64C event=nativePicked mode=import allowsMultipleSelection=false delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=1 sampledAt=1794349014.101509",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6C23547A-F9AB-4895-9350-97ACA934E64C event=completion source=uikit callbacks=1 outcome=one sampledAt=1794349014.101746",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=6C23547A-F9AB-4895-9350-97ACA934E64C source=user-copy event=completion outcome=one callbacks=1 sampledAt=1794349014.104718",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6C23547A-F9AB-4895-9350-97ACA934E64C event=nativeDismantled mode=import allowsMultipleSelection=false delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=1 sampledAt=1794349014.180962",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6C23547A-F9AB-4895-9350-97ACA934E64C event=bindingChanged ordinal=1 presented=false callbacks=1 sampledAt=1794349014.232069",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=6C23547A-F9AB-4895-9350-97ACA934E64C source=user-copy event=bindingChanged presented=false callbacks=1 sampledAt=1794349014.2321439",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6C23547A-F9AB-4895-9350-97ACA934E64C event=bindingChanged ordinal=2 presented=true callbacks=0 sampledAt=1794349020.780508",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=6C23547A-F9AB-4895-9350-97ACA934E64C source=user-copy event=bindingChanged presented=true callbacks=0 sampledAt=1794349020.780589",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6C23547A-F9AB-4895-9350-97ACA934E64C event=nativeCreated mode=import allowsMultipleSelection=false delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=0 sampledAt=1794349020.802654",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=6C23547A-F9AB-4895-9350-97ACA934E64C source=user-copy mode=import allowsMultipleSelection=false sampledAt=1794349021.404319",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6C23547A-F9AB-4895-9350-97ACA934E64C source=user-copy event=observed mode=import allowsMultipleSelection=false delegatePresent=true inWindow=true dismissing=false sampledAt=1794349021.404344"
+      ],
+      "app_stdout_evidence": {
+        "source_bytes": 32953561,
+        "source_sha256": "1ee1d9df2340a58224b9a45bac027534a39b617b897a9ca2c04c9b7715ec7cb2",
+        "transferred_bytes": 2730918,
+        "whole_archive_downloaded": false
+      },
+      "bounded_artifact_files": [
+        {
+          "file": "ios-tests.log",
+          "bytes": 944947,
+          "sha256": "45d6928610d0c561e519b793de1512618a9509aebc8868cd4acbacd21b7720ce"
+        },
+        {
+          "file": "test-summary.json",
+          "bytes": 1627,
+          "sha256": "4b62fa57d3f836be4a6661770ee74bd6371537006fc4dd994161fce5eac9226e"
+        },
+        {
+          "file": "ui-shard-completion.json",
+          "bytes": 460,
+          "sha256": "d469d3b81f8846952196756ab530f7f92c9e324588e2019e01ab62795e0d2cca"
+        }
+      ],
+      "session_evidence": {
+        "bytes": 5109955,
+        "sha256": "2c0c4cd66f69edf0b6d8eb35167cdd73619de413c37830241db4d45486751368",
+        "lines": {
+          "touch_synthesis": 35835,
+          "remote_process_touch_ack": 35848
+        }
+      }
+    },
+    {
+      "variant": "se",
+      "run_id": 42911183701,
+      "job_id": 130161960869,
+      "artifact_id": 13808302885,
+      "runtime": {
+        "version": "18.5",
+        "build": "22F77"
+      },
+      "result": {
+        "started": 1,
+        "completed": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "expected_failures": 0,
+        "duration_seconds": 181.092
+      },
+      "failure": {
+        "file": "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift",
+        "line": 332,
+        "predicate": "source receipt exists or native Open enabled and hittable",
+        "bound_seconds": 15,
+        "selected_source_index": 1,
+        "stage": "first A file presentation"
+      },
+      "native": {
+        "created": 1,
+        "picked": 0,
+        "app_completions": 0,
+        "failing_presentation_native_picked": 0,
+        "mode": "import",
+        "allowsMultipleSelection": false,
+        "delegatePresent": true,
+        "touch_down_up_point": [
+          66.5,
+          204.0
+        ],
+        "touch_duration_seconds": 0.05,
+        "touch_matches_thumbnail_center": true,
+        "frame_after_tap": "docs/evidence/pdf-assembly-add-8c4195f-se-selection.png",
+        "frame_sha256": "17f4954e06205841dec7bd9d0adfdf9791639460c690077a25f19d64255e0495",
+        "xctest_event_synthesis_completed": true,
+        "files_remote_process_acknowledged_touch_events_completed": true
+      },
+      "not_reached": [
+        "two accepted sources",
+        "read approvals",
+        "page plan",
+        "assembly approval",
+        "output verification",
+        "export cancellation"
+      ],
+      "fixed_events": [
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=9BAFFABF-24A8-4FAF-BB14-36C5ADB3ABA2 event=bindingChanged ordinal=1 presented=true callbacks=0 sampledAt=1794349104.036405",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=9BAFFABF-24A8-4FAF-BB14-36C5ADB3ABA2 source=user-copy event=bindingChanged presented=true callbacks=0 sampledAt=1794349104.037806",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=9BAFFABF-24A8-4FAF-BB14-36C5ADB3ABA2 source=user-copy mode=unobserved sampledAt=1794349104.046413",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=9BAFFABF-24A8-4FAF-BB14-36C5ADB3ABA2 event=nativeCreated mode=import allowsMultipleSelection=false delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=0 sampledAt=1794349104.064764",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=9BAFFABF-24A8-4FAF-BB14-36C5ADB3ABA2 source=user-copy mode=import allowsMultipleSelection=false sampledAt=1794349104.568649lt] Received request to notify when animations are idle",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=9BAFFABF-24A8-4FAF-BB14-36C5ADB3ABA2 source=user-copy event=observed mode=import allowsMultipleSelection=false delegatePresent=true inWindow=true dismissing=false sampledAt=1794349105.036525"
+      ],
+      "app_stdout_evidence": {
+        "source_bytes": 22380499,
+        "source_sha256": "d2e2c02c9cc2fb29dd9657f5912f06f2f30c4d52cbc2affc7da65dd08ed1ac45",
+        "transferred_bytes": 1929581,
+        "whole_archive_downloaded": false
+      },
+      "bounded_artifact_files": [
+        {
+          "file": "ios-tests.log",
+          "bytes": 905428,
+          "sha256": "9e4a626a96e0c4673350d090be32fecceb6d1ab2e392d0daf56b0190657d89cd"
+        },
+        {
+          "file": "test-summary.json",
+          "bytes": 1645,
+          "sha256": "b6ac48143d608cf7d5be940de49ba055231294686effdaa071b3f098f9762e8d"
+        },
+        {
+          "file": "ui-shard-completion.json",
+          "bytes": 460,
+          "sha256": "d469d3b81f8846952196756ab530f7f92c9e324588e2019e01ab62795e0d2cca"
+        }
+      ],
+      "session_evidence": {
+        "bytes": 3722620,
+        "sha256": "44769ead48928d97a1d820b538dc832dfad707429a609b197ef813da35f2d481",
+        "lines": {
+          "touch_synthesis": 25778,
+          "remote_process_touch_ack": 25791
+        }
+      }
+    }
+  ],
+  "diagnosis": {
+    "confirmed": "current26 returns A then never invokes nativePicked for B; SE never invokes nativePicked for A. Both synthesized touches are at the respective visible thumbnail centers and the native Files screen remains visible. XCTest event synthesis completes; the corresponding Files remote process acknowledges TouchEventsCompleted on both failed taps. This excludes a missing synthesized touch, but does not prove document selection/import began.",
+    "not_proven": [
+      "second presentation stale Session completion",
+      "shared root cause across devices",
+      "OS picker or provider root cause",
+      "test gesture root cause"
+    ],
+    "callback_fencing": "nativePicked is logged before the Coordinator completed guard. No rejected second completion is observed; no reason yet to remove immutable callbacks or request fencing.",
+    "status": "investigation_in_progress_no_source_patch"
+  },
+  "acceptance_unchanged": {
+    "case_cap_seconds": 300,
+    "callback_wait_seconds": 15,
+    "two_distinct_files_required": true,
+    "actual_two_callbacks_required": true,
+    "separate_read_grants_required": true,
+    "exact_output_order": "A2,B1,A1",
+    "originals_unchanged_required": true,
+    "export_cancel_retains_result_required": true
+  },
+  "retrieval": {
+    "whole_zip_downloaded": false,
+    "unrelated_user_provider_AX_dump": false,
+    "secrets_published": false
+  }
+}

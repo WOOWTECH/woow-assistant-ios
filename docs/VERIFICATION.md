@@ -1,5 +1,27 @@
 # Verification — 2026-11-11
 
+## Archive UI passes two devices; PDF add remains under investigation
+
+At `8c4195f`, archive UI passed **4/4** on each of
+[current iOS 26.2](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911167014)
+and [SE / iOS 18.5](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911171619),
+zero skips. Real encrypted rows survive relaunch, open only explicitly, remain
+readable but cannot continue under changed model identity, and stay deleted after
+relaunch. Cancelled runs and unsent drafts are not claimed as saved.
+[Per-method/runtime/source proof](evidence/ui-archive-8c4195f.json). Exact17 remains separate.
+
+The new deliberate PDF-add flow still failed on both
+[current](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911177308)
+and [SE](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911183701),
+each **0/1**. These failed at different stages: current delivered A but had no
+nativePicked event after the B touch; SE had no nativePicked event after the first
+A touch. Both system picker screens remained visible. The visible thumbnail checks
+and synthesized coordinates do not prove that the native control accepted selection.
+No shared root cause, stale callback or OS/provider defect is established.
+[Native events, failure frames and limits](evidence/pdf-assembly-add-8c4195f.json).
+The strict distinct-source, approval, page-order and export assertions remain required.
+
+
 ## Integrated native suite completed at 8c4195f
 
 [42911161821](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911161821)
