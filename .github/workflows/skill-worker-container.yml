@@ -1,0 +1,41 @@
+name: Isolated skill worker container acceptance
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skill-worker-container-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  container-acceptance:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5
+        with:
+          persist-credentials: false
+      - name: Verify pinned official base and original source hashes
+        run: python3 scripts/skill-worker/check_container.py --verify-base-only
+      - name: Build local image with hash-locked dependencies
+        run: >-
+          docker build --pull --platform linux/amd64
+          --tag woow-skill-worker:acceptance
+          --file scripts/skill-worker/Dockerfile scripts/skill-worker
+      - name: Exercise actual isolated containers and pinned PDF script
+        timeout-minutes: 8
+        run: >-
+          python3 scripts/skill-worker/check_container.py
+          --image woow-skill-worker:acceptance
+          --report build/skill-worker-container.json
+      - name: Retain synthetic acceptance report
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: skill-worker-container-${{ github.run_id }}
+          path: build/skill-worker-container.json
+          if-no-files-found: warn
+          retention-days: 14
