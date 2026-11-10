@@ -70,7 +70,7 @@ final class BrowserLibraryTests: XCTestCase {
         var state = BrowserLibraryState()
         let safe = URL(string: "https://example.com/home")!
         try state.visit(tab: state.selectedID, url: safe, title: "Home")
-        for address in ["https://example.com/?code=secret", "https://example.com/?access_token=secret", "https://example.com/webhook/secret", "https://example.com/oauth/callback"] {
+        for address in ["https://example.com/?code=secret", "https://example.com/?access_token=secret", "https://example.com/?apiKey=secret", "https://example.com/?accessToken=secret", "https://example.com/?clientSecret=secret", "https://example.com/webhook/secret", "https://example.com/oauth/callback"] {
             let url = URL(string: address)!
             XCTAssertTrue(BrowserManualNavigationPolicy.allows(url))
             XCTAssertNil(BrowserManualNavigationPolicy.libraryURL(url))

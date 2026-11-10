@@ -33,14 +33,20 @@ class ReleaseError(Exception):
     pass
 
 
-def run(args, label, timeout=120, env=None):
+def run(args, label, timeout=120, env=None, diagnostic_log=None):
     """Do not echo commands: security arguments may contain passwords."""
     if env is None:
         env = {k: v for k, v in os.environ.items() if k not in SECRET_NAMES}
     try:
         result = subprocess.run(args, capture_output=True, timeout=timeout, env=env)
-    except (OSError, subprocess.TimeoutExpired):
+    except subprocess.TimeoutExpired as error:
+        if diagnostic_log is not None:
+            diagnostic_log.write_bytes((error.stdout or b"") + (error.stderr or b""))
+        raise ReleaseError(label + "：工具執行逾時。") from None
+    except OSError:
         raise ReleaseError(label + "：工具不存在或執行逾時。") from None
+    if diagnostic_log is not None:
+        diagnostic_log.write_bytes(result.stdout + result.stderr)
     if result.returncode:
         raise ReleaseError(label + "：失敗（退出碼 %d；未輸出可能含憑證的內容）。" % result.returncode)
     return result.stdout
@@ -171,8 +177,20 @@ def verify_settings(rows):
 
 
 def verify_macho(output):
-    minimums = re.findall(r"^\s*(?:minos|version) (\d+\.\d+(?:\.\d+)?)\s*$", output, re.M)
-    # Only pass LC_BUILD_VERSION / LC_VERSION_MIN_IPHONEOS sections from caller.
+    # LC_BUILD_VERSION also contains a linker tool's `version` (e.g. 1230.1).
+    # That tool version is not an OS requirement. Parse each load command by kind.
+    minimums = []
+    for kind, section in re.findall(r"cmd LC_(BUILD_VERSION|VERSION_MIN_IPHONEOS)\b(.*?)(?=cmd LC_|\Z)", output, re.S):
+        if kind == "BUILD_VERSION":
+            if re.findall(r"^\s*platform\s+(\S+)\s*$", section, re.M) not in [["IOS"], ["2"]]:
+                raise ReleaseError("Mach-O 不是 iPhoneOS 平台。")
+            field = "minos"
+        else:
+            field = "version"
+        values = re.findall(r"^\s*" + field + r"\s+(\d+\.\d+(?:\.\d+)?)\s*$", section, re.M)
+        if len(values) != 1:
+            raise ReleaseError("Mach-O 最低系統版本欄位缺少或不唯一。")
+        minimums.extend(values)
     if not minimums or any(version(v) > (17, 0, 0) for v in minimums):
         raise ReleaseError("Mach-O 最低系統版本無法驗證或高於 iOS 17.0。")
 
@@ -201,7 +219,10 @@ def verify_app(app, signed=False, identity=None):
         deployment = "\n".join(s for s in sections if re.search(r"cmd LC_(BUILD_VERSION|VERSION_MIN_IPHONEOS)\b", s))
         if re.search(r"platform\s+(?:IOSSIMULATOR|7)\b", deployment):
             raise ReleaseError("偵測到模擬器二進位檔。")
-        verify_macho(deployment)
+        try:
+            verify_macho(deployment)
+        except ReleaseError as error:
+            raise ReleaseError(str(error) + " Binary: " + str(binary.relative_to(app)) + "\n" + deployment.strip()) from None
     if signed:
         if not (app / "embedded.mobileprovision").is_file():
             raise ReleaseError("簽章 App 缺少內嵌描述檔。")
@@ -274,6 +295,11 @@ def signing_material(method):
 
 def generate_project(root, output):
     run(["xcodegen", "generate", "--spec", str(root / "project.yml"), "--project", str(output)], "產生獨立建置專案")
+    # XcodeGen rebases source paths, but not an explicit INFOPLIST_FILE setting.
+    # Keep the isolated Debug project usable without changing Release settings.
+    configuration = output / "Configuration"
+    configuration.mkdir(exist_ok=True)
+    shutil.copyfile(root / "Configuration/Info-Debug.plist", configuration / "Info-Debug.plist")
     return output / (SCHEME + ".xcodeproj")
 
 
@@ -289,7 +315,7 @@ def build(root, output, signed, method):
     verify_settings(json.loads(run(common + ["-showBuildSettings", "-json"], "檢查實際最低系統設定", env=child_env)))
     if not signed:
         run(common + ["build", "CODE_SIGNING_ALLOWED=NO", "CODE_SIGNING_REQUIRED=NO", "CODE_SIGN_IDENTITY="],
-            "未簽章裝置建置", timeout=2400, env=child_env)
+            "未簽章裝置建置", timeout=2400, env=child_env, diagnostic_log=output / "device-build.log")
         app = output / "DerivedData/Build/Products/Release-iphoneos/WoowAssistant.app"
         metadata.update(verify_app(app))
         metadata["artifact_kind"] = "unsigned-device-build-not-installable"

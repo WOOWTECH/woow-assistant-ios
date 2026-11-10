@@ -18,9 +18,16 @@ MCP discovery starts only from an explicit connection action. The user selects t
 
 Browser research remains read-only. The separate interaction entry point observes stable document/node IDs, asks the model for one action, and waits for a native review. A one-use grant expires after 60 seconds. Before dispatch, fixed JavaScript checks document/snapshot identity, the actual node reference and its captured attributes/form values. All values cross the WebKit argument bridge; no model-supplied JavaScript runs. DOM events are synthetic; dispatch is not proof of a completed website task. Interaction traces are not automatically treated as read-only routes or successful skill-learning evidence.
 
-The bundled skill catalog is a pinned, hash-checked archive of original documents and scripts, displayed as inert text. Separately labeled iOS text adaptations enter the same pending review and trial workflow as imported skills; neither reading nor approving text grants MCP or DOM execution authority. Remote gateway, original script execution, provider-native function-call streaming and full browser capabilities remain unfinished.
+The bundled skill catalog is a pinned, hash-checked archive of original documents and scripts, displayed as inert text. Separately labeled iOS text adaptations enter the same pending review and trial workflow as imported skills; neither reading nor approving text grants MCP or DOM execution authority. Selected PDF execution has a separate two-step runtime with native PDFKit and an optional pinned-original-script worker adapter. The worker has real local stdio/HTTP tests but no deployed authenticated service. Remote gateway, full original-skill tool registration, provider-native function-call streaming and full browser parity remain unfinished.
 
 - Credentials belong in Keychain, never SwiftData, logs or chat content.
 - MCP is an outbound client. Server annotations and descriptions never authorize calls; the remote server validates its input schema. OAuth, stdio and legacy SSE remain unsupported.
 - Skills are reviewed text context, not local executable programs. Optional remote computation must be distinguished from iOS capabilities.
 - Approval is bound to the current immutable operation and run. Neither a model answer nor a saved JSON boolean is an approval credential.
+
+
+## Browser workspace and files
+
+BrowserWorkspace owns one persistent WebKit profile and a separate BrowserSession/WKWebView per live tab. Metadata is encrypted with a dedicated device Keychain key; known callback/secret URLs are excluded. Manual HTTPS navigation accepts login/query URLs while model research retains its existing public-page restrictions. Switching/closing tabs revokes pending proposals. Website-record removal first quiesces every old document, then removes the selected records; history/bookmarks and learning data have separate deletion controls.
+
+A workspace-wide BrowserDownloadManager receives real WKDownload objects, retains WebKit authentication context, bounds file/count/time usage, cleans partial files and shares only validated completed files. BrowserNavigationIntent binds download permission to manual navigation and one-use callbacks. Native WebKit file inputs use the system chooser on iOS 17. DEBUG upload fixtures permit only an exact loopback origin/path; the loopback ATS exception is in the Debug plist only. Release builds have no fixture server or ATS exception.

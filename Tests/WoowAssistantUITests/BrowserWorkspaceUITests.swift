@@ -46,7 +46,16 @@ final class BrowserWorkspaceUITests: XCTestCase {
         XCTAssertTrue(rename.waitForExistence(timeout: 5)); rename.tap()
         let input = app.alerts.textFields.firstMatch
         XCTAssertTrue(input.waitForExistence(timeout: 5)); input.tap()
-        input.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: (input.value as? String ?? "").count) + "My saved page")
+        input.press(forDuration: 1.2)
+        let labels = ["全選", "Select All"]
+        let selectAll = app.buttons.matching(NSPredicate(format: "label IN %@", labels)).firstMatch
+        let menuSelectAll = app.menuItems.matching(NSPredicate(format: "label IN %@", labels)).firstMatch
+        if selectAll.waitForExistence(timeout: 3) { selectAll.tap() }
+        else {
+            XCTAssertTrue(menuSelectAll.waitForExistence(timeout: 3), "Use native Select All; tapping a long title can place the cursor in its middle.")
+            menuSelectAll.tap()
+        }
+        input.typeText("My saved page")
         XCTAssertEqual(input.value as? String, "My saved page")
         app.alerts.buttons["儲存"].tap()
         let bookmark = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "browser.bookmark.open.")).firstMatch

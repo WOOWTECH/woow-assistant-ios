@@ -146,6 +146,26 @@ class IsolationTests(unittest.TestCase):
 
 
 class BuildTests(unittest.TestCase):
+    def test_unsigned_build_failure_can_preserve_opt_in_diagnostics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            log = Path(directory) / "device-build.log"
+            with self.assertRaises(release.ReleaseError):
+                release.run([sys.executable, "-c", "import sys; print('fixture-build-failure'); sys.exit(9)"],
+                            "unsigned fixture", diagnostic_log=log)
+            self.assertIn("fixture-build-failure", log.read_text())
+
+    def test_isolated_project_retains_relative_debug_plist_input(self):
+        root = Path(__file__).resolve().parents[1]
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            with patch.object(release, "run"):
+                project = release.generate_project(root, output)
+            self.assertEqual(project.parent, output)
+            source = root / "Configuration/Info-Debug.plist"
+            copied = output / "Configuration/Info-Debug.plist"
+            self.assertEqual(copied.read_bytes(), source.read_bytes())
+            self.assertEqual(plistlib.loads(copied.read_bytes())["NSAppTransportSecurity"]["NSExceptionDomains"].keys(), {"127.0.0.1"})
+
     def test_release_rejects_ats_in_unsigned_and_signed_products(self):
         debug_plist = Path(__file__).resolve().parents[1] / "Configuration/Info-Debug.plist"
         debug_ats = plistlib.loads(debug_plist.read_bytes())["NSAppTransportSecurity"]
@@ -242,7 +262,8 @@ class BuildTests(unittest.TestCase):
         with self.assertRaises(release.ReleaseError): release.verify_settings(rows)
 
     def test_binary_minimum_is_checked_not_only_project_yaml(self):
-        release.verify_macho("cmd LC_BUILD_VERSION\n minos 17.0\n sdk 26.2\n")
+        release.verify_macho("cmd LC_BUILD_VERSION\n platform IOS\n minos 17.0\n sdk 26.2\n")
+        release.verify_macho("cmd LC_BUILD_VERSION\n platform 2\n minos 17.0\n sdk 26.2\n ntools 1\n tool LD\n version 1230.1\n")
         release.verify_macho("cmd LC_VERSION_MIN_IPHONEOS\n version 15.0\n sdk 26.2\n")
         for output in ["", " minos 18.0\n", " minos 17.0\n minos 17.1\n"]:
             with self.assertRaises(release.ReleaseError): release.verify_macho(output)

@@ -17,9 +17,11 @@
 - [x] Native JSON/SSE model transport with bounded requests and fixture coverage.
 - [x] Configurable actual model conversation, cancellation and retained drafts.
 - [ ] Stream partial model output into the chat UI.
-- [ ] `WKWebView` tab manager: navigation, history, bookmarks, site mode and process recovery.
+- [x] Persistent WebKit profiles, independent live tabs, encrypted bookmarks/history and metadata restoration (acceptance tracked per revision).
+- [ ] Site-mode controls and full process/login recovery parity.
 - [ ] Decide explicit opt-in local-network browsing policy; the starter URL filter defaults to public destinations and does not yet satisfy full Mika parity.
-- [ ] Files import, attachment metadata and safe download vault.
+- [x] Manual native browser file chooser, bounded WKDownload storage, progress/cancel/share/delete and selected-PDF import/execution.
+- [ ] General chat attachments, file metadata and output workspace integration.
 - [x] XCTest / XCUITest fixtures for run cancellation, app relaunch and browser navigation, including hosted WebKit integration (revision-specific acceptance in VERIFICATION).
 
 ## M2 — Controlled connections
@@ -31,7 +33,8 @@
 - [ ] OAuth PKCE, explicit session reinitialization UI and other required transport modes.
 - [ ] Authorized real-device HA control tests (target and allowed actions pending).
 - [x] Complete pinned Mika bundled-source catalog with hashes/licenses and separately reviewed iOS text adaptations.
-- [ ] Declarative Skills registry and remote compute job contracts.
+- [x] Capability dependency inventory, per-step PDF grants, native PDFKit and pinned original PDF-worker protocol/tests.
+- [ ] Full original-skill tool registry and deployed authenticated remote compute environment.
 
 ## M3 — Browser parity and notifications
 
