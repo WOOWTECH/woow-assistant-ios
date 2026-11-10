@@ -17,7 +17,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, interaction, parity, workspace, files, memory-ui, memory-rollback, learning, browser, core, startup]
+        options: [all, interaction, parity, workspace, files, authoring, memory-ui, memory-rollback, learning, browser, core, startup]
         default: all
 
 permissions:
@@ -115,6 +115,9 @@ jobs:
             --runtime "$WOOW_SIM_RUNTIME" --products build/DerivedData/Build/Products/Debug-iphonesimulator
           test_filters=()
           case '${{ inputs.test_scope }}' in
+            authoring)
+              test_filters=(-only-testing:AssistantSkillsTests/SkillAuthoringBridgeTests -only-testing:WoowAssistantUITests/SkillAuthoringUITests)
+              ;;
             files)
               test_filters=(-only-testing:AssistantSkillsTests -only-testing:AssistantDomainTests/BrowserDownloadTests -only-testing:AssistantDomainTests/BrowserNavigationIntentTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/BrowserUploadUITests -only-testing:WoowAssistantUITests/SkillExecutionUITests)
               ;;
@@ -131,7 +134,7 @@ jobs:
               test_filters=(-only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/BrowserInteractionUITests)
               ;;
             parity)
-              test_filters=(-only-testing:AssistantMCPTests -only-testing:AssistantSkillsTests -only-testing:AssistantDomainTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/MCPConversationUITests -only-testing:WoowAssistantUITests/BrowserInteractionUITests -only-testing:WoowAssistantUITests/BrowserLearningUITests -only-testing:WoowAssistantUITests/SkillCatalogUITests -only-testing:WoowAssistantUITests/MemoryUITests -only-testing:WoowAssistantUITests/MemoryRaceUITests)
+              test_filters=(-only-testing:AssistantMCPTests -only-testing:AssistantSkillsTests -only-testing:AssistantDomainTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/MCPConversationUITests -only-testing:WoowAssistantUITests/BrowserInteractionUITests -only-testing:WoowAssistantUITests/BrowserLearningUITests -only-testing:WoowAssistantUITests/SkillCatalogUITests -only-testing:WoowAssistantUITests/SkillAuthoringUITests -only-testing:WoowAssistantUITests/MemoryUITests -only-testing:WoowAssistantUITests/MemoryRaceUITests)
               ;;
             startup)
               test_filters=(-only-testing:WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded)

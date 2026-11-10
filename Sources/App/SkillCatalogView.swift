@@ -1,7 +1,7 @@
 import AssistantSkills
 import SwiftUI
 
-/// A read-only source archive and an explicit draft importer, not a tool launcher.
+/// Source archive with explicit entry points to supported local capabilities.
 @MainActor
 struct SkillCatalogView: View {
     @ObservedObject var store: LearningStore
@@ -101,6 +101,17 @@ private struct SkillCatalogDetail: View {
 
     var body: some View {
         List {
+            if entry.id == "skill-authoring" {
+                Section("編寫個人技能") {
+                    NavigationLink { SkillAuthoringView(store: store, catalog: catalog) } label: {
+                        Text("查閱、編寫與審閱儲存")
+                    }
+                    .disabled(!store.available)
+                    .accessibilityIdentifier("catalog.skill-authoring.open")
+                    Text("手動編寫並核准後儲存至個人技能；目前不會由模型自主編寫或儲存。")
+                        .font(.caption)
+                }
+            }
             if entry.id == "documents" {
                 Section("實際文件處理") {
                     NavigationLink { SkillExecutionView() } label: { Text("選取 PDF 並擷取文字") }

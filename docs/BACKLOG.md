@@ -34,6 +34,8 @@
 - [ ] Authorized real-device HA control tests (target and allowed actions pending).
 - [x] Complete pinned Mika bundled-source catalog with hashes/licenses and separately reviewed iOS text adaptations.
 - [x] Capability dependency inventory, per-step PDF grants, native PDFKit and pinned original PDF-worker protocol/tests.
+- [x] Manual skill-authoring bridge with original-request/read-version/review binding and atomic encrypted persistence; native UI acceptance tracked per revision.
+- [ ] Model-autonomous skill search/read/save integration.
 - [ ] Full original-skill tool registry and deployed authenticated remote compute environment.
 
 ## M3 — Browser parity and notifications

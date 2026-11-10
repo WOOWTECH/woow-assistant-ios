@@ -48,7 +48,8 @@ public enum SkillExecutionDependencies {
                 "預設以原生 PDFKit 取文、選頁、資訊與密碼解鎖；原始腳本僅由另行設定且核准上傳的 worker 執行。"),
             row("scripts/manifest.json: apk:py3-pypdf; Python argparse/json/logging/os/sys", .hostIntegrationRequired,
                 "iOS 不執行 Python。可選 worker 需要 Python 與 pypdf；原版未固定 pypdf 版本。"),
-            row("--out / read_file / search_files / share_file", .unavailable, "本增量回傳有頁碼的記憶體結果，尚未接入輸出檔案、搜尋或分享工具。"),
+            row("--out / share_file", .hostIntegrationRequired, "App 可讓使用者選擇位置儲存擷取文字；尚未提供可由技能呼叫的分享工具。"),
+            row("read_file / search_files", .unavailable, "尚未提供輸出文字的分段讀取或搜尋工具；不開放一般檔案系統存取。"),
             row("run_command + pypdf 拆分／合併／抽頁", .excluded, "不執行任意 Shell 或 Python；未提供 PDF 編輯或 OCR。")]
         case "info-research": return [browser,
             row("跨來源搜尋與兩個獨立原始來源", .hostIntegrationRequired, "瀏覽器受來源與導航政策限制；需要上層逐站授權並保留實際閱讀證據。"),
@@ -58,9 +59,9 @@ public enum SkillExecutionDependencies {
                 "現有 MCP 探索、選取工具與單次核准可作為接點；須實際找到該帳號的工具，不假設存在訊息服務。此執行器尚未接入。"),
             row("WeChat / Feishu / Instagram 原生 App 操作", .excluded, "不操作其他 App；原文『不用先問』不授予發送權限。")]
         case "skill-authoring": return [
-            row("skill_search / skill_read", .hostIntegrationRequired, "既有 SkillsState、SkillRetrieval 與完整文件可供上層查閱；尚未註冊成此執行器的工具。"),
+            row("skill_search / skill_read", .hostIntegrationRequired, "App 的手動技能寫作可搜尋個人與原始技能、讀取全文；尚未由模型自主呼叫。"),
             row("ask_user / skill_save(markdown, quote, version)", .hostIntegrationRequired,
-                "既有 importMarkdown/editDraft/approveDraft 與樂觀版本檢查可接入；仍需使用者檢視草稿，不由技能文字核准自己。")]
+                "手動技能寫作會綁定本次要求，核對完整內容並核准後才儲存；版本衝突與取消會阻擋儲存，模型不能自行核准。")]
         default: return []
         }
     }

@@ -81,6 +81,37 @@ not merely hiding an invalid response. Actual PDFKit extraction and the original
 Python worker remain covered separately. Large-device page-load delay remains
 unexplained; deadline diagnostics were improved without changing the assertion.
 
+The `776f5f9` files large variant completed successfully: 98 portable cases,
+12 original-worker cases, 40 selected native/hosted cases and eight UI cases all
+passed, zero selected skips. Both actual PDF export cases passed; the previously
+timed-out cancellation case passed in 0.067 seconds in native XCTest. The native
+PDFKit extraction remains a separate passing case. This also covers the hosted
+persistent-cookie removal check, but does not substitute for the separate native
+login/clear-site UI flow. SE and current-runtime files variants remain pending.
+
+Current follow-up runs are separate source checkpoints:
+- `1747c20` [workspace 42763765491](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42763765491): includes bounded persistent website-removal phases and failure cleanup evidence. This instrumentation does not itself fix cookie removal.
+- `08ebb8f` [iOS 17.5 42762808616](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762808616): full scheme after separating boot results from optional inventory failures; running.
+- `024aba9` [Transporter 42764461574](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42764461574) and [unsigned Release 42764485075](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42764485075): queued to verify the real official upload-tool installation and actual build-number override. No signing/upload mode was dispatched.
+
+The optional TestFlight delivery path has 32 passing local Python tests using
+synthetic artifacts and substitute subprocesses. The official Transporter 4.3.0.4
+installer was actually downloaded and its SHA-256 and Apple installer certificate
+verified locally without installation. Account authentication, real distribution
+signing, Apple upload, processing and tester availability remain unverified.
+
+### Manual skill authoring increment
+
+A typed search/read/prepare/review/commit bridge is connected to the bundled
+skill-authoring detail screen. It uses LearningStore's existing encrypted snapshot
+and publishes success only after durable persistence. This is a manual authoring
+flow, not model-autonomous tool execution. The pinned Mika documents are unchanged.
+Local direct Swift execution passed five groups / 51 checks (26 ordinary conditions
+and 25 expected-error checks), using actual AES-GCM files with an in-memory key
+provider. Those map to five native XCTest methods, not 51 test cases. Four new UI
+cases cover create/relaunch, refusal/relaunch, read/update/relaunch, and invalid-tool
+rejection; they still require native CI execution.
+
 ### Earlier increment evidence
 
 Integrated source `d160a24` was tested in [files 42748349250](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748349250)

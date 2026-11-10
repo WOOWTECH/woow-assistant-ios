@@ -20,7 +20,7 @@ private struct LearningSnapshot: Codable {
 }
 
 @MainActor
-final class LearningStore: ObservableObject {
+final class LearningStore: ObservableObject, SkillAuthoringStoring {
     @Published private(set) var memory = MemoryState()
     @Published private(set) var skills = SkillsState()
     @Published private(set) var websites = WebsiteKnowledgeState()
@@ -102,6 +102,32 @@ final class LearningStore: ObservableObject {
             skills = next; error = nil; notice = nil
             return true
         } catch { self.error = Self.message(error); return false }
+    }
+
+    func skillAuthoringSnapshot() -> SkillAuthoringSnapshot {
+        SkillAuthoringSnapshot(state: skills, generation: generation,
+            availableToolNames: BrowserSession.toolNames, available: available)
+    }
+
+    /// Synchronous MainActor transaction. Check the reviewed generation before
+    /// cancellation advances it; never publish a draft or success before disk.
+    func commitSkillAuthoring(expectedGeneration: UUID,
+                              _ change: (inout SkillsState) throws -> Void) throws {
+        guard available else { throw SkillAuthoringError.unavailable }
+        guard generation == expectedGeneration else { throw SkillAuthoringError.storageChanged }
+        onUserChange?()
+        // A host callback may invalidate the reviewed snapshot synchronously.
+        guard generation == expectedGeneration else { throw SkillAuthoringError.storageChanged }
+        cancelLearning()
+        do {
+            var next = skills
+            try change(&next)
+            try persist(memory: memory, skills: next)
+            skills = next; error = nil; notice = nil
+        } catch {
+            self.error = Self.message(error)
+            throw error
+        }
     }
 
     /// Call only after the view has obtained BOTH clear-all confirmations.
@@ -291,7 +317,8 @@ final class LearningStore: ObservableObject {
         mutateSkills { _ = try catalog.stageAdaptation(id: id, into: &$0) }
     }
 
-    private static func message(_ error: Error) -> String {
+    static func message(_ error: Error) -> String {
+        if let authoring = error as? SkillAuthoringError { return authoring.errorDescription ?? "技能未儲存。" }
         if let catalog = error as? SkillCatalogError { return catalog.errorDescription ?? "內建技能未匯入。" }
         if let memory = error as? MemoryError {
             switch memory {
@@ -309,6 +336,7 @@ final class LearningStore: ObservableObject {
             case .sensitiveContent: return "技能內含可能的敏感資料，未儲存。"
             case .changedSinceRead: return "原技能已被修改，請重新檢查更新內容。"
             case .draftPending: return "同名技能已有待確認草稿，請先處理。"
+            case .builtinName: return "這個名稱保留給內建技能，請使用不同的個人技能名稱。"
             case .missingSection: return "技能須包含入口、步驟、容易出錯的地方、怎樣算辦成、什麼時候停下交給使用者五個段落。"
             case .tooLong: return "技能全文超過 4,000 字上限。"
             case .capacityReached: return "技能或版本紀錄已達儲存上限；現有資料保留，這次變更未儲存。"

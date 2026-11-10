@@ -28,7 +28,7 @@ let package = Package(
         .target(name: "AssistantSkills", dependencies: ["AssistantModels"], path: "Sources/AssistantSkills", resources: [.process("Resources")]),
         .target(name: "AssistantPersistence", path: "Sources/AssistantPersistence"),
         .testTarget(name: "AssistantMemoryTests", dependencies: ["AssistantMemory"], path: "Tests/AssistantMemoryTests"),
-        .testTarget(name: "AssistantSkillsTests", dependencies: ["AssistantSkills", "AssistantModels"], path: "Tests/AssistantSkillsTests"),
+        .testTarget(name: "AssistantSkillsTests", dependencies: ["AssistantSkills", "AssistantModels", "AssistantPersistence"], path: "Tests/AssistantSkillsTests"),
         .testTarget(name: "AssistantPersistenceTests", dependencies: ["AssistantPersistence"], path: "Tests/AssistantPersistenceTests"),
         .testTarget(name: "AssistantMCPTests", dependencies: ["AssistantMCP", "AssistantModels"], path: "Tests/AssistantMCPTests"),
         .testTarget(name: "AssistantModelsTests", dependencies: ["AssistantModels"], path: "Tests/AssistantModelsTests"),
