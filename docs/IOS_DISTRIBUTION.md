@@ -1,5 +1,11 @@
 # iOS 簽章與最低版本驗證
 
+最新完成的 Release 裝置編譯為 `d1fb868` [unsigned-device 42782856252](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42782856252)：**建置 19**，Xcode／iphoneos SDK 26.2，最低系統 17.0，九個二進位檔及原生 Documents、ATS、隱私必要理由均通過檢查。這是未簽章且不可安裝的裝置建置；`signature_verified`、`runtime_tested`、`uploaded` 均為 false。包含空的 PDF 選取結果提示修正，沒有執行 Apple 簽章或上傳模式。
+
+`1bc4549` [17.5 workspace 42779156342](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42779156342) 已完成 38 項原生／hosted 測試，全數通過、零略過（Domain 27、hosted 11）。介面測試啟動器等待 AX-loaded notification 逾時，五項 UI 案例都未執行；摘要的 38 通過／1 失敗中，失敗項目是 runner 初始化錯誤。報告 `test_exit_code=65`，兩個驗收旗標均為 false，不能當成瀏覽器完整介面通過。已保存 report、測試日誌與摘要，沒有改用別的版本填補 iOS 17 介面缺口。
+
+`8f89d9e` [17.0.1 startup 42777363564](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42777363564) 已結束，未執行 App 測試：21A342 runtime 在 5 分 56 秒後回報 terminal `Data Migration Failed`。流程沒有把 simctl 的退出碼 0 當成功；診斷 help 逾時、device-state inventory 缺失亦有保存，專用 simulator 已刪除。最低版本的基本介面仍未驗證；先前核心 114/114 通過屬另一輪獨立證據。[17.5 workspace 42779156342](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42779156342) 包含書籤標籤等待與網站資料清除修正，另行驗證中。
+
 `08ebb8f` [iOS 17.5 full 42762808616](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762808616) 實際啟動 17.5／21F79，測試於 80 分鐘期限中止。已完成日誌為原生 98 通過、介面 40 通過／3 失敗／10 即時服務略過；hosted 未執行，兩項基本介面案例只有開始紀錄。失敗包含書籤改名後標籤斷言，以及兩項 PDF 匯出的 App teardown 終止失敗。摘要為空，不能算完整驗收；報告 `test_timed_out=true`、`selected_tests_succeeded=false`、`runtime_tested=false`。07:19 UTC 已保存原始 artifact；runner cleanup 卡住超過 30 分鐘後於 07:52 請求取消，最終 cancellation 標籤不改變測試逾時。後續 [17.0.1 startup 42777363564](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42777363564)（`8f89d9e`）只驗證基本介面 class，待結果。摘要與附件匯出改為獨立 `always()` 步驟，讓摘要失敗時仍嘗試保存原生畫面，兩者失敗均保留。
 
 查核日期：2026-11-10。整合提交 `d160a24` 已通過 Release 裝置編譯；17.0.1／17.5 模擬器均已啟動並實際執行 App 與 XCTest，但驗收尚未全數通過。`1153d5a` 修正已重現的原始網址連接埠檢查，其原生與 hosted 回歸案例已在三種 iOS 18.5／26.2 模擬器，以及 iOS 17.0.1 通過。最新 `1b0f3d8` 的 iOS 17.0.1 核心／hosted 驗證為 114/114、零略過；沒有選入 UI，完整介面重測仍在進行。目前尚無真機驗收、distribution 簽章成功或可安裝發行包。

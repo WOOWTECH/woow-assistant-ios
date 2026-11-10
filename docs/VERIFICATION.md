@@ -13,6 +13,9 @@ Latest completed simulator evidence (passed test cases / selected cases, not ass
 | [Parity 42762628864](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762628864), `776f5f9` | Native/hosted 94/94; UI 18/21 | Native/hosted 94/94; UI 21/21 | Native/hosted 94/94; UI 21/21 |
 | [Learning 42769122118](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769122118), `1b0f3d8` | Native 39/39; UI 9/10 | Native 39/39; UI 9/10 | Native 39/39; UI 10/10 |
 | [Manual authoring 42772009461](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42772009461), `5d85da4` | Native 5/5; UI 3/4 | Native 5/5; UI 4/4 | Native 5/5; UI 3/4 |
+| [SE files 42773301406](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42773301406), `e2b7de9` | Native/hosted 45/45; UI 6/8 | Not selected | Not selected |
+| [SE workspace 42778341962](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42778341962), `e941709` | Native/hosted 26/26; UI 3/5 | Not selected | Not selected |
+| [Large browser 42776190893](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42776190893), `8f89d9e` | Not selected | Native 29/30; UI 3/3 | Not selected |
 
 The `776f5f9` and `1747c20` variants passed 98 portable cases. The completed
 `1b0f3d8` files variants passed 103, including the five new authoring
@@ -129,6 +132,22 @@ reruns; large success does not retroactively pass SE. Targeted SE
 on `e2b7de9` includes both repairs. CI concurrency now separates effective device
 variants, allowing this targeted run without cancelling the older full matrix.
 
+The targeted `e2b7de9` SE files result is 51/53, zero skips. All 45 native/hosted
+cases passed; six of eight UI cases passed, including full PDF extraction and
+export cancellation. The older upload readiness queries failed before the native
+picker opened, and export/save exceeded its 240-second allowance while reopening
+the exporter to verify saved output. The stalled remote process is the system
+DocumentManager service; a later spindump was collected after the earlier stall
+recovered, so it does not establish the cause. No result or readback assertion was
+removed and no deadline was increased.
+
+The `e941709` SE workspace result is 29/31, zero skips. All 26 native/hosted cases
+and three workspace UI cases passed, but the login case failed its QuickPath
+tutorial readiness check and site clearing exceeded the shared 60-second wait.
+The blank-page completion preceded removal and AX remained responsive; existing
+evidence does not prove when the old WebView was detached/released. The wait
+change alone is not a fix, and complete SE cookie-revocation/relaunch remains open.
+
 The `1b0f3d8` current files variant finished 51/53, zero skips: native/hosted
 45/45 and UI 6/8. Actual upload and both export cases passed. Upload cancellation
 failed the bounded native-picker readiness check. Full PDF selection tapped the
@@ -139,14 +158,33 @@ the artifact cannot prove the fixture's filesystem state after the error. No
 production fix is claimed. `e7a0f70` removes redundant source-menu accessibility
 queries during the same 45-second upload-picker wait; [current file-picker
 42775938595](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42775938595)
-compares both upload cases and the unchanged full-PDF flow. It is pending; a later
-pass does not erase the original provider failure.
+compared both upload cases and the unchanged full-PDF flow. It completed 7/8:
+native 5/5, upload UI 2/2 and full PDF UI 0/1, zero skips. At 08:03:05 UTC,
+the provider again failed bookmark resolution with -1005 and an empty internal
+delegate item array for a different fresh fixture. Upload readiness passed this
+run; the earlier failure remains recorded. The PDF failure is reproducible, but
+its filesystem cause is not yet established.
+
+`7c7a0cb` adds a strictly DEBUG-gated creation baseline and post-test inventory
+for only synthetic UUID PDF paths. It checks bounded regular-file bytes, title,
+author, page count, hash and filesystem identity; rejects links and changed files;
+and exports no PDF bytes or user paths. Actual local PDF/POSIX checks passed,
+including abrupt process exit, replacement, missing/oversized files and Release
+with no filesystem access. The evidence step runs even after export failure and
+explicitly reports unavailable diagnostics. [Current diagnostic file-picker
+42780906250](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42780906250)
+repeats the same ordered selection cases to collect this missing observation.
+It is pending; post-test presence alone cannot prove presence at the earlier
+picker failure, and instrumentation is not a product fix.
 
 Learning `1b0f3d8` passed all seven memory/race UI cases on every variant.
 Large's only failure entered the browser address while it was still disabled
 during asynchronous test-storage reset. `e7a0f70` waits for enabled/hittable state
 before the same single input; [large browser 42776190893](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42776190893)
-is pending. SE's only failure could not expose a website replay button below
+completed with all three browser-learning UI cases passing. Its full result is
+32/33: a different native coordinated-file-read case exceeded four minutes;
+29/30 native passed and no case was skipped. The native failure remains under
+investigation and the overall job is not counted as passing. SE's only failure could not expose a website replay button below
 the screen: recorded short drags began inside the search field and did not move
 the list. `616178d` performs one conditional normal list swipe, retaining full
 visibility, confirmation and actual replay assertions; [SE browser 42779755190](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42779755190)
@@ -166,11 +204,62 @@ the 240-second case allowance is unchanged. Targeted [SE authoring 42779742743](
 and [current authoring 42779748377](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42779748377)
 are pending. These are manual authoring tests, not model-autonomous skill tools.
 
+The `616178d` targeted SE authoring run completed **9/9**, zero failures/skips:
+all five native bridge methods and four manual UI cases passed. Exact input,
+approval/refusal and encrypted persistence/relaunch checks remain. UI durations
+were 113.029 seconds (cancel), 122.101 (invalid tool), 198.132 (update/relaunch)
+and 119.977 (create/relaunch), all within the unchanged 240-second allowance.
+The same-source current authoring run also passed 9/9, zero failures/skips. Its update/relaunch case took 236.221 seconds, leaving 3.779 seconds within the unchanged 240-second allowance. This pass does not erase prior `5d85da4` failures.
+
+The `7c7a0cb` current file-picker diagnostic run completed **8/8**, zero skips:
+five native methods, both upload UI cases and the full PDF UI flow passed. Its
+complete App log contains no provider -1005/-1012 or empty-delegate error. The
+fixture creation baseline (08:29:42 UTC) and post-test inventory (08:32:32 UTC)
+match at 8,477 bytes, identical device/inode, SHA-256 and modification time; the
+native thumbnail tap occurred at 08:30:14 and selected filename appeared at
+08:30:20. This successful run did not reproduce the failure and cannot establish
+file presence during either earlier failed run. No copy-mode change is justified
+by this result, and earlier provider failures remain unresolved.
+
+`d1fb868` changes the product's PDF importer to show an actionable selection error
+for empty/unexpected success arrays, without preparing a runtime or reading files.
+A strictly gated DEBUG trace records callback delivery/count only. This fixes a
+silent-result branch; it does not prove the provider error reaches that callback
+or repair bookmark resolution. DEBUG/Release parse checks passed. [SE file-picker
+42782850081](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42782850081)
+and [unsigned Release 42782856252](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42782856252)
+verify the new App code; pending. The earlier `7c7a0cb` diagnostic run remains a
+separate source checkpoint without this callback trace.
+
+The `d1fb868` unsigned Release completed successfully: **build 19**, Xcode 26.2,
+iphoneos SDK 26.2, minimum OS 17.0 and all nine binaries verified. Native Documents
+flags, absent Release ATS key and required privacy-reason entries passed. It has
+no verified distribution signature, no runtime acceptance or upload, and is not
+installable. SE file-picker validation of this App revision remains pending.
+
+`2dd7b69` makes the iOS Skills test target load the actual WoowAssistant host,
+matching the existing WebKit integration target. The repeated unhosted native
+failure stalled in `PDFDocument.init(data:)` after the coordinated bytes check;
+its wait chain reaches SpringBoard, runningboardd and launchd. The host-context
+explanation is a hypothesis, not a proven product fix. All PDF/coordination,
+authorization, cancellation and authoring assertions remain unchanged. Real
+XcodeGen output verified Debug/Release `TEST_HOST` and `BUNDLE_LOADER`; portable
+macOS tests are unchanged. Controlled [SE core 42784364067](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42784364067)
+and [current core 42784372596](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42784372596)
+select the same 34 memory/skills/persistence methods; native results pending.
+
+`5dd9047` removes unnecessary hittability/geometry queries for static QuickPath
+explanation text while still requiring the exact tutorial and an enabled,
+hittable native Continue button. [SE login 42784628988](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42784628988)
+selects the full login/cross-tab/relaunch/logout case with its original 420-second
+allowance. Pending; the separate website-removal deadline remains 60 seconds.
+
 Current follow-up runs are separate source checkpoints:
-- `0df511b` [workspace 42769973948](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769973948): large/current passed 31/31 selected native/hosted/UI cases, including login, protected HTTP, per-site removal and relaunch. SE passed 30/31: login passed, but removal completed at 30.719 seconds with zero synthetic cookies, after the first 30-second wait failed; subsequent HTTP/relaunch assertions did not execute. All three hosted targets passed 11/11, including actual WKDownload, zero skips. `e941709` shares the existing total 60-second allowance across removal and record refresh, keeping empty-list, HTTP and relaunch assertions. Targeted [SE workspace 42778341962](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42778341962) is pending. Workspace/all honor the login case's existing 420-second declaration; other scopes remain capped at 300. The four unexplained 60-second XCTest idle waits in the prior SE case remain open, not a proven product fix.
+- `0df511b` [workspace 42769973948](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769973948): large/current passed 31/31 selected native/hosted/UI cases, including login, protected HTTP, per-site removal and relaunch. SE passed 30/31: login passed, but removal completed at 30.719 seconds with zero synthetic cookies, after the first 30-second wait failed; subsequent HTTP/relaunch assertions did not execute. All three hosted targets passed 11/11, including actual WKDownload, zero skips. `e941709` shares the existing total 60-second allowance across removal and record refresh, keeping empty-list, HTTP and relaunch assertions. Targeted [SE workspace 42778341962](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42778341962) failed as recorded above. Workspace/all honor the login case's existing 420-second declaration; other scopes remain capped at 300. The four unexplained 60-second XCTest idle waits in the prior SE case remain open, not a proven product fix.
 - `1747c20` [workspace 42763765491](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42763765491): completed with the failures and timings above. The bounded persistent website-removal phases and failure cleanup evidence do not themselves fix cookie removal.
-- `08ebb8f` [iOS 17.5 42762808616](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762808616): booted 17.5/21F79 and reached the 80-minute test deadline. Completed log records show 98 native passed; UI 40 passed, three failed and ten explicit live-service skips. Hosted cases were not reached. Bookmark rename failed its label assertion after Save; two PDF export cases failed App termination in teardown. Two basic UI cases started without a final result and are not counted. The result summary was empty/incomplete. Report/log/bundle artifact was saved at 07:19 UTC; cancellation was requested at 07:52 after runner cleanup remained stuck for over 30 minutes. This remains a timed-out, incomplete acceptance run regardless of its eventual cancellation label. Targeted [17.0.1 startup 42777363564](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42777363564) on `8f89d9e` selects the basic UI class to cover unfinished settings/chat/MCP cases; pending.
-- `1bc4549` [iOS 17.5 workspace 42779156342](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42779156342): pending, includes the shared website-removal budget and bookmark-title publication wait. In the failed `08ebb8f` bookmark case, the exact input passed and the later AX/screenshot showed the correct new title on the same bookmark, with no error; the immediate post-Save assertion was premature. The new bounded five-second wait retains history/relaunch checks. This does not retroactively pass persistence, which the failed case never reached.
+- `08ebb8f` [iOS 17.5 42762808616](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762808616): booted 17.5/21F79 and reached the 80-minute test deadline. Completed log records show 98 native passed; UI 40 passed, three failed and ten explicit live-service skips. Hosted cases were not reached. Bookmark rename failed its label assertion after Save; two PDF export cases failed App termination in teardown. Two basic UI cases started without a final result and are not counted. The result summary was empty/incomplete. Report/log/bundle artifact was saved at 07:19 UTC; cancellation was requested at 07:52 after runner cleanup remained stuck for over 30 minutes. This remains a timed-out, incomplete acceptance run regardless of its eventual cancellation label. Targeted [17.0.1 startup 42777363564](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42777363564) on `8f89d9e` selected the basic UI class; its pre-test boot failure is recorded below.
+- `1bc4549` [iOS 17.5 workspace 42779156342](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42779156342): booted and passed all 38 selected native/hosted cases (Domain 27, hosted 11), zero skips. The UI runner then failed to initialize because it timed out waiting for the AX-loaded notification. No UI case executed; the summary records that runner error as a separate failed entry (38 passed/one failed), not as one of the five intended UI cases. Report exit 65 and selected/runtime acceptance flags remain false. Source includes the shared website-removal budget and bookmark-title publication wait. In the failed `08ebb8f` bookmark case, the exact input passed and the later AX/screenshot showed the correct new title on the same bookmark, with no error; the immediate post-Save assertion was premature. The new bounded five-second wait retains history/relaunch checks. This does not retroactively pass persistence, which the failed case never reached.
+- `8f89d9e` [iOS 17.0.1 startup 42777363564](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42777363564): failed before App tests. The selected 21A342 runtime reached terminal `Data Migration Failed` after 5m56s; the runner correctly rejected simctl's misleading zero exit code. Diagnostic help timed out and device-state inventory was unavailable; the dedicated simulator was deleted. No UI case executed. This preserves the earlier 114/114 core result but leaves basic UI on the minimum runtime unverified; it is not an App assertion failure.
 - `024aba9` [Transporter 42764461574](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42764461574) and [unsigned Release 42764485075](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42764485075): the unsigned run was cancelled while queued and replaced with [42765470430](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42765470430) on `c8ff84a` to include the new authoring App code. Transporter installation/startup passed; the replacement unsigned run passed, including actual build number 14, nine device binaries and minimum OS 17.0. It remains unsigned/not installable. No signing/upload mode was dispatched.
 
 The optional TestFlight delivery path has 32 passing local Python tests using
