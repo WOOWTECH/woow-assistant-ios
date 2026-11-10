@@ -1,0 +1,44 @@
+{
+  "revision": "2390926",
+  "run": 42813278810,
+  "job": 129819848335,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42813278810",
+  "runtime": "18.5",
+  "physicalDevice": false,
+  "overall": "success",
+  "nativeReadOnlyAcceptance": "passed",
+  "ui": {
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "expectedFailures": 0
+  },
+  "cases": {
+    "discoveryDisconnectReconnect": {
+      "passed": true,
+      "seconds": 33.643
+    },
+    "twoApprovedReadOnlyTools": {
+      "passed": true,
+      "seconds": 78.156,
+      "modelCalls": 3,
+      "formatCorrections": 0,
+      "attempts": 2,
+      "results": 2,
+      "toolErrors": 0,
+      "finalAnswerMatched": true
+    },
+    "refusalPreservesDraft": {
+      "passed": true,
+      "seconds": 52.495,
+      "proposalBeforeRefusal": true,
+      "attemptsBeforeRefusal": 0
+    }
+  },
+  "limits": [
+    "This run does not establish the cause of the earlier model HTTP rejection.",
+    "This source precedes the iOS17 full-viewport disconnect test correction.",
+    "Only audited read-only HA operations were approved; no physical device actuation tested."
+  ],
+  "privacy": "Fixed App-owned categories/counters and known test metadata only; no endpoint, credentials, household data or model replies."
+}

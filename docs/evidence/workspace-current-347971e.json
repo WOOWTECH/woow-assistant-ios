@@ -1,0 +1,53 @@
+{
+  "revision": "347971e",
+  "run": 42803804104,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42803804104",
+  "physicalDevice": false,
+  "summary_sha256": "163f55c979ae2d866d9798970bcd05ceb57a23c9feda3476dc8358a8c3526744",
+  "summary": {
+    "devicesAndConfigurations": [
+      {
+        "device": {
+          "architecture": "arm64",
+          "deviceId": "BC7CEBFB-6B90-4D7E-B85E-BB0102C99F06",
+          "deviceName": "iPhone 17",
+          "modelName": "iPhone 17",
+          "osBuildNumber": "23C54",
+          "osVersion": "26.2",
+          "platform": "iOS Simulator"
+        },
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "passedTests": 33,
+        "skippedTests": 0,
+        "testPlanConfiguration": {
+          "configurationId": "1",
+          "configurationName": "Test Scheme Action"
+        }
+      }
+    ],
+    "environmentDescription": "WoowAssistant · Built with macOS 15.8.2",
+    "expectedFailures": 0,
+    "failedTests": 0,
+    "finishTime": 1794313871.417,
+    "passedTests": 33,
+    "result": "Passed",
+    "skippedTests": 0,
+    "startTime": 1794313292.861,
+    "statistics": [],
+    "testFailures": [],
+    "title": "Test - WoowAssistant",
+    "topInsights": [],
+    "totalTestCount": 33
+  },
+  "ui_cases_passed": 5,
+  "non_ui_cases_passed": 28,
+  "scope": [
+    "native form login, cross-tab cookies, App relaunch, logout",
+    "website-record clear revokes actual cookie and stays cleared after App relaunch",
+    "bookmark rename and history clear persistence",
+    "manual query navigation and actual JavaScript dialog",
+    "independent tab state and selected-tab restoration"
+  ],
+  "limitation": "This source precedes the later DOM capture corrections and other new functionality; it is not a full current-head acceptance claim."
+}

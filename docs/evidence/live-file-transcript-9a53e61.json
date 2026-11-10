@@ -1,0 +1,43 @@
+{
+  "revision": "9a53e61",
+  "run": 42814220474,
+  "job": 129823061997,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42814220474",
+  "runtime": "18.5",
+  "physicalDevice": false,
+  "ui": {
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "expectedFailures": 0,
+    "seconds": 171.469
+  },
+  "case": "LiveTranscriptUITests/testRealModelReadsEntireNativeTextAndReturnsVerifiedSourceQuotes",
+  "diagnostic": {
+    "terminal": "completed",
+    "reason": "none",
+    "corrections": 0
+  },
+  "audit": {
+    "selections": 1,
+    "reads": 1,
+    "modelAttempts": 4,
+    "rangeReads": 3,
+    "covered": 18355,
+    "total": 18355,
+    "results": 1
+  },
+  "requirements": [
+    "Native Files selection returns the actual namespaced UTF-8 file; no URL injection",
+    "Explicit file-read approval then model-destination confirmation",
+    "Actual model reads three progressing ranges with full 18355-byte coverage",
+    "Exact byte-verified citations and one accepted result",
+    "No automatic skill or pending-draft creation"
+  ],
+  "limits": [
+    "One native UI acceptance run on iOS 18.5 does not resolve all intermittent provider failures on other variants",
+    "This source predates the subsequent timestamp-style improvement",
+    "Byte/evidence correctness does not independently prove every long-source semantic detail"
+  ],
+  "privacy": "Only fixed enum codes, counters and case metadata retained; no credentials, endpoint, source text or replies."
+}

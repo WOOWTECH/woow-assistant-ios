@@ -1,8 +1,25 @@
 # Verification — 2026-11-10
 
+## Complete audited HA live acceptance passed on iOS 18.5
+
+Source `2390926`, [42813278810](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42813278810), passed native read-only HA acceptance and **3/3 actual App UI, zero skips**. Discovery/disconnect/reconnect passed; the model selected two exact approved read-only tools, received both actual results and produced the required answer in **3 model calls**, with no correction or tool error. Refusal preserved the draft. [Fixed evidence](evidence/live-ha-2390926-ios18.json). The earlier provider HTTP rejection remains in the record; this successful run does not identify its cause or cover physical actuation.
+
+
+## iOS 26 browser workspace full selected scope passed
+
+At `347971e`, current iPhone 17 / iOS 26.2 [42803804104](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42803804104) passed **33/33, zero skips**: 28 native/hosted plus five complete UI cases. This includes actual login, cross-tab cookies, relaunch and logout, site-record clearing that stays cleared after relaunch, bookmarks/history, manual JavaScript dialogs and independent tabs. [Exact summary](evidence/workspace-current-347971e.json). Later DOM/skill changes need their own regression; the earlier SE 31/31 and this current result are revision-specific.
+
+
+## Native Files through complete actual-model transcript passed
+
+Source `9a53e61`, iOS 18.5 [42814220474](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42814220474), passed **1/1 App UI, zero skips**, 171.469 seconds. The system Files picker delivered the selected text file, explicit read/model-destination approvals completed, and the actual model made **4 requests / 3 range reads**, covering all **18,355 bytes** and returning one verified result. No schema correction was needed; exact citations and absence of automatic skill/draft creation were checked. [Bounded native evidence](evidence/live-file-transcript-9a53e61.json). This closes that previously failed workflow at this revision/runtime, while other provider variants and later timestamp-style changes remain separate.
+
+
 ## Five transcript formats completed on iOS 18.5 after bounded repair
 
 Source `9a53e61`, [42814211141](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42814211141), passed **5/5 actual-model native formats, zero skips** over the fixed 847-byte source. Summary, chapters, quotations and article each used two calls without correction. Transcript used one syntax correction and three calls. All formats read the full snapshot and verified exact quotations; total model requests/responses were **11/11**. This establishes the bounded repair in a real response, not native Files UI or independent semantic-quality acceptance. [Per-format evidence](evidence/transcript-formats-9a53e61-ios18.json).
+
+The matching exact iOS **17.0.1** run [42814216073](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42814216073) also passed **5/5, zero skips**: quotations and article each used one syntax correction; the other formats needed none. Total requests/responses were **12/12**, with all 847 bytes covered and citations verified. [iOS 17 per-format evidence](evidence/transcript-formats-9a53e61-ios17.json).
 
 A separate one-shot macOS combined-model/HA diagnostic at the same source also passed: actual server catalog, exact approved two-tool calls, actual results and expected final answer; **3 model calls, 2 tool results, zero corrections/errors**. It is explicitly not iOS/UI evidence and does not establish the cause of the earlier provider rejection. [Native local evidence](evidence/live-ha-local-9a53e61.json).
 
