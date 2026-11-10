@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "base_revision": "bbbb514dc1e188ead0228e0c195f754aae90b98a",
+  "state": "two_swift_files_frozen_for_parent_integration",
+  "files": {
+    "Sources/App/SkillPDFAssemblyView.swift": "883b7ad14d5bee91e2c90049e990760f070d8265bca07043cacb2ab60cf7aa92",
+    "Tests/WoowAssistantUITests/SkillExecutionUITests.swift": "4c66d63ea52a361273db6d14bf3711023e30545226802f66306e8cb87fdb4aa2"
+  },
+  "integration": {
+    "original_button": "pdfAssembly.select",
+    "copy_button": "pdfAssembly.importCopy",
+    "copy_notice": "pdfAssembly.importCopy.notice",
+    "selector": "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+    "expected_observation": "source=user-copy mode=import allowsMultipleSelection=true callbacks=1",
+    "user_action": "Explicitly tap 匯入 PDF 副本; no experimental flag or automatic fallback.",
+    "copy_disclosure": "系統會在你選檔時建立副本；App 仍會先請你核准讀取，再另行核准產生新 PDF。",
+    "file_selection_scope": "允許多選模式、實際選一個含兩頁的PDF；不是原生跨檔合併 UI 驗收。"
+  },
+  "preserved_assertions": [
+    "No read approval on selection",
+    "Exactly 2 pages and bounded positive receipt bytes",
+    "No output on read approval",
+    "Exact initial page order 1:1-2",
+    "One native Select All and delete; exact empty value",
+    "Exact entered value 1:2,1:1",
+    "Exact two reviewed output page mappings",
+    "Separate assembly authorization",
+    "Actual two-page bounded PDF result",
+    "Native exporter cancellation preserves identical result and remains exportable"
+  ],
+  "local_validation": {
+    "ios17_debug_syntax_parse": "passed",
+    "ios17_release_syntax_parse": "passed",
+    "diff_check": "passed",
+    "debug_import_choice_checks": 24,
+    "release_import_choice_checks": 26,
+    "actual_shared_scroll_geometry_checks": 7,
+    "geometry_runner_sha256": "72ed7699458d177770566550d45b834fe13e485d25bb37cef90bfc0eb842f845",
+    "shared_geometry_source_sha256": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204"
+  },
+  "limitations": [
+    "Host has CLT Swift5.8.1 and no Xcode/iOS SDK; syntax parse is not UIKit/SwiftUI typecheck or iOS runtime acceptance.",
+    "New copy case and exact Form scrolling require native CI.",
+    "Parent owns workflow selector/output inventory integration.",
+    "Original bbbb514 failures remain preserved in pdf-assembly-bbbb514.json."
+  ]
+}

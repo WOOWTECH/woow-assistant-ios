@@ -4,16 +4,19 @@
 
 | Scope | 類別 | 目前 methods |
 |---|---|---:|
-| `ui-startup` | `WoowAssistantUITests` | 12 |
+| `ui-startup` | `WoowAssistantUITests`、`SelfConfigurationUITests` | 13 |
+| `ui-notifications` | `NotificationUITests` | 1 |
 | `ui-workspace` | `BrowserWorkspaceUITests`、`BrowserLoginUITests` | 5 |
 | `ui-browser` | `BrowserInteractionUITests`、`BrowserUploadUITests` | 5 |
-| `ui-learning` | `BrowserLearningUITests` | 3 |
-| `ui-memory` | `MemoryUITests`、`MemoryRaceUITests` | 7 |
-| `ui-skills` | `SkillCatalogUITests`、`SkillAuthoringUITests` | 7 |
-| `ui-documents` | `SkillExecutionUITests` | 7 |
-| `ui-mcp` | `MCPConversationUITests` | 5 |
+| `ui-learning` | `BrowserLearningUITests`、`MultiSourceResearchUITests` | 5 |
+| `ui-memory` | `MemoryUITests`、`MemoryRaceUITests` | 8 |
+| `ui-profile` | `UserProfileUITests`、`UserProfileToolUITests` | 9 |
+| `ui-memory-tools` | `MemoryToolUITests` | 6 |
+| `ui-skills` | `SkillCatalogUITests`、`SkillAuthoringUITests`、`TranscriptUITests` | 10 |
+| `ui-documents` | `SkillExecutionUITests`、`SkillWorkerSettingsUITests` | 14 |
+| `ui-mcp` | `MCPConversationUITests`、`MCPLearningUITests` | 8 |
 
-合計 12 個類別、51 個 methods。PDF 類別包含 direct 與 coordinated fixture creation 兩個真實 Files 案例；沒有略過 A/B 任一案例。三個 Live 類別（`LiveMCPUITests`、`LiveMCPConversationUITests`、`LiveModelUITests`，目前 11 methods）明確排除，仍需獨立即時服務驗證。沒有修改 UI 測試、fixture、核准步驟或斷言。
+合計 21 個類別、84 個非 Live methods；另有 22 個 Live methods 明確分開。這是目前來源清單，不是已執行或全面通過的數目。`ui-notifications` 使用真實系統權限與原生通知橫幅，模型仍為固定測資；宜用此次作業專用的新模擬器，不能以 App 偏好重設冒充系統權限重設。
 
 分片以約 10–20 分鐘測試工作量為規劃目標，尚未完成這批分片的原生時間量測；下載 runtime、啟動 simulator 與建置另計。新 `ui-*` scopes 的 build＋test 上限是 30 分鐘，其他 scope 保留原有 80 分鐘上限。每案例 240 秒預設、300 秒最大值保留；含 workspace 的新分片沿用既有 workspace 的 420 秒最大值。沒有以增加逾時或重跑失敗案例達成通過。
 
@@ -32,7 +35,7 @@ python3 -m unittest discover -s scripts -p 'test_release_*.py' -v
 python3 scripts/release_ios17.py --os 17.0.1 --expected-host-arch arm64 --test-scope ui-memory --output build/ios17-memory
 ```
 
-workflow 的 `ios17_host_arch`、`startup-smoke` 與精確 runtime 比對保持不變。17.0.1 與 17.5 要分別跑 `core` 和全部八個 UI 分片，不能混用版本／架構補齊。清單檢查也在 native 工作開始前執行；任何新非 Live 類別必須加入唯一分片，新 methods 自動跟隨所屬類別。清單拒絕遺漏、重複、錯字、把 Live 放進分片、以及無法判讀的宣告。現有來源採一個同名 Swift 檔案對應一個 XCTestCase 類別；新增繼承測試或 extension methods 時須明確更新檢查器。
+workflow 的 `ios17_host_arch`、`startup-smoke` 與精確 runtime 比對保持不變。17.0.1 與 17.5 要分別跑 `core` 和全部 11 個 UI 分片，不能混用版本／架構補齊。清單檢查也在 native 工作開始前執行；任何新非 Live 類別必須加入唯一分片，新 methods 自動跟隨所屬類別。清單拒絕遺漏、重複、錯字、把 Live 放進分片、以及無法判讀的宣告。現有來源採一個同名 Swift 檔案對應一個 XCTestCase 類別；新增繼承測試或 extension methods 時須明確更新檢查器。
 
 ## 結果界線
 
@@ -42,6 +45,6 @@ workflow 的 `ios17_host_arch`、`startup-smoke` 與精確 runtime 比對保持�
 
 `selected_tests_succeeded=true` 僅代表所選範圍完成；任何單一 UI 分片、`core` 或 `startup-smoke` 的 `runtime_tested`／`full_acceptance_succeeded` 都是 false。只有舊的 `all` 真正包含所有 Live、零略過，且通過完成清單檢查，才可能設定這兩個欄位。這比舊版僅檢查 xcodebuild 退出碼更嚴格：缺少 Live 條件造成 skip 的 `all` 現在會明確驗證失敗。
 
-人工彙整時，必須核對同一 revision、精確 runtime／build、host architecture、inventory hash 的 `core` 與全部八片，各自沒有失敗／略過／遺漏，才可陳述「此版本與架構的全部非 Live 測試通過」。這不代表 Live、真機或完整產品驗收通過。單次 smoke 成功只證明那一個案例；此腳本不會自動把不同執行或不同版本合併成全面通過。
+人工彙整時，必須核對同一 revision、精確 runtime／build、host architecture、inventory hash 的 `core` 與全部 11 片，各自沒有失敗／略過／遺漏，才可陳述「此版本與架構的全部非 Live 測試通過」。這不代表 Live、真機或完整產品驗收通過。單次 smoke 成功只證明那一個案例；此腳本不會自動把不同執行或不同版本合併成全面通過。
 
 本機驗證使用真實來源檔案與合成 XCTest command／summary fixtures；不代表本機有執行 iOS 或 Xcode。現有原生 artifact、尚未完成的分片及原始失敗應繼續分開保留。

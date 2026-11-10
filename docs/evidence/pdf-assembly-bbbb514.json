@@ -1,0 +1,329 @@
+{
+  "version": 1,
+  "source_revision": "bbbb514dc1e188ead0228e0c195f754aae90b98a",
+  "comparison": "允許多選模式、實際選一個含兩頁的PDF；不代表原生跨檔合併 UI 驗收。",
+  "source_sha256": {
+    "Sources/App/PDFNativePicker.swift": "099292a4c461be8cb34c6258b806cb78897e895e6d6fe7b3d4e7ce15f6be0f47",
+    "Sources/App/SkillPDFAssemblyView.swift": "c03780076edc904d4392561e47556dc34544eddd4328614e9065ddaaad64bfa4",
+    "Sources/App/SkillExecutionUITestSupport.swift": "f136192e7e3f1e4ba269b1094608d11e382ce937f7308f4b73f8440342581f6b",
+    "Tests/WoowAssistantUITests/SkillExecutionUITests.swift": "5703cfb3553b3aea512e9a23a4c1936f2a02ae6c5b5244922f89b5c04db65614",
+    ".github/workflows/ios.yml": "4b2609c834f5904626dc50f94dbec1e792eab9dc3f5554ffb087041be20f4689",
+    ".github/workflows/release-ios.yml": "a3448f67b43400974b9b571e294dcad9877f64dbdbf3203e9b56cb7eacc0fa87",
+    "scripts/release_ios17.py": "3bb8ce982daf009cd1c19b2f59be1d110937ccd00074c7c5227c269370d0e960"
+  },
+  "matrix_complete": false,
+  "cases": [
+    {
+      "variant": "swiftui_se",
+      "run_id": 42884129136,
+      "job_id": 130067866959,
+      "artifact_id": 13797187669,
+      "conclusion": "failure",
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "actual": {
+        "totalTestCount": 1,
+        "passedTests": 0,
+        "failedTests": 1,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "method_started": 1,
+      "duration_seconds": 88.317,
+      "failure": "failed - No safe bounded scroll can reveal pdfAssembly.order; visibility remains required.",
+      "evidence": [
+        {
+          "file": "test-summary.json",
+          "bytes": 1630,
+          "sha256": "e7315c3bd82571938711c59487428ac60a189a2ae17b33e6fcb32f20fdf7c583"
+        },
+        {
+          "file": "ios-tests.log",
+          "bytes": 887553,
+          "sha256": "d8a890dd5eb5a3b90375b497928a34177f2046a3ded59a6263ae483785a77a52"
+        },
+        {
+          "file": "bounded-extraction.json",
+          "bytes": 875,
+          "sha256": "96231cdd9d82d212bd37775418d1179df3e1f7bfcdff83041900149c8705af1d"
+        }
+      ],
+      "observed": {
+        "public_mode": "open",
+        "allows_multiple_selection": true,
+        "selected_file_count": 1,
+        "callback_count": 1,
+        "callback_basis": "exact observation assertion passed and source/read receipt reached",
+        "actual_pdf_pages_read": 2,
+        "reached_page_order_replacement": false,
+        "produced_or_exported_pdf": false
+      }
+    },
+    {
+      "variant": "swiftui_large",
+      "run_id": 42884129136,
+      "job_id": 130067866762,
+      "artifact_id": 13796287599,
+      "conclusion": "failure",
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "actual": {
+        "totalTestCount": 1,
+        "passedTests": 0,
+        "failedTests": 1,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "method_started": 1,
+      "duration_seconds": 131.835,
+      "failure": "failed - No safe bounded scroll can reveal pdfAssembly.order; visibility remains required.",
+      "evidence": [
+        {
+          "file": "test-summary.json",
+          "bytes": 1612,
+          "sha256": "a8c38296c12e99152f5cd7a06dff176f0013af2011327cd0733a2d726b7281fb"
+        },
+        {
+          "file": "ios-tests.log",
+          "bytes": 889967,
+          "sha256": "3de2e96ff6ca36d093f07fa110897030996af18e45f766e75a292a948db5c588"
+        },
+        {
+          "file": "bounded-extraction.json",
+          "bytes": 478,
+          "sha256": "4d9d4524ce699765c6b5f7ba611cad3ff1a4ec29634e35199d1a0307e0c7c520"
+        }
+      ],
+      "picker_events": [
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=AC1015E4-2049-44ED-98F5-89A539047693 event=bindingChanged ordinal=1 presented=true callbacks=0 sampledAt=1794339212.828541",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=AC1015E4-2049-44ED-98F5-89A539047693 source=swiftui event=bindingChanged presented=true callbacks=0 sampledAt=1794339212.828831",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=AC1015E4-2049-44ED-98F5-89A539047693 source=swiftui mode=open allowsMultipleSelection=true sampledAt=1794339216.220667",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=AC1015E4-2049-44ED-98F5-89A539047693 source=swiftui event=observed mode=open allowsMultipleSelection=true delegatePresent=true inWindow=true dismissing=false sampledAt=1794339216.221428",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=AC1015E4-2049-44ED-98F5-89A539047693 event=completion source=swiftui callbacks=1 outcome=one sampledAt=1794339261.05862",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=AC1015E4-2049-44ED-98F5-89A539047693 source=swiftui event=completion outcome=one callbacks=1 sampledAt=1794339261.058882",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=AC1015E4-2049-44ED-98F5-89A539047693 event=bindingChanged ordinal=1 presented=false callbacks=1 sampledAt=1794339261.1105509",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=AC1015E4-2049-44ED-98F5-89A539047693 source=swiftui event=bindingChanged presented=false callbacks=1 sampledAt=1794339261.110622"
+      ],
+      "picker_event_source": {
+        "source": "diagnostics/0_Test_iPhone 16 Pro Max_Diagnostics/WoowAssistantUITests-87253F2E-197A-4CB9-BD2A-EA7149EA3E84-Configuration-Test Scheme Action-Iteration-1/WoowAssistantUITests-9AC91DF5-ED2F-49D7-B4E7-212A4605DBFE/StandardOutputAndStandardError-io.woowtech.assistant.txt",
+        "source_bytes": 38275802,
+        "source_sha256": "af41d7eb4b53b534e6d974fd02f8d0deaba61aff8d78c1cee8c4979f447e410d",
+        "transferred_bytes": 3122011,
+        "whole_archive_downloaded": false
+      },
+      "observed": {
+        "public_mode": "open",
+        "allows_multiple_selection": true,
+        "selected_file_count": 1,
+        "callback_count": 1,
+        "callback_basis": "exact observation assertion passed and source/read receipt reached",
+        "actual_pdf_pages_read": 2,
+        "reached_page_order_replacement": false,
+        "produced_or_exported_pdf": false
+      }
+    },
+    {
+      "variant": "swiftui_current",
+      "run_id": 42884129136,
+      "job_id": 130067867093,
+      "artifact_id": 13796562076,
+      "conclusion": "failure",
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "actual": {
+        "totalTestCount": 1,
+        "passedTests": 0,
+        "failedTests": 1,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "method_started": 1,
+      "duration_seconds": 167.464,
+      "failure": "XCTAssertTrue failed - Files selection must reach the real importer callback.",
+      "evidence": [
+        {
+          "file": "test-summary.json",
+          "bytes": 1583,
+          "sha256": "9924520dcc769ef29be1d15ed23dba29ad44d796af8211c689551cf59d9b9540"
+        },
+        {
+          "file": "ios-tests.log",
+          "bytes": 927313,
+          "sha256": "e71576aa113fafc240f1e4dd5122d049d7d1b98944ac7eedd64a7ad8bb0a267e"
+        },
+        {
+          "file": "bounded-extraction.json",
+          "bytes": 875,
+          "sha256": "f7796d4a6a68053bf7a76096f9a6db8c7e2f01e71de004637f216b6bf114c9b5"
+        }
+      ],
+      "picker_events": [
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=FC667066-DD3D-487C-8001-D1AE5DFD4E56 event=bindingChanged ordinal=1 presented=true callbacks=0 sampledAt=1794339338.457731",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=FC667066-DD3D-487C-8001-D1AE5DFD4E56 source=swiftui event=bindingChanged presented=true callbacks=0 sampledAt=1794339338.45794",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=FC667066-DD3D-487C-8001-D1AE5DFD4E56 source=swiftui mode=open allowsMultipleSelection=true sampledAt=1794339345.193293",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=FC667066-DD3D-487C-8001-D1AE5DFD4E56 source=swiftui event=observed mode=open allowsMultipleSelection=true delegatePresent=true inWindow=true dismissing=false sampledAt=1794339345.325941"
+      ],
+      "picker_event_source": {
+        "source": "diagnostics/0_Test_iPhone 17_Diagnostics/WoowAssistantUITests-9215EE87-BD2E-40DD-A3F0-198F0A9790B5-Configuration-Test Scheme Action-Iteration-1/WoowAssistantUITests-2737F21F-62D9-4C68-937F-DB95B1106F11/StandardOutputAndStandardError-io.woowtech.assistant.txt",
+        "source_bytes": 18463615,
+        "source_sha256": "9dfe6eb37d843e7b1650f6cf825c8e2d4b0012da59f1789549d238188aa308ed",
+        "transferred_bytes": 1843348,
+        "whole_archive_downloaded": false
+      },
+      "observed": {
+        "public_mode": "open",
+        "allows_multiple_selection": true,
+        "selected_file_count": null,
+        "callback_count": 0,
+        "callback_basis": "fixed binding/observed events show callbacks=0; no completion in complete App stdout; exact source row absent after 15 seconds",
+        "actual_pdf_pages_read": null,
+        "reached_page_order_replacement": false,
+        "produced_or_exported_pdf": false
+      }
+    },
+    {
+      "variant": "ios17_swiftui",
+      "run_id": 42884140784,
+      "job_id": 130067905681,
+      "artifact_id": 13797283763,
+      "conclusion": "failure",
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "classification": "runner bootstrap environment failure; no App method executed",
+      "actual_method_events": {
+        "starts": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "synthetic_bootstrap_summary": {
+        "totalTestCount": 1,
+        "passedTests": 0,
+        "failedTests": 1,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "failure": "Early unexpected exit, operation never finished bootstrapping - no restart will be attempted. (Underlying Error: Test crashed with signal kill before starting test execution.)",
+      "boot_succeeded": true,
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "prelaunch": {
+        "budget_seconds": 120,
+        "attempts": 1,
+        "status": "process_started_handshake_unverified",
+        "handshake_verified": false,
+        "process_alive": true,
+        "elapsed_seconds": 1.052
+      },
+      "sampling": {
+        "status": "stopped",
+        "handshake_verified": false,
+        "max_samples": 3,
+        "sample_seconds": 3,
+        "sample_command_seconds": 15,
+        "sample_byte_limit": 2097152,
+        "attempts": [
+          {
+            "role": "daemon_early",
+            "elapsed_seconds": 15.228,
+            "image": "xpcproxy_sim",
+            "status": "captured",
+            "frames": 1,
+            "bytes": 42
+          },
+          {
+            "role": "daemon_later",
+            "elapsed_seconds": 75.103,
+            "image": "xpcproxy_sim",
+            "status": "captured",
+            "frames": 1,
+            "bytes": 42
+          },
+          {
+            "role": "runner_bootstrap",
+            "elapsed_seconds": 382.91,
+            "image": "WoowAssistantUITests-Runner",
+            "status": "captured",
+            "frames": 51,
+            "bytes": 4032
+          }
+        ],
+        "actual_test_case_started": false
+      },
+      "runner_sample_finding": "Main thread waits in XCTestDriver._prepareTestConfigurationAndIDESession -> XCTFuture._waitForFulfillment; no selected test method frames. This localizes the bootstrap wait, not its daemon/transport root cause.",
+      "callback_or_layout_results": null,
+      "evidence": [
+        {
+          "file": "report.json",
+          "bytes": 6323,
+          "sha256": "31ab8a03cead0d0ae677916e708a06795e53d88524669158076e10c19062c1fc"
+        },
+        {
+          "file": "test-summary.json",
+          "bytes": 1461,
+          "sha256": "892ffbaa497c57be9ebc8fb334716b33ed967bde2cb31dc47ad6ebbd1a4f136b"
+        },
+        {
+          "file": "tests.log",
+          "bytes": 1097529,
+          "sha256": "8798427bd77bfd701b6508b5e05fc06b67d3cefdf5e263a2172a1c68b0fa53e9"
+        },
+        {
+          "file": "bootstrap-samples/report.json",
+          "bytes": 759,
+          "sha256": "723acbf74bba9e223150a15b97f1f4c497939ca64b3ee0cd84c93e957982109a"
+        },
+        {
+          "file": "bootstrap-samples/runner_bootstrap.txt",
+          "bytes": 4032,
+          "sha256": "a11613ded49e232855da7d4b7f883c7b6b7eed65c5b45e7dc5fe4278d2734b7e"
+        },
+        {
+          "file": "bounded-extraction.json",
+          "bytes": 1203,
+          "sha256": "bff9cf4deb229edf7786327a8b5d8acb7118cf230b148d2434305726711cba68"
+        }
+      ]
+    }
+  ],
+  "pending": {
+    "uikit_current": {
+      "run_id": 42884134853,
+      "job_id": 130067894447
+    }
+  },
+  "layout_finding": {
+    "classification": "confirmed harness container selection error before Select All",
+    "source_case": "swiftui_large",
+    "session_file": "Session-WoowAssistantUITests-2026-11-10_192705-bHmR4l.log",
+    "session_sha256": "b4e4f2dfeebe60ee2805fc767e360a538c55429d167a52ce19b2f98317825967",
+    "observed_selected_collection_frame": [
+      0,
+      610,
+      395,
+      45
+    ],
+    "actual_order_frame": [
+      40,
+      546.9999999999999,
+      360,
+      23
+    ],
+    "keyboard_frame": [
+      0,
+      655,
+      440,
+      243
+    ],
+    "video_attachment": "59BA4445-66D2-4F63-AD23-8BB55908DED8.mp4",
+    "video_second": 126,
+    "synthetic_frame_sha256": "404dad795f6fa97dab15ee048b55e4db08f6c1a12b9d6833337937ba2483922d",
+    "finding": "Generic helper selected the hittable keyboard candidate collection rather than pdfAssembly.form. Target cannot fit inside that 45pt collection. Video also shows keyboard accessory above the Keyboard AX frame.",
+    "fix": "Use exact assembly Form and exclude its keyboard accessory, retaining full visibility/hittability and bounded native scroll. Existing Select All replacement and all later assertions retained.",
+    "native_fix_validation": "pending"
+  },
+  "limitations": [
+    "No automatic picker fallback, re-selection, timeout increase, skipped assertion or injected file/binding.",
+    "SwiftUI baseline does not expose native created/dismantled callbacks; public observed mode and App completion events are recorded.",
+    "Original open failures remain failures independently of the new explicit copy option."
+  ]
+}

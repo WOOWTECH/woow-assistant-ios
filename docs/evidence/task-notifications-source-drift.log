@@ -1,0 +1,376 @@
+Captured source execution; SOURCE_CHANGED; not native iOS acceptance.
+
+core-execute
+{"actual_xctest_bodies":true,"assertions":154,"groups":{"boundsRelaunchAndRevocation":81,"defaultOffAndPermission":7,"enableRefreshOverlap":2,"inFlightAddCancellation":8,"observerLifecycle":13,"permissionAndSettingsRaces":6,"testButtonAndRoutes":25,"transitionsAndExpiry":12},"native_xctest_execution":false,"status":"PASS","system_notification_center_access":false}
+
+Debug-adapter-typecheck
+
+Debug-app-compile
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserWorkspace.swift:264:35: warning: consider using asynchronous alternative function
+            self.websiteDataStore.fetchDataRecords(ofTypes: allTypes) { [weak self] fresh in
+                                  ^
+<unknown>:0: note: 'dataRecords(ofTypes:)' declared here
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:668:10: warning: main actor-isolated instance method 'webView(_:decidePolicyFor:decisionHandler:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:668:10: note: add 'nonisolated' to 'webView(_:decidePolicyFor:decisionHandler:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:3:19: note: 'webView(_:decidePolicyFor:decisionHandler:)' declared here
+    optional func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:745:10: warning: main actor-isolated instance method 'webView(_:decidePolicyFor:decisionHandler:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:745:10: note: add 'nonisolated' to 'webView(_:decidePolicyFor:decisionHandler:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:16:19: note: 'webView(_:decidePolicyFor:decisionHandler:)' declared here
+    optional func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:707:10: warning: main actor-isolated instance method 'webView(_:didStartProvisionalNavigation:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:707:10: note: add 'nonisolated' to 'webView(_:didStartProvisionalNavigation:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:22:19: note: 'webView(_:didStartProvisionalNavigation:)' declared here
+    optional func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:736:10: warning: main actor-isolated instance method 'webView(_:didReceiveServerRedirectForProvisionalNavigation:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:736:10: note: add 'nonisolated' to 'webView(_:didReceiveServerRedirectForProvisionalNavigation:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:24:19: note: 'webView(_:didReceiveServerRedirectForProvisionalNavigation:)' declared here
+    optional func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:843:10: warning: main actor-isolated instance method 'webView(_:didFailProvisionalNavigation:withError:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:843:10: note: add 'nonisolated' to 'webView(_:didFailProvisionalNavigation:withError:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:26:19: note: 'webView(_:didFailProvisionalNavigation:withError:)' declared here
+    optional func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:727:10: warning: main actor-isolated instance method 'webView(_:didCommit:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:727:10: note: add 'nonisolated' to 'webView(_:didCommit:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:28:19: note: 'webView(_:didCommit:)' declared here
+    optional func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:791:10: warning: main actor-isolated instance method 'webView(_:didFinish:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:791:10: note: add 'nonisolated' to 'webView(_:didFinish:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:32:19: note: 'webView(_:didFinish:)' declared here
+    optional func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:842:10: warning: main actor-isolated instance method 'webView(_:didFail:withError:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:842:10: note: add 'nonisolated' to 'webView(_:didFail:withError:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:36:19: note: 'webView(_:didFail:withError:)' declared here
+    optional func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:861:10: warning: main actor-isolated instance method 'webViewWebContentProcessDidTerminate' cannot be used to satisfy nonisolated protocol requirement
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:861:10: note: add 'nonisolated' to 'webViewWebContentProcessDidTerminate' to make this instance method not isolated to the actor
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:46:19: note: 'webViewWebContentProcessDidTerminate' declared here
+    optional func webViewWebContentProcessDidTerminate(_ webView: WKWebView)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:773:10: warning: main actor-isolated instance method 'webView(_:navigationAction:didBecome:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:773:10: note: add 'nonisolated' to 'webView(_:navigationAction:didBecome:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:52:19: note: 'webView(_:navigationAction:didBecome:)' declared here
+    optional func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:776:10: warning: main actor-isolated instance method 'webView(_:navigationResponse:didBecome:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:776:10: note: add 'nonisolated' to 'webView(_:navigationResponse:didBecome:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:57:19: note: 'webView(_:navigationResponse:didBecome:)' declared here
+    optional func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1038:10: warning: main actor-isolated instance method 'webView(_:createWebViewWith:for:windowFeatures:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1038:10: note: add 'nonisolated' to 'webView(_:createWebViewWith:for:windowFeatures:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
+         ^
+    nonisolated
+WebKit.WKUIDelegate:3:19: note: 'webView(_:createWebViewWith:for:windowFeatures:)' declared here
+    optional func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView?
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1044:10: warning: main actor-isolated instance method 'webViewDidClose' cannot be used to satisfy nonisolated protocol requirement
+    func webViewDidClose(_ webView: WKWebView) { onCloseWindow?() }
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1044:10: note: add 'nonisolated' to 'webViewDidClose' to make this instance method not isolated to the actor
+    func webViewDidClose(_ webView: WKWebView) { onCloseWindow?() }
+         ^
+    nonisolated
+WebKit.WKUIDelegate:7:19: note: 'webViewDidClose' declared here
+    optional func webViewDidClose(_ webView: WKWebView)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1045:10: warning: main actor-isolated instance method 'webView(_:runJavaScriptAlertPanelWithMessage:initiatedByFrame:completionHandler:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1045:10: note: add 'nonisolated' to 'webView(_:runJavaScriptAlertPanelWithMessage:initiatedByFrame:completionHandler:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
+         ^
+    nonisolated
+WebKit.WKUIDelegate:9:19: note: 'webView(_:runJavaScriptAlertPanelWithMessage:initiatedByFrame:completionHandler:)' declared here
+    optional func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1049:10: warning: main actor-isolated instance method 'webView(_:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:completionHandler:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1049:10: note: add 'nonisolated' to 'webView(_:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:completionHandler:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String,
+         ^
+    nonisolated
+WebKit.WKUIDelegate:13:19: note: 'webView(_:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:completionHandler:)' declared here
+    optional func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1053:10: warning: main actor-isolated instance method 'webView(_:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1053:10: note: add 'nonisolated' to 'webView(_:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String,
+         ^
+    nonisolated
+WebKit.WKUIDelegate:17:19: note: 'webView(_:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:)' declared here
+    optional func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/UITestModelFixture.swift:64:21: warning: heterogeneous collection literal could only be inferred to '[String : Any]'; add explicit type annotation if this is intentional
+                    ["action": name, "arguments": arguments]), as: UTF8.self)
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                             as [String : Any]
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/UITestModelFixture.swift:112:21: warning: heterogeneous collection literal could only be inferred to '[String : Any]'; add explicit type annotation if this is intentional
+                    ["action": "profile_edit", "arguments": operation]), as: UTF8.self)
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                                       as [String : Any]
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/UITestModelFixture.swift:126:21: warning: heterogeneous collection literal could only be inferred to '[String : Any]'; add explicit type annotation if this is intentional
+                    ["action": action, "arguments": arguments]), as: UTF8.self)
+                    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                                               as [String : Any]
+
+Debug-app-execute
+{"actual_chat_session_and_combine":true,"actual_UNNotificationRequest_objects":true,"assertions":136,"groups":{"factoryAndPreferences":21,"nativeUNContentAndScope":42,"realChatCancelGeneration":3,"realChatSuccessFailureClear":10,"realMCPApprovalCompleteDecline":30,"realProfileMemoryApprovals":30},"network_or_personal_keychain":false,"notification_delivery":false,"status":"PASS","system_notification_center_access":false}
+
+Release-adapter-typecheck
+
+Release-app-compile
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserWorkspace.swift:264:35: warning: consider using asynchronous alternative function
+            self.websiteDataStore.fetchDataRecords(ofTypes: allTypes) { [weak self] fresh in
+                                  ^
+<unknown>:0: note: 'dataRecords(ofTypes:)' declared here
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserWorkspace.swift:60:45: warning: will never be executed
+        if reset { try? FileManager.default.removeItem(at: downloadDirectory) }
+                                            ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserWorkspace.swift:60:12: note: condition always evaluates to false
+        if reset { try? FileManager.default.removeItem(at: downloadDirectory) }
+           ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserWorkspace.swift:70:20: warning: will never be executed
+                if FileManager.default.fileExists(atPath: root.path) { try FileManager.default.removeItem(at: root) }
+                   ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserWorkspace.swift:69:16: note: condition always evaluates to false
+            if reset {
+               ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserWorkspace.swift:78:37: warning: will never be executed
+            isClearingWebsiteData = true
+                                    ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserWorkspace.swift:77:12: note: condition always evaluates to false
+        if reset {
+           ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:668:10: warning: main actor-isolated instance method 'webView(_:decidePolicyFor:decisionHandler:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:668:10: note: add 'nonisolated' to 'webView(_:decidePolicyFor:decisionHandler:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:3:19: note: 'webView(_:decidePolicyFor:decisionHandler:)' declared here
+    optional func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction, decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:745:10: warning: main actor-isolated instance method 'webView(_:decidePolicyFor:decisionHandler:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:745:10: note: add 'nonisolated' to 'webView(_:decidePolicyFor:decisionHandler:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:16:19: note: 'webView(_:decidePolicyFor:decisionHandler:)' declared here
+    optional func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:707:10: warning: main actor-isolated instance method 'webView(_:didStartProvisionalNavigation:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:707:10: note: add 'nonisolated' to 'webView(_:didStartProvisionalNavigation:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:22:19: note: 'webView(_:didStartProvisionalNavigation:)' declared here
+    optional func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:736:10: warning: main actor-isolated instance method 'webView(_:didReceiveServerRedirectForProvisionalNavigation:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:736:10: note: add 'nonisolated' to 'webView(_:didReceiveServerRedirectForProvisionalNavigation:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:24:19: note: 'webView(_:didReceiveServerRedirectForProvisionalNavigation:)' declared here
+    optional func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:843:10: warning: main actor-isolated instance method 'webView(_:didFailProvisionalNavigation:withError:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:843:10: note: add 'nonisolated' to 'webView(_:didFailProvisionalNavigation:withError:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:26:19: note: 'webView(_:didFailProvisionalNavigation:withError:)' declared here
+    optional func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:727:10: warning: main actor-isolated instance method 'webView(_:didCommit:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:727:10: note: add 'nonisolated' to 'webView(_:didCommit:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:28:19: note: 'webView(_:didCommit:)' declared here
+    optional func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:791:10: warning: main actor-isolated instance method 'webView(_:didFinish:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:791:10: note: add 'nonisolated' to 'webView(_:didFinish:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:32:19: note: 'webView(_:didFinish:)' declared here
+    optional func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:842:10: warning: main actor-isolated instance method 'webView(_:didFail:withError:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:842:10: note: add 'nonisolated' to 'webView(_:didFail:withError:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) { failed(navigation, error: error) }
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:36:19: note: 'webView(_:didFail:withError:)' declared here
+    optional func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:861:10: warning: main actor-isolated instance method 'webViewWebContentProcessDidTerminate' cannot be used to satisfy nonisolated protocol requirement
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:861:10: note: add 'nonisolated' to 'webViewWebContentProcessDidTerminate' to make this instance method not isolated to the actor
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:46:19: note: 'webViewWebContentProcessDidTerminate' declared here
+    optional func webViewWebContentProcessDidTerminate(_ webView: WKWebView)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:773:10: warning: main actor-isolated instance method 'webView(_:navigationAction:didBecome:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:773:10: note: add 'nonisolated' to 'webView(_:navigationAction:didBecome:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:52:19: note: 'webView(_:navigationAction:didBecome:)' declared here
+    optional func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:776:10: warning: main actor-isolated instance method 'webView(_:navigationResponse:didBecome:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:776:10: note: add 'nonisolated' to 'webView(_:navigationResponse:didBecome:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
+         ^
+    nonisolated
+WebKit.WKNavigationDelegate:57:19: note: 'webView(_:navigationResponse:didBecome:)' declared here
+    optional func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1038:10: warning: main actor-isolated instance method 'webView(_:createWebViewWith:for:windowFeatures:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1038:10: note: add 'nonisolated' to 'webView(_:createWebViewWith:for:windowFeatures:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
+         ^
+    nonisolated
+WebKit.WKUIDelegate:3:19: note: 'webView(_:createWebViewWith:for:windowFeatures:)' declared here
+    optional func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView?
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1044:10: warning: main actor-isolated instance method 'webViewDidClose' cannot be used to satisfy nonisolated protocol requirement
+    func webViewDidClose(_ webView: WKWebView) { onCloseWindow?() }
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1044:10: note: add 'nonisolated' to 'webViewDidClose' to make this instance method not isolated to the actor
+    func webViewDidClose(_ webView: WKWebView) { onCloseWindow?() }
+         ^
+    nonisolated
+WebKit.WKUIDelegate:7:19: note: 'webViewDidClose' declared here
+    optional func webViewDidClose(_ webView: WKWebView)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1045:10: warning: main actor-isolated instance method 'webView(_:runJavaScriptAlertPanelWithMessage:initiatedByFrame:completionHandler:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1045:10: note: add 'nonisolated' to 'webView(_:runJavaScriptAlertPanelWithMessage:initiatedByFrame:completionHandler:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
+         ^
+    nonisolated
+WebKit.WKUIDelegate:9:19: note: 'webView(_:runJavaScriptAlertPanelWithMessage:initiatedByFrame:completionHandler:)' declared here
+    optional func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1049:10: warning: main actor-isolated instance method 'webView(_:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:completionHandler:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1049:10: note: add 'nonisolated' to 'webView(_:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:completionHandler:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String,
+         ^
+    nonisolated
+WebKit.WKUIDelegate:13:19: note: 'webView(_:runJavaScriptConfirmPanelWithMessage:initiatedByFrame:completionHandler:)' declared here
+    optional func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void)
+                  ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1053:10: warning: main actor-isolated instance method 'webView(_:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:)' cannot be used to satisfy nonisolated protocol requirement
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String,
+         ^
+/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-tno95pfb/source/Sources/App/BrowserSession.swift:1053:10: note: add 'nonisolated' to 'webView(_:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:)' to make this instance method not isolated to the actor
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String,
+         ^
+    nonisolated
+WebKit.WKUIDelegate:17:19: note: 'webView(_:runJavaScriptTextInputPanelWithPrompt:defaultText:initiatedByFrame:completionHandler:)' declared here
+    optional func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String, defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void)
+                  ^
+
+Release-app-execute
+{"actual_chat_session_and_combine":true,"actual_UNNotificationRequest_objects":true,"assertions":121,"groups":{"factoryAndPreferences":6,"nativeUNContentAndScope":42,"realChatCancelGeneration":3,"realChatSuccessFailureClear":10,"realMCPApprovalCompleteDecline":30,"realProfileMemoryApprovals":30},"network_or_personal_keychain":false,"notification_delivery":false,"status":"PASS","system_notification_center_access":false}

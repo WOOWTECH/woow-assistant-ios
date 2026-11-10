@@ -1,0 +1,263 @@
+{
+  "captured_checks_status": "PASS",
+  "changed_sources": [],
+  "checks": [
+    {
+      "exit_code": 0,
+      "name": "AssistantContracts-compile",
+      "seconds": 0.904
+    },
+    {
+      "exit_code": 0,
+      "name": "AssistantDomain-compile",
+      "seconds": 1.803
+    },
+    {
+      "exit_code": 0,
+      "name": "AssistantModels-compile",
+      "seconds": 2.658
+    },
+    {
+      "exit_code": 0,
+      "name": "AssistantMemory-compile",
+      "seconds": 5.956
+    },
+    {
+      "exit_code": 0,
+      "name": "AssistantPersistence-compile",
+      "seconds": 0.844
+    },
+    {
+      "exit_code": 0,
+      "name": "AssistantMCP-compile",
+      "seconds": 3.666
+    },
+    {
+      "exit_code": 0,
+      "name": "AssistantSkills-compile",
+      "seconds": 21.931
+    },
+    {
+      "exit_code": 0,
+      "name": "AssistantBrowser-compile",
+      "seconds": 19.817
+    },
+    {
+      "exit_code": 0,
+      "name": "core-compile",
+      "seconds": 1.687
+    },
+    {
+      "exit_code": 0,
+      "name": "core-execute",
+      "result": {
+        "actual_xctest_bodies": true,
+        "assertions": 154,
+        "groups": {
+          "boundsRelaunchAndRevocation": 81,
+          "defaultOffAndPermission": 7,
+          "enableRefreshOverlap": 2,
+          "inFlightAddCancellation": 8,
+          "observerLifecycle": 13,
+          "permissionAndSettingsRaces": 6,
+          "testButtonAndRoutes": 25,
+          "transitionsAndExpiry": 12
+        },
+        "native_xctest_execution": false,
+        "status": "PASS",
+        "system_notification_center_access": false
+      },
+      "seconds": 1.395
+    },
+    {
+      "exit_code": 0,
+      "name": "iOS-syntax-only",
+      "seconds": 0.09
+    },
+    {
+      "exit_code": 0,
+      "name": "Debug-adapter-typecheck",
+      "seconds": 0.527
+    },
+    {
+      "exit_code": 0,
+      "name": "Debug-app-compile",
+      "seconds": 22.179
+    },
+    {
+      "exit_code": 0,
+      "name": "Debug-app-execute",
+      "result": {
+        "actual_UNNotificationRequest_objects": true,
+        "actual_chat_session_and_combine": true,
+        "assertions": 136,
+        "groups": {
+          "factoryAndPreferences": 21,
+          "nativeUNContentAndScope": 42,
+          "realChatCancelGeneration": 3,
+          "realChatSuccessFailureClear": 10,
+          "realMCPApprovalCompleteDecline": 30,
+          "realProfileMemoryApprovals": 30
+        },
+        "network_or_personal_keychain": false,
+        "notification_delivery": false,
+        "status": "PASS",
+        "system_notification_center_access": false
+      },
+      "seconds": 3.814
+    },
+    {
+      "exit_code": 0,
+      "name": "Release-adapter-typecheck",
+      "seconds": 0.475
+    },
+    {
+      "exit_code": 0,
+      "name": "Release-app-compile",
+      "seconds": 14.893
+    },
+    {
+      "exit_code": 0,
+      "name": "Release-app-execute",
+      "result": {
+        "actual_UNNotificationRequest_objects": true,
+        "actual_chat_session_and_combine": true,
+        "assertions": 121,
+        "groups": {
+          "factoryAndPreferences": 6,
+          "nativeUNContentAndScope": 42,
+          "realChatCancelGeneration": 3,
+          "realChatSuccessFailureClear": 10,
+          "realMCPApprovalCompleteDecline": 30,
+          "realProfileMemoryApprovals": 30
+        },
+        "network_or_personal_keychain": false,
+        "notification_delivery": false,
+        "status": "PASS",
+        "system_notification_center_access": false
+      },
+      "seconds": 0.63
+    }
+  ],
+  "limitations": [
+    "SwiftUI/UIKit only parsed for iOS, not typechecked or run",
+    "OS permission/banner/sound/tap acceptance belongs to isolated native CI",
+    "independent skill/browser runner integrations remain out of scope"
+  ],
+  "native_ios_execution": false,
+  "native_xctest_execution": false,
+  "network_or_personal_keychain": false,
+  "notification_delivery": false,
+  "production_source_substitutions": false,
+  "schema": 1,
+  "source_basis": "captured shared working-tree bytes; not a clean-commit claim",
+  "source_sha256": {
+    "Sources/App/BrowserLoginFixture.swift": "3578a046f5cacd2466b06b2efeb12d76982c96d394505778acfa9648b9153f19",
+    "Sources/App/BrowserSession.swift": "501789d7994ab8a74732a3c3d623bfbd4a5e49277a0566bfe57d94d7b682d8d1",
+    "Sources/App/BrowserUploadFixture.swift": "a1a3b3586f5cedb8457b3c71aab445411052554ae30fb976c47d059bfbe1e59a",
+    "Sources/App/BrowserWorkspace.swift": "0f5e0933adcb1e2a88d28f265fef9a02cc60a679dbd69251a95ee5c417a835f8",
+    "Sources/App/ChatSession.swift": "c6947419729bcc6f3b07ea24c0b4be3a8d522df2cb6d65471579dd82c295fb34",
+    "Sources/App/LearningKeychainStore.swift": "9a6275783caa50300a19802f2e06aa3ecb35f1f1f5ea7c4c50a84e75300460a7",
+    "Sources/App/LearningRunContext.swift": "7ea16b4669fbad56b4c3af91e74708b224f12856674f5e6317360e6b077a44c2",
+    "Sources/App/LearningStore.swift": "a370fdb4472902433ef204791e7c4665390faaa400a79fc8bf19e389423cbe25",
+    "Sources/App/LiveModelUITestSupport.swift": "4f16545b116cfc5e74a5a637def440646f1ee43f38e2bf85cdb70783fe3449cb",
+    "Sources/App/MCPSession.swift": "a21a55b070f8efb7a32a32a2ca9555c37977ab5f64d9e6dc184ef8e8abd0c8cd",
+    "Sources/App/MCPSettings.swift": "324512189ac78b564ac2822928ce208ff7352387beb0595c313bee4ffe855e8b",
+    "Sources/App/ModelSettings.swift": "afbeeb5d6d1f5deb860fde17f11dc3be073ba9df319bd0c69d74dc16515cff2c",
+    "Sources/App/MultiSourceResearchSession.swift": "5c38d10c1f50e3bd40b5800d00b049cf75ac5a1477f2f91576eec3c47cdf8ab2",
+    "Sources/App/SkillExecutionUITestSupport.swift": "f136192e7e3f1e4ba269b1094608d11e382ce937f7308f4b73f8440342581f6b",
+    "Sources/App/TaskNotificationCenterAdapter.swift": "4955d72a2b9b90b546c9fd18ccd68cf548ac2a5f62b3adc35b24a5ffd7180378",
+    "Sources/App/TaskNotificationChatBridge.swift": "0184d1e792531fb9c82430a0e0d4f67ab9d0db9ceb40bde69fb2dee9b565b67b",
+    "Sources/App/TaskNotificationSettingsView.swift": "2ffebaa5995f93dce3c34bf52a1d01d8c28838183c91ac13aca5cd02c54c83dd",
+    "Sources/App/TaskNotificationStore.swift": "f3909bc05a2766e672f57038fe4829f880bd684a4f4ef626e9d68b08e6be360d",
+    "Sources/App/UITestMCPFixture.swift": "1a12765725ffd7a79878ac09eceadde8310e81a9bcb63d690f59013c1671c591",
+    "Sources/App/UITestModelFixture.swift": "9801e1c6e3193eeed5927d4930ed7dde3cb0b42d12832f27b855bed8a5c98db6",
+    "Sources/AssistantBrowser/BrowserContracts.swift": "048bf72fe5ed049589d30322a448fb5c93f337f651c23c9a4e73650a7aaf8839",
+    "Sources/AssistantBrowser/BrowserDOMExecutor.swift": "7c71633644dc4feffb497ee498b465da0664118b48ce67e70b8ba04eb0e7183c",
+    "Sources/AssistantBrowser/BrowserDownloadManager.swift": "94b8d9ca1159cf881728cfb8121ebe44f5f3dcf1b77b7e1161d3f10ae74f48d1",
+    "Sources/AssistantBrowser/BrowserDownloadStore.swift": "aac2bdd4d2db5b31c9ed02df740f97ad40a8e11ef0d796bd1894a0af76da926a",
+    "Sources/AssistantBrowser/BrowserDownloadTypes.swift": "e3e28570ec7875f944f07bc2198c0f48a02e22046dad6ed536052abc452c3b7e",
+    "Sources/AssistantBrowser/BrowserInteraction.swift": "de08979f7795717bdcaea63f6496e7d4f265ba446fd0cebe939c0571a945e8e6",
+    "Sources/AssistantBrowser/BrowserInteractionPlanner.swift": "7884160f46caee31afa9ee79f44ae51afa89c22f18e6cefd7ae4255142095f7e",
+    "Sources/AssistantBrowser/BrowserLibrary.swift": "a48b83779bd4499f9cc467fd8a713c48699b3da143411cb68dd0f35ced822a9b",
+    "Sources/AssistantBrowser/BrowserNavigationIntent.swift": "13f93881ba8aeab0b772ddce30300918ad56a182432a97d684defb0cc85583c5",
+    "Sources/AssistantBrowser/BrowserPolicy.swift": "a09b109a19083ebcf644de972e42df3046da28a1d794efd7e8b9467807e5fafc",
+    "Sources/AssistantBrowser/MultiSourceResearchRunner.swift": "045082fa9d6704854efdf44f26d57c176ab87806cb23092ec4ecb0d8bd9a967a",
+    "Sources/AssistantBrowser/MultiSourceResearchTypes.swift": "af1ac51d3b6d243217678b033f1b82be8c22fb3ed890370fe6e8b4f0ed9f82d2",
+    "Sources/AssistantBrowser/ResearchSourceDiscoveryTypes.swift": "5fa96ef5e733204a0935f6b15d8895ae794b6c63f32e9a57473155b6f050ff52",
+    "Sources/AssistantBrowser/ResearchSourceDiscoveryWebKit.swift": "fc35dcedbe3ab776abbd70e8fd2326f9d72e540e97164ba0e587627df047bedc",
+    "Sources/AssistantBrowser/WebResearchRunner.swift": "005480efebed05a5c7a5e7af705e0f16d579c1ecfde83f0110ac76f05ceef342",
+    "Sources/AssistantBrowser/WebRoute.swift": "f96f4c159bb5aad61270283e0d7ebc87ba0784a34efb766eb0e84c67c4760aea",
+    "Sources/AssistantBrowser/WebRouteState.swift": "02448dd236d11611c5cfc1dabf5a1732319627d584692f2f1a048ffa05696a7e",
+    "Sources/AssistantBrowser/WebsiteKnowledgeSafety.swift": "eef4c8ad1deddd60d1062d8928aebaab5e5b5afa4cd3c87e7270d5686641ee64",
+    "Sources/AssistantBrowser/WebsiteKnowledgeState.swift": "50114ebafbd5b05f7bcf043cb8aef333079ff6087f00ade800512b85dbb7b9ac",
+    "Sources/AssistantBrowser/WebsiteKnowledgeTypes.swift": "a6a4bf2918cc01fd1cfb9018177b8841dc25512ef3126f22614eec9ba749174e",
+    "Sources/AssistantContracts/RunModels.swift": "a3d8bf7a6c7a5f1675f1d23c6c00f03c80f63be64aeaffa0a0136c2d51def0e3",
+    "Sources/AssistantDomain/RunCoordinator.swift": "139d5eca7a97e73c1000e001bf491f2b35e2ea074f7944dff1acb1952d9acb8e",
+    "Sources/AssistantDomain/TaskNotificationChatObserver.swift": "bce8fe72757c221283186430abc7700b85c66af5b5e6d359af711c6f022431bd",
+    "Sources/AssistantDomain/TaskNotificationService.swift": "1e619c0d691314338248e70abf402da7d8cde41dc29b5389ed3f44a45ff4278f",
+    "Sources/AssistantDomain/TaskNotificationTypes.swift": "ad837bace3e6411c9e71de08e6b1145359928c9dfdb57e4eaef1a30092dcda18",
+    "Sources/AssistantMCP/MCPClient.swift": "aecf3f5e700162558cff4c11fe24cc3aea14f716d2816ed57bf1797f34317762",
+    "Sources/AssistantMCP/MCPConversationRunner.swift": "81561ad4d39a37fb56578fdf9d0a7add13e50cbe80095f5d57f2d7dc0e2c9256",
+    "Sources/AssistantMCP/MCPConversationTypes.swift": "3204dae836ab83a55e9ce92d1a944b11d008cdc96025d36597f4041e5eb2a3a8",
+    "Sources/AssistantMCP/MCPHTTPTransport.swift": "80810c09ca7fd94a923876a28588d618bd96f6bde152128c8b556c01173eb759",
+    "Sources/AssistantMCP/MCPLocalTools.swift": "13a1b244cbfc5429dab6de22d47ee79dc98c44a88ecd1d8985c765e6aa426c55",
+    "Sources/AssistantMCP/MCPResponseParser.swift": "56d4cc3b35cd55ac762a71540c28d1f37aaaeadd584c3561e6638eeb106d7747",
+    "Sources/AssistantMCP/MCPTypes.swift": "dcce43b8528990968b0255f6f9f1d7a2145eadfd76bc7cb15a5f6634784dbff3",
+    "Sources/AssistantMemory/MemoryContext.swift": "37850875953b46eae9c0862dafdab1c8c81bd58f551c2799cf9644eb14129ca2",
+    "Sources/AssistantMemory/MemoryExtractor.swift": "d6f15fea1e8f75ffb3ab6f3f777ab2792cf16bd1baa9b886c0ccc318aadee404",
+    "Sources/AssistantMemory/MemorySafety.swift": "8a0fdbef488712c96d840aa1b0c55e62b5e07f6035cec6532ebf754f66b09074",
+    "Sources/AssistantMemory/MemoryState.swift": "81025ded6281eedad00ab0d53db5a05d9a630a3f04f0d4d93b04d997c6805b65",
+    "Sources/AssistantMemory/MemoryTools.swift": "2f12e8276d19140883f9d462776bcffc68acf164ab553c7cc51f0d4018b4f86b",
+    "Sources/AssistantMemory/MemoryTypes.swift": "d155ccd1b9274c84f5540f9a0c92b7e3a09d502184707ace6bb194caca3d9fad",
+    "Sources/AssistantMemory/UserProfileChatFlow.swift": "17b2651600ebfea58738ca2e9db0986229e81893512470d7c620cf849d2ed7f4",
+    "Sources/AssistantMemory/UserProfileState.swift": "ae70a9a17e20aed0e29f4196e63102169c2d3b7048b3c8566bfb20f7289bbbdf",
+    "Sources/AssistantMemory/UserProfileTool.swift": "b6107acf0dfd1ec0e39fa5031d265ce7153bd4ead2dbb37fad86214e8e3a157c",
+    "Sources/AssistantModels/ChatContextWindow.swift": "41e04121afe13d5510215a50c4c879907c8c28e03b38650ad3bdfd7fbc9b4d3b",
+    "Sources/AssistantModels/ChatSSEParser.swift": "daaf8668b25edac1d67cb6fb1e804f3d359bbcd9580368bb30618d56022aad5d",
+    "Sources/AssistantModels/HTTPChatModelClient.swift": "94e7ccb5ffc86d0cff2bb6f4a822a55a2ef94ac064d9d39ea76482395c0e1d8c",
+    "Sources/AssistantModels/ModelConfiguration.swift": "b886eede4c8c41247a9010b668849d9fceb67fca4dcd399baffe47b90e951142",
+    "Sources/AssistantModels/RawCommandEnvelope.swift": "afccf73ee49f91da1ff74a61c54076d5807ccd470b1bfde2f973c0cd2ca3a200",
+    "Sources/AssistantModels/RunReferenceContext.swift": "6917f8b97cbe6b4528a392807e5d9dc00b3010435106c9c600476678bf4847ca",
+    "Sources/AssistantPersistence/EncryptedLearningFile.swift": "a7ba735e6f17c4e67c8313e25292309388df38d36e0d5c7b826a509fd232b4da",
+    "Sources/AssistantSkills/BundledSkillCatalog.swift": "7f2314d60f904b457f83f20947ce800c61224d42968725de4f89d382992de43e",
+    "Sources/AssistantSkills/DocumentQueryRuntime.swift": "0498f703c7f3fe742cd62a08b75dfc0a87730f9ce6c665297b4dce460b90e9bb",
+    "Sources/AssistantSkills/DocumentTextTools.swift": "4fc688fcc85464387dd53fda21b396bea230010cbdc78abea253340cfadaecfc",
+    "Sources/AssistantSkills/SelfConfigurationRuntime.swift": "813abaa88284192c2e4372d5e84d31f6082fd0c4919d781c1e519ddfb04e245d",
+    "Sources/AssistantSkills/SelfConfigurationStore.swift": "10107071276deafab8d5e57ef537e1b4fea22de376a131804245777257c0deb1",
+    "Sources/AssistantSkills/SkillAuthoringBridge.swift": "afb2b96a33b7827858c3a95a1628bfa315d2730cc94b8a97e8df18e5f0789110",
+    "Sources/AssistantSkills/SkillDocument.swift": "f8f816f022a6570bd7e5f9c367e9c2ef10323af0de00686668a24779b0204039",
+    "Sources/AssistantSkills/SkillExecutionDependencies.swift": "655ee489aedf4c06d97035443329671aaac8884d9f9ea9a0fbabeae6a8a40d3e",
+    "Sources/AssistantSkills/SkillExecutionPDF.swift": "503699512b828faabfafb456e4c28033227f6b7df4b6f6678055c1f8e77a8bbf",
+    "Sources/AssistantSkills/SkillExecutionRuntime.swift": "ed414d76a87749f934dcf5ee51b61a1722c2ac967d020f5af4efb79c58b3d650",
+    "Sources/AssistantSkills/SkillExecutionTypes.swift": "748fe7c152690ebaf7803785161fc72c8a0d4486c32593eea9f769dbf175193d",
+    "Sources/AssistantSkills/SkillExecutionWorker.swift": "daf86d6884c4d3aaf67db774dd133b6201d05da77e65237f7b1970f4d0d89684",
+    "Sources/AssistantSkills/SkillLearning.swift": "83a44eb4ab4495905efc75d2ca040ed050a0da5cee4d196fecc5c57e9649902b",
+    "Sources/AssistantSkills/SkillLearningSafety.swift": "96fe72ad19a1bc3806d86fff3063bf0ba5d65f53dda00b8812b5ae368168dce0",
+    "Sources/AssistantSkills/SkillLearningService.swift": "d0a17f0e1af20870c46f530681c85c69e238c46562a9343b0f4549e21de87a18",
+    "Sources/AssistantSkills/SkillPDFAssemblyNative.swift": "91f69b7137f7e8cf684aeec849c8170eb98cf915c4ebfee92db71e0da2e6f6da",
+    "Sources/AssistantSkills/SkillPDFAssemblyRuntime.swift": "9652e1062c2419dd0ced80fb9af14754b95100179d445c0db6f555addea20e43",
+    "Sources/AssistantSkills/SkillPDFAssemblyTypes.swift": "aeb8e474cfd9d3ef67f55a0d76fa20083dbb5da1f315c8f86f82000d4f75f428",
+    "Sources/AssistantSkills/SkillRetrieval.swift": "47f3499031ba9cda5c96fce503fec797432e12b651e412c816b433323b5824ca",
+    "Sources/AssistantSkills/SkillSensitiveContent.swift": "6d1627820b2dddf7504f008ecd2db8b32227f204b857f737dc639f8b651b11f0",
+    "Sources/AssistantSkills/SkillTaskEvidence.swift": "4ff23d2fb36fa9ef6897837de6a1756d8b3d4ad5e35bb6edd51f362d39f316df",
+    "Sources/AssistantSkills/SkillToolCommand.swift": "5bff3061b948d2766df99dbaedb3bd2596185f7f26304487bda755780c60a164",
+    "Sources/AssistantSkills/SkillToolSession.swift": "f2c1e77316c9847daa12e7efa87cb3c3b46a382788b43422c4ca4b209df32226",
+    "Sources/AssistantSkills/SkillToolTypes.swift": "9c3496eea3a24e58e7c24ebe4dad7c65473b9122a5751078b0cf7eefe8c7aef0",
+    "Sources/AssistantSkills/SkillTypes.swift": "e050e01d760d68bc4d43030218a417b00a5d744280dfcaf67aec58193e3a113c",
+    "Sources/AssistantSkills/SkillsState.swift": "fea8f8a0ecc3a9ecbbab69df480711ddd21b93f599ecdbf9f9c5c2565673717e",
+    "Sources/AssistantSkills/TranscriptCommand.swift": "0f98ef1c25d766fd82e25f6fe4f2fe4a5a41acfe1d94bef7578d414f9c37a75c",
+    "Sources/AssistantSkills/TranscriptFileAccess.swift": "4c5fa61ac0bb91b17e0f9a2bad92c4a85e262dfeab2a2c1649125c7a2086c168",
+    "Sources/AssistantSkills/TranscriptRuntime.swift": "8dd8b7e66b0397a5cf1c58e94450a6a9706a8651874b976e2ac938c34ad0d131",
+    "Sources/AssistantSkills/TranscriptTypes.swift": "051814db9e18752ba445f8c515e61e24a92c938786ca99a7f49bd5c024d26428",
+    "Sources/AssistantSkills/TranscriptWebSource.swift": "635984c44e580d9f9c9c02477200fde44bdbd77217830fecabc4371f7ab37e01",
+    "Tests/AssistantDomainTests/TaskNotificationChecks.swift": "e05d0a3a21f7f5be33f93a14f0a932110d6a3feb21aaf0c7ef2edeaac3265cbf",
+    "Tests/AssistantDomainTests/TaskNotificationTests.swift": "e6ef20777380c1eeaebb09f91ac04b06d21b08eb1d11beb5d56766c2781f2210",
+    "scripts/CheckTaskNotificationApp.swift": "0990faf1c77eb4efdc45fcdc6af5f176d9e59502d396fe01e9ccbda848390e2d",
+    "scripts/CheckTaskNotificationCore.swift": "594cdd67f9b593c18967eee052ff2c2281b9ffb4f8b7b1ead0e8b9fc5224dc3e",
+    "scripts/check_task_notifications.py": "96ab3b20a33351feb28ac4d7d9a198c8215e7f9fb40e95b09a4e356ffaf13df8"
+  },
+  "sources_still_current": true,
+  "status": "PASS",
+  "system_notification_center_access": false
+}

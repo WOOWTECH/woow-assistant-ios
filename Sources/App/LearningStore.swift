@@ -38,6 +38,8 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
     private var extractionID: UUID?
     private(set) var generation = UUID()
     var onUserChange: (() -> Void)?
+    var referenceSnapshots: [WeakLearningRunSnapshot] = []
+    var referenceEditInProgress = false
 
     init() {
         do {
@@ -62,6 +64,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
     }
 
     func reload() {
+        revokeRunReferences()
         onUserChange?()
         cancelLearning()
         do {
@@ -89,12 +92,13 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
 
     @discardableResult
     func mutateMemory(_ change: (inout MemoryState) throws -> Void) -> Bool {
-        onUserChange?()
+        notifyReferenceEdit()
         cancelLearning()
         do {
             var next = memory
             try change(&next)
             try persist(memory: next, skills: skills)
+            checkMemoryReferenceRemoval(next)
             memory = next
             notes = notes.filter { note in
                 if note.kind == .forgot, let token = note.undoToken {
@@ -110,13 +114,16 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
     /// Manual profile edits become reference data for the next run. Existing
     /// contexts are values; do not cancel/rewrite the currently running task.
     @discardableResult
-    func mutateProfile(_ change: (inout UserProfileState) throws -> Void) -> Bool {
+    func mutateProfile(revokingRemovedEntries: Bool = false, _ change: (inout UserProfileState) throws -> Void) -> Bool {
         notice = nil
         do {
             guard available else { throw LearningFileError.notLoaded }
             var next = profile
             try change(&next)
             try persist(memory: memory, skills: skills, profile: next)
+            if revokingRemovedEntries {
+                revokeDeletedProfileReferences(in: next)
+            }
             profile = next; error = nil
             notice = "個人檔案已儲存，下一次對話任務開始時生效。"
             return true
@@ -134,6 +141,9 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
         let receipt = try review.apply(to: &next, now: Date())
         do { try persist(memory: memory, skills: skills, profile: next) }
         catch { self.error = Self.message(error); throw error }
+        if review.op == .delete {
+            revokeDeletedProfileReferences(in: next)
+        }
         profile = next
         error = nil
         notice = "個人檔案已儲存，下一次對話任務開始時生效。"
@@ -148,6 +158,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
         let receipt = try review.apply(to: &next, conversationID: conversationID, now: Date())
         do { try persist(memory: next, skills: skills) }
         catch { self.error = Self.message(error); throw error }
+        checkMemoryReferenceRemoval(next)
         memory = next
         notes = [receipt.note]
         error = nil; notice = nil
@@ -179,12 +190,13 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
 
     @discardableResult
     func mutateSkills(_ change: (inout SkillsState) throws -> Void) -> Bool {
-        onUserChange?()
+        notifyReferenceEdit()
         cancelLearning()
         do {
             var next = skills
             try change(&next)
             try persist(memory: memory, skills: next)
+            checkSkillReferenceRemoval(next)
             skills = next; error = nil; notice = nil
             return true
         } catch { self.error = Self.message(error); return false }
@@ -201,7 +213,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
                               _ change: (inout SkillsState) throws -> Void) throws {
         guard available else { throw SkillAuthoringError.unavailable }
         guard generation == expectedGeneration else { throw SkillAuthoringError.storageChanged }
-        onUserChange?()
+        notifyReferenceEdit()
         // A host callback may invalidate the reviewed snapshot synchronously.
         guard generation == expectedGeneration else { throw SkillAuthoringError.storageChanged }
         cancelLearning()
@@ -209,6 +221,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
             var next = skills
             try change(&next)
             try persist(memory: memory, skills: next)
+            checkSkillReferenceRemoval(next)
             skills = next; error = nil; notice = nil
         } catch {
             self.error = Self.message(error)
@@ -219,6 +232,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
     /// Call only after the view has obtained BOTH clear-all confirmations.
     @discardableResult
     func clearAll() -> Bool {
+        revokeRunReferences()
         onUserChange?()
         cancelLearning()
         do {
@@ -305,6 +319,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
                     var next = self.memory
                     let notes = try next.apply(plan: plan)
                     try self.persist(memory: next, skills: self.skills)
+                    self.checkMemoryReferenceRemoval(next)
                     self.memory = next
                     // A later extraction cannot discard the reviewed tool's
                     // undo card; newer changes to the same ID supersede it.
@@ -338,13 +353,14 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
 
     @discardableResult
     func mutateWeb(cancelResearch: Bool = true, _ change: (inout WebsiteKnowledgeState, inout WebRouteState) throws -> Void) -> Bool {
-        if cancelResearch { onUserChange?() }
+        if cancelResearch { notifyReferenceEdit() }
         cancelLearning()
         do {
             guard available, let vault else { throw LearningFileError.notLoaded }
             var nextWebsites = websites, nextRoutes = routes
             try change(&nextWebsites, &nextRoutes)
             try vault.save(LearningSnapshot(memory: memory, skills: skills, websites: nextWebsites, routes: nextRoutes, profile: profile))
+            revokeRunReferences(kind: .website, keeping: Set(nextWebsites.lessons.filter { $0.status == .approved }.map { $0.id.uuidString }))
             websites = nextWebsites; routes = nextRoutes; error = nil
             return true
         } catch { self.error = "網站資料未儲存；請檢查內容、來源與版本，既有資料保留。"; return false }
@@ -388,6 +404,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
                 }
             }
             try vault.save(LearningSnapshot(memory: memory, skills: nextSkills, websites: nextWebsites, routes: nextRoutes, profile: profile))
+            checkSkillReferenceRemoval(nextSkills)
             skills = nextSkills; websites = nextWebsites; routes = nextRoutes; error = nil
             return true
         } catch { self.error = "學習資料未儲存；原有技能、網站知識與路線保留。"; return false }
@@ -400,6 +417,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
             let evidence = SkillRunEvidence(end: .failed, failureKind: kind, wasRead: true)
             for reference in usedSkills { _ = try next.recordOutcome(reference: reference, evidence: evidence) }
             try persist(memory: memory, skills: next)
+            checkSkillReferenceRemoval(next)
             skills = next
         } catch { self.error = "任務已停止；技能結果紀錄未能儲存，既有資料保留。" }
     }

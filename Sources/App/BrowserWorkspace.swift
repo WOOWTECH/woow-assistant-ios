@@ -169,9 +169,9 @@ final class BrowserWorkspace: ObservableObject {
         if selected.isRunning { selected.cancel() }
         selected.cancelInteraction(); selected.resolveDialog(nil)
     }
-    func cancelAllWork() {
+    func cancelAllWork(preservingFrozenReferences: Bool = false) {
         for session in sessions.values {
-            if session.isRunning { session.cancel() }
+            if session.isRunning && !(preservingFrozenReferences && session.hasActiveRunReferences) { session.cancel() }
             session.cancelInteraction(); session.resolveDialog(nil)
         }
     }

@@ -209,10 +209,18 @@ targets:
     sources:
       - Tests/AssistantBrowserIntegrationTests
       - scripts/CheckResearchSourceDiscoveryApp.swift
+      - scripts/CheckLearningRunContextApp.swift
+      - scripts/CheckTaskNotificationApp.swift
+      - Tests/AssistantDomainTests/TaskNotificationChecks.swift
     dependencies:
       - target: WoowAssistant
       - target: AssistantBrowser
       - target: AssistantSkills
+      - target: AssistantDomain
+      - target: AssistantModels
+      - target: AssistantMemory
+      - target: AssistantPersistence
+      - target: AssistantMCP
 
 schemes:
   WoowAssistant:

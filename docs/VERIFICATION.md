@@ -1,5 +1,33 @@
 # Verification — 2026-11-11
 
+## Task references and notification integration awaiting native acceptance
+
+Single-site research now captures profile, active memory, eligible approved personal
+skills and website knowledge once per run, with one combined 6000-character /
+24000-byte limit. Ordinary edits affect the next run; disabling memory, deleting
+captured entries, clearing storage and reload revoke the active snapshot. Saved
+references remain data, not navigation approval or source evidence. Local shared
+checks passed 33 assertions, and actual App/WebKit checks passed 174 per Debug and
+Release, plus existing research (238) and ChatSession regressions (573/492).
+The final coherent snapshot is recorded separately from the owner handoff.
+[Scope and evidence](RUN_REFERENCES.md).
+
+Two concrete regressions were reproduced before correction: a replaced profile
+followed by deleting an unrelated entry incorrectly revoked the active reference;
+an already-cancelled valid browser-link operation still started navigation. The
+latter now reports zero loading starts, unchanged URL and no document claim.
+[Before/after evidence](evidence/learning-run-reference-regressions.json). This
+covers the deterministic cancellation entry, not every possible in-flight race.
+
+Default-off local task notifications now connect to the actual root ChatSession,
+including MCP and profile/memory review states. Local checks passed 154 core,
+136 Debug App and 121 Release App assertions, including a reproduced/fixed
+permission-request versus refresh race. These construct real UNNotificationRequest
+objects but do not access a live notification center. Native permission, banner,
+tap-to-root navigation and persisted opt-in/opt-out are separate UI acceptance;
+independent browser/skill runners are not wired yet. [Scope and evidence](TASK_NOTIFICATIONS.md).
+
+
 ## Source discovery: actual search, explicit selection, separate research approval
 
 The research form now offers a separate DuckDuckGo HTML search sheet. Only actual observed organic-result links can become candidates; tracking redirects are not decoded into guessed destinations. The isolated WebKit adapter has fixed navigation/resource policies, no page JavaScript, a shared 45-second deadline, cancellation fences and no automatic fallback. Native selection requires two or three distinct origins, and Apply only replaces source fields. It never starts research or converts search snippets into body citations.
@@ -7,6 +35,21 @@ The research form now offers a separate DuckDuckGo HTML search sheet. Only actua
 Local acceptance passed **127 assertions**: 85 shared core checks, 28 real macOS WebKit/lifecycle checks and 14 actual public-search checks. The one actual search loaded an HTTP 200 page and produced ten candidates individually matched to DOM anchors. An initial navigation rejection exposed Foundation's trailing-slash path representation; the correction uses the serialized path while preserving the exact allowed URL. [Original failure, source hashes and public search evidence](evidence/research-source-discovery-local.json). One successful query is not universal provider coverage or iOS acceptance.
 
 The initial production App Session passed 81 assertions in each of Debug and Release. A later actual WebKit integration exposed that leaving after a completed search did not revoke its selected candidates. `cancel()` now clears that completed result and selection. The new shared regression fails against the original `395ee5a` Session and passes after the correction: **100 assertions / seven groups in each configuration**. Two actual public searches then passed **54 checks**, using the production Session, adapter and observed DOM; each returned ten candidates across seven origins. Applying the two selected candidates starts no research or body reads, and leaving/query changes revoke old candidate IDs. [Current local and real-search evidence](evidence/research-source-discovery-app-live-local.json). This is macOS WebKit execution, not native iOS UI acceptance; the new seventh hosted regression and the two actual-search UI cases remain separate CI acceptance.
+
+## Completed-selection revocation passed native regression
+
+At `bbbb514`, [42884124056](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42884124056) passed **249/249 native/hosted methods, zero skips**, plus **191/191 portable methods**. All seven production source-discovery App methods completed, including the new regression that prevents applying a completed search after leaving or backgrounding. [Exact methods, runtime and source hashes](evidence/native-current-bbbb514.json). This accepts that App logic on iOS 26.2; it does not substitute for the independently running PDF or actual-search UI cases, or the later notification/reference work.
+
+## Current completed-selection correction: actual search UI
+
+At `bbbb514`, [42884145269](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42884145269)
+passed **2/2 actual-search UI methods, zero skips**, on iOS 18.5 (177.313 and
+150.264 seconds). Both searches returned ten real candidates. Selection applied
+two distinct origins in order without starting research, and reopening/closing
+preserved the intended parent fields. The second method observed fast completion,
+not cancellation; completed-result revocation is established by the separate
+hosted regression above, not these UI cases.
+[Exact paths and limitations](evidence/live-source-discovery-bbbb514-ios18.json).
 
 ## Latest native build and controlled PDF picker comparison
 
@@ -16,6 +59,25 @@ Exact iOS **17.0.1 / 21A342** at `ad461cf` completed **5/6 document-output metho
 
 The separate SE/Large assembly cases reached selection and read approval, then failed because five backspaces from a middle caret left `1-2`. The common harness now taps inside the exact visible field, uses one native Select All action, deletes once, checks empty and enters the exact reversed order. It retains original callback/case limits and every approval/output assertion. A DEBUG-only UIKit open/multiple-selection arm now runs the identical workload against the original SwiftUI importer. Both arms **select one two-page PDF in a picker that permits multiple selection**; this is not cross-file native merge acceptance. Local checks passed **217 Python tests**, 55 Debug/49 Release picker gates and 17 invalid-live-fixture cases. Native retesting remains required. [Original failures](evidence/pdf-assembly-ad461cf-order-edit.json), [controlled comparison and source hashes](evidence/pdf-assembly-open-multi-local.json).
 
+## Original PDF assembly failures and explicit copy path
+
+At `bbbb514`, all three ordinary assembly device jobs failed: SE and Large each
+returned one picker callback and read both PDF pages, then failed to reveal the
+focused page-order field; current iOS returned no selection callback. The separate
+UIKit open/multiple-selection experiment also returned no callback. The exact
+17.0.1 job booted but started zero methods because the XCTest runner was killed
+during bootstrap. These are distinct failures, not five failed assembly assertions.
+[All five terminal jobs and original evidence](evidence/pdf-assembly-bbbb514-final.json).
+
+The candidate targets the focused field's own Form scroll viewport and adds an
+explicit user-facing **import a PDF copy** option with a copy disclosure. It keeps
+both read and output approvals, exact page-order editing and native export-cancel
+checks. Original SwiftUI open, DEBUG UIKit open and user-chosen copy each have
+separate selectors. All select one two-page PDF while allowing multiple selection;
+none proves native cross-file merge. Local 24 Debug/26 Release import-mode checks
+and seven shared scroll-geometry checks passed; the new native cases still require
+execution. [Source hashes and local limits](evidence/pdf-assembly-copy-local.json).
+
 ## Actual profile recall and master-switch acceptance
 
 At `017976b`, [42868747738](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42868747738) passed **1/1 actual-model UI case, zero skips**, on iOS 18.5 in **98.688 seconds**. A synthetic randomized profile was typed and saved through the native editor, then survived process relaunch and was recalled exactly by the real model. After turning off the real persisted master switch and relaunching again, the same question returned exactly `UNKNOWN`; the stored profile remained intact with recall disabled. [Pinned source, exact counts and sequence](evidence/live-profile-recall-017976b.json). This closes the older toolbar-helper failure for this scenario, not all memory/browser runners or physical-device acceptance.
@@ -23,6 +85,10 @@ At `017976b`, [42868747738](https://github.com/WOOWTECH/woow-assistant-ios/actio
 ## Actual profile tool review and persistence passed
 
 At `f737665`, [42868043180](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42868043180) passed **1/1 actual-model profile UI, zero skips**, on iOS 18.5 in **92.638 seconds**. The real model proposed `profile_edit`; native review showed the exact user quote and replacement text before any receipt. Approval saved exactly one entry and produced a nonempty answer. Relaunch preserved the exact text and entry ID without replaying the chat or creating false history. [Pinned source and safe completion evidence](evidence/live-profile-tool-f737665.json). Profile recall/master-switch and the full fixture matrix remain separate scenarios.
+
+## Current iOS memory-tool UI regression completed
+
+At `46d25c4`, [42880165194](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42880165194) passed **6/6 ordinary memory-tool UI methods, zero skips**, on iPhone 17 / iOS 26.2. Every expected method completed once. The former save/undo/relaunch timeout now passed in 144.598 seconds; delete/undo/relaunch passed in 143.499 seconds. All six test bodies are byte-identical to `61f5377`; only their shared immediate-predicate path changed, with the original assertions and deadlines retained. [Exact method hashes, runtime and completed results](evidence/ui-memory-tools-46d25c4.json). The earlier SE/Large successes and current failure remain pinned to their original revision, not relabeled as this run.
 
 ## Document native acceptance and ordinary memory UI
 

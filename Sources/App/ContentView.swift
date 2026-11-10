@@ -4,10 +4,12 @@ import AssistantSkills
 @MainActor
 struct ContentView: View {
     @State private var selection: AppSection = .chat
+    @State private var notificationNavigationID = UUID()
     @StateObject private var session = ChatSession()
     @StateObject private var mcpSession = MCPSession()
     @StateObject private var browserWorkspace = BrowserWorkspace()
     @StateObject private var preferences = SelfConfigurationStore.applicationPreferences()
+    @StateObject private var notifications = TaskNotificationStore.applicationStore()
     private var browser: BrowserSession { browserWorkspace.selected }
     @Environment(\.scenePhase) private var scenePhase
 
@@ -18,7 +20,7 @@ struct ContentView: View {
                 case .chat:
                     ChatView(session: session, mcp: mcpSession)
                 case .settings:
-                    ModelSettingsView(session: session, preferences: preferences)
+                    ModelSettingsView(session: session, preferences: preferences, notifications: notifications)
                 case .tools:
                     MCPToolsView(session: mcpSession)
                 case .memory:
@@ -35,11 +37,22 @@ struct ContentView: View {
                 sectionNavigation
             }
         }
+        .id(notificationNavigationID)
         .environmentObject(preferences)
         .preferredColorScheme(preferences.preferredColorScheme)
+        .taskNotifications(chat: session, store: notifications) { destination in
+            switch destination {
+            case .chat: selection = .chat
+            case .browser: selection = .browser
+            }
+            // Destination-style links are not all represented in NavigationPath.
+            // Pop pushed details when the user opens a notification, retaining
+            // the root-owned sessions and stores above.
+            notificationNavigationID = UUID()
+        }
         .onAppear {
             session.learning.onUserChange = { [weak browserWorkspace, weak session] in
-                browserWorkspace?.cancelAllWork()
+                browserWorkspace?.cancelAllWork(preservingFrozenReferences: session?.learning.referenceEditInProgress == true)
                 session?.invalidateProfileReview()
             }
             mcpSession.onConnectionChange = { [weak session] in session?.cancelMCP() }
@@ -333,6 +346,7 @@ private struct LearningChatNotes: View {
 private struct ModelSettingsView: View {
     @ObservedObject var session: ChatSession
     @ObservedObject var preferences: SelfConfigurationStore
+    @ObservedObject var notifications: TaskNotificationStore
     @FocusState private var editingField: Field?
     private enum Field: Hashable { case baseURL, model, key }
 
@@ -399,6 +413,10 @@ private struct ModelSettingsView: View {
                     SelfConfigurationView(store: preferences, modelAccess: session.modelAccess)
                 } label: { Text("外觀與模型調整權限") }
                     .accessibilityIdentifier("settings.appearance")
+                NavigationLink {
+                    TaskNotificationSettingsView(store: notifications)
+                } label: { Text("任務通知") }
+                    .accessibilityIdentifier("settings.notifications")
             }
             .textFieldStyle(.roundedBorder)
             .textInputAutocapitalization(.never)

@@ -380,27 +380,53 @@ final class SkillExecutionUITests: XCTestCase {
     }
 
     func testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult() {
-        assertNativePDFAssembly(useUIKit: false)
+        assertNativePDFAssembly(picker: .swiftUI)
     }
 
     func testUIKitOpenMultiPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult() {
-        assertNativePDFAssembly(useUIKit: true)
+        assertNativePDFAssembly(picker: .uikitOpen)
     }
 
-    private func assertNativePDFAssembly(useUIKit: Bool) {
+    func testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult() {
+        // Actual product button, no launch flag or automatic picker fallback.
+        // Multi-selection is enabled; this case selects one two-page PDF.
+        assertNativePDFAssembly(picker: .userImportCopy)
+    }
+
+    private enum AssemblyPicker {
+        case swiftUI, uikitOpen, userImportCopy
+        var observation: String {
+            let source: String
+            switch self {
+            case .swiftUI: source = "swiftui"
+            case .uikitOpen: source = "uikit"
+            case .userImportCopy: source = "user-copy"
+            }
+            return "source=\(source) mode=\(self == .userImportCopy ? "import" : "open") allowsMultipleSelection=true callbacks=1"
+        }
+    }
+
+    private func assertNativePDFAssembly(picker: AssemblyPicker) {
         launchPDFScreen(fromCatalog: true, catalogEntry: "catalog.documents.assemble",
-                        fixtureIdentifier: "pdfAssembly.uitest.fixture", assemblyUIKitOpenMulti: useUIKit)
+                        fixtureIdentifier: "pdfAssembly.uitest.fixture", assemblyUIKitOpenMulti: picker == .uikitOpen)
         let form = app.collectionViews["pdfAssembly.form"]
         XCTAssertFalse(form.staticTexts["pdfAssembly.source.1"].exists)
         XCTAssertFalse(form.staticTexts["pdfAssembly.result"].exists)
-        tap("pdfAssembly.select", scroll: true)
+        if picker == .userImportCopy {
+            let notice = form.staticTexts["pdfAssembly.importCopy.notice"]
+            revealLearningElement(notice, in: app, visibility: .readableText)
+            XCTAssertTrue(notice.label.contains("系統會在你選檔時建立副本"))
+            tap("pdfAssembly.importCopy", scroll: true)
+        } else {
+            tap("pdfAssembly.select", scroll: true)
+        }
         requireHittable(nativeCancel, timeout: 45)
         chooseSyntheticPDFInPresentedPicker(selected: form.staticTexts["pdfAssembly.source.1"],
                                             expectedLabel: "來源 1：" + filename,
                                             allowsMultipleSelection: true)
         XCTAssertEqual(app.staticTexts["pdfAssembly.uitest.fixture"].value as? String,
-                       "source=\(useUIKit ? "uikit" : "swiftui") mode=open allowsMultipleSelection=true callbacks=1",
-                       "Both arms must observe actual open/multiple-selection and exactly one original importer callback.")
+                       picker.observation,
+                       "The actual picker must match the user's chosen mode, enable multiple selection and return exactly one importer callback.")
         XCTAssertFalse(form.staticTexts["pdfAssembly.receipt.1"].exists,
                        "Native selection must not approve reading the source.")
         XCTAssertFalse(form.buttons["pdfAssembly.assemble"].exists)
@@ -430,7 +456,7 @@ final class SkillExecutionUITests: XCTestCase {
         // backspaces: tapping a populated field did not put its caret at the
         // end. Select the whole value through the native editing menu once.
         // Both picker arms use this same operation; no binding/file injection.
-        revealLearningElement(order, in: app)
+        guard revealFocusedAssemblyOrder(order, in: form) else { return }
         requireHittable(order)
         order.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5)).press(forDuration: 1)
         let selectAllLabel = NSPredicate(format: "label IN %@", ["Select All", "全選", "全选"])
@@ -484,6 +510,51 @@ final class SkillExecutionUITests: XCTestCase {
         revealLearningElement(export, in: app)
         requireHittable(export)
         XCTAssertFalse(nativeCancel.exists)
+    }
+
+    private func revealFocusedAssemblyOrder(_ order: XCUIElement, in form: XCUIElement) -> Bool {
+        // bbbb514's Large session recorded the generic helper choosing the
+        // keyboard candidate CollectionView (0,610,395,45), while the actual
+        // order field was (40,547,360,23). Keep this gesture in the exact Form.
+        let keyboard = app.keyboards.firstMatch
+        let done = app.buttons["pdfAssembly.keyboardDone"]
+        let toolbar = app.toolbars.containing(.button, identifier: "pdfAssembly.keyboardDone").firstMatch
+        for attempt in 0...8 {
+            guard form.exists, order.exists, keyboard.exists, done.exists else {
+                XCTFail("The assembly Form, exact order field and keyboard controls must remain present.")
+                return false
+            }
+            let formFrame = form.frame
+            var viewport = formFrame.intersection(app.frame)
+            // SwiftUI's keyboard accessory sits above the Keyboard AX frame.
+            // If it exposes no Toolbar AX role, the exact Done button still
+            // supplies a conservative upper bound; never use another Form.
+            let accessoryFrame = toolbar.exists ? toolbar.frame : done.frame
+            guard !accessoryFrame.isEmpty, !accessoryFrame.isNull, !accessoryFrame.isInfinite else {
+                XCTFail("The assembly keyboard accessory must have a visible frame.")
+                return false
+            }
+            viewport.size.height = min(viewport.maxY, keyboard.frame.minY, accessoryFrame.minY) - viewport.minY
+            viewport = viewport.insetBy(dx: 0, dy: 4)
+            let targetFrame = order.frame
+            if learningFrameIsVisible(targetFrame, in: viewport, visibility: .fullyVisible), order.isHittable {
+                return true
+            }
+            guard attempt < 8, let drag = LearningScrollDrag.make(
+                listFrame: formFrame, viewport: viewport, targetFrame: targetFrame,
+                searchUp: true, maximumDistance: 120
+            ) else {
+                XCTFail("The exact assembly order field must be fully visible above its keyboard accessory.")
+                return false
+            }
+            let origin = form.coordinate(withNormalizedOffset: .zero)
+            origin.withOffset(CGVector(dx: drag.start.x - formFrame.minX, dy: drag.start.y - formFrame.minY))
+                .press(forDuration: 0.05,
+                       thenDragTo: origin.withOffset(CGVector(dx: drag.end.x - formFrame.minX,
+                                                            dy: drag.end.y - formFrame.minY)),
+                       withVelocity: .slow, thenHoldForDuration: 0.2)
+        }
+        return false
     }
 
     private func assertNativePDFRead(fixtureWriteMode: String?, picker: PickerArm = .swiftUI) {

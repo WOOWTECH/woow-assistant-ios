@@ -1,0 +1,50 @@
+{
+  "scope": "bounded synthetic regression experiments; no live service or real user data",
+  "profile_unrelated_delete": {
+    "before": {
+      "failed": 1,
+      "failure": "deleting B must not revoke previously superseded captured A"
+    },
+    "after_group": 19
+  },
+  "already_cancelled_valid_browser_link": {
+    "before": {
+      "cancellation_probe": {
+        "automation_claimed": true,
+        "loading_starts": 1,
+        "task_cancelled_before_open": true,
+        "url_changed": true,
+        "valid_observed_link_id": 0
+      },
+      "failed": 1,
+      "failure": "cancelled valid link starts zero navigation and never claims document"
+    },
+    "after": {
+      "automation_claimed": false,
+      "loading_starts": 0,
+      "task_cancelled_before_open": true,
+      "url_changed": false,
+      "valid_observed_link_id": 0
+    },
+    "before_environment": "DEBUG local WebKit fixture with -UITestMode; no external navigation",
+    "after_environment": "DEBUG actual BrowserSession native WebKit local HTML; no fixture load fallback invoked",
+    "scope_limit": "Deterministic already-cancelled entry reproduced; timing of an in-flight master-off actor race was not independently reproduced."
+  },
+  "source_before_sha256": {
+    "Sources/App/LearningStore.swift": "dc46e56acc5cdf47aa8730c34a9468cc261488bef55985742d9ff8f6d34856bb",
+    "Sources/App/LearningRunContext.swift": "a7d093a6d9130577a4c3ce92cc4348a30d0c0fcc5aee239580a9e820acadf477",
+    "Sources/App/BrowserSession.swift": "5997df09607c8ec20c1afcfcdbc6b2e551b7dafeef5052559663a1ae21572c88"
+  },
+  "source_after_sha256": {
+    "Sources/App/LearningStore.swift": "a370fdb4472902433ef204791e7c4665390faaa400a79fc8bf19e389423cbe25",
+    "Sources/App/LearningRunContext.swift": "7ea16b4669fbad56b4c3af91e74708b224f12856674f5e6317360e6b077a44c2",
+    "Sources/App/BrowserSession.swift": "501789d7994ab8a74732a3c3d623bfbd4a5e49277a0566bfe57d94d7b682d8d1",
+    "scripts/CheckLearningRunContextApp.swift": "e773a66b76d4eb12ddafcf9e44cd457908fc0b52168eb7f62bf947e14a0f56c5"
+  },
+  "executed_binary_sha256": {
+    "profile-delete-before": "64791650859a0a5346d07b0f7e9fec5d846655d099bdb541dd79bbd2ce6e334c",
+    "navigation-before": "c95aaf4ec35db10fb30239baf450f292f940424ecc608cb981962b926b5b0a58",
+    "diagnose-final": "1244d0b47b2844b321097b0276451cc609a87411f9fafd53d42edd7349a9fa83"
+  },
+  "test_source_note": "Before experiments compiled frozen prior production App sources against the new regression bodies; old captured harness is not claimed as the executed regression source."
+}

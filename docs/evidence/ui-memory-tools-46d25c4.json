@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-10T19:41:19.330566+00:00",
+  "source_commit": "46d25c4ec685a734bf85a2cd92c38dda5e4ee27f",
+  "run_id": 42880165194,
+  "job_id": 130053986830,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42880165194/job/130053986830",
+  "job_conclusion": "success",
+  "scope": "Current-device native memory-tool fixture acceptance at 46d25c4. Synthetic model commands exercise actual App review, encrypted persistence, undo and pending-procedure decisions.",
+  "runtime": {
+    "device_name": "iPhone 17",
+    "runtime_version": "26.2",
+    "runtime_build": "23C54",
+    "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2"
+  },
+  "method_completion_columns": [
+    "qualified_method",
+    "outcome",
+    "seconds"
+  ],
+  "method_completions": [
+    [
+      "WoowAssistantUITests/MemoryToolUITests/testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch",
+      "passed",
+      144.598
+    ],
+    [
+      "WoowAssistantUITests/MemoryToolUITests/testDeclinedSavePreservesDraftAndCreatesNoData",
+      "passed",
+      120.324
+    ],
+    [
+      "WoowAssistantUITests/MemoryToolUITests/testReviewedDeleteCanBeUndoneAndRestoresManualMemoryAfterRelaunch",
+      "passed",
+      143.499
+    ],
+    [
+      "WoowAssistantUITests/MemoryToolUITests/testReviewedUpdateOfManualMemoryPersistsAfterRelaunch",
+      "passed",
+      184.751
+    ],
+    [
+      "WoowAssistantUITests/MemoryToolUITests/testSavedProcedureCanBeRejectedAndRelaunchesAbsent",
+      "passed",
+      119.308
+    ],
+    [
+      "WoowAssistantUITests/MemoryToolUITests/testSavedProcedureRequiresSeparateApprovalAndRelaunchesActive",
+      "passed",
+      111.044
+    ]
+  ],
+  "source_declared_methods": [
+    "testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch",
+    "testDeclinedSavePreservesDraftAndCreatesNoData",
+    "testReviewedDeleteCanBeUndoneAndRestoresManualMemoryAfterRelaunch",
+    "testReviewedUpdateOfManualMemoryPersistsAfterRelaunch",
+    "testSavedProcedureCanBeRejectedAndRelaunchesAbsent",
+    "testSavedProcedureRequiresSeparateApprovalAndRelaunchesActive"
+  ],
+  "source_matches_exactly": true,
+  "completed_ui_count": 6,
+  "unique_completed_ui_count": 6,
+  "passed": 6,
+  "failed": 0,
+  "skipped": 0,
+  "xcresult_summary_counts": {
+    "totalTestCount": 6,
+    "passedTests": 6,
+    "failedTests": 0,
+    "skippedTests": 0
+  },
+  "completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 6,
+      "passedTests": 6,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 6,
+    "completed_ui_count": 6,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/MemoryToolUITests.swift": "9ce6a53ded0816932509dd86584d910870feaed05910b318b63a213e0cb1a8d2",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+    "Sources/App/ChatSession.swift": "c6947419729bcc6f3b07ea24c0b4be3a8d522df2cb6d65471579dd82c295fb34",
+    "Sources/App/LearningStore.swift": "3446c43afdb2cbf2992f1eb29f63a33cdb13fa2550e7761a034d2b0c3cc783c5",
+    "Sources/App/MemoryToolReviewView.swift": "e94e40f52c694ea751fccb31103766da52c81aaee1742be60e28ccb673d66da3",
+    "Sources/App/MemoryDataView.swift": "bea52c1fc7f1f23c37a415fdce983667eafde33ac02353420e194b0347088c7b"
+  },
+  "test_method_sha256": {
+    "testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch": "c1c5df3e8bbbcacfe62f34df65d531a8be1227d8ca6ddc7ed59232ab9c7aeb51",
+    "testDeclinedSavePreservesDraftAndCreatesNoData": "05232c6fa15d8236cdabfc9694e4aea500d9a5855e402cd904e5d5d7bd01475e",
+    "testReviewedDeleteCanBeUndoneAndRestoresManualMemoryAfterRelaunch": "ef15aa7baa79bde615bc8581ffff7d8e66862b7c1a597f96a63ee15a6b2699da",
+    "testReviewedUpdateOfManualMemoryPersistsAfterRelaunch": "5441d7b3a7ba4052b52e6b3d181ec4a2be356a09d409e162134798c83dfe54c4",
+    "testSavedProcedureCanBeRejectedAndRelaunchesAbsent": "950aed68ae24cbc9094d780508074419fb0f7c4e6dfec68ab5adacab13761632",
+    "testSavedProcedureRequiresSeparateApprovalAndRelaunchesActive": "a0a0d1c349fe0cbf8e7b93c5dd0a37454e470b20267e04f5d96247b789abdba1"
+  },
+  "test_method_hash_definition": "UTF-8 bytes from four-space func declaration through four-space closing brace, excluding following newline; all six byte-identical to 61f5377.",
+  "artifact": {
+    "id": 13797046625,
+    "size_bytes": 327036361,
+    "digest": "sha256:602b75db83f5a85f55047f8dcb462a06a370ceb504f75fb2ddea2e36ee3a0767",
+    "inspected_metadata": [
+      "test-summary.json",
+      "test-simulator.json",
+      "ui-shard-completion.json"
+    ]
+  },
+  "fixture_deadline_seconds": 240,
+  "retries": 0,
+  "change_under_test": {
+    "path": "Tests/WoowAssistantUITests/MemoryToolUITests.swift",
+    "helpers": [
+      "assertLabel",
+      "assertValue",
+      "ready",
+      "absent"
+    ],
+    "change": "Evaluate the same predicate once immediately; if false use the unchanged XCTest expectation and existing deadline.",
+    "test_bodies_equal_to_61f5377": true,
+    "no_increased_timeout_or_weakened_data_assertions": true
+  },
+  "prior_failure_preserved": {
+    "report": "ui-memory-tools-61f5377.json",
+    "run_id": 42866520782,
+    "job_id": 130006841353,
+    "source_commit": "61f5377254d15c99736223efbc7dae3d57a577ca",
+    "xcresult_passed": 4,
+    "xcresult_failed": 2,
+    "skipped": 0,
+    "normal_method_completion_lines": 5,
+    "failure_stage": "Both undo cases exceeded 240 seconds during the final relaunch/pending checks. Delete/undo lacked a normal method completion; xcresult still records it failed.",
+    "se_large": "Each passed 6/6 on 61f5377; those results remain attributed to their old SHA."
+  },
+  "verified_behaviors": [
+    "Reviewed save requires native approval; undo remains absent after relaunch.",
+    "Declined save preserves the input draft and creates no active or pending memory, receipt, note or conversation turn.",
+    "Reviewed update keeps original entry ID and persisted content/keywords after relaunch.",
+    "Reviewed delete then undo restores the same original entry ID after relaunch.",
+    "Saved procedure remains pending until separate native approval; approved same ID relaunches active.",
+    "Rejected pending procedure relaunches absent from active and pending lists."
+  ],
+  "limits": [
+    "Source-matched raw job-log completion lines, source method inventory and independent xcresult summary/completion metadata agree; workflow success alone was not used.",
+    "This is native UI fixture evidence, not actual HTTP model evidence.",
+    "Immediate predicate evaluation plus this passing run supports the bounded fixture adjustment; no claim of a proven sole environmental root cause or a timing guarantee.",
+    "Later shared App/core changes are outside the pinned source snapshot.",
+    "Only bounded fixed metadata/method names/counts/hashes are included; no raw logs, environment, credentials or live AX trees."
+  ]
+}

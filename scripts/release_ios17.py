@@ -23,6 +23,7 @@ from release_ios import ReleaseError, generate_project, run, version, verify_set
 # UI class exactly once. Keep class selectors so new methods cannot be omitted.
 UI_SHARDS = {
     "ui-startup": ["WoowAssistantUITests", "SelfConfigurationUITests"],
+    "ui-notifications": ["NotificationUITests"],
     "ui-workspace": ["BrowserWorkspaceUITests", "BrowserLoginUITests"],
     "ui-browser": ["BrowserInteractionUITests", "BrowserUploadUITests"],
     "ui-learning": ["BrowserLearningUITests", "MultiSourceResearchUITests"],
@@ -54,6 +55,7 @@ DOCUMENT_SCOPES = {
         "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder",
         "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
         "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenMultiPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+        "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
         "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
     ],
 }
@@ -69,6 +71,7 @@ TEST_SCOPES = {
     "picker-user-copy": ["WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText"],
     "pdf-assembly": ["WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
     "pdf-assembly-uikit": ["WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenMultiPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
+    "pdf-assembly-copy": ["WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
     "profile-tool": ["WoowAssistantUITests/UserProfileToolUITests"],
     "memory-tools": ["WoowAssistantUITests/MemoryToolUITests"],
     **DOCUMENT_SCOPES,

@@ -33,6 +33,7 @@ struct SkillPDFAssemblyDocument: FileDocument {
 struct SkillPDFAssemblyView: View {
     @StateObject private var model = SkillPDFAssemblySession()
     @State private var choosingFile = false
+    @State private var importChoice: PDFImportChoice = .original
     @State private var exporting = false
     @State private var exportDocument: SkillPDFAssemblyDocument?
     @State private var exportPlanID: UUID?
@@ -59,8 +60,12 @@ struct SkillPDFAssemblyView: View {
                 Text("目前支援一般靜態 PDF；不支援加密、表單、註記、附件、書籤、標記結構、圖層與互動文件，也不會辨識掃描文字。")
                     .font(.caption)
                 if model.sources.isEmpty {
-                    Button("選取 PDF 文件") { choosingFile = true }
+                    Button("選取 PDF 文件") { presentPicker(.original) }
                         .accessibilityIdentifier("pdfAssembly.select")
+                    Text("匯入副本時，系統會在你選檔時建立副本；App 仍會先請你核准讀取，再另行核准產生新 PDF。")
+                        .font(.caption).accessibilityIdentifier("pdfAssembly.importCopy.notice")
+                    Button("匯入 PDF 副本") { presentPicker(.importCopy) }
+                        .accessibilityIdentifier("pdfAssembly.importCopy")
                 }
                 #if DEBUG
                 if let fixture = model.uiTestFixture {
@@ -148,7 +153,7 @@ struct SkillPDFAssemblyView: View {
                 Button("收起鍵盤") { orderFocused = false }.accessibilityIdentifier("pdfAssembly.keyboardDone")
             }
         }
-        .modifier(PDFImportPresentation(isPresented: $choosingFile, choice: .original, experiment: pickerExperiment,
+        .modifier(PDFImportPresentation(isPresented: $choosingFile, choice: importChoice, experiment: pickerExperiment,
                                        allowsMultipleSelection: true, onCompletion: receiveSelection,
                                        onObservation: { value in
             #if DEBUG
@@ -176,6 +181,11 @@ struct SkillPDFAssemblyView: View {
         }
     }
 
+    private func presentPicker(_ choice: PDFImportChoice) {
+        importChoice = choice
+        choosingFile = true
+    }
+
     private func receiveSelection(_ outcome: Result<[URL], Error>) {
         #if DEBUG
         importerCallbacks = min(importerCallbacks + 1, 16)
@@ -195,7 +205,8 @@ struct SkillPDFAssemblyView: View {
     #if DEBUG
     private func recordPickerEvent(_ event: String) {
         guard let configuration = pickerExperiment, importerCallbacks < 16 else { return }
-        print("SKILL_PDF_ASSEMBLY_PICKER namespace=\(configuration.namespace.uuidString) source=\(configuration.source) event=\(event) callbacks=\(importerCallbacks) sampledAt=\(Date().timeIntervalSince1970)")
+        let source = importChoice == .importCopy ? "user-copy" : configuration.source
+        print("SKILL_PDF_ASSEMBLY_PICKER namespace=\(configuration.namespace.uuidString) source=\(source) event=\(event) callbacks=\(importerCallbacks) sampledAt=\(Date().timeIntervalSince1970)")
         fflush(stdout)
     }
     #endif

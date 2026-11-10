@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "source_still_current": true,
+  "result": {
+    "failed": 0,
+    "groups": {
+      "dataBoundary": 5,
+      "identitiesAndInvalidInputs": 18,
+      "immutableCombinedKinds": 3,
+      "wholeEntryBudgets": 7
+    },
+    "passed": 33
+  },
+  "source_sha256": {
+    "Sources/AssistantModels/ChatContextWindow.swift": "41e04121afe13d5510215a50c4c879907c8c28e03b38650ad3bdfd7fbc9b4d3b",
+    "Sources/AssistantModels/ChatSSEParser.swift": "daaf8668b25edac1d67cb6fb1e804f3d359bbcd9580368bb30618d56022aad5d",
+    "Sources/AssistantModels/HTTPChatModelClient.swift": "94e7ccb5ffc86d0cff2bb6f4a822a55a2ef94ac064d9d39ea76482395c0e1d8c",
+    "Sources/AssistantModels/ModelConfiguration.swift": "b886eede4c8c41247a9010b668849d9fceb67fca4dcd399baffe47b90e951142",
+    "Sources/AssistantModels/RawCommandEnvelope.swift": "afccf73ee49f91da1ff74a61c54076d5807ccd470b1bfde2f973c0cd2ca3a200",
+    "Sources/AssistantModels/RunReferenceContext.swift": "6917f8b97cbe6b4528a392807e5d9dc00b3010435106c9c600476678bf4847ca",
+    "Tests/AssistantModelsTests/RunReferenceContextTests.swift": "5a1cd790555812fa85bb69a19899cf8be757791d0b3ab9241145ee56d6bebd12",
+    "scripts/check_run_reference_context.py": "9efbefb2c59f6fe290157be94b8a477ca60901e01496ca49d699c76b6dd77571"
+  },
+  "warnings_as_errors": true,
+  "native_xctest_execution": false
+}

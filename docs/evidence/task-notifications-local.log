@@ -1,0 +1,19 @@
+OUTPUT=/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-a5kcer0a
+{"name": "AssistantContracts-compile", "exit_code": 0, "seconds": 0.904}
+{"name": "AssistantDomain-compile", "exit_code": 0, "seconds": 1.803}
+{"name": "AssistantModels-compile", "exit_code": 0, "seconds": 2.658}
+{"name": "AssistantMemory-compile", "exit_code": 0, "seconds": 5.956}
+{"name": "AssistantPersistence-compile", "exit_code": 0, "seconds": 0.844}
+{"name": "AssistantMCP-compile", "exit_code": 0, "seconds": 3.666}
+{"name": "AssistantSkills-compile", "exit_code": 0, "seconds": 21.931}
+{"name": "AssistantBrowser-compile", "exit_code": 0, "seconds": 19.817}
+{"name": "core-compile", "exit_code": 0, "seconds": 1.687}
+{"name": "core-execute", "exit_code": 0, "seconds": 1.395, "result": {"actual_xctest_bodies": true, "assertions": 154, "groups": {"boundsRelaunchAndRevocation": 81, "defaultOffAndPermission": 7, "enableRefreshOverlap": 2, "inFlightAddCancellation": 8, "observerLifecycle": 13, "permissionAndSettingsRaces": 6, "testButtonAndRoutes": 25, "transitionsAndExpiry": 12}, "native_xctest_execution": false, "status": "PASS", "system_notification_center_access": false}}
+{"name": "iOS-syntax-only", "exit_code": 0, "seconds": 0.09}
+{"name": "Debug-adapter-typecheck", "exit_code": 0, "seconds": 0.527}
+{"name": "Debug-app-compile", "exit_code": 0, "seconds": 22.179}
+{"name": "Debug-app-execute", "exit_code": 0, "seconds": 3.814, "result": {"actual_chat_session_and_combine": true, "actual_UNNotificationRequest_objects": true, "assertions": 136, "groups": {"factoryAndPreferences": 21, "nativeUNContentAndScope": 42, "realChatCancelGeneration": 3, "realChatSuccessFailureClear": 10, "realMCPApprovalCompleteDecline": 30, "realProfileMemoryApprovals": 30}, "network_or_personal_keychain": false, "notification_delivery": false, "status": "PASS", "system_notification_center_access": false}}
+{"name": "Release-adapter-typecheck", "exit_code": 0, "seconds": 0.475}
+{"name": "Release-app-compile", "exit_code": 0, "seconds": 14.893}
+{"name": "Release-app-execute", "exit_code": 0, "seconds": 0.63, "result": {"actual_chat_session_and_combine": true, "actual_UNNotificationRequest_objects": true, "assertions": 121, "groups": {"factoryAndPreferences": 6, "nativeUNContentAndScope": 42, "realChatCancelGeneration": 3, "realChatSuccessFailureClear": 10, "realMCPApprovalCompleteDecline": 30, "realProfileMemoryApprovals": 30}, "network_or_personal_keychain": false, "notification_delivery": false, "status": "PASS", "system_notification_center_access": false}}
+REPORT=/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-task-notifications-a5kcer0a/report.json

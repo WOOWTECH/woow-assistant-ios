@@ -17,7 +17,7 @@ APP_SOURCES = [
     "BrowserUploadFixture", "BrowserLoginFixture", "SkillExecutionUITestSupport",
     "BrowserWorkspace", "ChatSession", "BrowserSession", "LearningKeychainStore",
     "UITestModelFixture", "MCPSettings", "LiveModelUITestSupport", "ModelSettings",
-    "LearningStore", "UITestMCPFixture", "MCPSession", "MultiSourceResearchSession",
+    "LearningStore", "LearningRunContext", "UITestMCPFixture", "MCPSession", "MultiSourceResearchSession",
 ]
 MODULES = [
     ("AssistantModels", []), ("AssistantMemory", ["AssistantModels"]),

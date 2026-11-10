@@ -82,6 +82,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     private var work: Task<Void, Never>?
     private var runID: UUID?
     private var origin: String?
+    private var runReferences: LearningRunSnapshot?
     private var approvedResearchRoot: MultiSourceResearchSource?
     #if DEBUG
     private var multiSourceFixture = false
@@ -132,6 +133,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func cancel() {
+        let reference = runReferences; runReferences = nil
+        reference?.onRevoke = nil; reference?.revoke()
         navigationIntent.invalidate()
         manualDocumentURL = nil; manualDocumentNavigation = nil
         resolveDialog(nil)
@@ -145,6 +148,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         status = "已停止；已取得的內容與草稿保留"
     }
 
+    var hasActiveRunReferences: Bool { runReferences.map { !$0.revoked } ?? false }
+
     func beginResearch(using chat: ChatSession) {
         guard !retiredForDataRemoval, !isRunning, !isInteracting, current != nil, !goal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         invalidateControls()
@@ -152,25 +157,34 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         error = nil; answer = nil; actions = []; learningStatus = nil
         do {
             let access = try chat.modelAccess()
-            claimAutomationDocument()
             let id = UUID(), generation = chat.learning.generation
             let taskGoal = goal
-            let references = chat.learning.skills.instructionContext(query: goal, availableToolNames: Self.toolNames)
-            let usedSkills = references.skillNames.compactMap { name in
-                chat.learning.skills.installed.first { $0.name == name }.map {
-                    SkillUsedReference(name: $0.name, fingerprint: $0.fingerprint)
-                }
-            }
-            let websiteContext = current.map { chat.learning.websiteContext(for: $0.url) } ?? ""
+            let snapshot = try chat.learning.captureRunReferences(goal: taskGoal,
+                capabilities: Self.toolNames, websiteURL: current?.url)
+            claimAutomationDocument()
+            runReferences = snapshot
+            snapshot.onRevoke = { [weak self] in self?.cancel() }
+            let usedSkills = snapshot.usedSkills
             origin = current.flatMap { Self.origin($0.url) }
             runID = id; isRunning = true; status = "正在研究網站…"
             work = Task { [weak self, weak chat] in
                 guard let self, let chat else { return }
                 do {
                     let result = try await WebResearchRunner(client: access.client).run(goal: taskGoal,
-                        context: references.text + "\n" + websiteContext, browser: self, configuration: access.configuration, apiKey: access.key,
+                        browser: self, configuration: access.configuration, apiKey: access.key,
+                        references: snapshot.references, validateContext: {
+                            try await MainActor.run {
+                                try snapshot.check()
+                                guard self.runID == id else { throw CancellationError() }
+                                let current = try chat.modelAccess()
+                                guard current.configuration.baseURL == access.configuration.baseURL,
+                                      current.configuration.model == access.configuration.model,
+                                      current.key == access.key else { throw RunReferenceError.revoked }
+                            }
+                        },
                         onAction: { [weak self] action in await self?.record(action, for: id) })
                     guard self.runID == id else { return }
+                    try snapshot.check()
                     self.answer = result.answer
                     self.status = result.reachedLimit ? "研究已停止，尚未確認完成" : "回答已交付，正在判定成果…"
                     // Learning is separately judged; raw model success is never verification.
@@ -182,14 +196,18 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
                     }
                     guard self.runID == id else { return }
                     if !result.reachedLimit { self.status = "研究已結束" }
+                    self.runReferences?.onRevoke = nil; self.runReferences = nil
                     self.origin = nil; self.isRunning = false; self.runID = nil; self.work = nil
                 } catch {
                     guard self.runID == id else { return }
                     chat.learning.recordResearchFailure(usedSkills: usedSkills, kind: .environment, expectedGeneration: generation)
+                    self.runReferences?.onRevoke = nil; self.runReferences = nil
                     self.origin = nil; self.isRunning = false; self.runID = nil; self.work = nil
                     self.reportFailure(error, status: "研究未完成；已讀取內容保留")
                 }
             }
+        } catch let referenceError as RunReferenceError {
+            self.error = referenceError.errorDescription
         } catch { self.error = "請先到設定儲存模型服務與金鑰。" }
     }
 
@@ -328,6 +346,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func openLink(id: Int) async throws -> WebObservation {
+        try Task.checkCancellation()
         guard let target = lastLinks.first(where: { $0.id == id }), let url = webView.url,
               current?.url == url, Self.origin(target.url) == Self.origin(url), permitted(target.url) else { throw WebResearchError.unsafeNavigation }
         return try await navigate(to: target.url)
@@ -365,6 +384,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     #endif
 
     private func navigate(to url: URL) async throws -> WebObservation {
+        try Task.checkCancellation()
         navigationIntent.invalidate()
         guard permitted(url), origin == nil || Self.origin(url) == origin else { throw WebResearchError.unsafeNavigation }
         claimAutomationDocument(originURL: url)
@@ -374,6 +394,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         let navigationTimeout: TimeInterval = current == nil ? 75 : 25
         navigationFinished = nil
         preparePageNavigation()
+        try Task.checkCancellation()
         #if DEBUG
         if multiSourceFixture {
             guard MultiSourceResearchFixture.allows(url), approvedResearchRoot?.allows(url) == true else {

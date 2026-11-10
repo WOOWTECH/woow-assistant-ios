@@ -46,7 +46,7 @@ struct UserProfileView: View {
                                 Button("編輯") { store.dismissNotice(); editor = .init(entry: entry) }
                                     .accessibilityIdentifier("profile.edit.\(entry.id.uuidString)")
                                 Button("刪除", role: .destructive) {
-                                    store.mutateProfile { try $0.delete(segment: entry.text) }
+                                    store.deleteProfileReference(segment: entry.text)
                                 }
                                 .accessibilityIdentifier("profile.delete.\(entry.id.uuidString)")
                             }
