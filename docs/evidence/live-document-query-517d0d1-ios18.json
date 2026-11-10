@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "source_commit": "517d0d15ec624f587e56fa41453369c4324284a1",
+  "ui_source_sha256": "1a3895670493cf19c5ed049c227b03b4515bf4c67acdbf020641f46322c03b54",
+  "run_id": 42885607583,
+  "job_id": 130073018001,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42885607583",
+  "job_conclusion": "failure",
+  "runtime_observed_in_job": "iOS-18-5",
+  "method": "LiveDocumentQueryUITests.testRealModelAnswersFromApprovedPDFAndExportCancellationPreservesResult",
+  "counts": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0
+  },
+  "counts_basis": "The fixed verify_live_ui.py output from the actual xcresult, not the zero-test suite printed after the runner restarted.",
+  "fixed_xcresult_verification": {
+    "code": "NOT_PASSED",
+    "expectedTests": 1,
+    "totalTestCount": 1,
+    "passedTests": 0,
+    "failedTests": 1,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "duration_seconds": null,
+  "duration_limitation": "No normal per-method completed-duration line was emitted. XCTest reported its 5-minute execution allowance exceeded; teardown began at XCTest t=305.07s. These are not a normal completed-case duration.",
+  "case_allowance_seconds": 300,
+  "driver_cleanup_reserve_boundary_seconds": 285,
+  "phases_seconds_since_setup": {
+    "selected": 76,
+    "extracted": 98,
+    "question_input_started": 124,
+    "question_input_delivered": 142,
+    "question_keyboard_dismissed": 149,
+    "question_verified": 151,
+    "model_started": 197,
+    "verified": 246,
+    "export_cancelled": 303
+  },
+  "actual_audit": {
+    "modelCalls": 4,
+    "searches": 1,
+    "reads": 2,
+    "results": 1,
+    "citations": 2,
+    "corrections": 0
+  },
+  "xctest_event_seconds": {
+    "question_type_start": 125.21,
+    "question_synthesis_start": 135.86,
+    "question_synthesis_following_idle": 144.01,
+    "keyboard_done_tap": 146.49,
+    "post_dismissal_question_value_lookup": 150.49,
+    "export_tap": 258.09,
+    "first_exporter_back_tap": 267.39,
+    "second_exporter_back_tap": 273.29,
+    "native_cancel_tap": 278.22,
+    "post_cancel_status_label_lookup": 283.4,
+    "post_cancel_answer_label_lookup": 287.44,
+    "post_cancel_final_citation_quote_lookup": 299.57,
+    "post_cancel_audit_value_lookup": 304.07,
+    "tear_down_start": 305.07
+  },
+  "fixed_failure_events": [
+    {
+      "category": "xctest_execution_time_allowance_exceeded",
+      "utc": "2026-11-10T19:59:54.0625100Z"
+    },
+    {
+      "category": "driver_remaining_budget_exhausted",
+      "utc": "2026-11-10T19:59:57.9770900Z",
+      "file": "Tests/WoowAssistantUITests/LiveDocumentQueryUITests.swift",
+      "line": 183,
+      "fixed_message": "The 300-second case budget is exhausted."
+    }
+  ],
+  "reached_before_allowance_failure": [
+    "actual_native_import_copy_selection",
+    "separate_read_and_extract_approvals",
+    "actual_two_page_PDFKit_extraction",
+    "exact_full_question_after_actual_keyboard_dismissal_before_destination_approval",
+    "actual_configured_model_search_and_two_reads",
+    "answer_markers_and_two_exact_quotes_with_original_page_numbers",
+    "actual_native_exporter_back_navigation_and_Cancel_tap",
+    "actual_export_cancellation_callback_status",
+    "exact_post_cancel_answer_and_two_citation_retention_checks"
+  ],
+  "reached_after_allowance_failure": [
+    "post_cancel_audit_equality_check_and_export_cancelled_phase_emission"
+  ],
+  "not_reached": [
+    "query_close_action",
+    "exact_original_extraction_retention_after_closing_query",
+    "final_extraction_audit_and_extraction_preserved_phase"
+  ],
+  "comparison_with_failed_4f26118": {
+    "previous_evidence": "live-document-query-4f26118-ios18.json",
+    "previous_counts": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0
+    },
+    "native_type_to_Done_tap_seconds": {
+      "4f26118": 57.99,
+      "517d0d1": 21.28
+    },
+    "meaning": "The new run no longer shows the old long focused-editor AX gap before Done. The complete unchanged question was subsequently verified before destination approval. This is an observation across two runs, not an isolated performance benchmark.",
+    "progress": "The old run failed during the first native exporter back transition. This run reached native Cancel and retained answer/citations, but still exhausted the unchanged whole-case budget.",
+    "remaining_cost": "Native exporter opening/back navigation/Cancel spans about 20 seconds; the post-cancel visibility, value and audit queries continue until after the case limit. No provider stall or model failure is established."
+  },
+  "cleanup_steps": {
+    "Clear private runner configuration": "success",
+    "Delete only this run's simulator": "success"
+  },
+  "limitations": [
+    "This is a failed E2E case, not an acceptance pass. A late export_cancelled marker does not override the XCTest timeout.",
+    "Setup-relative phase integers and XCTest relative event times have different origins and are reported separately.",
+    "The restarted runner printed a zero-test suite. The actual xcresult fixed summary is one failed method, zero passed and zero skipped.",
+    "No endpoint, credentials, model/source prose, AX dump, screenshot or private artifact bundle was downloaded or included.",
+    "No source changes or retry were made after this failure; the previous failed run remains recorded."
+  ]
+}

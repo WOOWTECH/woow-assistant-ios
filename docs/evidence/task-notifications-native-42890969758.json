@@ -1,0 +1,104 @@
+{
+  "schema_version": 1,
+  "run_id": 42890969758,
+  "job_id": 130091699137,
+  "artifact_id": 13799716189,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42890969758",
+  "commit": "f28d0bb3cf336e4d36bb232b5b5d7142f4417dfd",
+  "conclusion": "failure",
+  "device": "iPhone SE (3rd generation)",
+  "os": "iOS 18.5",
+  "xcode": "16.4",
+  "artifact_sha256": "a69ce3aa1eb0b7eed7faf202343855066eb2e159927b237ce6c34802f9689063",
+  "original_test_source_sha256": "1d84b53e4ce62d9341bb474e39e4a65942ea467b3e2ff4edb2c48bd13b912082",
+  "test_summary": {
+    "devicesAndConfigurations": [
+      {
+        "device": {
+          "architecture": "arm64",
+          "deviceId": "33ECB385-9DCC-4E82-9ECD-25B83F6DAD4A",
+          "deviceName": "Woow-CI-8375c6f0b51f4c07b1f347f89681c5e0",
+          "modelName": "iPhone SE (3rd generation)",
+          "osBuildNumber": "22F77",
+          "osVersion": "18.5",
+          "platform": "iOS Simulator"
+        },
+        "expectedFailures": 0,
+        "failedTests": 1,
+        "passedTests": 0,
+        "skippedTests": 0,
+        "testPlanConfiguration": {
+          "configurationId": "1",
+          "configurationName": "Test Scheme Action"
+        }
+      }
+    ],
+    "environmentDescription": "WoowAssistant · Built with macOS 15.8.2",
+    "expectedFailures": 0,
+    "failedTests": 1,
+    "finishTime": 1794341521.098,
+    "passedTests": 0,
+    "result": "Failed",
+    "skippedTests": 0,
+    "startTime": 1794341209.918,
+    "statistics": [],
+    "testFailures": [
+      {
+        "failureText": "failed - The system must actually display the fixed test notification.",
+        "targetName": "WoowAssistantUITests",
+        "testIdentifier": 1,
+        "testIdentifierString": "NotificationUITests/testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable()",
+        "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/NotificationUITests/testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable",
+        "testName": "testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable()"
+      }
+    ],
+    "title": "Test - WoowAssistant",
+    "topInsights": [],
+    "totalTestCount": 1
+  },
+  "completion_gate": {
+    "verified": false,
+    "counts": {
+      "totalTestCount": 1,
+      "passedTests": 0,
+      "failedTests": 1,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Failed",
+    "expected_ui_count": 1,
+    "completed_ui_count": 1,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": [
+      "WoowAssistantUITests/NotificationUITests/testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable"
+    ]
+  },
+  "stages": {
+    "native_app_build": "success",
+    "test_target_compilation": "success",
+    "explicit_public_permission_prompt": "observed",
+    "system_authorization": "authorized",
+    "original_banner_assertion": "failed",
+    "actual_banner_tap": "not_reached",
+    "relaunch_persistence": "not_reached",
+    "disable_relaunch": "not_reached",
+    "audible_sound": "not_verified"
+  },
+  "recording_observation": {
+    "attachment": "DA3FB586-917C-48DB-99DA-86DE1A0A4153.mp4",
+    "frame_seconds": 26,
+    "frame_file": "task-notifications-native-42890969758-frame26.png",
+    "frame_sha256": "69a8fddce81c86f7a5cbde3b4251342ecab91753ebf486f0ab38a911fc5ac6a2",
+    "visible_title": "通知測試",
+    "visible_body": "這是渥屋助理的測試通知。",
+    "app_icon_visible": true,
+    "separate_appname_text_visible": false,
+    "visual_delivery_observed": true,
+    "source": "unmodified frame extracted with AVAssetImageGenerator from the CI recording"
+  },
+  "diagnosis": "The system visibly delivered the fixed banner. The original matcher imposed an incorrect separate App-name text layout expectation. No matched SpringBoard subtree was attached on this failed run, so its complete AX representation is not available.",
+  "correction": "Keep pre-send absence and post-action bounded SpringBoard exact title/body matching; drop required App-name text. Prove attribution by tapping the actual observed banner and requiring this App runningForeground, root Chat visible and pushed notification settings absent.",
+  "correction_native_validation": "pending",
+  "product_notification_changes": false
+}

@@ -188,11 +188,35 @@ final class UserProfileUITests: XCTestCase {
     }
 
     private func showHistory(_ text: String) {
-        tap("profile.history", scroll: true)
-        XCTAssertEqual(app.buttons["profile.history"].firstMatch.value as? String, "已展開")
+        let button = app.buttons["profile.history"].firstMatch
+        revealLearningElement(button, in: app)
+        tapHistoryLabel(button)
+        // Observe the post-action state within the existing readiness bound.
+        // 4f read collapsed immediately after the tap; a timing cause is unproved.
+        let expanded = NSPredicate(format: "value == %@", "已展開")
+        if !expanded.evaluate(with: button) {
+            let expectation = XCTNSPredicateExpectation(predicate: expanded, object: button)
+            XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed)
+        }
+        XCTAssertEqual(button.value as? String, "已展開")
         let row = history(text)
         revealLearningElement(row, in: app, visibility: .readableText)
         XCTAssertTrue(row.exists)
+    }
+
+    private func tapHistoryLabel(_ button: XCUIElement) {
+        // 4f fixture AX exposed this native text child after a button tap left
+        // history collapsed. Target the visible label once; the old tap was
+        // inside both AX frames, so this does not establish a hit-area cause.
+        ready(button)
+        XCTAssertEqual(button.value as? String, "已收合")
+        let label = button.staticTexts.matching(NSPredicate(format: "label == %@", button.label)).firstMatch
+        XCTAssertTrue(label.exists)
+        XCTAssertTrue(label.isHittable)
+        let frame = label.frame
+        XCTAssertFalse(frame.isEmpty)
+        XCTAssertTrue(button.frame.contains(frame) && app.frame.contains(frame))
+        label.tap()
     }
 
     private func tap(_ identifier: String, scroll: Bool = false) {
@@ -232,12 +256,16 @@ final class UserProfileUITests: XCTestCase {
     }
 
     private func ready(_ element: XCUIElement) {
-        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: element)
+        let predicate = NSPredicate(format: "exists == true AND hittable == true AND enabled == true")
+        if predicate.evaluate(with: element) { return }
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed)
     }
 
     private func absent(_ element: XCUIElement) {
-        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: element)
+        let predicate = NSPredicate(format: "exists == false")
+        if predicate.evaluate(with: element) { return }
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 5), .completed)
     }
 

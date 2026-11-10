@@ -218,11 +218,26 @@ final class UserProfileToolUITests: XCTestCase {
         let history = app.buttons["profile.history"].firstMatch
         revealLearningElement(history, in: app)
         XCTAssertEqual(history.label, "已替換或刪除的紀錄（1）")
-        ready(history); history.tap()
+        tapHistoryLabel(history)
         assertValue(history, "已展開")
         let identifier = originalIdentifier.replacingOccurrences(of: "profile.item.", with: "profile.history.item.")
         assertReadable(app.staticTexts[identifier].firstMatch, equals: text)
         XCTAssertFalse(profileItem(text).exists)
+    }
+
+    private func tapHistoryLabel(_ button: XCUIElement) {
+        // Match the native child exposed by the 4f history failure AX. Keep a
+        // single tap and all expanded-state/history assertions; efficacy still
+        // requires a native rerun because the original tap was inside both frames.
+        ready(button)
+        XCTAssertEqual(button.value as? String, "已收合")
+        let label = button.staticTexts.matching(NSPredicate(format: "label == %@", button.label)).firstMatch
+        XCTAssertTrue(label.exists)
+        XCTAssertTrue(label.isHittable)
+        let frame = label.frame
+        XCTAssertFalse(frame.isEmpty)
+        XCTAssertTrue(button.frame.contains(frame) && app.frame.contains(frame))
+        label.tap()
     }
 
     private func assertEmptyProfile() {
@@ -307,12 +322,16 @@ final class UserProfileToolUITests: XCTestCase {
     }
 
     private func assertLabel(_ element: XCUIElement, _ text: String) {
-        let expected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND label == %@", text), object: element)
+        let predicate = NSPredicate(format: "exists == true AND label == %@", text)
+        if predicate.evaluate(with: element) { return }
+        let expected = XCTNSPredicateExpectation(predicate: predicate, object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [expected], timeout: 10), .completed)
     }
 
     private func assertValue(_ element: XCUIElement, _ text: String) {
-        let expected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", text), object: element)
+        let predicate = NSPredicate(format: "value == %@", text)
+        if predicate.evaluate(with: element) { return }
+        let expected = XCTNSPredicateExpectation(predicate: predicate, object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [expected], timeout: 10), .completed)
     }
 
@@ -323,12 +342,19 @@ final class UserProfileToolUITests: XCTestCase {
     }
 
     private func ready(_ element: XCUIElement) {
-        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: element)
+        // 4f current reached the delete case's final history checks at 239s,
+        // then exceeded its unchanged 240s allowance during termination.
+        // Keep the same predicate and wait; return immediately if already true.
+        let predicate = NSPredicate(format: "exists == true AND hittable == true AND enabled == true")
+        if predicate.evaluate(with: element) { return }
+        let ready = XCTNSPredicateExpectation(predicate: predicate, object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed)
     }
 
     private func absent(_ element: XCUIElement) {
-        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: element)
+        let predicate = NSPredicate(format: "exists == false")
+        if predicate.evaluate(with: element) { return }
+        let gone = XCTNSPredicateExpectation(predicate: predicate, object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 5), .completed)
     }
 }

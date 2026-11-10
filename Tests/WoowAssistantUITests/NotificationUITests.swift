@@ -5,13 +5,28 @@ import XCTest
 final class NotificationUITests: XCTestCase {
     private let app = XCUIApplication()
     private let namespace = UUID().uuidString
+    private var observedBannerCandidate: String?
 
     override func setUpWithError() throws {
         continueAfterFailure = false
         executionTimeAllowance = 240
     }
 
-    override func tearDownWithError() throws { app.terminate() }
+    override func tearDownWithError() throws {
+        if let testRun, testRun.failureCount > 0 {
+            if let observedBannerCandidate {
+                let candidate = XCTAttachment(string: observedBannerCandidate)
+                candidate.name = "Observed bounded system banner candidate (diagnostic only)"
+                candidate.lifetime = .keepAlways; add(candidate)
+            }
+            let springboard = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+            for (name, application) in [("App at failure", app), ("System at failure", springboard)] {
+                let screenshot = XCTAttachment(screenshot: application.screenshot())
+                screenshot.name = name; screenshot.lifetime = .keepAlways; add(screenshot)
+            }
+        }
+        app.terminate()
+    }
 
     func testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable() throws {
         launch(reset: true)
@@ -80,7 +95,8 @@ final class NotificationUITests: XCTestCase {
         springboard.coordinate(withNormalizedOffset: .zero)
             .withOffset(CGVector(dx: banner.frame.midX, dy: banner.frame.midY)).tap()
         try wait("Opening the notification must reveal the root conversation.", seconds: 10) {
-            self.app.staticTexts["chat.status"].exists
+            self.app.state == .runningForeground
+                && self.app.staticTexts["chat.status"].exists
                 && !self.app.navigationBars["任務通知"].exists
                 && self.app.buttons["navigation.chat"].value as? String == "已選取"
         }
@@ -155,14 +171,22 @@ final class NotificationUITests: XCTestCase {
             let visible = !node.frame.isEmpty && node.frame.intersects(snapshot.frame)
             var labels = visible && !node.label.isEmpty ? [node.label] : []
             for child in node.children { labels += visit(child) }
-            let text = labels.joined(separator: " ")
-            // All three labels must share a visible, bounded banner container;
-            // matching unrelated nodes anywhere in SpringBoard is insufficient.
-            if visible, node.elementType != .application, node.elementType != .window,
-               node.frame.height < snapshot.frame.height * 0.5,
-               text.contains("通知測試"), text.contains("這是渥屋助理的測試通知。"),
-               labels.contains(where: { $0 == "渥屋助理"
-                   || $0.caseInsensitiveCompare("WoowAssistant") == .orderedSame }) {
+            let bounded = visible && node.elementType != .application && node.elementType != .window
+                && node.frame.height < snapshot.frame.height * 0.5
+            if bounded, observedBannerCandidate == nil,
+               labels.contains(where: { $0.contains("通知測試") }),
+               labels.contains(where: { $0.contains("這是渥屋助理的測試通知。") }) {
+                // Retain the first transient candidate even if exact matching
+                // fails and the OS removes the banner before tearDown runs.
+                observedBannerCandidate = "frame=\(node.frame); identifier=\(node.identifier)\n"
+                    + labels.prefix(20).map { String($0.prefix(500)) }.joined(separator: "\n")
+            }
+            // iOS 18's compact short look shows an App icon, not App-name text.
+            // Match exact fields in one bounded system subtree. The subsequent
+            // actual tap must open this App's root Chat to establish attribution.
+            if bounded,
+               hasExactField("通知測試", in: labels),
+               hasExactField("這是渥屋助理的測試通知。", in: labels) {
                 if smallest == nil || node.frame.width * node.frame.height
                     < smallest!.frame.width * smallest!.frame.height {
                     smallest = SystemBanner(frame: node.frame, labels: labels)
@@ -172,6 +196,15 @@ final class NotificationUITests: XCTestCase {
         }
         visit(snapshot)
         return smallest
+    }
+
+    // AX may expose separate labels or combine fields in one announcement.
+    // Match a complete field, never a substring inside unrelated body text.
+    private func hasExactField(_ expected: String, in labels: [String]) -> Bool {
+        labels.contains { label in
+            label == expected || label.components(separatedBy: CharacterSet(charactersIn: ",\n"))
+                .contains { $0.trimmingCharacters(in: .whitespacesAndNewlines) == expected }
+        }
     }
 
     private func tap(_ element: XCUIElement, scroll: Bool = true) throws {

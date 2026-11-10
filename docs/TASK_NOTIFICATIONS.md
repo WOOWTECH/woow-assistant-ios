@@ -163,13 +163,28 @@ special hosted compilation flag or duplicate core wrapper is required.
 The local report distinguishes actual execution from iOS syntax parsing. It does
 not establish iOS build, permission prompt, banner/tap, audible sound or physical
 device acceptance. NotificationUITests separately requires a real system prompt when undetermined,
-a fully authorized status, one bounded SpringBoard banner subtree containing this
-App's name and the fixed title/body, and an actual tap that reveals the root chat
-from the pushed notification settings page. It also verifies opt-in and opt-out
+a fully authorized status, one bounded SpringBoard banner subtree containing the
+exact fixed title/body, absence before the explicit send, and an actual tap that
+puts this App in the foreground and reveals root Chat with the pushed notification
+settings page gone. App attribution depends on that actual route. iOS 18's compact
+banner can show the App icon without a separate App-name text label; the test must
+not require an OS-omitted label or accept App-name text embedded in the body as
+independent attribution. It also verifies opt-in and opt-out
 across relaunch. A screenshot and matched banner labels are attached. Provisional
 or denied states are not treated as full banner authorization; external Settings
 revocation and audible sound remain separate acceptance. Shared source drift is
 reported as SOURCE_CHANGED instead of silently relabeling older results.
+
+The first native settings case at `f28d0bb`, run `42890969758` on fresh iPhone SE
+iOS 18.5, built successfully but failed its banner matcher: 1 test, 0 passed,
+1 failed, 0 skipped. The public permission prompt and authorized state passed;
+the original matcher incorrectly required a separate App-name label. The actual
+CI recording shows the fixed notification title/body beside an App icon. This
+establishes real visual delivery in the recording, not a passing test or successful
+tap/relaunch flow. The [original failure evidence](evidence/task-notifications-native-42890969758.json)
+and [unmodified recording frame](evidence/task-notifications-native-42890969758-frame26.png)
+are retained. The corrected matcher and foreground-route assertion await another
+native run; local syntax parsing does not typecheck or validate XCTest behavior.
 
 ## References checked
 

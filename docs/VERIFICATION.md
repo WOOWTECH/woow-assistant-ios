@@ -1,5 +1,64 @@
 # Verification — 2026-11-11
 
+## Integrated references and notifications passed native logic checks
+
+At `f28d0bb`, [42890964046](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42890964046)
+passed **277/277 native/hosted methods, zero skips**, on iPhone 17 / iOS 26.2.
+Portable execution separately passed **203/203**. All 28 new methods completed:
+8 notification core, 4 reference-context core, 10 actual learning-reference App
+and 6 actual notification App methods. These overlap the core layer; they are not
+480 distinct features. [Exact methods and source hashes](evidence/native-current-f28d0bb.json).
+
+The separate native notification UI case at the same revision failed **0/1**.
+Its actual recording shows the fixed system banner at about 26–28 seconds, with
+an App icon and title/body, without a separately rendered App-name text. The old
+matcher required that extra name label. The candidate now matches exact fixed
+fields inside a bounded SpringBoard subtree; attribution still requires tapping
+that actual banner and reaching this App in the foreground, with root Chat visible
+and the pushed notification settings gone. Failed observations retain a bounded
+transient AX candidate and screenshots. It has not yet passed native retesting.
+[Original failure and recording observation](evidence/task-notifications-native-42890969758.json).
+
+The older `4f26118` profile matrix completed **6/9 by xcresult, zero skips**;
+console text alone misleadingly recorded a timed-out delete method as passed.
+The two other failures were an initial App-launch timeout and a history disclosure
+remaining collapsed after a tap. Candidate helpers immediately evaluate unchanged
+readiness predicates and target the exact visible history label once, then await the actual expanded state within the existing 10-second readiness bound; all nine
+method bodies, data checks and 240-second limits remain unchanged. Launch failure
+is not claimed fixed. [Original method-specific evidence](evidence/ui-profile-4f26118.json).
+
+
+## PDF assembly: SE original and current user-copy completed
+
+At `f28d0bb`, the ordinary SE / iOS 18.5 case
+[42890982515](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42890982515)
+passed **1/1, zero skips**, in 196.177 seconds. The explicit user-copy case on
+current iOS 26.2 [42890975618](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42890975618)
+also passed **1/1, zero skips**, in 227.597 seconds. Both returned exactly one
+selection callback, separately approved the actual two-page read and output,
+entered the exact reversed page order, produced a two-page PDF, and received a
+native export-cancel callback while retaining the identical exportable result.
+[Per-device stages and source hashes](evidence/pdf-assembly-f28d0bb.json).
+These cases select one two-page PDF in a picker allowing multiple selection;
+this does not accept cross-file merging. Large-device collection remains separate.
+
+## Actual PDF question: retained result reached, whole-case deadline still failed
+
+At `517d0d1`, [42885607583](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42885607583)
+failed **0/1, zero skips**. Real selection, extraction, four model calls, two exact
+page citations, actual native export cancellation and retained answer/citations
+were observed; the unchanged 300-second allowance expired before query close and
+final original-extraction readback. The late cancellation marker is not a pass.
+[Fixed stages, timing and exact missing steps](evidence/live-document-query-517d0d1-ios18.json).
+
+The new driver evaluates already-ready predicates immediately and reads visible
+query rows together using a fresh scoped accessibility snapshot, while still
+performing real bounded scrolls for unreadable rows. Exact question, destination,
+read/extract approvals, answer/citations, native cancellation and original-result
+retention assertions remain. Whole-case 300 seconds and cleanup boundary at 285
+seconds remain unchanged. This is a native retest candidate, not a claimed App
+performance fix or E2E success.
+
 ## Task references and notification integration awaiting native acceptance
 
 Single-site research now captures profile, active memory, eligible approved personal

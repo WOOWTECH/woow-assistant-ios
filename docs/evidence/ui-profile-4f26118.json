@@ -1,0 +1,342 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-10T20:02:50.308339+00:00",
+  "source_commit": "4f261180a3d20334a4d6940bb2eacd9d720aacac",
+  "run_id": 42875117146,
+  "job_id": 130036246374,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42875117146/job/130036246374",
+  "job_conclusion": "failure",
+  "scope": "Current-device profile and profile-tool native fixtures at 4f26118; preserve xcresult failure counts even where console method completion differs.",
+  "runtime": {
+    "device_name": "iPhone 17",
+    "runtime_version": "26.2",
+    "runtime_build": "23C54",
+    "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2"
+  },
+  "portable": {
+    "passed": 187,
+    "failed": 0,
+    "skipped": 0,
+    "separate_execution": true
+  },
+  "xcresult_summary_counts": {
+    "totalTestCount": 9,
+    "passedTests": 6,
+    "failedTests": 3,
+    "skippedTests": 0
+  },
+  "normal_method_completion_counts": {
+    "total": 9,
+    "unique": 9,
+    "passed": 7,
+    "failed": 2,
+    "skipped": 0
+  },
+  "method_completion_columns": [
+    "qualified_method",
+    "console_outcome",
+    "seconds"
+  ],
+  "method_completions": [
+    [
+      "WoowAssistantUITests/UserProfileToolUITests/testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+      "passed",
+      239.474
+    ],
+    [
+      "WoowAssistantUITests/UserProfileToolUITests/testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+      "passed",
+      147.71
+    ],
+    [
+      "WoowAssistantUITests/UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "passed",
+      241.291
+    ],
+    [
+      "WoowAssistantUITests/UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "failed",
+      62.074
+    ],
+    [
+      "WoowAssistantUITests/UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch",
+      "failed",
+      135.265
+    ],
+    [
+      "WoowAssistantUITests/UserProfileUITests/testDuplicateAndCancelledTextNeverPublish",
+      "passed",
+      156.899
+    ],
+    [
+      "WoowAssistantUITests/UserProfileUITests/testMasterSwitchAndTwiceConfirmedClearPersist",
+      "passed",
+      191.745
+    ],
+    [
+      "WoowAssistantUITests/UserProfileUITests/testMultipleSentencesNeverPublish",
+      "passed",
+      125.876
+    ],
+    [
+      "WoowAssistantUITests/UserProfileUITests/testSensitiveTextNeverPublishes",
+      "passed",
+      123.202
+    ]
+  ],
+  "source_declared_methods": {
+    "UserProfileUITests": [
+      "testCreateReplaceDeleteAndHistorySurviveRelaunch",
+      "testSensitiveTextNeverPublishes",
+      "testMultipleSentencesNeverPublish",
+      "testDuplicateAndCancelledTextNeverPublish",
+      "testMasterSwitchAndTwiceConfirmedClearPersist"
+    ],
+    "UserProfileToolUITests": [
+      "testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+      "testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+      "testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch"
+    ]
+  },
+  "source_completion_names_match_exactly": true,
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/UserProfileUITests.swift": "7712db1f3cb47c48f33a4ecde9163f6cc1e0f9e3556c0a3e7a2d03a75174c6cf",
+    "Tests/WoowAssistantUITests/UserProfileToolUITests.swift": "ed0f454214d63bcad9970c4a449b360ae0c56654a5432dc76e7af33ec3a6f9af",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+    "Sources/App/UserProfileView.swift": "69ebbc881e5ec6bee50f5eefa79be14dc1bd2a7752b7621692c357d2dd18c783",
+    "Sources/App/MemoryDataView.swift": "bea52c1fc7f1f23c37a415fdce983667eafde33ac02353420e194b0347088c7b"
+  },
+  "test_method_sha256": {
+    "UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch": "a6a204ba3c81fcb650f4dab831bda92621407a4f363c57eadb13ec9765f85a9f",
+    "UserProfileUITests/testSensitiveTextNeverPublishes": "f9fba54a4dfab75127f86482aa1953ea87b61c15bb3f30beb685e4f1b9550bb2",
+    "UserProfileUITests/testMultipleSentencesNeverPublish": "c9a9aecdc2a4dd6fc1e0a08792af469e5c5d4efa774f6110220f9641c6b62946",
+    "UserProfileUITests/testDuplicateAndCancelledTextNeverPublish": "0c24a03f887711621d866e9c53c1b6300c2f9cc2fc3d103b5c63eb73aeac31cc",
+    "UserProfileUITests/testMasterSwitchAndTwiceConfirmedClearPersist": "802746560d16b48e47698472b52b50561d754cae753ce0b326841077e1ca5e50",
+    "UserProfileToolUITests/testApprovedChatAdditionPersistsInProfileAfterRelaunch": "f843f0108fa547fa18b2e42f6964bdf824af07fcb1f218ef5a997906f80897c7",
+    "UserProfileToolUITests/testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry": "6ff2a9e84f024dfb03f5363209c3ae739729e8ce4caaf2e71379a397b08967a1",
+    "UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch": "7fd04c7dc4a8e96b0889adc787ce9924850146f49755470298084c3fd948e568",
+    "UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch": "cbcd9b253f05ad972467d7320ddb28cdf835f6bc09789b16ab617f16c50584d6"
+  },
+  "test_method_hash_definition": "UTF-8 bytes from four-space func declaration through four-space closing brace, excluding following newline.",
+  "completion": {
+    "verified": false,
+    "counts": {
+      "totalTestCount": 9,
+      "passedTests": 6,
+      "failedTests": 3,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Failed",
+    "expected_ui_count": 9,
+    "completed_ui_count": 9,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": [
+      "WoowAssistantUITests/UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "WoowAssistantUITests/UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch"
+    ]
+  },
+  "runtime_recovery": {
+    "observed_start_lines": 11,
+    "unique_started_methods": 9,
+    "start_counts": {
+      "UserProfileToolUITests/testApprovedChatAdditionPersistsInProfileAfterRelaunch": 1,
+      "UserProfileToolUITests/testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry": 1,
+      "UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch": 1,
+      "UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch": 2,
+      "UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch": 2,
+      "UserProfileUITests/testDuplicateAndCancelledTextNeverPublish": 1,
+      "UserProfileUITests/testMasterSwitchAndTwiceConfirmedClearPersist": 1,
+      "UserProfileUITests/testMultipleSentencesNeverPublish": 1,
+      "UserProfileUITests/testSensitiveTextNeverPublishes": 1
+    },
+    "runner_restart_messages": 2,
+    "fixed_message": "Restarting after unexpected exit, crash, or test timeout; summary will include totals from previous launches.",
+    "agent_retry": false,
+    "note": "Replacement and manual create/history each have two start lines after Xcode recovery. Do not claim every method executed once or normalize failed/unfinished invocations to success."
+  },
+  "failures": [
+    {
+      "method": "UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "xcresult_outcome": "failed",
+      "xcresult_reason": "Test exceeded execution time allowance of 4 minutes",
+      "console_completion": "passed",
+      "console_seconds": 241.291,
+      "observed_final_stage": "Final history after relaunch: tap history at 235.78s; original history row inspected through 239.10s; teardown terminate at 239.50s. The 240-second allowance failed the method.",
+      "custom_fixture_attachments": 0
+    },
+    {
+      "method": "UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "xcresult_outcome": "failed",
+      "xcresult_reason": "Test exceeded execution time allowance of 4 minutes",
+      "console_completion": "failed",
+      "console_seconds": 62.074,
+      "source_location": "Tests/WoowAssistantUITests/UserProfileToolUITests.swift:123",
+      "fixed_console_error": "Timed out while launching application via Xcode.",
+      "observed_stage": "Initial app.launch fails before profile input or model/review actions; Xcode subsequently starts this method again and records an execution-allowance failure.",
+      "custom_fixture_attachments": 0
+    },
+    {
+      "method": "UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch",
+      "xcresult_outcome": "failed",
+      "console_completion": "failed",
+      "console_seconds": 135.265,
+      "source_location": "Tests/WoowAssistantUITests/UserProfileUITests.swift:192",
+      "fixed_assertion": {
+        "expected_history_value": "已展開",
+        "actual_history_value": "已收合"
+      },
+      "observed_stage": "Created Prefer quiet and replaced it with Prefer central; first history disclosure assertion fails before this method reaches its relaunch/delete assertions.",
+      "history_tap_seconds": 132.09,
+      "event_synthesis_seconds": 132.39,
+      "history_value_read_seconds": 132.74,
+      "custom_fixture_attachments": 2
+    }
+  ],
+  "fixture_history_evidence": {
+    "test": "UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch",
+    "AX": {
+      "button_identifier": "profile.history",
+      "button_frame": {
+        "x": 16.0,
+        "y": 630.7,
+        "width": 370.0,
+        "height": 52.3
+      },
+      "value": "已收合",
+      "active_item_text": "Prefer central",
+      "history_item_present": false,
+      "keyboard_present": false,
+      "window_size": {
+        "width": 402.0,
+        "height": 874.0
+      },
+      "native_text_label": "已替換或刪除的紀錄（1）",
+      "native_text_frame": {
+        "x": 32.0,
+        "y": 646.7,
+        "width": 193.0,
+        "height": 20.3
+      }
+    },
+    "synthesized_tap": {
+      "down": {
+        "x": 201.0,
+        "y": 656.8333333333333
+      },
+      "up": {
+        "x": 201.0,
+        "y": 656.8333333333333
+      },
+      "inside_AX_button_frame": true,
+      "inside_AX_native_text_frame": true
+    },
+    "screenshot_observation": "History row remains visibly collapsed after first tap; active replacement is visible.",
+    "attachment_sha256": {
+      "1EBAE254-4C4A-494A-A6E8-5029CF2A80EB.png": "28197540c445471828426daa0a764464fdea4e3d28241384ff8410a486c7e993",
+      "E6FE26D9-A2A1-426A-BCA8-A243DB3076AD.txt": "de35bded26c8527fdbc1a26287969272877491137dc36187d8d5e8c538393a5f",
+      "27323B59-5078-4CD1-A0BD-10A9F5F27A7E": "1ff495473087a0cbbc42fac633f486158f4dffc102b5afee965652b724316422"
+    },
+    "root_cause": "Unproved. The original native tap lies inside both button and text AX frames; the evidence does not establish a Spacer/outside-frame miss, actual hit region, or product/fixture sole cause.",
+    "timing_seconds": {
+      "tap_requested": 132.09,
+      "event_synthesis": 132.39,
+      "post_tap_idle_check": 132.73,
+      "value_query_started": 132.74,
+      "teardown_AX_request": 133.15,
+      "second_teardown_AX_request": 133.58
+    },
+    "timing_limit": "The initial value query and subsequent failure AX remained collapsed. These observations do not prove a delayed SwiftUI/AX update or that bounded waiting will fix the failure."
+  },
+  "prior_clear_regression": {
+    "method": "UserProfileUITests/testMasterSwitchAndTwiceConfirmedClearPersist",
+    "outcome": "passed",
+    "seconds": 191.745,
+    "scope": "Both clear-confirmation phases, first cancellation preserving profile, final clear, master-switch persistence and relaunch checks executed in the source method.",
+    "not_claimed": "This passing invocation does not retrospectively prove the cause of the prior first-Continue tap failure."
+  },
+  "artifact": {
+    "id": 13797319679,
+    "size_bytes": 467631522,
+    "digest": "sha256:9bef6ae5ee7980912e5a308ce2d49eef2daf1b0582530d85a3a66a082faaf7a3",
+    "inspected_metadata": [
+      "test-summary.json",
+      "test-simulator.json",
+      "ui-shard-completion.json",
+      "fixture attachment manifest and selected fixture AX/screenshot/synthesized event"
+    ]
+  },
+  "fixture_deadline_seconds": 240,
+  "candidate_next_steps": [
+    "Rerun all nine original methods with helper-only candidates, whole-method 240-second cap and all original assertions; manual expanded-state observation now has a bounded 10-second wait.",
+    "History helper targets the exact native StaticText child once, requires collapsed state and visible contained geometry, then preserves expanded-state and actual history assertions. This is a precision/diagnostic candidate, not an established product fix.",
+    "Immediate predicate fastpaths retain identical readiness/value/label/absence predicates and original fallback timeouts.",
+    "Keep the replacement launch timeout/automatic runner recovery classified separately. No launch/test retry or fixture sleep added."
+  ],
+  "source_changes_from_this_diagnosis": [
+    "Tests/WoowAssistantUITests/UserProfileUITests.swift",
+    "Tests/WoowAssistantUITests/UserProfileToolUITests.swift"
+  ],
+  "limits": [
+    "Acceptance count is xcresult 6 passed / 3 failed / 0 skipped, not console 7/2.",
+    "All nine source methods have a normal completion name, but two also have earlier or restarted invocations; no once-only execution claim.",
+    "The test fixtures use synthetic model replies; this is not live model HTTP evidence.",
+    "No product fix is claimed; only bounded fixture observations and fixed failure classifications are retained.",
+    "No raw logs, environment, credentials, full AX tree or private model data are included."
+  ],
+  "candidate_fix": {
+    "source_sha256": {
+      "Tests/WoowAssistantUITests/UserProfileUITests.swift": "f7f39e9d366940c2f031e69604a4f174788e2e0ae16b716225f33719a62779df",
+      "Tests/WoowAssistantUITests/UserProfileToolUITests.swift": "cc40c0d9aef8ee89bdfe1d5dc744f787fd6041edb94e7c53d7c1a84a0ce1f409"
+    },
+    "helpers": {
+      "UserProfileUITests": [
+        "showHistory",
+        "tapHistoryLabel",
+        "ready",
+        "absent"
+      ],
+      "UserProfileToolUITests": [
+        "assertSingleHistory",
+        "tapHistoryLabel",
+        "assertLabel",
+        "assertValue",
+        "ready",
+        "absent"
+      ]
+    },
+    "changes": [
+      "Evaluate identical predicates immediately before original XCTest expectation fallback.",
+      "Tap the exact native text child of profile.history once after collapsed-state and geometry checks; preserve all expanded-state and historical-row assertions.",
+      "Manual showHistory checks the expanded value immediately, then if needed polls that same observable value for at most the existing 10-second readiness bound before the original final value and content assertions. One tap; whole-method 240-second allowance unchanged."
+    ],
+    "all_nine_test_method_bodies_byte_identical_to_4f26118": true,
+    "execution_allowance_seconds": 240,
+    "retries_added": 0,
+    "assertions_removed": 0,
+    "local_validation": {
+      "ios17_target_syntax_parse": "passed; CLT warns MacOSX sysroot, so this is not native typecheck or execution",
+      "all_nine_original_test_method_bodies_comparison": "passed",
+      "diff_check": "passed",
+      "release_ios17_readiness_previous_run": {
+        "passed": 10,
+        "failed": 0,
+        "scope": "before the final manual expanded-state wait and concurrently added notification UI inventory"
+      },
+      "release_ios17_readiness_latest_run": {
+        "passed": 9,
+        "failed": 1,
+        "failure_method": "test_failure_is_saved_before_test_and_simulator_cleanup",
+        "fixed_reason": "UI 分片未涵蓋類別：NotificationApprovalUITests",
+        "stage": "Source UI inventory gate before the test could reach its intended prelaunch failure. Shared inventory is parent-owned; no edit made here."
+      }
+    },
+    "native_efficacy": "Not yet executed; 4f26118 remains 6/9 passed in xcresult.",
+    "scope_limit": "No App/shared LearningUITestSupport changes. History cause remains unproved. Launch/runner recovery failure is not fixed by these helpers.",
+    "existing_wait_timeouts_unchanged": true,
+    "new_post_action_wait_seconds": 10,
+    "execution_allowance_unchanged": true
+  }
+}

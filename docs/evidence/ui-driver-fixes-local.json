@@ -1,0 +1,25 @@
+{
+  "status": "LOCAL_CHECKS_PASS_NATIVE_PENDING",
+  "source_base": "e9636980fe835e76c26d0c04b23d1936cf1a30bb",
+  "scope": "isolated checkout of published source plus these frozen UI driver fixes; excludes unrelated in-progress team changes",
+  "python_tests": {
+    "passed": 223,
+    "failed": 0
+  },
+  "swift_validation": "Debug/Release iOS-target syntax parsing only; host has no iOS SDK",
+  "profile_original_test_bodies_unchanged": 9,
+  "whole_case_limits_unchanged": true,
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/NotificationUITests.swift": "f749a606e2a53ab3898163e5225664b7f23c60a612f1719729839913203e3cfa",
+    "Tests/WoowAssistantUITests/UserProfileUITests.swift": "f7f39e9d366940c2f031e69604a4f174788e2e0ae16b716225f33719a62779df",
+    "Tests/WoowAssistantUITests/UserProfileToolUITests.swift": "cc40c0d9aef8ee89bdfe1d5dc744f787fd6041edb94e7c53d7c1a84a0ce1f409",
+    "Tests/WoowAssistantUITests/LiveDocumentQueryUITests.swift": "3778e26287029eb6b887aa86954d943485e7149de899d48909a7c1f176b2bb39"
+  },
+  "checks": [
+    "JSON and credential-pattern scan",
+    "git diff --check",
+    "XcodeGen project generation",
+    "four changed Swift UI test files parsed in both configurations"
+  ],
+  "native_acceptance": false
+}

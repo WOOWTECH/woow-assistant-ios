@@ -1,0 +1,238 @@
+{
+  "version": 1,
+  "source_revision": "f28d0bb3cf336e4d36bb232b5b5d7142f4417dfd",
+  "source_sha256": {
+    "Sources/App/PDFNativePicker.swift": "099292a4c461be8cb34c6258b806cb78897e895e6d6fe7b3d4e7ce15f6be0f47",
+    "Sources/App/SkillPDFAssemblyView.swift": "883b7ad14d5bee91e2c90049e990760f070d8265bca07043cacb2ab60cf7aa92",
+    "Tests/WoowAssistantUITests/SkillExecutionUITests.swift": "4c66d63ea52a361273db6d14bf3711023e30545226802f66306e8cb87fdb4aa2",
+    ".github/workflows/ios.yml": "5edb7f88f3c7d6230f75a6d0d1a718d5abf2e54360a3951aa6763f7f7e05a00a"
+  },
+  "results_collection_complete": false,
+  "comparison": "允許多選模式、實際選一個含兩頁的PDF",
+  "cases": [
+    {
+      "variant": "original_se",
+      "run_id": 42890982515,
+      "job_id": 130091741515,
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "expected_source": "swiftui",
+      "expected_mode": "open",
+      "expected_callbacks": 1,
+      "artifact_id": 13799541657,
+      "conclusion": "success",
+      "actual": {
+        "totalTestCount": 1,
+        "passedTests": 1,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "strict_completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 1,
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 1,
+        "completed_ui_count": 1,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "method_starts": 1,
+      "duration_seconds": 196.177,
+      "picker_events": [
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6A841717-D6B9-476F-BB14-BD6E5E9EC539 event=bindingChanged ordinal=1 presented=true callbacks=0 sampledAt=1794341504.484746",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=6A841717-D6B9-476F-BB14-BD6E5E9EC539 source=swiftui event=bindingChanged presented=true callbacks=0 sampledAt=1794341504.484895",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=6A841717-D6B9-476F-BB14-BD6E5E9EC539 source=swiftui mode=open allowsMultipleSelection=true sampledAt=1794341510.575615",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6A841717-D6B9-476F-BB14-BD6E5E9EC539 source=swiftui event=observed mode=open allowsMultipleSelection=true delegatePresent=true inWindow=true dismissing=false sampledAt=1794341510.5756478",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6A841717-D6B9-476F-BB14-BD6E5E9EC539 event=completion source=swiftui callbacks=1 outcome=one sampledAt=1794341535.284035",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=6A841717-D6B9-476F-BB14-BD6E5E9EC539 source=swiftui event=completion outcome=one callbacks=1 sampledAt=1794341535.284336",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=6A841717-D6B9-476F-BB14-BD6E5E9EC539 event=bindingChanged ordinal=1 presented=false callbacks=1 sampledAt=1794341535.347787",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=6A841717-D6B9-476F-BB14-BD6E5E9EC539 source=swiftui event=bindingChanged presented=false callbacks=1 sampledAt=1794341535.347935"
+      ],
+      "picker_event_source": {
+        "source": "diagnostics/0_Test_iPhone SE (3rd generation)_Diagnostics/WoowAssistantUITests-B6E8DE9E-72D4-4A02-A6B3-974B0C673372-Configuration-Test Scheme Action-Iteration-1/WoowAssistantUITests-6ACA0809-6056-4C4F-B4A8-F923C2EE3779/StandardOutputAndStandardError-io.woowtech.assistant.txt",
+        "source_bytes": 56841859,
+        "source_sha256": "1d90d1333d4fd7283e7a6ff6ae2713ed0661ea631838a4f3aeb588e31a29be8c",
+        "transferred_bytes": 4634955,
+        "whole_archive_downloaded": false
+      },
+      "stages": {
+        "native_picker": {
+          "source": "swiftui",
+          "mode": "open",
+          "allows_multiple_selection": true,
+          "callback_count": 1,
+          "outcome": "one"
+        },
+        "two_page_read_receipt": "passed",
+        "native_select_all_elapsed_seconds": 132.97,
+        "delete_then_exact_empty_value_elapsed_seconds": 136.18,
+        "exact_replacement_value": "1:2,1:1",
+        "exact_replacement_assertion_elapsed_seconds": 138.55,
+        "review_both_reversed_page_mappings": "passed",
+        "separate_assembly_approval_elapsed_seconds": 160.06,
+        "real_two_page_bounded_output_receipt": "passed",
+        "native_exporter_open_elapsed_seconds": 166.54,
+        "cancel_status_assertion_elapsed_seconds": 189.52,
+        "identical_result_preserved_and_export_still_enabled": "passed"
+      },
+      "evidence": [
+        {
+          "file": "test-summary.json",
+          "bytes": 1004,
+          "sha256": "8e667183631be50d7f230f600822698f3604f4e09645ec9201c7fde0e8fad941"
+        },
+        {
+          "file": "ios-tests.log",
+          "bytes": 928544,
+          "sha256": "6df8cfcb289a637a7dd8d04b4006acb55e57033c43a5f4ecfa72227668264be2"
+        },
+        {
+          "file": "ui-shard-completion.json",
+          "bytes": 331,
+          "sha256": "8a279e1a8985b031dbc2ed1d84fa3997ebd32b8f52ce6024d388f88f2ea5cfaf"
+        },
+        {
+          "file": "skill-pdf-fixture-evidence.json",
+          "bytes": 1072,
+          "sha256": "2499bfb96284dcb51a1265faddf8242a8a50d546605964af24782a729e81dbf5"
+        },
+        {
+          "file": "bounded-extraction.json",
+          "bytes": 871,
+          "sha256": "978ae142ddeaa205d48d57eb84792bc1648c4eb6c8182005bef4d6569d47373d"
+        }
+      ]
+    },
+    {
+      "variant": "current_user_copy",
+      "run_id": 42890975618,
+      "job_id": 130091720445,
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "expected_source": "user-copy",
+      "expected_mode": "import",
+      "expected_callbacks": 1,
+      "artifact_id": 13799567346,
+      "conclusion": "success",
+      "actual": {
+        "totalTestCount": 1,
+        "passedTests": 1,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "strict_completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 1,
+          "passedTests": 1,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 1,
+        "completed_ui_count": 1,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "method_starts": 1,
+      "duration_seconds": 227.597,
+      "picker_events": [
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 event=bindingChanged ordinal=1 presented=true callbacks=0 sampledAt=1794341642.106806",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 source=user-copy event=bindingChanged presented=true callbacks=0 sampledAt=1794341642.1072578",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 source=user-copy mode=unobserved sampledAt=1794341642.1196198",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 event=nativeCreated mode=import allowsMultipleSelection=true delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=0 sampledAt=1794341642.154886",
+        "SKILL_PDF_PICKER_PRESENTATION namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 source=user-copy mode=import allowsMultipleSelection=true sampledAt=1794341643.425005",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 source=user-copy event=observed mode=import allowsMultipleSelection=true delegatePresent=true inWindow=true dismissing=false sampledAt=1794341643.425039",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 event=nativePicked mode=import allowsMultipleSelection=true delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=1 sampledAt=1794341682.073186",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 event=completion source=uikit callbacks=1 outcome=one sampledAt=1794341682.074823",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 source=user-copy event=completion outcome=one callbacks=1 sampledAt=1794341682.079361",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 event=nativeDismantled mode=import allowsMultipleSelection=true delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=1 sampledAt=1794341682.180591",
+        "SKILL_PDF_PICKER_LIFECYCLE namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 event=bindingChanged ordinal=1 presented=false callbacks=1 sampledAt=1794341682.205832",
+        "SKILL_PDF_ASSEMBLY_PICKER namespace=692A46D8-82E0-4A83-9F50-FD496A909E92 source=user-copy event=bindingChanged presented=false callbacks=1 sampledAt=1794341682.205986"
+      ],
+      "picker_event_source": {
+        "source": "diagnostics/0_Test_Woow-CI-cbc3867665a344e49925b3a48ed43f75_Diagnostics/WoowAssistantUITests-0097CB2F-3A5B-4AF4-8AA3-43D747123125-Configuration-Test Scheme Action-Iteration-1/WoowAssistantUITests-113C38B2-EAC3-4070-867D-24B44571E282/StandardOutputAndStandardError-io.woowtech.assistant.txt",
+        "source_bytes": 61613038,
+        "source_sha256": "0184d5c47756c8711fbff5df6622f28dcc0dab2681a0c1c41eaebc9c373f6192",
+        "transferred_bytes": 5292888,
+        "whole_archive_downloaded": false
+      },
+      "stages": {
+        "explicit_product_copy_button_elapsed_seconds": 57.91,
+        "native_picker": {
+          "source": "user-copy",
+          "mode": "import",
+          "allows_multiple_selection": true,
+          "callback_count": 1,
+          "outcome": "one",
+          "native_created_and_picked_and_dismantled_recorded": true,
+          "delegate_present_at_observation": true
+        },
+        "two_page_read_receipt": "passed",
+        "read_approval_elapsed_seconds": 103.84,
+        "native_select_all_elapsed_seconds": 144.75,
+        "delete_then_exact_empty_value_elapsed_seconds": 148.75,
+        "exact_replacement_value": "1:2,1:1",
+        "exact_replacement_assertion_elapsed_seconds": 151.38,
+        "review_both_reversed_page_mappings": "passed",
+        "separate_assembly_approval_elapsed_seconds": 177.76,
+        "real_two_page_bounded_output_receipt": "passed",
+        "native_exporter_open_elapsed_seconds": 186.4,
+        "cancel_status_assertion_elapsed_seconds": 219.17,
+        "identical_result_preserved_and_export_still_enabled": "passed"
+      },
+      "evidence": [
+        {
+          "file": "test-summary.json",
+          "bytes": 1001,
+          "sha256": "fb002e29312d6db138d8397e989ed08edfc789e8e7c33b4db5c9e7a97eec3bb9"
+        },
+        {
+          "file": "ios-tests.log",
+          "bytes": 964202,
+          "sha256": "275fabefc5443d4db45dc478b45d24b88170d283fba212b1b5e661bf6e102c53"
+        },
+        {
+          "file": "ui-shard-completion.json",
+          "bytes": 331,
+          "sha256": "8a279e1a8985b031dbc2ed1d84fa3997ebd32b8f52ce6024d388f88f2ea5cfaf"
+        },
+        {
+          "file": "skill-pdf-fixture-evidence.json",
+          "bytes": 1074,
+          "sha256": "db4b1140cca82acf08e049e25a4287477f4e9b453b5e7055be17e8027fb417f5"
+        },
+        {
+          "file": "bounded-extraction.json",
+          "bytes": 871,
+          "sha256": "c55e9f494d4125053f61b31da3d207af016acb1984cc8a9266820e60140a01e5"
+        }
+      ]
+    }
+  ],
+  "pending": [
+    {
+      "variant": "original_large",
+      "run_id": 42890989077,
+      "job_id": 130091764951,
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "expected_source": "swiftui",
+      "expected_mode": "open",
+      "expected_callbacks": 1
+    }
+  ],
+  "limitations": [
+    "One two-page synthetic PDF was selected in a multi-selection-enabled picker; this is not native cross-file merge acceptance.",
+    "SE original and Current user-copy passed with every original assertion retained; Large remains pending. Historical Current open failures remain failures and are not replaced by copy success.",
+    "No skipped cases, automatic picker retry, injected binding/file or deadline increase."
+  ]
+}

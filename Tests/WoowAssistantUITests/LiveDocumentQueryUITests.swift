@@ -151,15 +151,20 @@ final class LiveDocumentQueryUITests: XCTestCase {
         phase("verified")
         try tap("documentQuery.export", scroll: true)
         try wait("The real native exporter must appear.", timeout: 15) { self.nativeNavigation.exists }
+        phase("export_presented")
         try cancelExporter()
+        phase("export_cancel_tapped")
         try nativeDismissed()
         let exportStatus = app.staticTexts["documentQuery.exportStatus"].firstMatch
         try show(exportStatus, readable: true)
         XCTAssertTrue(exportStatus.label == "已取消匯出，回答與引文仍保留。",
                       "Only the actual exporter cancellation callback satisfies this case.")
+        phase("export_callback_verified")
         try show(answerElement, readable: true)
         XCTAssertTrue(answerElement.label == answer, "Export cancellation must preserve the exact answer.")
+        phase("retained_answer_verified")
         try assertCitations(markers)
+        phase("retained_citations_verified")
         XCTAssertTrue(try queryAudit() == audit, "Export must not send another model request or replace its result.")
         phase("export_cancelled")
         try tap("documentQuery.close")
@@ -179,11 +184,27 @@ final class LiveDocumentQueryUITests: XCTestCase {
 
     private func wait(_ message: String, timeout: TimeInterval, condition: @escaping () -> Bool) throws {
         // Reserve time for namespace cleanup inside the existing 300s cap.
-        let remaining = 285 - Date().timeIntervalSince(started)
-        guard remaining > 0 else { XCTFail("The 300-second case budget is exhausted."); throw Failure.budget }
-        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in condition() }, object: nil)
-        guard XCTWaiter.wait(for: [expectation], timeout: min(timeout, remaining)) == .completed else {
+        try requireBudget()
+        let deadline = min(started.addingTimeInterval(285), Date().addingTimeInterval(timeout))
+        // Ready controls need no scheduled predicate poll. Charge the initial
+        // native check to the same timeout; never add it to the waiting budget.
+        if !condition() {
+            let remaining = deadline.timeIntervalSinceNow
+            guard remaining > 0 else { XCTFail(message); throw Failure.readiness }
+            let expectation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in condition() }, object: nil)
+            guard XCTWaiter.wait(for: [expectation], timeout: remaining) == .completed else {
+                XCTFail(message); throw Failure.readiness
+            }
+        }
+        try requireBudget()
+        guard Date() <= deadline else {
             XCTFail(message); throw Failure.readiness
+        }
+    }
+
+    private func requireBudget() throws {
+        guard Date().timeIntervalSince(started) < 285 else {
+            XCTFail("The 300-second case budget is exhausted."); throw Failure.budget
         }
     }
 
@@ -225,9 +246,9 @@ final class LiveDocumentQueryUITests: XCTestCase {
     }
 
     private func queryAudit() throws -> DocumentQueryUIAudit {
-        let status = app.staticTexts["documentQuery.status"].firstMatch
-        try show(status, readable: true)
-        guard let audit = DocumentQueryUIAudit.parse(status.value as? String) else {
+        let values = try readableQueryText(["documentQuery.status"])
+        guard let status = values["documentQuery.status"],
+              let audit = DocumentQueryUIAudit.parse(status.value) else {
             XCTFail("The fixed query audit is missing or malformed; no raw value was logged."); throw Failure.audit
         }
         return audit
@@ -239,14 +260,72 @@ final class LiveDocumentQueryUITests: XCTestCase {
     }
 
     private func assertCitations(_ markers: [String]) throws {
+        let identifiers = markers.indices.flatMap {
+            ["documentQuery.citation.page.\($0)", "documentQuery.citation.quote.\($0)"]
+        }
+        let values = try readableQueryText(identifiers)
         for (index, marker) in markers.enumerated() {
-            let page = app.staticTexts["documentQuery.citation.page.\(index)"].firstMatch
-            let quote = app.staticTexts["documentQuery.citation.quote.\(index)"].firstMatch
-            try show(page, readable: true); try show(quote, readable: true)
+            guard let page = values["documentQuery.citation.page.\(index)"],
+                  let quote = values["documentQuery.citation.quote.\(index)"] else {
+                XCTFail("Each citation must expose its readable page and quote."); throw Failure.readiness
+            }
             XCTAssertTrue(page.label == "原 PDF 第 \(index + 1) 頁 · 選取序號 \(index + 1)", "The citation must identify its actual original page.")
             XCTAssertTrue(quote.label == marker, "The verified quotation must match the actual selected PDF marker byte for byte.")
         }
         XCTAssertFalse(app.staticTexts["documentQuery.citation.quote.2"].exists)
+    }
+
+    private struct QueryTextValue { let label: String; let value: String? }
+
+    private func readableQueryText(_ identifiers: [String]) throws -> [String: QueryTextValue] {
+        // 517d0d1 spent 280.24–304.07s repeatedly resolving the same Form,
+        // keyboard and individual text attributes without a single scroll.
+        // 517 logs identify this Form as a CollectionView. Container-ID
+        // uniqueness remains a native assertion, not a fact proven by that log.
+        // Read visible static rows together from one fresh, scoped AX snapshot.
+        // This is never used for a tap or to infer Files dismissal/cancellation.
+        let forms = app.collectionViews.matching(identifier: "documentQuery.form")
+        let form = forms.firstMatch
+        var values: [String: QueryTextValue] = [:]
+        var revealed = Set<String>()
+        while true {
+            try requireBudget()
+            guard forms.count == 1, form.isHittable, !app.keyboards.firstMatch.exists else {
+                XCTFail("The readable query Form must be unique and unobscured by the keyboard.")
+                throw Failure.readiness
+            }
+            let snapshot: XCUIElementSnapshot
+            do { snapshot = try form.snapshot() }
+            catch { XCTFail("The query Form snapshot could not be read."); throw Failure.readiness }
+            let viewport = snapshot.frame.intersection(app.frame).insetBy(dx: 0, dy: 4)
+            var pending = [snapshot], matches: [XCUIElementSnapshot] = []
+            while let node = pending.popLast() {
+                if identifiers.contains(node.identifier) { matches.append(node) }
+                pending.append(contentsOf: node.children)
+            }
+            let positions = matches.map {
+                DocumentQueryTextPosition(identifier: $0.identifier, frame: $0.frame,
+                                          isStaticText: $0.elementType == .staticText)
+            }
+            guard let readable = documentQueryReadableIndices(positions, identifiers: identifiers, viewport: viewport) else {
+                XCTFail("Query readback requires unique static text rows in a valid viewport.")
+                throw Failure.readiness
+            }
+            for (identifier, index) in readable {
+                let node = matches[index]
+                values[identifier] = QueryTextValue(label: node.label, value: node.value as? String)
+            }
+            try requireBudget()
+            guard let missing = identifiers.first(where: { values[$0] == nil }) else { return values }
+            guard revealed.insert(missing).inserted else {
+                XCTFail("The requested query text remained unreadable after bounded scrolling.")
+                throw Failure.readiness
+            }
+            // Virtualized/offscreen rows still require actual bounded gestures.
+            // Discard this snapshot after the gesture; never cache AX data
+            // across native presentation, model completion or another call.
+            try show(app.staticTexts[missing].firstMatch, readable: true)
+        }
     }
 
     private func choosePDFCopy() throws {
@@ -353,9 +432,9 @@ final class LiveDocumentQueryUITests: XCTestCase {
         for attempt in 0...3 {
             if nativeCancel.exists { try ready(nativeCancel); nativeCancel.tap(); return }
             guard attempt < 3,
-                  let back = visible(nativeNavigation.buttons.matching(NSPredicate(format: "label IN %@", localLabels + browseLabels))),
-                  attempted.insert(back.label).inserted else { break }
+                  let back = visible(nativeNavigation.buttons.matching(NSPredicate(format: "label IN %@", localLabels + browseLabels))) else { break }
             let previous = back.label
+            guard attempted.insert(previous).inserted else { break }
             back.tap()
             try wait("The native exporter did not leave its previous folder.", timeout: 12) {
                 self.nativeCancel.exists || !self.nativeNavigation.buttons.matching(NSPredicate(format: "label == %@", previous)).firstMatch.exists
@@ -363,6 +442,37 @@ final class LiveDocumentQueryUITests: XCTestCase {
         }
         XCTFail("The native exporter did not expose Cancel through its bounded local route."); throw Failure.route
     }
+}
+
+private struct DocumentQueryTextPosition {
+    let identifier: String
+    let frame: CGRect
+    let isStaticText: Bool
+}
+
+private func documentQueryReadableIndices(_ rows: [DocumentQueryTextPosition], identifiers: [String],
+                                         viewport: CGRect) -> [String: Int]? {
+    guard !identifiers.isEmpty, Set(identifiers).count == identifiers.count,
+          !viewport.isEmpty, !viewport.isNull, !viewport.isInfinite,
+          [viewport.minX, viewport.minY, viewport.width, viewport.height].allSatisfy({ $0.isFinite }) else { return nil }
+    var result: [String: Int] = [:]
+    for identifier in identifiers {
+        let matches = rows.indices.filter { rows[$0].identifier == identifier }
+        // SwiftUI may repeat a Text identifier on its containing cell. Only
+        // the expected StaticText can provide the value; wrappers cannot.
+        let textMatches = matches.filter { rows[$0].isStaticText }
+        guard textMatches.count <= 1 else { return nil }
+        guard let index = textMatches.first else {
+            guard matches.isEmpty else { return nil } // Present only with the wrong role.
+            continue // Materialize the absent row via real scrolling.
+        }
+        let frame = rows[index].frame
+        if [frame.minX, frame.minY, frame.width, frame.height].allSatisfy({ $0.isFinite }),
+           learningFrameIsVisible(frame, in: viewport, visibility: .readableText) {
+            result[identifier] = index
+        }
+    }
+    return result
 }
 
 private struct DocumentQueryUIAudit: Equatable {
