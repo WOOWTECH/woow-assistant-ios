@@ -11,7 +11,67 @@ import UIKit
 @MainActor
 enum BrowserDOMFixtures {
     struct Failure: Error { let message: String }
+    private enum Stage: String {
+        case setup, navigation, documentTitle, initialSnapshot, repeatedSnapshot, proposal
+        case beforeTyping, typing, typedValue, inputEvents, consumedApproval
+        case selecting, selectedValue, submitting, submittedValue
+        case replaceNode, replacedApproval, unchangedValue, mutateValue, mutatedApproval
+        case cancellation, cancelledValue, scrolling, scrollPosition, reloadedApproval, reloadedValue
+    }
+
+    /// Keep the delegate alive for both loads, and accept only the navigation
+    /// returned by that particular loadHTMLString call. isLoading is not a
+    /// substitute for a committed, finished document on a cold WebKit process.
+    @MainActor private final class NavigationWaiter: NSObject, WKNavigationDelegate {
+        private var expected: WKNavigation?
+        private var outcome: Result<Void, Error>?
+
+        func load(_ web: WKWebView, html: String, baseURL: URL) async throws {
+            outcome = nil
+            expected = nil
+            guard let navigation = web.loadHTMLString(html, baseURL: baseURL) else {
+                throw Failure(message: "Local fixture navigation was not created")
+            }
+            expected = navigation
+            let deadline = ProcessInfo.processInfo.systemUptime + 75
+            while outcome == nil && ProcessInfo.processInfo.systemUptime < deadline {
+                try await Task.sleep(nanoseconds: 20_000_000)
+            }
+            guard let outcome else { throw Failure(message: "Local fixture didFinish deadline exceeded") }
+            try outcome.get()
+        }
+
+        private func finish(_ navigation: WKNavigation?, result: Result<Void, Error>) {
+            guard let expected, navigation === expected, outcome == nil else { return }
+            outcome = result
+        }
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            finish(navigation, result: .success(()))
+        }
+        func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+            finish(navigation, result: .failure(Failure(message: "Local fixture navigation failed")))
+        }
+        func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+            finish(navigation, result: .failure(Failure(message: "Local fixture provisional navigation failed")))
+        }
+        func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+            guard outcome == nil else { return }
+            outcome = .failure(Failure(message: "Local fixture WebContent process terminated"))
+        }
+    }
+
     static func run() async throws -> Int {
+        var stage = Stage.setup
+        var assertions = 0
+        var loads = 0
+        var completed = false
+        defer {
+            if !completed {
+                // Fixed fixture phase/counts only: never print JS, DOM, or URLs.
+                print("DOMFixture failed stage=\(stage.rawValue) loads=\(loads) assertions=\(assertions)")
+            }
+        }
         let configuration = WKWebViewConfiguration()
         configuration.websiteDataStore = .nonPersistent()
         let web = WKWebView(frame: CGRect(x: 0, y: 0, width: 600, height: 600), configuration: configuration)
@@ -31,26 +91,37 @@ enum BrowserDOMFixtures {
         window.makeKeyAndVisible()
         defer { window.isHidden = true; previousKeyWindow?.makeKey() }
         #endif
+        let navigationWaiter = NavigationWaiter()
+        web.navigationDelegate = navigationWaiter
+        defer { web.navigationDelegate = nil }
         let executor = BrowserDOMExecutor(webView: web)
-        var assertions = 0
         func expect(_ condition: @autoclosure () -> Bool, _ message: String) throws {
             assertions += 1
             if !condition() { throw Failure(message: message) }
         }
-        func js(_ script: String) async throws -> String {
-            let result = try await web.evaluateJavaScript(script)
+        func js(_ script: String, stage nextStage: Stage) async throws -> String {
+            stage = nextStage
+            // Use WebKit's callback API like the production executor; avoid
+            // making fixture readiness depend on the SDK's async overlay.
+            let result: Any? = try await withCheckedThrowingContinuation { continuation in
+                web.evaluateJavaScript(script) { value, error in
+                    if let error { continuation.resume(throwing: error) }
+                    else { continuation.resume(returning: value) }
+                }
+            }
             return result as? String ?? String(describing: result)
         }
         func load() async throws {
-            web.loadHTMLString(html, baseURL: URL(string: "https://example.com/form")!)
-            let deadline = Date().addingTimeInterval(75)
-            while web.isLoading && Date() < deadline { try await Task.sleep(nanoseconds: 100_000_000) }
+            stage = .navigation
+            loads += 1
+            try await navigationWaiter.load(web, html: html, baseURL: URL(string: "https://example.com/form")!)
             try expect(!web.isLoading, "Local real WebKit load finished")
-            let ready = try await js("document.title")
+            let ready = try await js("document.title", stage: .documentTitle)
             try expect(ready == "DOM fixture", "Real HTML document loaded")
         }
         func proposal(_ kind: BrowserInteractionKind, label: String? = nil, text: String? = nil,
                       option: Int? = nil, direction: BrowserScrollDirection? = nil) async throws -> BrowserInteractionProposal {
+            stage = .proposal
             let snapshot = try await executor.snapshot()
             let control = snapshot.controls.first(where: { $0.label == label })
             var gate = BrowserInteractionGate()
@@ -59,7 +130,9 @@ enum BrowserDOMFixtures {
             return try gate.consumeApproval(id: pending.id)
         }
         try await load()
+        stage = .initialSnapshot
         let initial = try await executor.snapshot()
+        stage = .repeatedSnapshot
         let repeated = try await executor.snapshot()
         try expect(initial.documentID == repeated.documentID, "Document identity stable")
         try expect(initial.snapshotID != repeated.snapshotID, "Each observation invalidates old snapshot")
@@ -71,49 +144,62 @@ enum BrowserDOMFixtures {
         try expect(initial.controls.first(where: { $0.label == "Disabled action" })?.enabled == false, "Disabled control represented but not executable")
         let literal = "Quote '\"; alert(1); <script>safe</script> 世界"
         let typing = try await proposal(.type, label: "Public note", text: literal)
-        let before = try await js("document.getElementById('note').value")
+        let before = try await js("document.getElementById('note').value", stage: .beforeTyping)
         try expect(before == "initial-value", "Preparing/consuming grant alone does not execute")
+        stage = .typing
         try await executor.performApproved(typing)
-        let typed = try await js("document.getElementById('note').value")
+        let typed = try await js("document.getElementById('note').value", stage: .typedValue)
         try expect(typed == literal, "Arguments are literal data, not executable JS")
-        let event = try await js("document.getElementById('events').textContent")
+        let event = try await js("document.getElementById('events').textContent", stage: .inputEvents)
         try expect(event == "input:false change:false", "Actual DOM listeners fired, explicitly synthetic not trusted")
+        stage = .consumedApproval
         do { try await executor.performApproved(typing); throw Failure(message: "Snapshot replay executed") }
         catch let error as BrowserInteractionError { try expect(error == .staleSnapshot, "Executed snapshot cannot replay") }
-        try await executor.performApproved(proposal(.select, label: "Mode", option: 1))
-        let selected = try await js("document.getElementById('choice').value")
+        let selecting = try await proposal(.select, label: "Mode", option: 1)
+        stage = .selecting
+        try await executor.performApproved(selecting)
+        let selected = try await js("document.getElementById('choice').value", stage: .selectedValue)
         try expect(selected == "advanced", "Actual select value changed")
-        try await executor.performApproved(proposal(.click, label: "Save locally"))
-        let saved = try await js("document.getElementById('result').textContent")
+        let submitting = try await proposal(.click, label: "Save locally")
+        stage = .submitting
+        try await executor.performApproved(submitting)
+        let saved = try await js("document.getElementById('result').textContent", stage: .submittedValue)
         try expect(saved == "SAVED " + literal + " advanced", "Actual form submit handler ran")
 
         let stale = try await proposal(.type, label: "Public note", text: "must not write")
-        _ = try await js("document.getElementById('note').replaceWith(document.getElementById('note').cloneNode(true)); 'replaced'")
+        _ = try await js("document.getElementById('note').replaceWith(document.getElementById('note').cloneNode(true)); 'replaced'", stage: .replaceNode)
+        stage = .replacedApproval
         do { try await executor.performApproved(stale); throw Failure(message: "Replaced node executed") }
         catch let error as BrowserInteractionError { try expect(error == .staleSnapshot, "Identical replacement node invalidates identity") }
-        let unchanged = try await js("document.getElementById('note').value")
+        let unchanged = try await js("document.getElementById('note').value", stage: .unchangedValue)
         try expect(unchanged == literal, "Stale action changed nothing")
         let mutated = try await proposal(.type, label: "Public note", text: "must not write")
-        _ = try await js("document.getElementById('note').value='human edit'; 'changed'")
+        _ = try await js("document.getElementById('note').value='human edit'; 'changed'", stage: .mutateValue)
+        stage = .mutatedApproval
         do { try await executor.performApproved(mutated); throw Failure(message: "Changed input executed") }
         catch let error as BrowserInteractionError { try expect(error == .staleSnapshot, "Value changes during review invalidate approval") }
 
         let cancelledProposal = try await proposal(.type, label: "Public note", text: "cancelled")
+        stage = .cancellation
         let cancelled = Task { @MainActor in try await executor.performApproved(cancelledProposal) }
         cancelled.cancel()
         do { try await cancelled.value; throw Failure(message: "Cancelled task executed") }
         catch is CancellationError { try expect(true, "Cancellation honored before dispatch") }
-        let afterCancel = try await js("document.getElementById('note').value")
+        let afterCancel = try await js("document.getElementById('note').value", stage: .cancelledValue)
         try expect(afterCancel == "human edit", "Cancelled action changed nothing")
-        try await executor.performApproved(proposal(.scroll, direction: .down))
-        let scroll = try await js("String(window.scrollY > 0)")
+        let scrolling = try await proposal(.scroll, direction: .down)
+        stage = .scrolling
+        try await executor.performApproved(scrolling)
+        let scroll = try await js("String(window.scrollY > 0)", stage: .scrollPosition)
         try expect(scroll == "true", "Actual viewport scrolled")
         let oldDocument = try await proposal(.click, label: "Save locally")
         try await load()
+        stage = .reloadedApproval
         do { try await executor.performApproved(oldDocument); throw Failure(message: "Same-URL new document executed") }
         catch let error as BrowserInteractionError { try expect(error == .staleSnapshot, "Same URL reload has new document identity") }
-        let unsubmitted = try await js("document.getElementById('result').textContent")
+        let unsubmitted = try await js("document.getElementById('result').textContent", stage: .reloadedValue)
         try expect(unsubmitted == "NOT SAVED", "Reload refused old submit without effects")
+        completed = true
         return assertions
     }
     static let html = #"""

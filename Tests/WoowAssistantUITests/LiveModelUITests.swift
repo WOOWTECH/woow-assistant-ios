@@ -417,7 +417,15 @@ final class LiveModelUITests: XCTestCase {
             print("Live native navigation readiness \(identifier): seconds=\(Date().timeIntervalSince(startedAt)); exists=\(exists); hittable=\(hittable); frame=\(frame)")
         }
         XCTAssertEqual(readiness, .completed, "The native navigation button must be interactable.")
+        XCTAssertTrue(app.frame.contains(button.frame), "Native navigation must be fully inside the App window.")
         button.tap()
+        // A hittable button is not proof that its action changed the section.
+        // Observe the native selection before looking for a destination row;
+        // never compensate with a second tap or expose page/model text.
+        let selected = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "已選取"), object: button)
+        let transition = XCTWaiter.wait(for: [selected], timeout: 15)
+        print("Live native destination \(identifier): selected=\(button.value as? String == "已選取"); status=\(app.staticTexts["\(section).status"].exists)")
+        XCTAssertEqual(transition, .completed, "The single native tap must select the requested section.")
         XCTAssertTrue(app.staticTexts["\(section).status"].waitForExistence(timeout: 5))
     }
 
