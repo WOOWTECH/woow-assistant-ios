@@ -1,3 +1,5 @@
+import CoreGraphics
+
 #if SKILL_EXECUTION_UI_FIXTURE_CHECKS
 import Foundation
 #if DEBUG
@@ -146,7 +148,20 @@ struct SkillExecutionPickerChecks {
         var bounded = SkillPickerRoute()
         for expected in SkillPickerStep.allCases { try require(bounded.next { _ in true } == expected) }
         try require(bounded.next { _ in true } == nil)
+        // Frames from the e1024aa iOS 26 failure: the image is visible even
+        // though XCTest cannot derive a hittable point for its AX Image.
+        let cell = CGRect(x: 140, y: 212, width: 122, height: 189.7)
+        let image = CGRect(x: 168.7, y: 216, width: 65, height: 84)
+        let viewport = CGRect(x: 0, y: 72, width: 402, height: 802)
+        let navigation = CGRect(x: 0, y: 88, width: 402, height: 114)
+        try require(skillPDFThumbnailIsVisible(image, cell: cell, viewport: viewport, navigation: navigation))
+        for invalid in [CGRect.zero, CGRect.infinite, image.offsetBy(dx: 130, dy: 0), image.offsetBy(dx: 0, dy: -40)] {
+            try require(!skillPDFThumbnailIsVisible(invalid, cell: cell, viewport: viewport, navigation: navigation))
+        }
+        try require(!skillPDFThumbnailIsVisible(image, cell: cell,
+            viewport: CGRect(x: 0, y: 250, width: 402, height: 624), navigation: navigation))
         print("PASS bounded Skills Files route: no repeated Browse, real successor progress, local folder and exact-file terminal")
+        print("PASS observed PDF thumbnail geometry; reject absent, unrelated, covered and clipped targets")
     }
 }
 #else
@@ -354,11 +369,22 @@ final class SkillExecutionUITests: XCTestCase {
     private func chooseSyntheticPDF() {
         openNativePicker()
         guard let file = navigateNativeFiles(exporting: false) else { return }
-        // d160a24 SE evidence: the exact filename StaticText is enabled but
-        // tapping it leaves Files open. Select the thumbnail inside the verified
-        // file cell, not the filename label (which can expand its truncated text).
-        if let thumbnail = firstHittable(file.images) { thumbnail.tap() }
-        else { file.tap() }
+        // The iOS 26 failure recording shows a visible PDF thumbnail whose AX
+        // Image is not hittable. A whole-cell tap lands on the filename instead.
+        // Anchor the gesture to the exact cell's verified visible image; never
+        // substitute a label/cell-center tap or a fixed screen coordinate.
+        let images = file.images.allElementsBoundByIndex
+        let list = app.collectionViews["File View"]
+        let navigation = app.navigationBars["FullDocumentManagerViewControllerNavigationBar"]
+        guard images.count == 1, let thumbnail = images.first, thumbnail.exists,
+              file.isEnabled, file.isHittable, list.exists, navigation.exists,
+              skillPDFThumbnailIsVisible(thumbnail.frame, cell: file.frame,
+                  viewport: list.frame.intersection(app.frame), navigation: navigation.frame) else {
+            recordPickerDiagnostics(stage: "exact-thumbnail-not-visible")
+            XCTFail("The exact selected PDF must expose one fully visible thumbnail inside its Files cell.")
+            return
+        }
+        thumbnail.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         let selected = app.staticTexts["skillExecution.filename"]
         if !selected.waitForExistence(timeout: 3), let open = knownButton(["開啟", "Open", "完成", "Done"]) { open.tap() }
         let received = selected.waitForExistence(timeout: 15)
@@ -582,4 +608,9 @@ private struct SkillPickerRoute {
     func progress(after step: SkillPickerStep, where available: (SkillPickerStep) -> Bool) -> Bool {
         step.successors.contains { !attempted.contains($0) && available($0) }
     }
+}
+
+private func skillPDFThumbnailIsVisible(_ image: CGRect, cell: CGRect, viewport: CGRect, navigation: CGRect) -> Bool {
+    guard [image, cell, viewport, navigation].allSatisfy({ !$0.isEmpty && !$0.isNull && !$0.isInfinite }) else { return false }
+    return cell.contains(image) && viewport.contains(image) && !navigation.intersects(image)
 }

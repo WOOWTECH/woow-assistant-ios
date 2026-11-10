@@ -462,12 +462,31 @@ final class BrowserUploadUITests: XCTestCase {
     private func openNativeDocumentPicker() {
         let input = app.webViews.buttons.matching(NSPredicate(format: "label CONTAINS %@", "選擇測試檔案")).firstMatch
         requireHittable(input, message: "The actual input[type=file] must be accessible in WKWebView.")
+        let presentationStarted = ProcessInfo.processInfo.systemUptime
         input.tap()
+        var observedCancel = false
+        var observedSourceAction = false
         let chooserReady = XCTNSPredicateExpectation(predicate: NSPredicate { [weak self] _, _ in
             guard let self else { return false }
-            return (self.nativeCancel.exists && self.nativeCancel.isHittable) || self.chooseFilesAction?.isHittable == true
+            let cancel = self.nativeCancel
+            if cancel.exists {
+                observedCancel = true
+                if cancel.isHittable { return true }
+            }
+            if let files = self.chooseFilesAction {
+                observedSourceAction = true
+                return files.isHittable
+            }
+            return false
         }, object: nil)
-        XCTAssertEqual(XCTWaiter.wait(for: [chooserReady], timeout: 15), .completed,
+        // e1024aa SE recording: a single tap opens Files, initially with a blank
+        // Recents sheet; Cancel/content appear later while XCTest is still
+        // resolving the remote control. Large fails the same 15-second wait.
+        // Bound cold presentation readiness; never tap the input again.
+        let readiness = XCTWaiter.wait(for: [chooserReady], timeout: 45)
+        let elapsedMilliseconds = Int((ProcessInfo.processInfo.systemUptime - presentationStarted) * 1_000)
+        print("UPLOAD_CHOOSER_READY ready=\(readiness == .completed) elapsedMs=\(elapsedMilliseconds) cancelSeen=\(observedCancel) sourceSeen=\(observedSourceAction)")
+        XCTAssertEqual(readiness, .completed,
                        "WebKit must present the native file-source menu or Files picker.")
         if let files = chooseFilesAction, files.isHittable { files.tap() }
         requireHittable(nativeCancel, message: "The native Files document picker must actually open.")

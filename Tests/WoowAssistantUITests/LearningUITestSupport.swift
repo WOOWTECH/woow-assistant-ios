@@ -14,10 +14,6 @@ enum LearningElementVisibility {
 func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
                            visibility: LearningElementVisibility = .fullyVisible,
                            file: StaticString = #filePath, line: UInt = #line) {
-    if visibility == .readableText && element.elementType != .staticText {
-        XCTFail("Partial visibility is permitted only for read-only static text.", file: file, line: line)
-        return
-    }
     // Scrolling does not replace the containing Form/List. Resolve it once per
     // invocation, but refresh geometry after each swipe (keyboard/layout may
     // change). Never enumerate the AX tree twice for a single gesture.
@@ -51,6 +47,12 @@ func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
     for attempt in 0...8 {
         let (bounds, scrollTarget) = viewport()
         let exists = element.exists
+        // A virtualized Form row has no snapshot until scrolling materializes
+        // it. Querying elementType before exists fails before any scroll occurs.
+        if exists && visibility == .readableText && element.elementType != .staticText {
+            XCTFail("Partial visibility is permitted only for read-only static text.", file: file, line: line)
+            return
+        }
         let frame = exists ? element.frame : .zero
         if exists && learningFrameIsVisible(frame, in: bounds, visibility: visibility) {
             // Long static text can have its tap point outside the viewport even

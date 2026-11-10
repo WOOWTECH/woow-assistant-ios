@@ -2,6 +2,36 @@
 
 ## Browser workspace / files / PDF increment - validation in progress
 
+Latest completed evidence:
+
+- [Live model 42751407713](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42751407713)
+  on `e1024aa`: seven native model calls across transport/memory/skill probes and
+  all seven live UI cases passed, zero failures/skips. Actual browser cases cover
+  approved DOM navigation, public-page research, and five-page learning through
+  approval/relaunch. The separate native skill-judge probe uses a synthetic
+  trajectory and is not counted as live browser execution.
+- [Release 42753499130](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42753499130)
+  on `39a13b0`: nine device binaries, App minimum OS 17.0, SDK 26.2, native Documents
+  flags and actual packaged required-reason entries verified. This commit changes
+  only a privacy resource and release tooling/documentation; Swift App code is
+  unchanged from `d160a24`. Still unsigned/not installable, no runtime claim.
+- [Files 42751391794](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42751391794)
+  on test-only `e1024aa`: 97 portable, 12 original-script worker and 39 native cases
+  passed in each variant. UI: SE 3/8, large 4/8, current 4/8. Actual upload passed
+  everywhere; SE/large cancellation failed during cold native Files presentation.
+  Recording shows a blank Recents sheet before controls become ready; the next
+  test revision waits conditionally up to 45 seconds after one tap, without retry.
+  PDF refusal-before-read now passes everywhere, and large refusal-after-read
+  passes. Remaining failures include a virtualized status row queried too early
+  and iOS 26 whole-cell fallback taps missing the visible thumbnail. The next
+  revision repairs element lookup order and validates the exact thumbnail geometry;
+  extraction/export assertions remain unchanged and still require native retesting.
+- Earlier workspace `42748354209` retains SE/current failures; its remaining large
+  job was cancelled when the repaired workspace run was dispatched. It is not an
+  all-completed matrix. [Workspace 42751396574](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42751396574)
+  and [parity 42751403028](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42751403028)
+  on `e1024aa` are pending results.
+
 Integrated source `d160a24` is under test in [files 42748349250](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748349250)
 and [workspace 42748354209](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748354209).
 The current-runtime partial logs confirm 97 portable cases and the files run's
