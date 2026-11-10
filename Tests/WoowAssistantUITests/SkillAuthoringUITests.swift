@@ -5,7 +5,7 @@ import XCTest
 final class SkillAuthoringUITests: XCTestCase {
     private var app = XCUIApplication()
     private let namespace = UUID().uuidString
-    private let name = "authoring-notes"
+    private let fixtureSkillName = "authoring-notes"
     private let request = "Save this notes workflow as a skill after I review it."
 
     override func setUpWithError() throws {
@@ -69,8 +69,8 @@ final class SkillAuthoringUITests: XCTestCase {
         launch(reset: false)
         openAuthoring()
         begin()
-        search(name)
-        tap("authoring.match.personal." + name, scroll: true)
+        search(fixtureSkillName)
+        tap("authoring.match.personal." + fixtureSkillName, scroll: true)
         let source = app.staticTexts["authoring.read.full"]
         XCTAssertTrue(source.waitForExistence(timeout: 5))
         XCTAssertTrue(source.label.contains("OriginalMarker"))
@@ -170,7 +170,7 @@ final class SkillAuthoringUITests: XCTestCase {
         let status = app.staticTexts["authoring.saved.status"]
         XCTAssertTrue(status.waitForExistence(timeout: 5))
         XCTAssertEqual(status.label, updated ? "已更新個人技能 · 試用中" : "已新增個人技能 · 試用中")
-        XCTAssertEqual(app.staticTexts["authoring.saved.name"].label, name)
+        XCTAssertEqual(app.staticTexts["authoring.saved.name"].label, fixtureSkillName)
         XCTAssertFalse(app.buttons["authoring.approve"].exists, "A successful grant cannot be replayed.")
         XCTAssertFalse(app.staticTexts["authoring.error"].exists)
     }
@@ -178,10 +178,10 @@ final class SkillAuthoringUITests: XCTestCase {
     private func assertPersisted(marker: String, absent: String? = nil) {
         launch(reset: false)
         openSkills()
-        let status = app.staticTexts["skills.state." + name]
+        let status = app.staticTexts["skills.state." + fixtureSkillName]
         revealLearningElement(status, in: app)
         XCTAssertEqual(status.label, "試用中 · 尚未驗證")
-        tap("skills.fullText." + name, scroll: true)
+        tap("skills.fullText." + fixtureSkillName, scroll: true)
         let text = app.staticTexts["skills.document"]
         XCTAssertTrue(text.waitForExistence(timeout: 5))
         XCTAssertTrue(text.label.contains(marker))
@@ -210,7 +210,7 @@ final class SkillAuthoringUITests: XCTestCase {
     private func markdown(_ detail: String) -> String {
         """
         ---
-        name: \(name)
+        name: \(fixtureSkillName)
         description: Organize notes.
         ---
         ## Entry
