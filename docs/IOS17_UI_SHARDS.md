@@ -46,7 +46,7 @@ workflow 的 `ios17_host_arch`、`startup-smoke` 與精確 runtime 比對保持�
 
 `selected_tests_succeeded=true` 僅代表所選範圍完成；任何單一 UI 分片、`core` 或 `startup-smoke` 的 `runtime_tested`／`full_acceptance_succeeded` 都是 false。只有舊的 `all` 真正包含所有 Live、零略過，且通過完成清單檢查，才可能設定這兩個欄位。這比舊版僅檢查 xcodebuild 退出碼更嚴格：缺少 Live 條件造成 skip 的 `all` 現在會明確驗證失敗。
 
-人工彙整時，必須核對同一 revision、精確 runtime／build、host architecture、inventory hash 的 `core` 與全部 11 片，各自沒有失敗／略過／遺漏，才可陳述「此版本與架構的全部非 Live 測試通過」。這不代表 Live、真機或完整產品驗收通過。單次 smoke 成功只證明那一個案例；此腳本不會自動把不同執行或不同版本合併成全面通過。
+人工彙整時，必須核對同一 revision、精確 runtime／build、host architecture、inventory hash 的 `core` 與全部 12 片，各自沒有失敗／略過／遺漏，才可陳述「此版本與架構的全部非 Live 測試通過」。這不代表 Live、真機或完整產品驗收通過。單次 smoke 成功只證明那一個案例；此腳本不會自動把不同執行或不同版本合併成全面通過。
 
 本機驗證使用真實來源檔案與合成 XCTest command／summary fixtures；不代表本機有執行 iOS 或 Xcode。現有原生 artifact、尚未完成的分片及原始失敗應繼續分開保留。
 

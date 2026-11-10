@@ -1,0 +1,359 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-10T22:11:34.829384+00:00",
+  "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+  "status": "PENDING_NATIVE_ACCEPTANCE",
+  "test_plan_only": true,
+  "test_results_accepted": false,
+  "non_live_ui_expected": 90,
+  "ui_shards": 12,
+  "live_methods_not_in_this_plan": 22,
+  "runs": [
+    {
+      "label": "native-current",
+      "run_id": 42911161821,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911161821",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "test_scope": "native",
+        "current_only": "true",
+        "fresh_simulator": "true"
+      },
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "label": "archive-current",
+      "run_id": 42911167014,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911167014",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "test_scope": "ui-archive",
+        "current_only": "true",
+        "fresh_simulator": "true"
+      },
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "label": "archive-se",
+      "run_id": 42911171619,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911171619",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "test_scope": "ui-archive",
+        "compact_only": "true",
+        "fresh_simulator": "true"
+      },
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "label": "pdf-pair-current",
+      "run_id": 42911177308,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911177308",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "test_scope": "pdf-assembly-multi",
+        "current_only": "true",
+        "fresh_simulator": "true"
+      },
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "label": "pdf-pair-se",
+      "run_id": 42911183701,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911183701",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "test_scope": "pdf-assembly-multi",
+        "compact_only": "true",
+        "fresh_simulator": "true"
+      },
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "label": "archive-exact17",
+      "run_id": 42911189682,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911189682",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "ui-archive",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "documents-output-exact17",
+      "run_id": 42911195759,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911195759",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "documents-output",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "notifications-se",
+      "run_id": 42911430223,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911430223",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "test_scope": "ui-notifications",
+        "compact_only": "true",
+        "fresh_simulator": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "notifications-current",
+      "run_id": 42911435946,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911435946",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "test_scope": "ui-notifications",
+        "current_only": "true",
+        "fresh_simulator": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "ui-startup-exact17",
+      "run_id": 42911440527,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911440527",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "ui-startup",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "ui-notifications-exact17",
+      "run_id": 42911445587,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911445587",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "ui-notifications",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "ui-workspace-exact17",
+      "run_id": 42911452525,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911452525",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "ui-workspace",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "ui-browser-exact17",
+      "run_id": 42911457763,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911457763",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "ui-browser",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "ui-learning-exact17",
+      "run_id": 42911462510,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911462510",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "ui-learning",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "ui-memory-exact17",
+      "run_id": 42911467177,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911467177",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "ui-memory",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "ui-profile-exact17",
+      "run_id": 42911473308,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911473308",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "ui-profile",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "ui-memory-tools-exact17",
+      "run_id": 42911478299,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911478299",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "ui-memory-tools",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "ui-skills-exact17",
+      "run_id": 42911483428,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911483428",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "ui-skills",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "ui-mcp-exact17",
+      "run_id": 42911489250,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911489250",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "ui-mcp",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "documents-read-exact17",
+      "run_id": 42911539426,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911539426",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "documents-read",
+        "ios17_host_arch": "arm64",
+        "ios17_prelaunch": "true",
+        "ios17_sample_bootstrap": "true",
+        "ios17_bounded_test_diagnostics": "true",
+        "ios17_build_before_boot": "true"
+      },
+      "status": "queued",
+      "conclusion": null
+    },
+    {
+      "label": "core-exact17",
+      "run_id": 42911544886,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911544886",
+      "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "inputs": {
+        "mode": "ios17-hosted",
+        "ios17_version": "17.0.1",
+        "ios17_test_scope": "core",
+        "ios17_host_arch": "arm64"
+      },
+      "status": "queued",
+      "conclusion": null
+    }
+  ],
+  "boundaries": [
+    "Every run source revision verified against GitHub metadata.",
+    "Workflow success alone is not acceptance; actual runtime, methods, zero skips, artifacts and source boundary must be checked.",
+    "Native/hosted and portable executions overlap; do not add their counts.",
+    "The split documents-read/output replace one ui-documents shard without duplication.",
+    "No physical-device, audible-sound, signed-distribution or full Mika parity acceptance is inferred."
+  ]
+}

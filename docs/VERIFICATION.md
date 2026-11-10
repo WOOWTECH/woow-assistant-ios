@@ -1,5 +1,17 @@
 # Verification — 2026-11-11
 
+## Prior-source exact17 output and SE profile acceptance
+
+At `1abc6d7`, [42902041641](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902041641)
+passed all **9/9 documents-output methods, zero skips**, on iPhone 15 arm64 / exact
+iOS 17.0.1 / 21A342. The old two-file batch selection passed in this environment;
+its current-iOS failure remains preserved. This is prior-flow evidence and does not
+accept the subsequent deliberate-add replacement. [Exact methods and runtime](evidence/ios17-documents-output-1abc6d7.json).
+
+At the same source, [42902029485](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902029485)
+passed **9/9 profile UI methods, zero skips**, on iPhone SE / iOS 18.5. Each selected
+method completed once, with xcresult and source checks. [Bounded evidence](evidence/ui-profile-1abc6d7-se.json).
+
 ## Conversation archive, saved references and deliberate PDF addition integrated
 
 The new conversation archive stores completed question/answer pairs in a dedicated
@@ -8,12 +20,15 @@ Restoring never resumes unfinished commands or approvals; continuation requires 
 same endpoint, model and credential identity. Actual App checks pass 90 Debug / 76
 Release assertions, with 573 / 492 existing chat assertions and 30 independent
 review assertions. Native SwiftUI and four new archive UI cases remain pending.
+[Archive checks](evidence/conversation-archive-app-local.json),
+[independent review](evidence/conversation-archive-independent-local.json).
 
 Saved memory/profile/compatible skills now reach route replay and PDF questions at
 explicit start. Deletion, disabling and cancellation invalidate in-flight work.
 Local route checks pass 239 assertions per configuration; PDF question App checks
 pass 357 per configuration, including the corrected standalone live-harness build.
 These local counts are not native UI acceptance or actual-model behavior claims.
+[PDF references and corrected harness provenance](evidence/document-query-references-local.json).
 
 PDF assembly now selects one file at a time and offers explicit Add PDF controls,
 up to three sources. Each addition clears prior grants and requires fresh read and
@@ -22,6 +37,7 @@ pass 53 new and 57 existing App assertions each. The two-file native test retain
 separate file identities, two real picker callbacks, approvals and exact A2/B1/A1
 output. This replaces the inconsistent batch flow without asserting an OS fix.
 New native runs must validate this combined source revision.
+[Exact deliberate-add local checks](evidence/pdf-assembly-sequential-add-local.json).
 
 The isolated integration snapshot passes 231 Python tests, actionlint, XcodeGen,
 fixture diagnostic guards and whitespace checks. Hosted replay/archive tests and a

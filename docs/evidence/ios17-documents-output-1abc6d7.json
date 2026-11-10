@@ -1,0 +1,271 @@
+{
+  "schema_version": 1,
+  "source_revision": "1abc6d7bdf38c03d4e6fe3e2052238fdfa112dd8",
+  "run_id": 42902041641,
+  "job_id": 130130247646,
+  "artifact_id": 13806686075,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902041641",
+  "scope": "documents-output",
+  "result": "Passed",
+  "actual_runtime": {
+    "architecture": "arm64",
+    "deviceId": "4C005709-526C-4A2C-8E83-E277296FC9B1",
+    "deviceName": "Woow-iOS17-e70cd65fe45e41f1982ff1c4acc05a3c",
+    "modelName": "iPhone 15",
+    "osBuildNumber": "21A342",
+    "osVersion": "17.0.1",
+    "platform": "iOS Simulator"
+  },
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "counts": {
+    "totalTestCount": 9,
+    "passedTests": 9,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "methods": [
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 147.025,
+      "start_log_line": 19,
+      "pass_log_line": 926
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 126.458,
+      "start_log_line": 927,
+      "pass_log_line": 1762
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 143.328,
+      "start_log_line": 1763,
+      "pass_log_line": 2434
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testRefusingFirstStepDoesNotReadOrExtract",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 40.043,
+      "start_log_line": 2435,
+      "pass_log_line": 2720
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testRefusingSecondStepKeepsExtractionUnauthorized",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 46.555,
+      "start_log_line": 2721,
+      "pass_log_line": 3056
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenMultiPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 125.75,
+      "start_log_line": 3057,
+      "pass_log_line": 3710
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 147.362,
+      "start_log_line": 3711,
+      "pass_log_line": 4370
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyImportsTwoDistinctPDFsAndInterleavesApprovedPages",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 130.735,
+      "start_log_line": 4374,
+      "pass_log_line": 5067
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
+      "result": "Passed",
+      "starts": 1,
+      "completions": 1,
+      "duration_seconds": 44.864,
+      "start_log_line": 5071,
+      "pass_log_line": 5394
+    }
+  ],
+  "test_completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 9,
+      "passedTests": 9,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 9,
+    "completed_ui_count": 9,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "phase_history": [
+    {
+      "phase": "preflight",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:21:50.133104+00:00",
+      "elapsed_seconds": 0.0
+    },
+    {
+      "phase": "checking_runtime",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:21:50.333551+00:00",
+      "elapsed_seconds": 0.2
+    },
+    {
+      "phase": "downloading_runtime",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:22:49.828248+00:00",
+      "elapsed_seconds": 59.7
+    },
+    {
+      "phase": "checking_installed_runtime",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:25:51.625792+00:00",
+      "elapsed_seconds": 241.5
+    },
+    {
+      "phase": "generating_project",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:25:53.230030+00:00",
+      "elapsed_seconds": 243.1
+    },
+    {
+      "phase": "checking_build_settings",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:25:53.463844+00:00",
+      "elapsed_seconds": 243.3
+    },
+    {
+      "phase": "building_before_boot",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:26:00.194027+00:00",
+      "elapsed_seconds": 250.1
+    },
+    {
+      "phase": "prebuilt_tests_ready",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:28:28.435736+00:00",
+      "elapsed_seconds": 398.3
+    },
+    {
+      "phase": "creating_simulator",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:28:28.442561+00:00",
+      "elapsed_seconds": 398.3
+    },
+    {
+      "phase": "booting",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:28:30.480577+00:00",
+      "elapsed_seconds": 400.3
+    },
+    {
+      "phase": "prelaunching_test_daemon",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:29:54.281385+00:00",
+      "elapsed_seconds": 484.1
+    },
+    {
+      "phase": "testing",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:30:02.957739+00:00",
+      "elapsed_seconds": 492.8
+    },
+    {
+      "phase": "verifying_test_completion",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:50:21.180484+00:00",
+      "elapsed_seconds": 1711.0
+    },
+    {
+      "phase": "passed",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T21:50:27.964051+00:00",
+      "elapsed_seconds": 1717.8
+    }
+  ],
+  "prebuild": {
+    "prebuild_exit_code": 0,
+    "prebuild_elapsed_seconds": 148.194,
+    "prebuilt_xctestrun": {
+      "path": "DerivedData/Build/Products/WoowAssistant_iphonesimulator18.5-arm64.xctestrun",
+      "sha256": "9978e367f9653f556eb13135435df6a6257e0d78a60f4fcc7482c857ec8b63e2"
+    },
+    "remaining_test_timeout_seconds": 1651.80641275,
+    "build_test_timeout_seconds": 1800,
+    "maximum_case_seconds": 300
+  },
+  "execution": "one build-for-testing before fresh simulator creation; one test-without-building with the exact recorded xctestrun",
+  "xctestrun_hash_source": "runner report; raw xctestrun not archived for independent rehash",
+  "runtime_fallback": false,
+  "retries": 0,
+  "boot_succeeded": true,
+  "test_daemon_prelaunch": {
+    "budget_seconds": 120,
+    "attempts": 1,
+    "status": "process_started_handshake_unverified",
+    "handshake_verified": false,
+    "process_alive": true,
+    "elapsed_seconds": 8.474
+  },
+  "simulator_deleted": true,
+  "artifacts": {
+    "bounded-extraction.json": {
+      "bytes": 882,
+      "sha256": "833950f09a19d2a2aa8e6051003118870824887032cfc0f01c94c77b55ba8a88"
+    },
+    "build-for-testing.log": {
+      "bytes": 1123345,
+      "sha256": "921b7c4396b7e6b6175e97c903ee550b0e1f0266680334d78e65ae360806aa30"
+    },
+    "report.json": {
+      "bytes": 10269,
+      "sha256": "6ca7458fce8f8e456469f529f18a284dbde6b28bf169e28674fa863bcf5f0703"
+    },
+    "test-summary.json": {
+      "bytes": 1007,
+      "sha256": "38bb14ded41a95d17178ecc0d9b15dfcb8d150695d5ef87f488747368f5bdbe6"
+    },
+    "tests.log": {
+      "bytes": 395689,
+      "sha256": "e66f2830149545cc16320a554647720a73b08df5691ce4275a1ff394fca5a6f7"
+    }
+  },
+  "bounded_retrieval": {
+    "whole_archive_downloaded": false,
+    "archive_bytes": 49100427,
+    "transferred_bytes": 100507
+  },
+  "limits": [
+    "Focused nine-case source 1abc6d7 evidence only; not the full suite or the new sequential-add workflow.",
+    "The original two-PDF batch copy method passed on iOS17 with its separate read approvals, exact A2/B1/A1 content and export-cancel retention assertions. This does not invalidate the recorded iOS26 two-selected/one-returned failure at 92a9ef4.",
+    "The product batch flow is being replaced by deliberate single-file presentations plus Add PDF; no OS-fix claim and no attribution of this pass to unexecuted new code.",
+    "Exact runtime is independently confirmed by xcresult; focused report runtime_tested/full_acceptance_succeeded flags remain false.",
+    "Prelaunch process alive is not a verified XCTest handshake; no causal or broad bootstrap-fix claim."
+  ]
+}

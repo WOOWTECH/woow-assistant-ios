@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "local_actual_source_execution_and_compile",
+  "result": "PASS_LOCAL_ONLY",
+  "source_scope": {
+    "owner_isolated_base": "bb19aa77f3a6b2f9a2cbe2366594901645290190",
+    "parent_integrated_isolated_base": "727b6c20d958222669a4d1feb320070456fd0c62",
+    "description": "Two isolated commit bases with explicit file overlays; not a clean-commit or whole-current-working-tree acceptance claim.",
+    "owned_file_sha256": {
+      "Sources/AssistantSkills/DocumentQueryRuntime.swift": "e8d8768a3f74997f5af456356494254c1179e1c9749782a2220f308ec0637457",
+      "Sources/App/DocumentQuerySession.swift": "467f3bff0c5b4f0af55af780a3a25c38bda04abff6e36065c631bc1e6a1cd63b",
+      "Sources/App/DocumentQueryView.swift": "752acf7b25829057a1248523dec26f1cbc0486e60072eef394437d902609581a",
+      "Sources/App/SkillExecutionView.swift": "529f795c68597455ac9017a529866bf72ad066637a386007afa5ff7f3f92e424",
+      "Sources/App/MemoryDataView.swift": "80e6cddeea63add75b4e6bba3655533aa0c16c5a12945491c0f12ccb78cb509d",
+      "Sources/App/SkillCatalogView.swift": "db6b4a88388d1a7ef7c384102bd8cefc8b3a1800a5fa8efac5da88c6e4492d5f",
+      "Tests/AssistantSkillsTests/DocumentQueryTests.swift": "cd8263dd1659ef04a3dd2139cc2e1e37d0501209c98fdd137967f07ed3ae3a92",
+      "scripts/CheckDocumentQueryApp.swift": "b8ff9e6ed552022b7779b91da78de8111920dab7d1ff6f00ed1d09001091a826",
+      "scripts/check_document_query_app.py": "05ef1904fd581649af37ee7bda447f20d116d1d6a517e8feb322bdc93eb5177d"
+    },
+    "parent_harness_overlay_sha256": {
+      "scripts/LiveDocumentQueryAppSmoke.swift": "1ce2cc778a5fbd18fef45f925040e04a32ba91777349c36c8e1760f2020c792c"
+    },
+    "owned_overlay_identical_between_snapshots": true,
+    "parent_report_source_file_count": 98,
+    "parent_report_source_map_sha256": "73b8c1dbd403a865915a038b5bad90b9925e004308b9317253db743f99970fcc",
+    "source_map_digest_encoding": "UTF-8 JSON, sorted keys, comma/colon separators, no trailing newline",
+    "parent_report_sources_verified_against_isolated_checkout": true,
+    "shared_archive_replay_and_central_source_list_work_not_claimed": true
+  },
+  "input_evidence_sha256": {
+    "owner_checkpoint": "5aec0f18d68854f0214ad6cd79e9d77e6467c78fa42eed478a664cf24c854e96",
+    "parent_manifest": "9f38809100b60fe62787edb0870da2e7e83d164ad87ca67b61686e0eca22d333",
+    "parent_check_report": "c38871cf8fe1d72676f3326abed8d65b160c25a6f83a2a9b5ebe1cf58c51b6ee",
+    "owner_core_report": "51424dc8b66101fe685515e8168555e77877567fca4f6e1c2d2f3a5857e15fdc",
+    "owner_app_report": "434253d3320c94024322a9c9c1ecfe5aad6795135d56c859630a2dd3a3bf43b4"
+  },
+  "core": {
+    "base_commit": "bb19aa77f3a6b2f9a2cbe2366594901645290190",
+    "groups": 10,
+    "passed_assertions": 244,
+    "failed_assertions": 0,
+    "group_assertions": {
+      "nativeSnapshot": 16,
+      "sourceBoundaries": 17,
+      "utf8AndLedger": 43,
+      "actualModelRoundtrip": 11,
+      "hostileCommands": 71,
+      "citationRejections": 14,
+      "referenceContextAndEvidence": 19,
+      "referenceBudgetsAndCorrection": 7,
+      "budgets": 26,
+      "cancellationAndDeadline": 20
+    },
+    "original_groups": 8,
+    "original_assertions": 218,
+    "added_reference_assertions": 26,
+    "warnings_as_errors": true,
+    "real_pdfkit": true,
+    "model_network_requests": 0,
+    "native_xctest_execution": false
+  },
+  "app": {
+    "base_commit": "727b6c20d958222669a4d1feb320070456fd0c62",
+    "checker_result": "PASS",
+    "checks_completed": 19,
+    "checks": [
+      {
+        "name": "Debug-AssistantModels-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Debug-AssistantMemory-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Debug-AssistantPersistence-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Debug-AssistantMCP-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Debug-AssistantSkills-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Debug-AssistantBrowser-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Debug-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Debug-iOS-syntax",
+        "exit_code": 0
+      },
+      {
+        "name": "Debug-run",
+        "exit_code": 0
+      },
+      {
+        "name": "Release-AssistantModels-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Release-AssistantMemory-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Release-AssistantPersistence-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Release-AssistantMCP-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Release-AssistantSkills-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Release-AssistantBrowser-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Release-build",
+        "exit_code": 0
+      },
+      {
+        "name": "Release-iOS-syntax",
+        "exit_code": 0
+      },
+      {
+        "name": "Release-run",
+        "exit_code": 0
+      },
+      {
+        "name": "Live-build",
+        "exit_code": 0
+      }
+    ],
+    "Debug": {
+      "failed": 0,
+      "groups": {
+        "cancellationAndQuestionChanges": 21,
+        "changedAccessBeforeStart": 8,
+        "consentAndExport": 20,
+        "correctionAuditAndQuestionReset": 10,
+        "failureRefusalAndExplicitRetry": 26,
+        "lateSettingsAndKeyChanges": 51,
+        "referenceCaptureAndSwitches": 19,
+        "referenceEditsStayFrozen": 18,
+        "referenceRevocationStopsActualTask": 184
+      },
+      "model_network_requests": 0,
+      "passed": 357
+    },
+    "Release": {
+      "failed": 0,
+      "groups": {
+        "cancellationAndQuestionChanges": 21,
+        "changedAccessBeforeStart": 8,
+        "consentAndExport": 20,
+        "correctionAuditAndQuestionReset": 10,
+        "failureRefusalAndExplicitRetry": 26,
+        "lateSettingsAndKeyChanges": 51,
+        "referenceCaptureAndSwitches": 19,
+        "referenceEditsStayFrozen": 18,
+        "referenceRevocationStopsActualTask": 184
+      },
+      "model_network_requests": 0,
+      "passed": 357
+    },
+    "original_group_count_per_configuration": 6,
+    "original_assertions_per_configuration": 136,
+    "added_reference_groups_per_configuration": 3,
+    "added_reference_assertions_per_configuration": 221,
+    "actual_task_revocation_subcases_per_configuration": 12,
+    "revocation_validation": "Capture and await the actual App Task; the model fixture ignores cancellation and holds its reply, then releases it and the same Task is awaited. No counter or yield substitutes for task completion.",
+    "live_harness_compiled": true,
+    "live_harness_executed": false,
+    "live_model_requests": 0,
+    "personal_keychain_used": false,
+    "production_app_source_substitutions": false,
+    "file_document_typechecked": true,
+    "swiftui_view_typechecked": false,
+    "native_ios_typechecked": false,
+    "native_ios_executed": false
+  },
+  "preserved_failure_history": {
+    "base_commit": "bb19aa77f3a6b2f9a2cbe2366594901645290190",
+    "overall_checker_result": "FAIL",
+    "failed_step": "Live-build",
+    "Debug_passed_assertions": 357,
+    "Release_passed_assertions": 357,
+    "cause": "The baseline parent-owned live harness used DocumentQuerySession(source:) without the newly required learning argument; subsequent type-inference errors cascaded from that call.",
+    "superseded_by": "Parent isolated 727b6c2 overlay injects an isolated LearningStore into the harness; all 19 checks including Live-build pass.",
+    "previous_report_preserved": true,
+    "no_live_request_in_either_check": true
+  },
+  "behavior_change": {
+    "before": "No LearningRunSnapshot injection in the DocumentQuerySession/Runtime path.",
+    "after": "Capture one bounded frozen user-context snapshot only on explicit start; include enabled profile, relevant memory and capability-compatible skills as data, never PDF evidence or tool authority.",
+    "revocation": [
+      "selected memory deletion",
+      "profile deletion including deletion of a replacement descendant",
+      "skill suspension",
+      "master-off, including off/on without revival",
+      "store reload"
+    ],
+    "unchanged": [
+      "immutable extracted PDF",
+      "actual source read ledger",
+      "exact original-page citations",
+      "12 model calls",
+      "180 seconds",
+      "256KiB combined context including references",
+      "one format correction",
+      "no automatic learning write"
+    ],
+    "master_vs_skills": "Master-off excludes profile/memory on a new capture; independently enabled compatible skills remain available.",
+    "completed_result": "Reference lease ends after delivery; already delivered answer remains."
+  },
+  "native_registration": {
+    "new_files": [],
+    "project_change_required": false,
+    "existing_host_target": "AssistantSkillsTests",
+    "focused_selectors": [
+      "AssistantSkillsTests/DocumentQueryTests",
+      "AssistantSkillsTests/DocumentQueryAppIntegrationTests"
+    ],
+    "expected_methods": 19,
+    "new_core_methods": [
+      "testReferenceContextAndEvidence",
+      "testReferenceBudgetsAndCorrection"
+    ],
+    "new_app_methods": [
+      "testReferenceCaptureAndSwitches",
+      "testReferenceEditsStayFrozen",
+      "testReferenceRevocationStopsActualTask"
+    ]
+  },
+  "version_boundary": {
+    "existing_exact17_run_id": 42903804459,
+    "existing_exact17_source_commit": "f49c8f77ff7963f1993daf652069affc0e79c983",
+    "existing_exact17_includes_new_references": false,
+    "existing_exact17_outcome_not_claimed_by_this_local_report": true
+  },
+  "limitations": [
+    "Local macOS CLT execution and iOS syntax checks; no new-feature iOS SDK typecheck or native UI acceptance.",
+    "Parent combined archive/replay integration is separate.",
+    "Scripted model fixtures validate behavior; no real model service was called.",
+    "No endpoints, configuration values, model replies, synthetic reference prose or raw logs are included."
+  ]
+}

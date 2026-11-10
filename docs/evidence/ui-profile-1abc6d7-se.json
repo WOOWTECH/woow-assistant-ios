@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "observed_at": "2026-11-10T21:57:41.646169+00:00",
+  "source_commit": "1abc6d7bdf38c03d4e6fe3e2052238fdfa112dd8",
+  "run_id": 42902029485,
+  "job_id": 130130203207,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902029485",
+  "job_conclusion": "success",
+  "scope": "ui-profile SE: five manual-profile and four reviewed-chat-profile native fixture methods",
+  "runtime": {
+    "device_name": "iPhone SE (3rd generation)",
+    "runtime_build": "22F77",
+    "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-5",
+    "runtime_version": "18.5"
+  },
+  "portable": {
+    "completed": 207,
+    "passed": 207,
+    "failed": 0,
+    "skipped": 0
+  },
+  "ui": {
+    "source_expected": 9,
+    "started": 9,
+    "unique_started": 9,
+    "completed": 9,
+    "unique_completed": 9,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0,
+    "each_source_method_started_and_completed_once": true,
+    "runner_restart_messages": 0,
+    "method_completion_columns": [
+      "qualified_method",
+      "outcome",
+      "seconds"
+    ],
+    "method_completions": [
+      [
+        "WoowAssistantUITests/UserProfileToolUITests/testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+        "passed",
+        164.998
+      ],
+      [
+        "WoowAssistantUITests/UserProfileToolUITests/testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+        "passed",
+        96.511
+      ],
+      [
+        "WoowAssistantUITests/UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+        "passed",
+        157.648
+      ],
+      [
+        "WoowAssistantUITests/UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+        "passed",
+        132.774
+      ],
+      [
+        "WoowAssistantUITests/UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch",
+        "passed",
+        108.86
+      ],
+      [
+        "WoowAssistantUITests/UserProfileUITests/testDuplicateAndCancelledTextNeverPublish",
+        "passed",
+        117.553
+      ],
+      [
+        "WoowAssistantUITests/UserProfileUITests/testMasterSwitchAndTwiceConfirmedClearPersist",
+        "passed",
+        138.589
+      ],
+      [
+        "WoowAssistantUITests/UserProfileUITests/testMultipleSentencesNeverPublish",
+        "passed",
+        127.062
+      ],
+      [
+        "WoowAssistantUITests/UserProfileUITests/testSensitiveTextNeverPublishes",
+        "passed",
+        101.315
+      ]
+    ]
+  },
+  "xcresult_summary_counts": {
+    "totalTestCount": 9,
+    "passedTests": 9,
+    "failedTests": 0,
+    "skippedTests": 0
+  },
+  "completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 9,
+      "passedTests": 9,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 9,
+    "completed_ui_count": 9,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "source_sha256": {
+    "Sources/App/BrowserSession.swift": "501789d7994ab8a74732a3c3d623bfbd4a5e49277a0566bfe57d94d7b682d8d1",
+    "Sources/App/ChatSession.swift": "c6947419729bcc6f3b07ea24c0b4be3a8d522df2cb6d65471579dd82c295fb34",
+    "Sources/App/LearningRunContext.swift": "3f481ed8a03fb60bf5a25d3a0f963f6589d1b928ea0520b087680fcf5345a636",
+    "Sources/App/LearningStore.swift": "0a72d0516f0086daa4da0a1c28149a199253551709bba74d0a2d88157d67de97",
+    "Sources/App/MultiSourceResearchSession.swift": "64e8b3188cca65a50eeeb7b4baac4b552acab0111bd7e974d7627432ffecaa89",
+    "Sources/App/SkillExecutionUITestSupport.swift": "87cb6c06a942150b59426a403b816a60866b30b3a93da7c0261f17e1252bf81d",
+    "Sources/App/UserProfileView.swift": "cdfa8d5cf38911925ab62687ff54543e27b28df3337334b7e6c59ead1d26c88a",
+    "Sources/AssistantBrowser/MultiSourceResearchRunner.swift": "48737e0d81bf891e0e8acabe1b5992c7ffe8ae6fbf0a28834fd4b03ad4c30d2e",
+    "Sources/AssistantBrowser/WebResearchRunner.swift": "005480efebed05a5c7a5e7af705e0f16d579c1ecfde83f0110ac76f05ceef342",
+    "Sources/AssistantModels/RunReferenceContext.swift": "6917f8b97cbe6b4528a392807e5d9dc00b3010435106c9c600476678bf4847ca",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+    "Tests/WoowAssistantUITests/UserProfileToolUITests.swift": "cc40c0d9aef8ee89bdfe1d5dc744f787fd6041edb94e7c53d7c1a84a0ce1f409",
+    "Tests/WoowAssistantUITests/UserProfileUITests.swift": "f7f39e9d366940c2f031e69604a4f174788e2e0ae16b716225f33719a62779df",
+    "project.yml": "209f262d5ae09bf5c453d7e5119e5c79fca7bdf3eacb3180e70f9e28c0747ddc",
+    "scripts/release_ios17.py": "343b9bb9b67c83bc2ca7c51540834a04d05c6ce1d7366d0c2b3e54ba69f6dc8e"
+  },
+  "test_method_sha256": {
+    "UserProfileToolUITests/testApprovedChatAdditionPersistsInProfileAfterRelaunch": "f843f0108fa547fa18b2e42f6964bdf824af07fcb1f218ef5a997906f80897c7",
+    "UserProfileToolUITests/testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry": "6ff2a9e84f024dfb03f5363209c3ae739729e8ce4caaf2e71379a397b08967a1",
+    "UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch": "7fd04c7dc4a8e96b0889adc787ce9924850146f49755470298084c3fd948e568",
+    "UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch": "cbcd9b253f05ad972467d7320ddb28cdf835f6bc09789b16ab617f16c50584d6",
+    "UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch": "a6a204ba3c81fcb650f4dab831bda92621407a4f363c57eadb13ec9765f85a9f",
+    "UserProfileUITests/testSensitiveTextNeverPublishes": "f9fba54a4dfab75127f86482aa1953ea87b61c15bb3f30beb685e4f1b9550bb2",
+    "UserProfileUITests/testMultipleSentencesNeverPublish": "c9a9aecdc2a4dd6fc1e0a08792af469e5c5d4efa774f6110220f9641c6b62946",
+    "UserProfileUITests/testDuplicateAndCancelledTextNeverPublish": "0c24a03f887711621d866e9c53c1b6300c2f9cc2fc3d103b5c63eb73aeac31cc",
+    "UserProfileUITests/testMasterSwitchAndTwiceConfirmedClearPersist": "802746560d16b48e47698472b52b50561d754cae753ce0b326841077e1ca5e50"
+  },
+  "test_method_hash_definition": "Exact source text from the test function declaration to before the next function declaration, with trailing whitespace stripped.",
+  "artifact": {
+    "id": 13805718693,
+    "size_bytes": 56788820,
+    "digest": "sha256:ee00db64566e146f0a89c034b6d41b14b9e01112aff4202ba9f6ef518ac4f5df",
+    "inspected_metadata": [
+      "test-summary.json",
+      "test-simulator.json",
+      "ui-shard-completion.json"
+    ]
+  },
+  "limits": [
+    "Native fixture evidence; no external model or Home Assistant claim.",
+    "Applies only to committed 1abc6d7 bytes; does not cover the new archive implementation.",
+    "Earlier 4f failures remain historical evidence; this success does not establish their underlying timing or hit-area cause.",
+    "No private environment, credentials, raw logs, live AX trees or signed artifact URLs included."
+  ]
+}
