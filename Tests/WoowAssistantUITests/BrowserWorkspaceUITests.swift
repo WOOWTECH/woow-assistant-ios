@@ -58,6 +58,14 @@ final class BrowserWorkspaceUITests: XCTestCase {
         XCTAssertEqual(input.value as? String, "My saved page")
         app.alerts.buttons["儲存"].tap()
         let bookmark = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "browser.bookmark.open.")).firstMatch
+        // 08ebb8f iOS 17.5 read the label immediately after Save and failed;
+        // its teardown AX attachment already showed this same bookmark renamed.
+        // Wait for the published label, then retain the history/relaunch checks.
+        let renamed = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND label CONTAINS %@", "My saved page"),
+            object: bookmark)
+        XCTAssertEqual(XCTWaiter.wait(for: [renamed], timeout: 5), .completed,
+                       "The saved bookmark name must reach accessibility before continuing.")
         XCTAssertTrue(bookmark.label.contains("My saved page"))
         chooseSection("歷史"); XCTAssertEqual(history.count, 1)
         app.buttons["browser.history.clear"].tap()
