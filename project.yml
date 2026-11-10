@@ -172,6 +172,9 @@ targets:
     deploymentTarget: "17.0"
     sources: [Tests/AssistantSkillsTests]
     dependencies:
+      # Exercise PDFKit in the real UIKit host, as it runs in production.
+      # Unhosted iOS tests have stalled during PDFDocument initialization.
+      - target: WoowAssistant
       - target: AssistantSkills
       - target: AssistantModels
       - target: AssistantPersistence
