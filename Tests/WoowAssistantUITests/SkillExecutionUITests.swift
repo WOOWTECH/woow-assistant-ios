@@ -122,6 +122,47 @@ struct SkillExecutionTextExportChecks {
         print("PASS actual export FileDocument UTF-8 round-trip, page citations, invalid input and byte limit")
     }
 }
+#elseif SKILL_EXECUTION_NATIVE_PICKER_CHECKS
+import Foundation
+
+/// CLT verifies the real experiment gates; UIKit presentation remains a native CI check.
+/// Compile this file with Sources/App/PDFNativePicker.swift, with/without DEBUG.
+@main
+enum SkillExecutionNativePickerChecks {
+    struct Failure: Error {}
+    static func require(_ condition: Bool) throws { if !condition { throw Failure() } }
+    static func main() throws {
+        let id = UUID(uuidString: "A1111111-2222-4333-8444-555555555555")!
+        let control = ["app", "-UITestMode", "-UITestSkillExecution", "-UITestNamespace", id.uuidString]
+        let treatment = control + ["-UITestPDFUIKitPicker"]
+        func configuration(_ arguments: [String], fixture: UUID? = nil) -> PDFNativePickerExperiment.Configuration? {
+            PDFNativePickerExperiment.configuration(arguments: arguments, fixtureNamespace: fixture)
+        }
+        try require(configuration(treatment) == nil)
+        try require(configuration(treatment, fixture: UUID()) == nil)
+        let rejected: [[String]] = [
+            ["app"], ["-UITestPDFUIKitPicker"],
+            treatment.filter { $0 != "-UITestMode" }, treatment.filter { $0 != "-UITestSkillExecution" },
+            treatment + ["-UITestMode"], treatment + ["-UITestSkillExecution"],
+            treatment + ["-UITestNamespace", id.uuidString], treatment + ["-UITestPDFUIKitPicker"],
+            treatment + ["-LiveModelUITest"], treatment + ["-LiveMCPUITest"],
+            Array(control.dropLast()) + ["../personal", "-UITestPDFUIKitPicker"],
+            Array(control.dropLast()) + [id.uuidString.lowercased(), "-UITestPDFUIKitPicker"],
+            ["-UITestMode", "-UITestSkillExecution", "-UITestPDFUIKitPicker", "-UITestNamespace"]
+        ]
+        for arguments in rejected { try require(configuration(arguments, fixture: id) == nil) }
+        #if DEBUG
+        try require(configuration(control, fixture: id)?.usesUIKit == false)
+        try require(configuration(treatment, fixture: id)?.usesUIKit == true)
+        try require(configuration(treatment, fixture: id)?.namespace == id)
+        print("PASS DEBUG UIKit picker requires exact fixture namespace and unique test flags; default stays SwiftUI")
+        #else
+        try require(configuration(control, fixture: id) == nil)
+        try require(configuration(treatment, fixture: id) == nil)
+        print("PASS Release ignores UIKit experiment and mode observation flags")
+        #endif
+    }
+}
 #elseif SKILL_EXECUTION_PICKER_CHECKS
 /// swiftc -D SKILL_EXECUTION_PICKER_CHECKS -parse-as-library <this file> -o /tmp/woow-skill-picker-checks
 @main
@@ -167,7 +208,7 @@ struct SkillExecutionPickerChecks {
 #else
 import XCTest
 
-/// Real native fileImporter/Files + real SkillExecutionRuntime/PDFKit. The DEBUG
+/// Real native SwiftUI/UIKit Files pickers + real SkillExecutionRuntime/PDFKit. The DEBUG
 /// fixture only creates a synthetic PDF and reports actual dispatch counters.
 /// No picker shortcut, direct URL injection, model, Python or remote endpoint.
 /// Parent entry IDs: catalog.documents.execute and skills.documents.execute.
@@ -200,10 +241,19 @@ final class SkillExecutionUITests: XCTestCase {
         assertNativePDFRead(fixtureWriteMode: "coordinated")
     }
 
-    private func assertNativePDFRead(fixtureWriteMode: String?) {
-        launchFixture(fromCatalog: true, fixtureWriteMode: fixtureWriteMode)
+    func testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText() {
+        assertNativePDFRead(fixtureWriteMode: "coordinated", useUIKitPicker: true)
+    }
+
+    private func assertNativePDFRead(fixtureWriteMode: String?, useUIKitPicker: Bool = false) {
+        launchFixture(fromCatalog: true, fixtureWriteMode: fixtureWriteMode, useUIKitPicker: useUIKitPicker)
         chooseSyntheticPDF()
         assertAudit(selections: 1, reads: 0, extractionAttempts: 0, results: 0)
+        if useUIKitPicker {
+            XCTAssertEqual(app.staticTexts["skillExecution.uitest.fixture"].value as? String,
+                           "source=uikit mode=open allowsMultipleSelection=false",
+                           "The actual presented public UIKit picker must be observed in single-file open mode.")
+        }
         XCTAssertFalse(app.staticTexts["skillExecution.fingerprint"].exists,
                        "Implementation fingerprint must stay inside collapsed source details.")
         XCTAssertFalse(app.staticTexts["skillExecution.result.text"].exists)
@@ -396,10 +446,11 @@ final class SkillExecutionUITests: XCTestCase {
         XCTAssertFalse(nativeCancel.exists)
     }
 
-    private func launchFixture(fromCatalog: Bool, fixtureWriteMode: String? = nil) {
+    private func launchFixture(fromCatalog: Bool, fixtureWriteMode: String? = nil, useUIKitPicker: Bool = false) {
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW",
             "-UITestMode", "-UITestNamespace", namespace, "-UITestResetStorage", "-UITestSkillExecution"]
         if let fixtureWriteMode { app.launchArguments += ["-UITestSkillFixtureWriteMode", fixtureWriteMode] }
+        if useUIKitPicker { app.launchArguments.append("-UITestPDFUIKitPicker") }
         app.launchEnvironment = [:]
         app.launch()
         tap("navigation.memory")

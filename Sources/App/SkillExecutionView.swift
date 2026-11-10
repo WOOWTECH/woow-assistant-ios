@@ -51,6 +51,18 @@ struct SkillExecutionTextDocument: FileDocument {
     @State private var exportPlanID: UUID?
     @State private var exportFilename = "PDF文字"
     @State private var exportStatus: String?
+    #if DEBUG
+    @State private var pickerObservation = "尚未觀察選檔器"
+    #endif
+
+    private var pickerExperiment: PDFNativePickerExperiment.Configuration? {
+        #if DEBUG
+        PDFNativePickerExperiment.configuration(arguments: ProcessInfo.processInfo.arguments,
+                                                fixtureNamespace: model.uiTestFixture?.namespace)
+        #else
+        nil
+        #endif
+    }
 
     init(worker: (any SkillExecutionPDFWorker)? = nil) { self.suppliedWorker = worker }
 
@@ -72,6 +84,7 @@ struct SkillExecutionTextDocument: FileDocument {
                 if let fixture = model.uiTestFixture {
                     Text("測試文件已建立：\(fixture.filename)")
                         .font(.caption).accessibilityIdentifier("skillExecution.uitest.fixture")
+                        .accessibilityValue(pickerObservation)
                 }
                 if let audit = model.uiTestAudit {
                     Text(audit.evidence).font(.caption)
@@ -134,21 +147,12 @@ struct SkillExecutionTextDocument: FileDocument {
         }
         .accessibilityIdentifier("skillExecution.form")
         .navigationTitle("執行 PDF 技能")
-        .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.pdf], allowsMultipleSelection: false) { outcome in
+        .modifier(PDFImportPresentation(isPresented: $choosingFile, experiment: pickerExperiment,
+                                       onCompletion: receivePDFSelection, onObservation: { value in
             #if DEBUG
-            model.recordImporterCallback(outcome)
+            pickerObservation = value
             #endif
-            switch outcome {
-            case .success(let urls):
-                guard let url = urls.first, urls.count == 1 else {
-                    model.status = "未能取得選取的 PDF，請重新選取一個檔案。"
-                    return
-                }
-                model.prepare(url: url, pages: pages, password: password, metadataOnly: metadataOnly, worker: useWorker ? worker : nil)
-                password = ""
-            case .failure: model.status = "未能選取檔案，請重試。"
-            }
-        }
+        }))
         .fileExporter(isPresented: $exportingText, document: exportDocument,
                       contentTypes: [.utf8PlainText], defaultFilename: exportFilename,
                       onCompletion: { outcome in
@@ -165,6 +169,22 @@ struct SkillExecutionTextDocument: FileDocument {
         }
         .onAppear { workerSettings.reload(); model.seedUITestIfRequested() }
         .onDisappear { resetExport(); model.clear() }
+    }
+
+    private func receivePDFSelection(_ outcome: Result<[URL], Error>) {
+        #if DEBUG
+        model.recordImporterCallback(outcome)
+        #endif
+        switch outcome {
+        case .success(let urls):
+            guard let url = urls.first, urls.count == 1 else {
+                model.status = "未能取得選取的 PDF，請重新選取一個檔案。"
+                return
+            }
+            model.prepare(url: url, pages: pages, password: password, metadataOnly: metadataOnly, worker: useWorker ? worker : nil)
+            password = ""
+        case .failure: model.status = "未能選取檔案，請重試。"
+        }
     }
 
     private func beginExport(_ result: SkillExecutionPDFResult) {
