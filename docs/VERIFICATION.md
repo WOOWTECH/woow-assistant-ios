@@ -1,5 +1,24 @@
 # Verification — 2026-11-11
 
+## Transcript references and actual cancellation integrated
+
+The Files, catalog and approved browser-text transcript entries now capture the same
+LearningStore only after explicit Start. Saved memory/profile/compatible skills are
+user-role references before the selected format request, never source citations or
+extra tool authority. Edits remain frozen; deletion/disable/reload/clear stop the run.
+An actual held-model test exposed that the old task group kept the run alive after
+cancellation. The new one-shot completion releases the App task before that model
+returns and rejects its later result. The original 24 calls, cumulative 180-second
+model wait, one correction and byte limits remain unchanged.
+
+Parent isolated integration passes **238 actual App assertions and 17 core suites**
+in each local configuration, **231 Python tests**, actionlint and XcodeGen; real HTTP
+entry points compile without executing. Three new core and five hosted methods are
+registered; native/UI/live behavior remains pending. [Integration proof](evidence/transcript-reference-integration-local.json),
+[original failure and regression](evidence/transcript-reference-cancellation-regression.json),
+[behavior and remaining boundaries](TRANSCRIPT_REFERENCES.md).
+
+
 ## Archive UI passes two devices; PDF add remains under investigation
 
 At `8c4195f`, archive UI passed **4/4** on each of

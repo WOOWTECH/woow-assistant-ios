@@ -45,13 +45,14 @@ import XCTest
         return try await reader.read(approving: review.id)
     }
     static func http(_ runtime: TranscriptRuntime, _ scenario: TranscriptHTTPFixture.Scenario,
+                     references: RunReferenceContext = .empty,
                      context: @escaping @MainActor () throws -> Void = {},
                      onEvent: @escaping @MainActor (TranscriptEvent) -> Void = { _ in }) async throws -> TranscriptOutcome {
         let url = TranscriptHTTPFixture.register(scenario); defer { TranscriptHTTPFixture.remove(url) }
         let session = TranscriptHTTPFixture.session(); defer { session.invalidateAndCancel() }
         return try await runtime.run(client: HTTPChatModelClient(session: session),
             configuration: .init(baseURL: url, model: "transcript-fixture", maxOutputTokens: 8192), apiKey: key,
-            validateContext: context, onEvent: onEvent)
+            references: references, validateContext: context, onEvent: onEvent)
     }
     static func completed(_ outcome: TranscriptOutcome) throws -> TranscriptResult {
         guard case .completed(let result) = outcome else { throw Failure(message: "expected verified result") }
@@ -345,7 +346,10 @@ import XCTest
             ("HTTP second invalid command stops across reads", TranscriptChecks.correctionLimit),
             ("HTTP unknown tools/paths cannot execute", TranscriptChecks.correctionAuthority),
             ("HTTP correction shares call budget; other errors stop", TranscriptChecks.correctionBudgets),
-            ("HTTP correction cancellation/context/time budget", TranscriptChecks.correctionCancellation)
+            ("HTTP correction cancellation/context/time budget", TranscriptChecks.correctionCancellation),
+            ("HTTP saved references are immutable user data", TranscriptChecks.referenceMessages),
+            ("HTTP references cannot supply source evidence or tools", TranscriptChecks.referenceAuthority),
+            ("held model cancellation and deadline finish actual task", TranscriptChecks.referenceCompletionFences)
         ]
         var failures = 0
         for (name, check) in checks {

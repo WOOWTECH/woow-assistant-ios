@@ -109,7 +109,7 @@ private struct SkillCatalogDetail: View {
         List {
             if entry.id == "content-transcribe" {
                 Section("整理文字稿與字幕") {
-                    NavigationLink { TranscriptView(modelAccess: modelAccess, modelChanges: modelChanges) } label: {
+                    NavigationLink { TranscriptView(learning: store, modelAccess: modelAccess, modelChanges: modelChanges) } label: {
                         Text("選取文字稿或字幕檔")
                     }.accessibilityIdentifier("catalog.content-transcribe.open")
                     Text("核准讀檔並確認目的服務後，由模型分段閱讀原文、整理內容與核對引文。")

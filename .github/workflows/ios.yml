@@ -200,7 +200,7 @@ jobs:
               test_filters=(-only-testing:AssistantSkillsTests/SkillAuthoringBridgeTests -only-testing:WoowAssistantUITests/SkillAuthoringUITests)
               ;;
             transcript)
-              test_filters=(-only-testing:AssistantSkillsTests/TranscriptRuntimeTests -only-testing:AssistantSkillsTests/TranscriptCommandRecoveryTests -only-testing:AssistantBrowserIntegrationTests/BrowserSessionNavigationTests -only-testing:WoowAssistantUITests/TranscriptUITests)
+              test_filters=(-only-testing:AssistantSkillsTests/TranscriptRuntimeTests -only-testing:AssistantSkillsTests/TranscriptCommandRecoveryTests -only-testing:AssistantSkillsTests/TranscriptReferenceTests -only-testing:AssistantSkillsTests/TranscriptReferenceAppIntegrationTests -only-testing:AssistantBrowserIntegrationTests/BrowserSessionNavigationTests -only-testing:WoowAssistantUITests/TranscriptUITests)
               ;;
             skill-settings)
               test_filters=(-only-testing:AssistantSkillsTests/SelfConfigurationTests -only-testing:WoowAssistantUITests/SelfConfigurationUITests -only-testing:WoowAssistantUITests/SkillWorkerSettingsUITests)

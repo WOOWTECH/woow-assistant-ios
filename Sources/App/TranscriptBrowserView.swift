@@ -55,7 +55,7 @@ import SwiftUI
             }
             .navigationDestination(isPresented: $showEditor) {
                 if let source {
-                    TranscriptView(modelAccess: chat.modelAccess,
+                    TranscriptView(learning: chat.learning, modelAccess: chat.modelAccess,
                         modelChanges: chat.$savedSettings.dropFirst().map { _ in () }.eraseToAnyPublisher(),
                         approvedSource: source)
                 }

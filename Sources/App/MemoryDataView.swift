@@ -101,7 +101,7 @@ struct MemoryDataView: View {
                             .disabled(!store.available)
                             .accessibilityIdentifier("skills.agent.open")
                         NavigationLink {
-                            TranscriptView(modelAccess: modelAccess, modelChanges: modelChanges)
+                            TranscriptView(learning: store, modelAccess: modelAccess, modelChanges: modelChanges)
                         } label: { Text("整理文字稿與字幕") }
                             .accessibilityIdentifier("skills.transcript.open")
                         Text("閱讀完整原文與授權、匯入 iOS 文字技能，或選取 PDF 執行文件處理；每個執行步驟仍需核准。")

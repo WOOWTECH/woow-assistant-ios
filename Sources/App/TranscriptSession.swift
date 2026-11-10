@@ -17,12 +17,21 @@ import Foundation
     @Published private(set) var audit = TranscriptUITestAudit()
     #endif
     private let files = TranscriptFileAccess()
+    private let learning: LearningStore
+    private var references: LearningRunSnapshot?
     private var access: ModelAccess?
     private var runtime: TranscriptRuntime?
     private var task: Task<Void, Never>?
     private var operationID: UUID?
     private var commandFailureReason: TranscriptCommandFailureReason?
     private var formatCorrections = 0
+
+    init(learning: LearningStore) { self.learning = learning }
+
+    #if DEBUG
+    /// Read-only task identity for native tests to join actual cancellation.
+    var capturedRunCompletion: Task<Void, Never>? { task }
+    #endif
 
     private enum Phase {
         case idle, reading, running, completed, refused, unknownFailure
@@ -106,16 +115,23 @@ import Foundation
         do {
             try validate(approvedAccess, current: modelAccess())
             let runtime = try TranscriptRuntime(source: source, format: format, catalog: .bundled())
+            // Retrieval uses the user's format choice, never untrusted source
+            // contents, filenames, model output or page text as a new request.
+            let snapshot = try learning.captureRunReferences(goal: "文字稿 字幕 " + format.title,
+                capabilities: TranscriptRuntime.referenceCapabilities)
             self.runtime = runtime; error = nil; result = nil; refusal = nil
             resetDiagnostic(); recordDiagnostic(.running)
             let id = UUID(); operationID = id; running = true
+            references = snapshot
+            snapshot.onRevoke = { [weak self] in self?.referencesRevoked(for: id) }
             task = Task { [weak self] in
                 do {
                     let configuration = ModelConfiguration(baseURL: approvedAccess.configuration.baseURL,
                         model: approvedAccess.configuration.model, maxOutputTokens: 8192)
                     let outcome = try await runtime.run(client: approvedAccess.client, configuration: configuration,
-                        apiKey: approvedAccess.key, validateContext: { [weak self] in
+                        apiKey: approvedAccess.key, references: snapshot.references, validateContext: { [weak self] in
                             guard let self, self.operationID == id else { throw TranscriptError.cancelled }
+                            try snapshot.check()
                             try self.validate(approvedAccess, current: modelAccess())
                         }, onEvent: { [weak self] event in
                             guard let self, self.operationID == id else { return }
@@ -139,8 +155,10 @@ import Foundation
                             }
                         })
                     guard let self, self.operationID == id, !Task.isCancelled else { return }
+                    try snapshot.check()
                     try self.validate(approvedAccess, current: modelAccess())
-                    self.running = false; self.task = nil; self.runtime = nil
+                    self.releaseReferences()
+                    self.running = false; self.operationID = nil; self.task = nil; self.runtime = nil
                     switch outcome {
                     case .completed(let result):
                         self.result = result
@@ -164,6 +182,7 @@ import Foundation
     func cancel(notice: Bool = true) {
         let wasRunning = running
         operationID = nil; files.cancel(); task?.cancel(); task = nil; runtime?.cancel(); runtime = nil
+        releaseReferences()
         running = false; review = nil
         if notice || wasRunning { recordDiagnostic(.failed(.cancelled)) }
         if notice { status = TranscriptError.cancelled.errorDescription! }
@@ -186,6 +205,19 @@ import Foundation
     }
 
     func selectionFailed() { error = "選檔未完成，尚未讀取新的內容。" }
+
+    private func releaseReferences() {
+        let snapshot = references; references = nil
+        snapshot?.onRevoke = nil; snapshot?.revoke()
+    }
+
+    private func referencesRevoked(for id: UUID) {
+        guard operationID == id else { return }
+        cancel(notice: false); access = nil; destination = nil
+        error = "本次參考資料已撤銷；請確認目前設定與目的服務後重新整理。"
+        status = "整理已停止，已核准的原文仍保留；晚到回覆不會更新結果。"
+        recordDiagnostic(.failed(.contextChanged))
+    }
 
     private func validate(_ prior: ModelAccess, current: ModelAccess) throws {
         guard prior.configuration.baseURL == current.configuration.baseURL,

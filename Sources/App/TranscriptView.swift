@@ -4,12 +4,12 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 /// Host passes the actual configured access plus a publisher that fires whenever
-/// that configuration/credential changes. No LearningStore dependency or writes.
+/// that configuration/credential changes. Saved references are read-only snapshots.
 @MainActor struct TranscriptView: View {
     let modelAccess: () throws -> ModelAccess
     let modelChanges: AnyPublisher<Void, Never>
     let approvedSource: TranscriptSnapshot?
-    @StateObject private var session = TranscriptSession()
+    @StateObject private var session: TranscriptSession
     @State private var choosing = false
     @State private var format: TranscriptFormat = .summary
     @State private var loadedApprovedSource: UUID?
@@ -19,8 +19,9 @@ import UniformTypeIdentifiers
     @State private var fixtureNotice: String?
     #endif
 
-    init(modelAccess: @escaping () throws -> ModelAccess, modelChanges: AnyPublisher<Void, Never>,
+    init(learning: LearningStore, modelAccess: @escaping () throws -> ModelAccess, modelChanges: AnyPublisher<Void, Never>,
          approvedSource: TranscriptSnapshot? = nil) {
+        _session = StateObject(wrappedValue: TranscriptSession(learning: learning))
         self.modelAccess = modelAccess; self.modelChanges = modelChanges; self.approvedSource = approvedSource
     }
 
@@ -75,7 +76,8 @@ import UniformTypeIdentifiers
                     }
                     Button("確認目前設定的目的服務") { session.confirmDestination(modelAccess: modelAccess) }
                         .disabled(session.running).accessibilityIdentifier("transcript.confirmDestination")
-                    Text("開始後，檔名與原文會分段傳送至上述服務。請先確認內容適合傳送；產出不會自動寫入記憶或技能。")
+                    Text("開始後，檔名、原文，以及依目前開關選取的個人檔案、記憶與已啟用技能參考會傳至上述服務。參考資料不會成為原文證據；產出不會自動寫入記憶或技能。")
+                        .accessibilityIdentifier("transcript.referenceNotice")
                     Button("將這份文字傳給模型並整理") { session.start(format: format, modelAccess: modelAccess) }
                         .disabled(session.destination == nil || session.running).accessibilityIdentifier("transcript.start")
                 }

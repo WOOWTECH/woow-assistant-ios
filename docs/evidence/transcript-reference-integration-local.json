@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "PASS_LOCAL_ONLY",
+  "isolated_base": "c56011967a8df63adde9e43d3716c510e93d3469",
+  "source_sha256": {
+    "Sources/App/MemoryDataView.swift": "f5633aec1867c49b2223c092093f112752b1b15a610754a8b835301c6b8438f8",
+    "Sources/App/SkillCatalogView.swift": "2aa6213b744d4c6440ef4990dccb478bd99f5eb7a08d746d7689a48c0ba06b0d",
+    "Sources/App/TranscriptBrowserView.swift": "4b4ddb9916e0342116aec4b6d05d8a4145820a1cb0de16f71a4c6234cc61e612",
+    "Sources/App/TranscriptSession.swift": "657bafb3dcdcf3bd13d1b1708190766ae687fd859636602f427a403014d52a91",
+    "Sources/App/TranscriptView.swift": "3127cc6f2c9f2d1a45830ff12fd4aebc74302f12b5a88bbe2ec211ea6e13df55",
+    "Sources/AssistantSkills/TranscriptRuntime.swift": "ef5e8353ea49082f061f40c8eb5267f7677c51b9039ffc826a4098c96ad4c521",
+    "Tests/AssistantSkillsTests/TranscriptReferenceTests.swift": "670e85447feb97474e393008144db5267b34d167e3c6c1b6c4482acefd8a541d",
+    "Tests/AssistantSkillsTests/TranscriptRuntimeTests.swift": "12279e09322551f83690c492b0c3e459c891f4951d3954cc55dd5e054f0b967b",
+    "docs/TRANSCRIPT_REFERENCES.md": "a50f6aa5070152c80a1d531845f30456268cb33eda96f91d2be31559b441812f",
+    "docs/evidence/transcript-reference-cancellation-regression.json": "38ce233273a669e4e946d50c97e8ffc6d73ba0d16a1ac6b1b32c302673057e6a",
+    "scripts/CheckTranscriptReferencesApp.swift": "e62bc645cbb54d378d7a3e99957e27b51883f1b7c03055eca07ddd45c0b27680",
+    "scripts/check_transcript_references_app.py": "3f6bb984e2b280ff089e442e2843992bee27f3da452afa9296766a6b66391436",
+    "project.yml": "9e174ab170f2b37723e896aa37261081d11b5c5988c31f8f7642db43c5aec298",
+    ".github/workflows/ios.yml": "c1f480d567071ae8a25b0ca7aa645d46e9b586dead2ddb5c34aae9ea3f441a89",
+    "scripts/check_transcript.sh": "9dedca07a0cd1ffe2dc1b022ab7481f0213b402185f95f350e9f8c83b92c2748",
+    "docs/evidence/transcript-reference-local.json": "13614e92e6fd80e703cdce0582d6693c7354381464a7672f1ae7bf484a2e3083"
+  },
+  "actual_checker_report_sha256": "c3b7e3ed4254c462f154e738725472ee3b055593081de7ca444f4d3b6f193f18",
+  "python_tests_passed": 231,
+  "actionlint": "PASS",
+  "xcodegen": "PASS",
+  "actual_transcript_checker": "PASS",
+  "Debug_app_assertions": 238,
+  "Release_app_assertions": 238,
+  "core_suites_per_configuration": 17,
+  "live_harness": "compiled_only_both_configurations",
+  "native_xctest_ui_execution": false,
+  "model_network_requests": 0,
+  "registration": [
+    "3 new core methods from directory source",
+    "5 new hosted App methods in AssistantSkillsTests",
+    "both classes in focused transcript scope and full native suite"
+  ],
+  "legacy_checker": "check_transcript.sh invokes actual App/core checker; ModelAccess-only stub removed",
+  "source_boundary": "Intervening8494fc9 changes only documentation/evidence; no untested source overlay included."
+}
