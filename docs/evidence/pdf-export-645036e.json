@@ -1,0 +1,102 @@
+{
+  "source": "645036eea06a7fb998b8c7d17125575e6ed5d55c",
+  "run_id": 42789964607,
+  "job_id": 129740586987,
+  "artifact_id": 13752355342,
+  "device": {
+    "architecture": "arm64",
+    "deviceName": "iPhone 17",
+    "modelName": "iPhone 17",
+    "osBuildNumber": "23C54",
+    "osVersion": "26.2",
+    "platform": "iOS Simulator"
+  },
+  "counts": {
+    "ui_total": 2,
+    "passed": 1,
+    "failed": 1,
+    "skipped": 0,
+    "expected_failures": 0,
+    "native_xctests_selected": 0
+  },
+  "cases": [
+    {
+      "method": "testNativeExportCancellationPreservesResultAndAllowsRetry",
+      "result": "failed",
+      "duration_seconds": 88.157,
+      "failure_line": 453,
+      "failure": "Files selection must reach the real importer callback.",
+      "timeline_seconds": {
+        "pdf_thumbnail_tap": 60.62,
+        "teardown_after_assertion": 86.66
+      },
+      "unreached": [
+        "both runtime approvals",
+        "PDF extraction",
+        "opening exporter",
+        "native exporter cancellation",
+        "30-second dismissal wait",
+        "retained result assertions",
+        "repeated exporter cancellation"
+      ],
+      "evidence": "cancel-case-log.txt"
+    },
+    {
+      "method": "testNativeExportSavesTextToChosenLocalFolder",
+      "result": "passed",
+      "duration_seconds": 170.023,
+      "timeline_seconds": {
+        "first_approval": 42.1,
+        "second_approval": 54.31,
+        "first_export": 79.08,
+        "save_tap": 87.39,
+        "dismissal_first_logged_poll": 89.35,
+        "dismissal_success_poll": 111.31,
+        "first_intro_query_after_dismissal": 111.38,
+        "saved_status_exact_predicate": 121.77,
+        "audit_read": 128.65,
+        "reopen_exporter": 136.83,
+        "file_list_assertion_queries_start": 142.5,
+        "file_list_assertion_queries_end": 143.76,
+        "cancel_tap": 154.38,
+        "post_cancel_dismissal_poll": 156.59,
+        "cancel_status_exact_predicate": 167.84,
+        "teardown": 168.11
+      },
+      "dismissal_wait": "completed within 30-second bound; approximately 22 seconds between first and successful logged predicate polls",
+      "verified": [
+        "real importer and both approvals",
+        "real PDF extraction",
+        "exact saved status",
+        "audit selections=1 reads=1 extractionAttempts=1 results=1",
+        "reopened real native exporter and exact exported basename in file-list cell",
+        "native cancellation and exact retained-result cancellation status",
+        "native Cancel absence after status checks"
+      ],
+      "limits": [
+        "reopened filename-list assertion is not a separate saved-file content readback",
+        "single successful current/iOS26.2 case does not establish repeated reliability or SE coverage"
+      ],
+      "evidence": "save-case-log.txt"
+    }
+  ],
+  "conclusion": "The new dismissal wait and later Save assertions passed in this run. Overall failure remains the separate initial PDF import selection in the cancellation/retry case. No dismissal timeout or post-save assertion failure.",
+  "files": {
+    "test-summary.json": {
+      "bytes": 1523,
+      "sha256": "3842420a63ca54ddb5580fc013e7356983e38849f34e5d7e3fad9c40bbf566db"
+    },
+    "ios-tests.log": {
+      "bytes": 949838,
+      "sha256": "dd1fb98413c0c0a55dc85b0282e947b6f190ae207caddb30432f6d25367611fd"
+    },
+    "cancel-case-log.txt": {
+      "bytes": 27999,
+      "sha256": "363397df63cea6dbc483e1415dc7ef311705eb7e1e4d4cf4db83f3effb283958"
+    },
+    "save-case-log.txt": {
+      "bytes": 61660,
+      "sha256": "ccf155c1a1ddde5375be89b1f74c819f7a967cb7e701e4befc48c52451fe1b6a"
+    }
+  }
+}

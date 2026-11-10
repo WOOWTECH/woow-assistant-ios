@@ -1,0 +1,163 @@
+{
+  "source": "afa1a7271dfcf5cfc3c805cc9e6ec06363b7e396",
+  "runs": {
+    "se": 42785936385,
+    "current": 42785943219
+  },
+  "artifacts": {
+    "se": 13750090716,
+    "current": 13750626469
+  },
+  "cases": [
+    {
+      "variant": "se",
+      "case": "save",
+      "namespace": "514072E0-51C8-474A-8C5F-982CCC50C72E",
+      "baselineUTC": "2026-11-10T09:03:59.340001+00:00",
+      "postTestUTC": "2026-11-10T09:06:03.321123+00:00",
+      "inventory": {
+        "baseline": {
+          "evidence": {
+            "bytes": 8235,
+            "device": 16777227,
+            "inode": 3594509,
+            "modifiedNanoseconds": 337554705,
+            "modifiedSeconds": 1794301439,
+            "sampledAt": 1794301439.340001,
+            "sha256": "c0e315f317061bf2d514038e8bfaed693f2c1a48e3b0c6f107a6f2d84eb3fc52",
+            "status": "valid"
+          },
+          "namespace": "514072E0-51C8-474A-8C5F-982CCC50C72E",
+          "phase": "created",
+          "version": 1
+        },
+        "current": {
+          "bytes": 8235,
+          "device": 16777227,
+          "inode": 3594509,
+          "modifiedNanoseconds": 337554705,
+          "modifiedSeconds": 1794301439,
+          "sampledAt": 1794301563.3211231,
+          "sha256": "c0e315f317061bf2d514038e8bfaed693f2c1a48e3b0c6f107a6f2d84eb3fc52",
+          "status": "valid"
+        },
+        "sameHash": true,
+        "sameIdentity": true,
+        "sameSize": true
+      },
+      "importerCallbacksInCompleteAppLog": [],
+      "tapLogUTC": "2026-11-10T09:04:17.781523Z",
+      "assertionFailureLogUTC": "2026-11-10T09:04:49.493491Z",
+      "providerErrorObserved": false,
+      "boundary": "Selected-file UI never arrived. No importer callback marker or provider/bookmark error observed for this case; cause not established."
+    },
+    {
+      "variant": "current",
+      "case": "cancel",
+      "namespace": "C4782200-BB4B-4D87-A847-0708FFB2E4F5",
+      "baselineUTC": "2026-11-10T09:03:54.135753+00:00",
+      "postTestUTC": "2026-11-10T09:09:49.911586+00:00",
+      "inventory": {
+        "baseline": {
+          "evidence": {
+            "bytes": 8220,
+            "device": 16777229,
+            "inode": 3547494,
+            "modifiedNanoseconds": 120202874,
+            "modifiedSeconds": 1794301434,
+            "sampledAt": 1794301434.1357532,
+            "sha256": "5faa3645dfc7aa9e3fc8b0166198068d1c16cc58dfc10de117f550ca6fa8de8e",
+            "status": "valid"
+          },
+          "namespace": "C4782200-BB4B-4D87-A847-0708FFB2E4F5",
+          "phase": "created",
+          "version": 1
+        },
+        "current": {
+          "bytes": 8220,
+          "device": 16777229,
+          "inode": 3547494,
+          "modifiedNanoseconds": 120202874,
+          "modifiedSeconds": 1794301434,
+          "sampledAt": 1794301789.911586,
+          "sha256": "5faa3645dfc7aa9e3fc8b0166198068d1c16cc58dfc10de117f550ca6fa8de8e",
+          "status": "valid"
+        },
+        "sameHash": true,
+        "sameIdentity": true,
+        "sameSize": true
+      },
+      "importerCallbacksInCompleteAppLog": [],
+      "tapLogUTC": "2026-11-10T09:04:29.196091Z",
+      "resolverErrorUTC": "2026-11-10T09:04:31.565512Z",
+      "providerErrorUTC": "2026-11-10T09:04:31.565946Z",
+      "emptyDelegateUTC": "2026-11-10T09:04:31.566477Z",
+      "providerDomain": "NSFileProviderErrorDomain",
+      "providerCode": -1005,
+      "resolverDomain": "NSFileProviderResolverErrorDomain",
+      "resolverCode": -1012,
+      "providerItem": "did=3",
+      "appPID": 17108,
+      "assertionFailureLogUTC": "2026-11-10T09:04:58.822776Z",
+      "boundary": "Provider bookmark resolution failed, then its internal empty-delegate log appeared. No SwiftUI importer callback marker for this namespace. This is not evidence of a success-empty SwiftUI callback."
+    },
+    {
+      "variant": "current",
+      "case": "save",
+      "namespace": "D20883CC-F845-4C69-B5D0-6FEFE53BF091",
+      "baselineUTC": "2026-11-10T09:05:26.309662+00:00",
+      "postTestUTC": "2026-11-10T09:09:49.915683+00:00",
+      "inventory": {
+        "baseline": {
+          "evidence": {
+            "bytes": 8518,
+            "device": 16777229,
+            "inode": 3547891,
+            "modifiedNanoseconds": 307112499,
+            "modifiedSeconds": 1794301526,
+            "sampledAt": 1794301526.3096619,
+            "sha256": "0be0935ec0f7c04e27cd28fb7f7fdaacd1d3bbc58043a041343fc8b23bd8defb",
+            "status": "valid"
+          },
+          "namespace": "D20883CC-F845-4C69-B5D0-6FEFE53BF091",
+          "phase": "created",
+          "version": 1
+        },
+        "current": {
+          "bytes": 8518,
+          "device": 16777229,
+          "inode": 3547891,
+          "modifiedNanoseconds": 307112499,
+          "modifiedSeconds": 1794301526,
+          "sampledAt": 1794301789.915683,
+          "sha256": "0be0935ec0f7c04e27cd28fb7f7fdaacd1d3bbc58043a041343fc8b23bd8defb",
+          "status": "valid"
+        },
+        "sameHash": true,
+        "sameIdentity": true,
+        "sameSize": true
+      },
+      "importerCallbacksInCompleteAppLog": [
+        {
+          "namespace": "D20883CC-F845-4C69-B5D0-6FEFE53BF091",
+          "outcome": "success",
+          "count": "1",
+          "sampledAt": "1794301552.871939",
+          "utc": "2026-11-10T09:05:52.871939+00:00"
+        }
+      ],
+      "tapLogUTC": "2026-11-10T09:05:50.448012Z",
+      "saveTapLogUTC": "2026-11-10T09:06:56.034711Z",
+      "assertionFailureLogUTC": "2026-11-10T09:07:11.117796Z",
+      "appPID": 21030,
+      "providerErrorObserved": false,
+      "boundary": "Importer delivered success/count=1 before approved extraction. Later export test scrolled while saving panel remained visible; exporter completion and TXT persistence were not established. No matching -1005/-1012 observed in this case."
+    }
+  ],
+  "limits": [
+    "Snapshots establish matching synthetic source PDF identity/content before and after each failed test, not continuous presence at every intervening instant.",
+    "Inventory does not inspect the exported TXT or establish export completion.",
+    "Importer callback markers are not exporter callback markers.",
+    "No mode changes, code edits, workflow dispatches, or additional runs inspected."
+  ]
+}

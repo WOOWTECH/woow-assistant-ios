@@ -23,6 +23,7 @@ Latest completed simulator evidence (passed test cases / selected cases, not ass
 | Core `2dd7b69`: [SE 42784364067](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42784364067), [current 42784372596](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42784372596) | Native/hosted 34/34 | Not selected | Native/hosted 34/34 |
 | [SE login 42784628988](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42784628988), `5dd9047` | UI 1/1 | Not selected | Not selected |
 | PDF export `afa1a72`: [SE 42785936385](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42785936385), [current 42785943219](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42785943219) | UI 1/2 | Not selected | UI 0/2 |
+| [Current export 42789964607](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42789964607), `645036e` | Not selected | Not selected | UI 1/2 |
 
 The `776f5f9` and `1747c20` variants passed 98 portable cases. The completed
 `1b0f3d8` files variants passed 103, including the five new authoring
@@ -307,6 +308,48 @@ post-save intro lookup took approximately 0.66–0.93 seconds, so the earlier
 verification were not reached. This does not establish why the row lookup failed,
 whether the query change caused it, or whether file saving completed. No
 provider/FileProvider cause or complete export fix is inferred.
+
+The current save recording further shows the system exporter still covering the
+App with a saving spinner at 117 seconds. At 129 seconds it remains visible and
+has been dragged downward by the test gestures. The first row was not already
+visible and missed by the scoped query. This establishes a test readiness gap:
+the helper scrolled before export dismissal; the old blocked AX lookup was not a
+valid substitute for waiting. `645036e` adds a maximum 30-second wait for the
+actual native navigation container to disappear before any result-page gesture.
+Failure stops the case; the existing 240-second total, exact saved/cancel status,
+audit and reopen/file-list assertions remain unchanged. [Current export
+42789964607](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42789964607)
+finished **1/2**, zero skips: actual save, success status, audit, reopening the
+native destination, finding the exact exported filename, and final cancellation
+status all passed in 170.023 seconds. The separate cancellation/retry case failed
+at the initial PDF importer callback after 88.157 seconds, before export. The
+30-second dismissal gate and all prior acceptance assertions remain enabled.
+This validates the test-readiness correction on this current-runtime save flow,
+not a production saving fix or a resolution of the intermittent picker failure.
+The workflow remains failed overall; SE was not selected for this rerun.
+The actual dismissal was observed about 22 seconds after its first logged poll;
+the first result-page lookup followed it. Reopening verifies the exact filename
+in the native file list, not a separate byte-for-byte readback of that exported
+file. The [case timeline and source-log hashes](evidence/pdf-export-645036e.json)
+are retained for review.
+
+The `afa1a72` failed import cases now have matching creation and post-test
+identity evidence from the same run. Current cancellation's 8,220-byte PDF
+retains SHA-256, device/inode and modification time between 09:03:54.135753 and
+09:09:49.911586 UTC. At 09:04:31.565946, FileProvider reports -1005 with resolver
+-1012; an empty internal delegate array follows at 09:04:31.566477. The complete
+App log has no importer callback marker for that namespace, so this is not proof
+that SwiftUI delivered a successful empty array to the App. SE save's 8,235-byte
+PDF likewise retains identity between 09:03:59.340001 and 09:06:03.321123, but
+has neither an App callback marker nor a matching provider/bookmark error; its
+cause must remain separate. Current save received `success count=1` at
+09:05:52.871939 and failed only after tapping Save. Before/after PDF identity does
+not prove uninterrupted presence at the exact error, nor that an exported TXT
+was written. These observations narrow the evidence gap without establishing a
+provider root cause or fix.
+The synthetic-only [identity/timeline comparison](evidence/file-provider-afa1a72.json)
+is retained with this repository; original logs and recordings remain in the two
+linked workflow artifacts.
 
 Additional source checkpoints:
 - `0df511b` [workspace 42769973948](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769973948): large/current passed 31/31 selected native/hosted/UI cases, including login, protected HTTP, per-site removal and relaunch. SE passed 30/31: login passed, but removal completed at 30.719 seconds with zero synthetic cookies, after the first 30-second wait failed; subsequent HTTP/relaunch assertions did not execute. All three hosted targets passed 11/11, including actual WKDownload, zero skips. `e941709` shares the existing total 60-second allowance across removal and record refresh, keeping empty-list, HTTP and relaunch assertions. Targeted [SE workspace 42778341962](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42778341962) failed as recorded above. Workspace/all honor the login case's existing 420-second declaration; other scopes remain capped at 300. The four unexplained 60-second XCTest idle waits in the prior SE case remain open, not a proven product fix.
