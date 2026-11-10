@@ -120,8 +120,15 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
             host.attach(session)
         }
         defer { selection.cancel() }
+        // A new storage type written after the confirmation snapshot must
+        // still be included by the post-quiescence enumeration.
+        _ = try await javascript("localStorage.setItem('workspace_late_record', 'FIXTURE_LATE'); 'written'", in: secondWebView)
+        let publicationsBeforeClear = enumeration.publicationCount
+        workspace.refreshWebsiteRecords() // Its callback must be invalidated by the clear below.
         workspace.removeWebsiteData(records)
         XCTAssertTrue(workspace.isClearingWebsiteData)
+        // A refresh initiated while deleting must not race the final verified list.
+        workspace.refreshWebsiteRecords()
         do {
             // 1747c20 Large: both documents were blank by 35 ms, while WebKit's
             // persistent removeData callback arrived at 23.066 s. Bound only
@@ -139,6 +146,8 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
             throw error
         }
         XCTAssertNil(workspace.error, "Quiescence failure must not be mistaken for completed record removal")
+        XCTAssertEqual(enumeration.publicationCount, publicationsBeforeClear + 1,
+                       "Only the verified final records may publish after clearing starts")
         XCTAssertEqual(replacementCount, 1, "Mount exactly one replacement after the actual removeData callback")
         XCTAssertNil(second.interactionProposal)
         XCTAssertNil(second.controlSnapshot)
@@ -165,6 +174,10 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
         try await host.load(replacement, path: "/workspace-after-clear", marker: "網站資料已清除")
         let afterRemoval = try await javascript("document.cookie", in: replacement.webView)
         XCTAssertFalse(afterRemoval.contains("workspace_cookie="))
+        let lateStorage = try await javascript("localStorage.getItem('workspace_late_record') === null ? 'absent' : 'retained'", in: replacement.webView)
+        XCTAssertEqual(lateStorage, "absent", "Clear must include storage types added after the original record snapshot")
+        XCTAssertFalse(workspace.websiteRecords.contains { $0.displayName.contains("example.invalid") },
+                       "Published completion must reflect verified removal, not a stale enumeration")
     }
 
     @MainActor func testTabsRetainDifferentDocumentsAndSwitchingOrClosingRevokesProposals() async throws {

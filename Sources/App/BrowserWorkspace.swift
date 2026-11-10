@@ -22,6 +22,7 @@ final class BrowserWorkspace: ObservableObject {
     @Published private(set) var websiteRecords: [WKWebsiteDataRecord] = []
     @Published private(set) var isClearingWebsiteData = false
     private var sessions: [UUID: BrowserSession] = [:]
+    private var websiteRecordRevision = UUID()
     private var vault: EncryptedLearningFile?
     let websiteDataStore: WKWebsiteDataStore
     let downloads: BrowserDownloadManager
@@ -187,15 +188,21 @@ final class BrowserWorkspace: ObservableObject {
     func removeHistory(_ id: UUID) { _ = update { $0.removeHistory(id) } }
     func clearHistory() { _ = update { $0.clearHistory() } }
     func refreshWebsiteRecords() {
+        guard !isClearingWebsiteData else { return }
+        let revision = UUID()
+        websiteRecordRevision = revision
         websiteDataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { [weak self] records in
-            self?.websiteRecords = records.sorted { $0.displayName < $1.displayName }
+            guard let self, self.websiteRecordRevision == revision, !self.isClearingWebsiteData else { return }
+            self.websiteRecords = records.sorted { $0.displayName < $1.displayName }
         }
     }
     func removeWebsiteData(_ records: [WKWebsiteDataRecord]) {
-        guard !isClearingWebsiteData else { return }
+        guard !isClearingWebsiteData, !records.isEmpty else { return }
+        let selectedNames = Set(records.map(\.displayName))
+        websiteRecordRevision = UUID() // Earlier enumeration cannot republish stale records.
+        error = nil
         #if DEBUG
         let started = ProcessInfo.processInfo.systemUptime
-        let selectedNames = Set(records.map(\.displayName))
         var removalEvents: [[String: String]] = []
         // Only the strictly gated synthetic login fixture persists diagnostics.
         // Hosted tests receive the same bounded, value-free phases in stdout.
@@ -248,43 +255,63 @@ final class BrowserWorkspace: ObservableObject {
                 #endif
                 return
             }
-            // Keep the stopped sessions and their blank views alive until
-            // WebKit finishes removal. Publishing a replacement here makes
-            // BrowserView create a new WKWebView on the same store while the
-            // Networking process is still deleting its data.
-            #if DEBUG
-            trace("removeRequested")
-            #endif
-            self.websiteDataStore.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), for: records) { [weak self] in
+            // Re-enumerate after every page has stopped. The selected record
+            // may have acquired new data types since the confirmation dialog.
+            // Delete the actual refreshed types, avoiding work in unrelated
+            // WebKit subsystems, then independently verify the selected records.
+            // Keep stopped sessions alive until removal AND verification finish.
+            let allTypes = WKWebsiteDataStore.allWebsiteDataTypes()
+            self.websiteDataStore.fetchDataRecords(ofTypes: allTypes) { [weak self] fresh in
                 guard let self else { return }
+                let selectedRecords = fresh.filter { selectedNames.contains($0.displayName) }
+                let selectedTypes = Set(selectedRecords.flatMap { $0.dataTypes }).intersection(allTypes)
                 #if DEBUG
-                trace("removeCompleted")
-                if BrowserLoginFixture.enabled != nil {
-                    self.websiteDataStore.httpCookieStore.getAllCookies { cookies in
-                        trace("fixtureCookies", ["remaining": cookies.filter { $0.name == BrowserLoginFixture.cookieName }.count])
+                trace("recordsSelected", ["records": selectedRecords.count, "types": selectedTypes.count])
+                #endif
+                let verify: () -> Void = { [weak self] in
+                    guard let self else { return }
+                    self.websiteDataStore.fetchDataRecords(ofTypes: allTypes) { [weak self] remaining in
+                        guard let self else { return }
+                        let selected = remaining.filter { selectedNames.contains($0.displayName) }
+                        self.websiteRecords = remaining.sorted { $0.displayName < $1.displayName }
+                        self.error = selected.isEmpty ? nil : "部分網站資料仍保留，請重新確認。"
+                        #if DEBUG
+                        let classifiedTypes: Set<String> = [WKWebsiteDataTypeCookies, WKWebsiteDataTypeMemoryCache, WKWebsiteDataTypeDiskCache]
+                        trace("recordsRefreshed", ["allRecords": remaining.count, "selectedRecords": selected.count,
+                                                  "selectedCookieRecords": selected.filter { $0.dataTypes.contains(WKWebsiteDataTypeCookies) }.count,
+                                                  "selectedMemoryCacheRecords": selected.filter { $0.dataTypes.contains(WKWebsiteDataTypeMemoryCache) }.count,
+                                                  "selectedDiskCacheRecords": selected.filter { $0.dataTypes.contains(WKWebsiteDataTypeDiskCache) }.count,
+                                                  "selectedOtherDataTypes": Set(selected.flatMap { $0.dataTypes }).subtracting(classifiedTypes).count])
+                        #endif
+                        self.isClearingWebsiteData = false
+                        self.sessions.removeAll()
+                        self.selected = self.makeSession(id: self.library.selectedID)
+                        #if DEBUG
+                        trace("sessionsReplaced", ["ready": selected.isEmpty ? 1 : 0])
+                        #endif
                     }
                 }
-                #endif
-                self.isClearingWebsiteData = false
-                self.sessions.removeAll()
-                self.selected = self.makeSession(id: self.library.selectedID)
-                #if DEBUG
-                trace("sessionsReplaced", ["ready": 1])
-                #endif
-                #if DEBUG
-                self.websiteDataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { [weak self] remaining in
-                    self?.websiteRecords = remaining.sorted { $0.displayName < $1.displayName }
-                    let selected = remaining.filter { selectedNames.contains($0.displayName) }
-                    let classifiedTypes: Set<String> = [WKWebsiteDataTypeCookies, WKWebsiteDataTypeMemoryCache, WKWebsiteDataTypeDiskCache]
-                    trace("recordsRefreshed", ["allRecords": remaining.count, "selectedRecords": selected.count,
-                                              "selectedCookieRecords": selected.filter { $0.dataTypes.contains(WKWebsiteDataTypeCookies) }.count,
-                                              "selectedMemoryCacheRecords": selected.filter { $0.dataTypes.contains(WKWebsiteDataTypeMemoryCache) }.count,
-                                              "selectedDiskCacheRecords": selected.filter { $0.dataTypes.contains(WKWebsiteDataTypeDiskCache) }.count,
-                                              "selectedOtherDataTypes": Set(selected.flatMap { $0.dataTypes }).subtracting(classifiedTypes).count])
+                guard !selectedRecords.isEmpty, !selectedTypes.isEmpty else {
+                    #if DEBUG
+                    trace("removeNotNeeded")
+                    #endif
+                    verify()
+                    return
                 }
-                #else
-                self.refreshWebsiteRecords()
+                #if DEBUG
+                trace("removeRequested")
                 #endif
+                self.websiteDataStore.removeData(ofTypes: selectedTypes, for: selectedRecords) { [weak self] in
+                    #if DEBUG
+                    trace("removeCompleted")
+                    if BrowserLoginFixture.enabled != nil, let self {
+                        self.websiteDataStore.httpCookieStore.getAllCookies { cookies in
+                            trace("fixtureCookies", ["remaining": cookies.filter { $0.name == BrowserLoginFixture.cookieName }.count])
+                        }
+                    }
+                    #endif
+                    verify()
+                }
             }
         }
     }

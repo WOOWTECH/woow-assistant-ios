@@ -1,0 +1,591 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "1ea3d08056aa04a4b6f16269900d16fc974fb8a8",
+  "run": 42828114273,
+  "runURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828114273",
+  "scope": "native; all seven native/hosted targets; no App UI methods",
+  "aggregate": {
+    "passed": 488,
+    "total": 489,
+    "failed": 1,
+    "skipped": 0,
+    "newFeatureNativePassed": 42,
+    "newFeatureNativeTotal": 42
+  },
+  "variants": [
+    {
+      "variant": "se",
+      "job": 129870672983,
+      "artifact": 13771351151,
+      "device": {
+        "architecture": "arm64",
+        "deviceName": "iPhone SE (3rd generation)",
+        "modelName": "iPhone SE (3rd generation)",
+        "osBuildNumber": "22F77",
+        "osVersion": "18.5",
+        "platform": "iOS Simulator"
+      },
+      "counts": {
+        "totalTestCount": 163,
+        "passedTests": 163,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "nativeClassCounts": {
+        "AssistantDomainTests": 53,
+        "AssistantModelsTests": 6,
+        "AssistantMCPTests": 15,
+        "AssistantMemoryTests": 10,
+        "AssistantSkillsTests": 55,
+        "AssistantPersistenceTests": 4,
+        "AssistantBrowserIntegrationTests": 20
+      },
+      "newFeatureMethods": [
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testActualHTTPModelRequestCarriesBothSourcesAndReturnsCheckedCitations",
+          "outcome": "passed",
+          "seconds": 0.27
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testByteExactUnicodeAndSingleBoundedFormatCorrection",
+          "outcome": "passed",
+          "seconds": 0.151
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testConfirmedRootsAndActualCitationReceipts",
+          "outcome": "passed",
+          "seconds": 0.034
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testPartialResultsGlobalBudgetAndCancellation",
+          "outcome": "passed",
+          "seconds": 0.052
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testUnsupportedCommandsStaleIDsAndInventedCitationsFailClosed",
+          "outcome": "passed",
+          "seconds": 0.081
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testCapacityAndExactUniqueMatching",
+          "outcome": "passed",
+          "seconds": 0.261
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testCRAndLFRejectedAcrossAddReplaceAndDecode",
+          "outcome": "passed",
+          "seconds": 0.014
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testHistoryAndFrozenContext",
+          "outcome": "passed",
+          "seconds": 0.046
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testMalformedCodableStateRejected",
+          "outcome": "passed",
+          "seconds": 0.211
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testSafetyAndTransactionalMutations",
+          "outcome": "passed",
+          "seconds": 0.187
+        },
+        {
+          "class": "AssistantSkillsTests.UserProfilePersistenceTests",
+          "method": "testEncryptedStoreRollbackRelaunchSwitchMigrationAndClear",
+          "outcome": "passed",
+          "seconds": 0.276
+        },
+        {
+          "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+          "method": "testOtherApprovedOriginStillCannotRedirectOrRebindThisWebView",
+          "outcome": "passed",
+          "seconds": 0.524
+        },
+        {
+          "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+          "method": "testPersistentManualStoreCannotBeUsedForApprovedResearchRoots",
+          "outcome": "passed",
+          "seconds": 0.009
+        },
+        {
+          "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+          "method": "testTwoActualWebKitSourcesNavigateAndProduceExactReceipts",
+          "outcome": "passed",
+          "seconds": 0.92
+        }
+      ],
+      "failedMethods": [],
+      "websiteRemovalPhases": [
+        {
+          "elapsedMs": "0",
+          "persistent": "1",
+          "phase": "begin",
+          "records": "1",
+          "sessions": "2"
+        },
+        {
+          "elapsedMs": "0",
+          "index": "0",
+          "phase": "pageBegin"
+        },
+        {
+          "elapsedMs": "8",
+          "index": "0",
+          "phase": "pageFinished",
+          "stopped": "1"
+        },
+        {
+          "elapsedMs": "8",
+          "index": "1",
+          "phase": "pageBegin"
+        },
+        {
+          "elapsedMs": "16",
+          "index": "1",
+          "phase": "pageFinished",
+          "stopped": "1"
+        },
+        {
+          "elapsedMs": "16",
+          "phase": "pagesDiscarded",
+          "ready": "1"
+        },
+        {
+          "elapsedMs": "16",
+          "phase": "removeRequested"
+        },
+        {
+          "elapsedMs": "17798",
+          "phase": "removeCompleted"
+        },
+        {
+          "elapsedMs": "17839",
+          "phase": "sessionsReplaced",
+          "ready": "1"
+        },
+        {
+          "allRecords": "1",
+          "elapsedMs": "17905",
+          "phase": "recordsRefreshed",
+          "selectedCookieRecords": "0",
+          "selectedDiskCacheRecords": "0",
+          "selectedMemoryCacheRecords": "0",
+          "selectedOtherDataTypes": "0",
+          "selectedRecords": "0"
+        }
+      ],
+      "materials": [
+        {
+          "filename": "test-summary.json",
+          "bytes": 1586,
+          "sha256": "d9c562d10f38db4c7da079659036c40d630a5b51e57e77449e7c05f773e23df9"
+        },
+        {
+          "filename": "ios-tests.log",
+          "bytes": 920424,
+          "sha256": "9cfb6b47ef2bba65349783130c29567ac4b90f02f49a0df340f404748a52759d"
+        }
+      ]
+    },
+    {
+      "variant": "large",
+      "job": 129870673218,
+      "artifact": 13770422528,
+      "device": {
+        "architecture": "arm64",
+        "deviceName": "iPhone 16 Pro Max",
+        "modelName": "iPhone 16 Pro Max",
+        "osBuildNumber": "22F77",
+        "osVersion": "18.5",
+        "platform": "iOS Simulator"
+      },
+      "counts": {
+        "totalTestCount": 163,
+        "passedTests": 162,
+        "failedTests": 1,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "nativeClassCounts": {
+        "AssistantDomainTests": 53,
+        "AssistantModelsTests": 6,
+        "AssistantMCPTests": 15,
+        "AssistantMemoryTests": 10,
+        "AssistantSkillsTests": 55,
+        "AssistantPersistenceTests": 4,
+        "AssistantBrowserIntegrationTests": 20
+      },
+      "newFeatureMethods": [
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testActualHTTPModelRequestCarriesBothSourcesAndReturnsCheckedCitations",
+          "outcome": "passed",
+          "seconds": 0.198
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testByteExactUnicodeAndSingleBoundedFormatCorrection",
+          "outcome": "passed",
+          "seconds": 0.084
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testConfirmedRootsAndActualCitationReceipts",
+          "outcome": "passed",
+          "seconds": 0.041
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testPartialResultsGlobalBudgetAndCancellation",
+          "outcome": "passed",
+          "seconds": 0.039
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testUnsupportedCommandsStaleIDsAndInventedCitationsFailClosed",
+          "outcome": "passed",
+          "seconds": 0.069
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testCapacityAndExactUniqueMatching",
+          "outcome": "passed",
+          "seconds": 0.274
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testCRAndLFRejectedAcrossAddReplaceAndDecode",
+          "outcome": "passed",
+          "seconds": 0.058
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testHistoryAndFrozenContext",
+          "outcome": "passed",
+          "seconds": 0.168
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testMalformedCodableStateRejected",
+          "outcome": "passed",
+          "seconds": 0.242
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testSafetyAndTransactionalMutations",
+          "outcome": "passed",
+          "seconds": 0.133
+        },
+        {
+          "class": "AssistantSkillsTests.UserProfilePersistenceTests",
+          "method": "testEncryptedStoreRollbackRelaunchSwitchMigrationAndClear",
+          "outcome": "passed",
+          "seconds": 0.224
+        },
+        {
+          "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+          "method": "testOtherApprovedOriginStillCannotRedirectOrRebindThisWebView",
+          "outcome": "passed",
+          "seconds": 0.805
+        },
+        {
+          "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+          "method": "testPersistentManualStoreCannotBeUsedForApprovedResearchRoots",
+          "outcome": "passed",
+          "seconds": 0.003
+        },
+        {
+          "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+          "method": "testTwoActualWebKitSourcesNavigateAndProduceExactReceipts",
+          "outcome": "passed",
+          "seconds": 0.898
+        }
+      ],
+      "failedMethods": [
+        {
+          "class": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests",
+          "method": "testPersistentCookiesAreSharedAndRemovingOneRecordPreservesOtherSites",
+          "outcome": "failed",
+          "seconds": 51.252
+        }
+      ],
+      "websiteRemovalPhases": [
+        {
+          "elapsedMs": "0",
+          "persistent": "1",
+          "phase": "begin",
+          "records": "1",
+          "sessions": "2"
+        },
+        {
+          "elapsedMs": "1",
+          "index": "0",
+          "phase": "pageBegin"
+        },
+        {
+          "elapsedMs": "13",
+          "index": "0",
+          "phase": "pageFinished",
+          "stopped": "1"
+        },
+        {
+          "elapsedMs": "13",
+          "index": "1",
+          "phase": "pageBegin"
+        },
+        {
+          "elapsedMs": "29",
+          "index": "1",
+          "phase": "pageFinished",
+          "stopped": "1"
+        },
+        {
+          "elapsedMs": "29",
+          "phase": "pagesDiscarded",
+          "ready": "1"
+        },
+        {
+          "elapsedMs": "29",
+          "phase": "removeRequested"
+        },
+        {
+          "elapsedMs": "50042",
+          "phase": "removeCompleted"
+        },
+        {
+          "elapsedMs": "50055",
+          "phase": "sessionsReplaced",
+          "ready": "1"
+        },
+        {
+          "allRecords": "1",
+          "elapsedMs": "50159",
+          "phase": "recordsRefreshed",
+          "selectedCookieRecords": "0",
+          "selectedDiskCacheRecords": "0",
+          "selectedMemoryCacheRecords": "0",
+          "selectedOtherDataTypes": "0",
+          "selectedRecords": "0"
+        }
+      ],
+      "materials": [
+        {
+          "filename": "test-summary.json",
+          "bytes": 2175,
+          "sha256": "960f2edcd3bb019f0d2040db1c3e5b75b01dca445c460e1bee6bd3336e593b25"
+        },
+        {
+          "filename": "ios-tests.log",
+          "bytes": 926776,
+          "sha256": "91698f6fa779c42a559f24ded427766b4b85dd2eb586dbb20869c688d2ba0a50"
+        }
+      ]
+    },
+    {
+      "variant": "current",
+      "job": 129870672944,
+      "artifact": 13770373004,
+      "device": {
+        "architecture": "arm64",
+        "deviceName": "iPhone 17",
+        "modelName": "iPhone 17",
+        "osBuildNumber": "23C54",
+        "osVersion": "26.2",
+        "platform": "iOS Simulator"
+      },
+      "counts": {
+        "totalTestCount": 163,
+        "passedTests": 163,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "nativeClassCounts": {
+        "AssistantDomainTests": 53,
+        "AssistantModelsTests": 6,
+        "AssistantMCPTests": 15,
+        "AssistantMemoryTests": 10,
+        "AssistantSkillsTests": 55,
+        "AssistantPersistenceTests": 4,
+        "AssistantBrowserIntegrationTests": 20
+      },
+      "newFeatureMethods": [
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testActualHTTPModelRequestCarriesBothSourcesAndReturnsCheckedCitations",
+          "outcome": "passed",
+          "seconds": 0.115
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testByteExactUnicodeAndSingleBoundedFormatCorrection",
+          "outcome": "passed",
+          "seconds": 0.093
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testConfirmedRootsAndActualCitationReceipts",
+          "outcome": "passed",
+          "seconds": 0.05
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testPartialResultsGlobalBudgetAndCancellation",
+          "outcome": "passed",
+          "seconds": 0.053
+        },
+        {
+          "class": "AssistantDomainTests.MultiSourceResearchTests",
+          "method": "testUnsupportedCommandsStaleIDsAndInventedCitationsFailClosed",
+          "outcome": "passed",
+          "seconds": 0.073
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testCapacityAndExactUniqueMatching",
+          "outcome": "passed",
+          "seconds": 0.235
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testCRAndLFRejectedAcrossAddReplaceAndDecode",
+          "outcome": "passed",
+          "seconds": 0.014
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testHistoryAndFrozenContext",
+          "outcome": "passed",
+          "seconds": 0.05
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testMalformedCodableStateRejected",
+          "outcome": "passed",
+          "seconds": 0.219
+        },
+        {
+          "class": "AssistantMemoryTests.UserProfileStateTests",
+          "method": "testSafetyAndTransactionalMutations",
+          "outcome": "passed",
+          "seconds": 0.2
+        },
+        {
+          "class": "AssistantSkillsTests.UserProfilePersistenceTests",
+          "method": "testEncryptedStoreRollbackRelaunchSwitchMigrationAndClear",
+          "outcome": "passed",
+          "seconds": 0.295
+        },
+        {
+          "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+          "method": "testOtherApprovedOriginStillCannotRedirectOrRebindThisWebView",
+          "outcome": "passed",
+          "seconds": 0.724
+        },
+        {
+          "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+          "method": "testPersistentManualStoreCannotBeUsedForApprovedResearchRoots",
+          "outcome": "passed",
+          "seconds": 0.012
+        },
+        {
+          "class": "AssistantBrowserIntegrationTests.MultiSourceResearchIntegrationTests",
+          "method": "testTwoActualWebKitSourcesNavigateAndProduceExactReceipts",
+          "outcome": "passed",
+          "seconds": 1.28
+        }
+      ],
+      "failedMethods": [],
+      "websiteRemovalPhases": [
+        {
+          "elapsedMs": "0",
+          "persistent": "1",
+          "phase": "begin",
+          "records": "1",
+          "sessions": "2"
+        },
+        {
+          "elapsedMs": "0",
+          "index": "0",
+          "phase": "pageBegin"
+        },
+        {
+          "elapsedMs": "11",
+          "index": "0",
+          "phase": "pageFinished",
+          "stopped": "1"
+        },
+        {
+          "elapsedMs": "11",
+          "index": "1",
+          "phase": "pageBegin"
+        },
+        {
+          "elapsedMs": "25",
+          "index": "1",
+          "phase": "pageFinished",
+          "stopped": "1"
+        },
+        {
+          "elapsedMs": "25",
+          "phase": "pagesDiscarded",
+          "ready": "1"
+        },
+        {
+          "elapsedMs": "25",
+          "phase": "removeRequested"
+        },
+        {
+          "elapsedMs": "38",
+          "phase": "removeCompleted"
+        },
+        {
+          "elapsedMs": "54",
+          "phase": "sessionsReplaced",
+          "ready": "1"
+        },
+        {
+          "allRecords": "1",
+          "elapsedMs": "73",
+          "phase": "recordsRefreshed",
+          "selectedCookieRecords": "0",
+          "selectedDiskCacheRecords": "0",
+          "selectedMemoryCacheRecords": "0",
+          "selectedOtherDataTypes": "0",
+          "selectedRecords": "0"
+        }
+      ],
+      "materials": [
+        {
+          "filename": "test-summary.json",
+          "bytes": 1551,
+          "sha256": "b3d7bff1c7291562f1cab96ba99e62f99526eb0ba78d73c634fb1696f55449ec"
+        },
+        {
+          "filename": "ios-tests.log",
+          "bytes": 954520,
+          "sha256": "c8cc01f1f4e5cfffce3dc63e5564b23eb8942357a5a34e801ed45c8bf4c7ebd4"
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "Large website removal case exceeded its unchanged 30-second completion bound; actual removeData callback arrived after 50.042 seconds, while page quiescence finished at 29 ms.",
+    "Newline safety, profile persistence and multi-source native methods passed; separate UI/live/physical acceptance is not implied.",
+    "Later deletion algorithm and PDF import UI changes are not included in this source.",
+    "Artifact summaries and native case completions are cross-checked; no private live service output is included."
+  ]
+}

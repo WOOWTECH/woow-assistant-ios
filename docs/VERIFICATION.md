@@ -1,5 +1,15 @@
 # Verification — 2026-11-10
 
+## Complete native matrix at 1ea3d08: SE/current passed; Large site deletion exceeded its bound
+
+[42828114273](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828114273) executed all seven native/hosted targets: **SE 163/163; current 163/163; Large 162/163; zero skips throughout**. The 14 new profile/multi-source methods passed on each device (**42/42**), including the CR/LF regression and actual encrypted App store. [Counts, unique method checks, runtime metadata and original removal timelines](evidence/native-matrix-1ea3d08.json).
+
+Large's existing selected-site removal case failed its unchanged 30-second bound. Both pages stopped by 29 ms; the actual WebKit removal callback arrived at 50.042 seconds. The later callback and empty selected-record counts do not override the failed method or prove every downstream assertion. No iOS UI/live acceptance is inferred from native cases.
+
+The follow-up stops pages, re-enumerates the selected site records, deletes their refreshed actual data types, then re-enumerates to verify removal before publishing completion or mounting a replacement view. Refresh requests before/during removal cannot overwrite the final list. The hosted case now also writes localStorage after the original confirmation snapshot and requires its absence afterward, while preserving the unrelated cookie and the 30-second bound. WebKit's [current upstream implementation](https://github.com/WebKit/WebKit/blob/main/Source/WebKit/UIProcess/WebsiteData/WebsiteDataStore.cpp) dispatches deletion work according to requested types; avoiding unused subsystems is a performance hypothesis, not a proven explanation for the installed iOS 18.5 build. Native retesting is required.
+
+The fixture-diagnostic copier also now accepts the already-emitted `pagesDiscarded` phase and the new count-only phases; previously it rejected a complete trace at that phase. Four schema/privacy regression tests pass. No website names, cookie values or URLs are added to diagnostic files.
+
 ## Selected PDF UI avoids a redundant return to the beginning
 
 The failed import-copy case's log places **42.98 seconds** between finding the static `skillExecution.intro` anchor and the next action in `scrollExecutionToTop()`. The anchor is never tapped. Its check now requires its entire frame inside the unobscured Form, while actual approval controls still require hittability. After inspecting the extraction summary, the test keeps that viewport to inspect the immediately following output and reads the actual label once for all existing exact marker/namespace assertions. The 240-second deadline, picker selection, both approvals and final audit are unchanged. Native retesting must establish any timing improvement; the lower-level cause of the delay is not established.
