@@ -491,8 +491,15 @@ final class MemoryUITests: XCTestCase {
     }
 
     private func waitUntilHittable(_ element: XCUIElement) {
-        let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true"), object: element)
-        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
+        // The exact iOS 17 failure timed out resolving a visible keyword field
+        // through the compound AX predicate. Match BrowserLearning's native
+        // existence check, retaining hittability within the same total budget.
+        let deadline = Date().addingTimeInterval(5)
+        XCTAssertTrue(element.waitForExistence(timeout: max(0, deadline.timeIntervalSinceNow)))
+        if !element.isHittable {
+            let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "hittable == true"), object: element)
+            XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: max(0, deadline.timeIntervalSinceNow)), .completed)
+        }
     }
 
     private func setSwitch(_ element: XCUIElement, value: String) {

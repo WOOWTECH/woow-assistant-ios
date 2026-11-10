@@ -1,5 +1,14 @@
 # Verification — 2026-11-11
 
+## Exact iOS 17 baseline completed; memory readiness correction — 2026-11-11
+
+Nine remaining runs at `8c4195f` now have source/runtime/method/xcresult and full artifact ZIP digest evidence. Native core and hosted App methods passed **306/306** on iOS **17.0.1 / 21A342**, zero skips. Independent UI partitions passed browser **5/5**, profile **9/9**, memory tools **6/6**, skills **10/10**, and MCP **8/8**. Learning was **3 passed / 2 failed**, memory **7 / 1**, and documents-read **5 / 1**; none is relabeled a pass. Counts across suites/revisions are not added. [Per-run evidence](evidence/exact17-8c-remaining-shards.json).
+
+The memory failure occurred before the first Save, while readiness polling did not resolve the visible keyword field. Its candidate driver uses native existence polling, then hittability only if needed, sharing the original five-second deadline. All test bodies, data assertions, failure-stop behavior and product sources are unchanged. Debug/Release syntax parses and exact patch scope checks passed; actual iOS behavior awaits a separate run. [Preserved failure and driver evidence](evidence/memory-exact17-readiness-driver-3de917a.json).
+
+The documents-read open-in-place case failed waiting for an importer callback at 87.273 seconds; it remains distinct from the exact17 pair accessibility failure and current/SE FileProvider failures. Further diagnosis is required, not a shared-cause assertion.
+
+
 ## Plain chat streaming, page find and UI driver corrections — 2026-11-11
 
 The integrated candidate adds plain ChatSession text streaming with a display-only partial reply. Completion alone can create an archive turn, learning input or completion notification. Cancellation retains the draft and explicitly unfinished preview; request identity prevents late output from an older request. Profile/memory and MCP structured flows retain their reviewed complete-response path. Debug-only UI fixtures require the isolated namespace and explicit fixture mode, and are excluded from Release.

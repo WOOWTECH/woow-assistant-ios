@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "base_commit": "3de917ab0bbc35193c91c5fa121d798b2c82a102",
+  "status": "frozen_local_checks_pass_native_pending",
+  "source_file": "Tests/WoowAssistantUITests/MemoryUITests.swift",
+  "source_before_sha256": "6517e1a715119b6948d15f28e18cba9eb57154ee1f5d236e47eb1e1f3ab55c4f",
+  "source_after_sha256": "ba5e252efb01233e2dff082de297c1d6171db7cdfd29b1518519f55ed676e551",
+  "patch_sha256": "67857eba8eb77d6a07fe6d648b52e64adc1ae90f434ac5854da7ca4568328456",
+  "change": "Replace compound AX readiness polling with BrowserLearning-style native existence polling plus conditional hittability polling against the original deadline.",
+  "scope_verification": {
+    "single_helper_replacement_verified": true,
+    "entire_file_outside_helper_byte_identical": true,
+    "all_test_methods_and_data_assertions_unchanged": true,
+    "original_existence_requirement_preserved": true,
+    "original_hittability_requirement_preserved": true,
+    "readiness_budget_seconds": 5,
+    "second_stage_uses_remaining_time_only": true,
+    "case_budget_seconds": 180,
+    "all_other_timeouts_unchanged": true,
+    "product_files_changed": false,
+    "both_waits_use_same_deadline_remaining_time": true,
+    "continue_after_failure_remains_false": true
+  },
+  "original_native_failure": {
+    "run_id": 42911467177,
+    "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911467177",
+    "head_sha": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+    "validation_job_id": 130162920886,
+    "artifacts": [
+      {
+        "id": 13811837742,
+        "name": "ios17-17.0.1-42911467177",
+        "size_in_bytes": 36474181,
+        "digest": "sha256:c3b4f9540c901765b92dbf4fbdb3359d0ad23b43dac3538e49934f392b1ed07e",
+        "expired": false,
+        "url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13811837742"
+      }
+    ],
+    "actual_runtime": {
+      "xcresult_devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "4BC52621-AE2D-487C-B5A5-265B8BCBC30E",
+          "deviceName": "Woow-iOS17-581f368bdaee4565bebc46c69c76b022",
+          "modelName": "iPhone 15",
+          "osBuildNumber": "21A342",
+          "osVersion": "17.0.1",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "selected_runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      }
+    },
+    "actual_methods": [
+      {
+        "identifier": "WoowAssistantUITests/MemoryRaceUITests/testClearWhileReplyPendingDoesNotRepopulateAndNewChatHidesOldNotes",
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 19
+          },
+          {
+            "event": "passed",
+            "tests_log_line": 417,
+            "duration_seconds": 90.155
+          }
+        ]
+      },
+      {
+        "identifier": "WoowAssistantUITests/MemoryUITests/testMemoryEditPinSearchAndDeletePersist",
+        "starts": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 421
+          },
+          {
+            "event": "failed",
+            "tests_log_line": 536,
+            "duration_seconds": 40.942
+          }
+        ]
+      },
+      {
+        "identifier": "WoowAssistantUITests/MemoryUITests/testOversizedMemoryIsRejectedAndCorrectedTextPersists",
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 537
+          },
+          {
+            "event": "passed",
+            "tests_log_line": 879,
+            "duration_seconds": 108.09
+          }
+        ]
+      },
+      {
+        "identifier": "WoowAssistantUITests/MemoryUITests/testProceduresRequireApprovalAndCanBeRejected",
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 880
+          },
+          {
+            "event": "passed",
+            "tests_log_line": 1194,
+            "duration_seconds": 73.464
+          }
+        ]
+      },
+      {
+        "identifier": "WoowAssistantUITests/MemoryUITests/testSegmentsAndPreferencePersistence",
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 1195
+          },
+          {
+            "event": "passed",
+            "tests_log_line": 1483,
+            "duration_seconds": 49.708
+          }
+        ]
+      },
+      {
+        "identifier": "WoowAssistantUITests/MemoryUITests/testSkillImportFailureReviewAndEnablementPersist",
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 1484
+          },
+          {
+            "event": "passed",
+            "tests_log_line": 1858,
+            "duration_seconds": 100.724
+          }
+        ]
+      },
+      {
+        "identifier": "WoowAssistantUITests/MemoryUITests/testSkillUpdateRejectionAndRollback",
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 1859
+          },
+          {
+            "event": "passed",
+            "tests_log_line": 2375,
+            "duration_seconds": 118.207
+          }
+        ]
+      },
+      {
+        "identifier": "WoowAssistantUITests/MemoryUITests/testTwoStepClearCancellationAndModelSettingsIsolation",
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 2376
+          },
+          {
+            "event": "passed",
+            "tests_log_line": 2984,
+            "duration_seconds": 129.602
+          }
+        ]
+      }
+    ],
+    "xcresult": {
+      "summary_source": "test-summary.json exported by CI xcresulttool",
+      "bundle_member_count": 68,
+      "local_xcresulttool_decode": false,
+      "result": "Failed",
+      "counts": {
+        "totalTestCount": 8,
+        "passedTests": 7,
+        "failedTests": 1,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "start_time_epoch": 1794351519.648,
+      "finish_time_epoch": 1794352568.175,
+      "failures": [
+        {
+          "method": "WoowAssistantUITests/MemoryUITests/testMemoryEditPinSearchAndDeletePersist",
+          "failure_text_first_line": "XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\")",
+          "source_locations": [
+            {
+              "file": "Tests/WoowAssistantUITests/MemoryUITests.swift",
+              "line": 495,
+              "tests_log_line": 528
+            }
+          ],
+          "full_failure_preserved_in": "test-summary.json"
+        }
+      ]
+    },
+    "artifact_verification": {
+      "zip_sha256": "c3b4f9540c901765b92dbf4fbdb3359d0ad23b43dac3538e49934f392b1ed07e",
+      "verified_full_zip_digest": true,
+      "members": [
+        {
+          "file": "report.json",
+          "bytes": 8808,
+          "sha256": "d3d0fda287c13bbef4435dfcb6c9b19bbb5b02d0edd1284d663ca23ee421a9bf"
+        },
+        {
+          "file": "test-summary.json",
+          "bytes": 1521,
+          "sha256": "0ae3b4e7e95e8aebd3124d19882665ddd101d9fb90417698d6c2c9d09f37c86c"
+        },
+        {
+          "file": "tests.log",
+          "bytes": 212615,
+          "sha256": "f8c6fc47d834225f1426121f42c6a65333755f2534f3688867043ece5e5636bb"
+        }
+      ]
+    },
+    "failure_classification": {
+      "boundary": "actual_native_UI_driver_readiness_timeout_before_first_memory_save",
+      "prebuild_exit_code": 0,
+      "boot_succeeded": true,
+      "xcodebuild_test_exit_code": 65,
+      "method": "MemoryUITests/testMemoryEditPinSearchAndDeletePersist",
+      "driver_source": "Tests/WoowAssistantUITests/MemoryUITests.swift:495",
+      "caller": "addMemory -> reveal(keywords) -> waitUntilHittable",
+      "failed_condition": "exists == true AND hittable == true within five seconds",
+      "actual_sequence": [
+        {
+          "tests_log_line": 495,
+          "event": "Exact Prefer green tea content predicate checked; execution proceeds to Done",
+          "raw_log_line": "    t =    20.44s Checking `Expect predicate `value == \"Prefer green tea\"` for object \"memory.editor.content\" TextView`"
+        },
+        {
+          "tests_log_line": 501,
+          "event": "Native Done tapped",
+          "raw_log_line": "    t =    24.19s Tap \"memory.editor.done\" Button"
+        },
+        {
+          "tests_log_line": 507,
+          "event": "Keyboard-absence predicate checked; execution proceeds to reveal",
+          "raw_log_line": "    t =    27.05s Checking `Expect predicate `exists == 0` for object Keyboard (First Match)`"
+        },
+        {
+          "tests_log_line": 520,
+          "event": "Shared reveal helper resolves the keywords TextField without a scroll gesture",
+          "raw_log_line": "    t =    28.44s Checking existence of `\"memory.editor.keywords\" TextField`"
+        },
+        {
+          "tests_log_line": 524,
+          "event": "Compound existence/hittability expectation checks the keywords field",
+          "raw_log_line": "    t =    33.08s Checking `Expect predicate `exists == 1 AND hittable == 1` for object \"memory.editor.keywords\" TextField`"
+        },
+        {
+          "tests_log_line": 528,
+          "event": "Five-second expectation fails before keywords entry or Save",
+          "raw_log_line": "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/MemoryUITests.swift:495: error: -[WoowAssistantUITests.MemoryUITests testMemoryEditPinSearchAndDeletePersist] : XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\")"
+        }
+      ],
+      "failure_AX": {
+        "artifact_member": "screenshots/57BDE978-D5A1-4CB8-A22B-C92CE5E31CFA.txt",
+        "sha256": "5fb8b47af2437fb41a566a7c4b1400e03ac1b43b43b01dfef8b01ad1d866cafa",
+        "content_value": "Prefer green tea",
+        "keywords_identifier": "memory.editor.keywords",
+        "keywords_type": "TextField",
+        "keywords_frame_points": [
+          20,
+          382.3,
+          353,
+          44
+        ],
+        "keywords_unique": true,
+        "keyboard_absent": true
+      },
+      "failure_screenshot": {
+        "artifact_member": "screenshots/5E363B8C-C6AC-4F78-A817-A012D9780DD0.png",
+        "sha256": "92d9999eddb0236f046effc4027f7861d9ec7272cbf0e2336f2b357a627f913e",
+        "observation": "New Memory editor remains visible; content is correct, keyword field is unobscured and keyboard absent."
+      },
+      "passing_same_run_comparator": {
+        "method": "MemoryUITests/testOversizedMemoryIsRejectedAndCorrectedTextPersists",
+        "keywords_tap_tests_log_line": 825,
+        "result": "passed",
+        "note": "The same actual keyword field is entered and memory saved in a later case; not proof that the earlier predicate was timely."
+      },
+      "diagnostic_limit": "The actual boundary is the driver readiness expectation. Post-failure AX/screenshot do not prove earlier hittability throughout the wait, and do not prove an internal XCTest cause. No product storage/edit operation had occurred yet; corrected-driver native acceptance remains pending."
+    }
+  },
+  "local_checks": [
+    {
+      "name": "debug_syntax",
+      "exit_code": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "name": "release_syntax",
+      "exit_code": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "name": "diff_whitespace",
+      "exit_code": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "name": "patch_applies_to_shared_source_without_writing",
+      "exit_code": 0,
+      "stderr_bytes": 0
+    }
+  ],
+  "native_validation_of_fix": "pending parent integration and independent exact17 run",
+  "limits": [
+    "Parse does not typecheck XCTest or validate native AX behavior.",
+    "A shared five-second deadline prevents assigning a second full timeout; XCTest AX query overhead is controlled by XCTest, not forcibly preempted by this helper.",
+    "Original 8c memory outcome remains seven passed and one failed, zero skipped.",
+    "No CI rerun, dispatch, product modification, or model call was made."
+  ]
+}
