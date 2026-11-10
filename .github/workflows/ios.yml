@@ -21,7 +21,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, interaction, parity, workspace, files, file-picker, authoring, memory-ui, memory-rollback, learning, browser, core, startup]
+        options: [all, interaction, parity, workspace, login, files, file-picker, authoring, memory-ui, memory-rollback, learning, browser, core, startup]
         default: all
 
 permissions:
@@ -124,9 +124,12 @@ jobs:
           test_filters=()
           maximum_case_seconds=300
           case '${{ inputs.test_scope }}' in
-            workspace|all|'') maximum_case_seconds=420 ;;
+            workspace|login|all|'') maximum_case_seconds=420 ;;
           esac
           case '${{ inputs.test_scope }}' in
+            login)
+              test_filters=(-only-testing:WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout)
+              ;;
             file-picker)
               test_filters=(-only-testing:AssistantSkillsTests/SkillExecutionTests -only-testing:WoowAssistantUITests/BrowserUploadUITests -only-testing:WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText)
               ;;

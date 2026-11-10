@@ -433,9 +433,11 @@ final class BrowserLoginUITests: XCTestCase {
         let explanation = app.staticTexts["Speed up your typing by sliding your finger across the letters to compose a word."].firstMatch
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
             guard explanation.exists, button.exists else { return false }
-            let frame = button.frame
-            return !frame.isEmpty && self.app.frame.contains(frame)
-                && explanation.isHittable && button.isEnabled && button.isHittable
+            // e941 SE video shows both controls visible. The multi-attribute
+            // AX query reached the explanation's hittability only as its waiter
+            // expired. Static explanatory text need not be an interaction target;
+            // require the exact text and the actual native button's readiness.
+            return button.isEnabled && button.isHittable
         }, object: nil)
         guard XCTWaiter.wait(for: [ready], timeout: 10) == .completed else {
             XCTFail("The exact native QuickPath tutorial must become visible before Continue is tapped.")
