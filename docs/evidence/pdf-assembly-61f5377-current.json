@@ -53,7 +53,11 @@
     "summary": "test-summary.json",
     "test_log": "ios-tests.log:3233",
     "failure_AX": "044937B3-28E8-4DC0-941E-4A299F8C64D0.txt",
-    "system_error": "StandardOutputAndStandardError-io.woowtech.assistant.txt:143454"
+    "system_error": "StandardOutputAndStandardError-io.woowtech.assistant.txt:143454",
+    "empty_prepared_URL_array": "StandardOutputAndStandardError-io.woowtech.assistant.txt:143455",
+    "fixture_after_test": "skill-pdf-fixture-evidence.json",
+    "installation_events": "mobile_installation.log.0:349",
+    "public_error_mapping": "macOS SDK FileProvider.framework/Headers/NSFileProviderError.h:49"
   },
   "limitations": [
     "Assembly has no callback counter in this revision; absence of the extraction-screen callback marker is not interpreted as a measured zero callback count.",
@@ -61,5 +65,64 @@
     "No evidence establishes that a longer wait, retap, new namespace or receipt parser change would fix this failure.",
     "Only bounded ZIP members were downloaded; the complete artifact/video bundle was not downloaded."
   ],
-  "schema_version": 1
+  "schema_version": 1,
+  "confirmed_failure_boundary": {
+    "system_bookmark_resolution_failed": true,
+    "system_reported_empty_prepared_document_url_array": true,
+    "system_reported_items_failed_preparation_and_materialization": true,
+    "failure_timestamp_utc": "2026-11-10 18:06:08.811",
+    "outer_error_public_name": "NSFileProviderError.Code.noSuchItem",
+    "private_resolver_code_meaning": "not inferred",
+    "app_callback_count": "not instrumented for assembly",
+    "underlying_provider_cause": "unresolved"
+  },
+  "fixture_observations": {
+    "created_timestamp_utc": "2026-11-10 18:05:33.009196",
+    "post_test_timestamp_utc": "2026-11-10 18:08:05.257730",
+    "baseline_valid": true,
+    "post_test_valid": true,
+    "bytes": 8594,
+    "same_hash": true,
+    "same_device_inode": true,
+    "same_size": true,
+    "same_modification_timestamp": true,
+    "fixture_seed_events": [
+      "created"
+    ],
+    "proves_presence_at_instant_of_failure": false
+  },
+  "installation_log_observations": {
+    "target_app_entries": 15,
+    "first_target_entry_utc": "2026-11-10 18:04:41",
+    "last_target_entry_utc": "2026-11-10 18:04:45",
+    "target_app_install_entries_between_fixture_creation_and_picker_failure": 0,
+    "complete_OS_lifecycle_instrumentation": false
+  },
+  "source_review": {
+    "assembly_import_path": "SwiftUI fileImporter with allowsMultipleSelection=true",
+    "custom_PDFNativePicker_coordinator_used_for_this_case": false,
+    "app_selection_processing_begins": "fileImporter onCompletion success",
+    "onDisappear_guard": "clear only when neither choosingFile nor exporting",
+    "app_clear_deletes_fixture": false,
+    "premature_app_dismissal_or_delegate_deallocation_proven": false,
+    "interpretation": "The system explicitly failed to resolve the selected item into a usable URL while Files remained presented. No App read grant or receipt existed yet. This is distinct from the receipt-format assertion and is not explained by the custom UIKit coordinator, which assembly does not use."
+  },
+  "candidate_next_change": {
+    "status": "proposal only; not implemented or tested for assembly",
+    "behavior": "An explicit user-selected import-copy route for assembly, using the existing native picker with allowsMultipleSelection=true; accept only one to three actual returned URLs, retain per-file read approval and reviewed page-order assembly approval.",
+    "constraints": [
+      "Keep the original open route available.",
+      "No automatic fallback, repeated Open tap, fabricated URL, pre-granted read, or extension of the 15-second callback assertion.",
+      "Record actual native picker mode, delegate URL count and SwiftUI completion count with fixed categories only.",
+      "Require a new real Current 26.2 native assembly result before claiming the candidate solves this case."
+    ],
+    "supporting_comparison": "docs/evidence/file-provider-open-copy-e09db96.json",
+    "supporting_comparison_scope": "Same source revision, iPhone 17/iOS 26.2: UIKit single-file import-copy passed 1/1 in 214.259 seconds while open failed 0/1 in 149.183 seconds. Separate jobs/provider state, not proof for multi-selection assembly."
+  },
+  "official_references": [
+    "https://developer.apple.com/documentation/fileprovider/nsfileprovidererror/code/nosuchitem",
+    "https://developer.apple.com/documentation/swiftui/view/fileimporter(ispresented:allowedcontenttypes:allowsmultipleselection:oncompletion:)",
+    "https://developer.apple.com/documentation/uikit/uidocumentpickerviewcontroller/init(foropeningcontenttypes:ascopy:)",
+    "https://developer.apple.com/documentation/uikit/uidocumentpickerdelegate/documentpicker(_:didpickdocumentsat:)"
+  ]
 }

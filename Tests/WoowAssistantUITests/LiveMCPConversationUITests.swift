@@ -151,9 +151,31 @@ final class LiveMCPConversationUITests: XCTestCase {
             let button = app.buttons.matching(identifier: identifier).firstMatch
             ready(button); button.tap()
         }
+        func fixedChatVisible(_ element: XCUIElement) -> Bool {
+            guard element.exists else { return false }
+            var viewport = app.frame
+            let bar = app.navigationBars.firstMatch
+            if bar.exists, !bar.frame.isEmpty {
+                let top = max(viewport.minY, bar.frame.maxY)
+                viewport = CGRect(x: viewport.minX, y: top, width: viewport.width, height: max(0, viewport.maxY - top))
+            }
+            let navigation = app.buttons["navigation.chat"].firstMatch
+            if navigation.exists { viewport.size.height = max(0, min(viewport.maxY, navigation.frame.minY) - viewport.minY) }
+            let keyboard = app.keyboards.firstMatch
+            if keyboard.exists { viewport.size.height = max(0, min(viewport.maxY, keyboard.frame.minY) - viewport.minY) }
+            return learningFrameIsVisible(element.frame, in: viewport, visibility: .fullyVisible)
+        }
         func readable(_ identifier: String, equals expected: String) {
             let label = app.staticTexts[identifier].firstMatch
-            revealLearningElement(label, in: app, visibility: .readableText)
+            if ["chat.memoryReceipt", "chat.memoryNote.0"].contains(identifier) {
+                // f737665: these are fixed Chat siblings ABOVE the messages
+                // ScrollView. Scrolling messages cannot reveal either label.
+                // Require their whole actual frames in the native viewport.
+                let visible = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in fixedChatVisible(label) }, object: nil)
+                XCTAssertEqual(XCTWaiter.wait(for: [visible], timeout: 5), .completed)
+            } else {
+                revealLearningElement(label, in: app, visibility: .readableText)
+            }
             XCTAssertTrue(label.label == expected, "The native label must match the explicit synthetic request.")
         }
         func segment(_ name: String) {
@@ -287,7 +309,8 @@ final class LiveMCPConversationUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@", "memory.item.")).count == 1)
         navigate("chat")
         let undo = app.buttons["chat.undoMemory.0"].firstMatch
-        revealLearningElement(undo, in: app)
+        let undoVisible = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in fixedChatVisible(undo) }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [undoVisible], timeout: 5), .completed)
         tap("chat.undoMemory.0")
         let note = app.staticTexts["chat.memoryNote.0"].firstMatch
         let undone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: note)

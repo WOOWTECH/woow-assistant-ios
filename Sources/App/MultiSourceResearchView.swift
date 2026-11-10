@@ -11,6 +11,7 @@ import WebKit
     @State private var root2 = ""
     @State private var root3 = ""
     @State private var goal = ""
+    @State private var discoveringSources = false
     @FocusState private var editing: Bool
 
     var body: some View {
@@ -20,6 +21,8 @@ import WebKit
                     Section("問題與來源") {
                         TextField("想核對的問題、地區與時間範圍", text: $goal, axis: .vertical)
                             .focused($editing).accessibilityIdentifier("multiResearch.goal")
+                        Button("搜尋可用的研究來源") { editing = false; discoveringSources = true }
+                            .accessibilityIdentifier("multiResearch.discoverSources")
                         rootField("來源一 HTTPS 網址", text: $root1, number: 1)
                         rootField("來源二 HTTPS 網址", text: $root2, number: 2)
                         rootField("來源三（選填）", text: $root3, number: 3)
@@ -88,6 +91,14 @@ import WebKit
                     Spacer()
                     Button("完成") { editing = false }.accessibilityIdentifier("multiResearch.keyboardDone")
                 }
+            }
+        }
+        .sheet(isPresented: $discoveringSources) {
+            ResearchSourceDiscoveryView(query: goal) { sources in
+                guard !session.running, (2...3).contains(sources.count) else { return }
+                root1 = sources[0].url.absoluteString
+                root2 = sources[1].url.absoluteString
+                root3 = sources.count == 3 ? sources[2].url.absoluteString : ""
             }
         }
         .onDisappear { session.cancel() }

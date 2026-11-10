@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "source_commit": "f737665558bd2c4160e68860646c89f77f075f52",
+  "run_id": 42868021734,
+  "job_id": 130011481781,
+  "os": "iOS 18.5",
+  "method": "LiveMCPConversationUITests.testRealModelUsesRemoteToolThenReviewedLocalMemoryAndUndo",
+  "total": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "seconds": 162.874,
+  "counters_at_model_finish": {
+    "modelCalls": 3,
+    "corrections": 0,
+    "attempts": 1,
+    "results": 1,
+    "toolErrors": 0
+  },
+  "observed": [
+    "exact_remote_review",
+    "remote_approved",
+    "local_memory_review",
+    "local_memory_approved",
+    "exact_model_finish"
+  ],
+  "failure": {
+    "file": "Tests/WoowAssistantUITests/LiveMCPConversationUITests.swift",
+    "line": 156,
+    "identifier": "chat.memoryReceipt",
+    "reason": "fixed_chat_header_target_tested_against_message_scrollview_viewport",
+    "first_scroll_seconds": 134.23,
+    "failure_seconds": 149.64
+  },
+  "not_reached": [
+    "exact_receipt_and_note_readback",
+    "saved_memory_list_readback",
+    "undo",
+    "relaunch_absence"
+  ],
+  "fix_scope": "only_new_mixed_method_fixed_receipt_note_and_undo_visibility; no shared helper or product changes; same 300 second allowance",
+  "limitations": [
+    "native_fixed_revision_not_run",
+    "no_global_HTTP_zero_claim",
+    "no_model_response_endpoint_tool_result_screenshot_or_AX_tree_in_this_report"
+  ]
+}

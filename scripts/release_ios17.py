@@ -34,7 +34,7 @@ UI_SHARDS = {
     "ui-mcp": ["MCPConversationUITests", "MCPLearningUITests"],
 }
 LIVE_UI_CLASSES = {"LiveMCPUITests", "LiveMCPConversationUITests", "LiveModelUITests", "LiveTranscriptUITests",
-                   "LiveDocumentQueryUITests"}
+                   "LiveDocumentQueryUITests", "LiveSourceDiscoveryUITests"}
 
 # Focused selections within ui-documents, not additional partition owners.
 # Their exact union is checked against discovered Swift methods at preflight.

@@ -1,5 +1,23 @@
 # Verification — 2026-11-11
 
+## Source discovery: actual search, explicit selection, separate research approval
+
+The research form now offers a separate DuckDuckGo HTML search sheet. Only actual observed organic-result links can become candidates; tracking redirects are not decoded into guessed destinations. The isolated WebKit adapter has fixed navigation/resource policies, no page JavaScript, a shared 45-second deadline, cancellation fences and no automatic fallback. Native selection requires two or three distinct origins, and Apply only replaces source fields. It never starts research or converts search snippets into body citations.
+
+Local acceptance passed **127 assertions**: 85 shared core checks, 28 real macOS WebKit/lifecycle checks and 14 actual public-search checks. The one actual search loaded an HTTP 200 page and produced ten candidates individually matched to DOM anchors. An initial navigation rejection exposed Foundation's trailing-slash path representation; the correction uses the serialized path while preserving the exact allowed URL. [Original failure, source hashes and public search evidence](evidence/research-source-discovery-local.json). One successful query is not universal provider coverage or iOS acceptance.
+
+The production App Session separately passed **81 assertions in each of Debug and Release**, six shared groups, with captured hashes still current. Tests cover zero implicit requests, ordered selection, origin limits, explicit retry and cancellation/query-change races where an old adapter deliberately returns late. These use synthetic search adapters and real core DOM validation, not external search. [App evidence](evidence/research-source-discovery-app-local.json). Two private native UI cases are wired for actual search/apply and cancellation-or-completion; a fast completion is explicitly not counted as observed cancellation. Native results remain pending.
+
+## Document native acceptance and ordinary memory UI
+
+At `ad461cf`, [42874419743](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42874419743) passed **238/238 native/hosted methods, zero skips**, including all eight new document-query core methods and six production App-session methods. Portable execution separately passed **187/187**. These are overlapping layers, not 425 distinct features. [Pinned source and actual method evidence](evidence/native-current-ad461cf.json). This is not native Files/query/export interaction acceptance.
+
+At `61f5377`, [42866520782](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866520782) passed all **6/6 ordinary memory-tool UI methods on each of SE and Large / iOS 18.5**, zero skips. Native review, refusal, update/delete/undo, separate procedure approval/rejection and relaunch persistence all completed once. The current-iOS job remains excluded until its actual result is verified. [Device-specific evidence](evidence/ui-memory-tools-61f5377.json).
+
+## Actual HA mixed turn: completed services, unfinished UI acceptance
+
+The real HA/model case at `f737665`, [42868021734](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42868021734), failed **0/1, zero skips, 162.874 seconds**. The actual remote review, memory review and exact final answer completed with three model decisions, one HA attempt/result, no tool error and no format repair. The subsequent receipt assertion used the message-scroll viewport for a fixed sibling outside that scroll view. Receipt/note readback, undo and relaunch checks were not reached. The correction only targets those fixed controls in the new mixed method and preserves the original 300-second cap and data assertions. [Original failure and safe counters](evidence/live-mcp-memory-f737665.json). A corrected native rerun is still required.
+
 ## Current MCP UI and remaining profile / picker failures
 
 At `61f5377`, [42866536800](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866536800) passed **8/8 MCP UI methods, zero failures/skips**, on iPhone 17 / iOS 26.2. This includes all three mixed local-learning cases: remote result then reviewed memory and undo/relaunch, saved profile preserved after remote refusal, and declined local memory with no remote attempt or persisted item. These use synthetic model/MCP fixtures; the separate real HA/model UI remains pending. [Exact methods and xcresult metadata](evidence/ui-mcp-61f5377.json).

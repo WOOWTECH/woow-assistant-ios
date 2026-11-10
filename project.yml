@@ -206,7 +206,9 @@ targets:
     type: bundle.unit-test
     platform: iOS
     deploymentTarget: "17.0"
-    sources: [Tests/AssistantBrowserIntegrationTests]
+    sources:
+      - Tests/AssistantBrowserIntegrationTests
+      - scripts/CheckResearchSourceDiscoveryApp.swift
     dependencies:
       - target: WoowAssistant
       - target: AssistantBrowser

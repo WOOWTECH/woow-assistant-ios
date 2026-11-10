@@ -1,0 +1,201 @@
+{
+  "schema": 1,
+  "status": "PASS",
+  "scope": "Bounded source discovery using the actual production adapter and macOS WebKit; no App-session or iOS acceptance claim.",
+  "source_basis": "captured working-tree bytes; not a clean-commit claim",
+  "source_still_current": true,
+  "fixed_provider": {
+    "id": "duckDuckGoHTML",
+    "origin": "https://html.duckduckgo.com",
+    "path": "/html/",
+    "official_non_javascript_interface": "https://duckduckgo.com/duckduckgo-help-pages/features/non-javascript",
+    "fallback_provider": false,
+    "additional_api_key": false,
+    "selection_boundary": "Only visible result anchors become candidates. No automatic source authorization, body read or research start."
+  },
+  "mika_reference": {
+    "revision": "0c172724f3f0c96f7345262588072f6e95db1138",
+    "path": "core/src/main/resources/skills/info-research/SKILL.md",
+    "sha256": "75f1bd627136a4e022625f7701fef19f07665b0b52718e0f524997cbf61129c2",
+    "implemented_slice": "User-triggered discovery of real search-result URLs for subsequent source review; snippets remain leads, not body evidence.",
+    "not_claimed": "Full autonomous Mika research parity or independent-publisher verification."
+  },
+  "initial_path_failure": {
+    "result": "FAIL",
+    "category": "navigationRejected",
+    "http_status": null,
+    "candidates_published": 0,
+    "evidence_basis": "Observed stdout from the initial real WebKit adapter run; a forwarding public navigation delegate captured the action. No standalone pre-fix report artifact was retained.",
+    "observed_action": {
+      "url": "https://html.duckduckgo.com/html/?q=Swift%20concurrency%20documentation",
+      "foundation_url_path": "/html",
+      "is_main_frame": true,
+      "method": "GET",
+      "navigation_type_raw": -1,
+      "should_perform_download": false
+    },
+    "cause_boundary": "The adapter compared URL.path to /html/. This host exposed /html through URL.path while the actual serialized URL retained /html/. The adapter rejected its own authorized initial action before a response; this was not an observed provider block.",
+    "correction": "Compare URLComponents.percentEncodedPath to /html/ while retaining exact expected URL, HTTPS, host, query and navigation restrictions.",
+    "first_corrected_actual_run": {
+      "result": "PASS",
+      "candidate_count": 10,
+      "html_bytes": 29087,
+      "dom_sha256": "0f108911af0c3ad55018ae1581e83e49fccfd2e8d0b2b25f7f1b98c3661ab961",
+      "rejected_links": 0,
+      "forwarding_diagnostic_delegate_used": false,
+      "url_policy_broadened": false
+    }
+  },
+  "validation": {
+    "passed_assertions": 127,
+    "groups": {
+      "actualProviderSearch": 14,
+      "actualWebKitDOMAndPrivacy": 16,
+      "adapterMountAndCancellation": 12,
+      "candidatePolicy": 26,
+      "hostileSnapshots": 18,
+      "queriesAndNavigation": 32,
+      "selectionBinding": 9
+    },
+    "core_assertions": 85,
+    "local_webkit_and_cancellation_assertions": 28,
+    "live_assertions": 14,
+    "shared_xctest_file": "Tests/AssistantDomainTests/ResearchSourceDiscoveryTests.swift",
+    "shared_xctest_methods": 4,
+    "actual_test_bodies_executed_standalone": true,
+    "warnings_as_errors": true,
+    "compile_and_execution": [
+      {
+        "exit_code": 0,
+        "name": "compile-core",
+        "seconds": 3.505
+      },
+      {
+        "exit_code": 0,
+        "name": "parse-xctest",
+        "seconds": 0.08
+      },
+      {
+        "exit_code": 0,
+        "name": "compile-shared-checks",
+        "seconds": 2.467
+      },
+      {
+        "exit_code": 0,
+        "name": "execute",
+        "seconds": 6.321
+      }
+    ],
+    "actual_source_dependency_closure": true,
+    "production_source_substitutions": false,
+    "native_xctest_execution": false,
+    "native_ios_execution": false,
+    "reproduce": "python3 scripts/check_research_source_discovery.py --live",
+    "reproduce_live_boundary": "One new explicit public search per invocation; provider content and availability may change."
+  },
+  "privacy_and_lifecycle": {
+    "ephemeral_store": true,
+    "page_javascript_disabled": true,
+    "fixed_content_rules_compiled_by_webkit": true,
+    "fixed_dom_observer_actual_hidden_download_and_script_forgery_checks": true,
+    "fixed_dom_observer_actual_utf8_size_and_challenge_checks": true,
+    "actual_local_resource_requests": {
+      "control_css": 1,
+      "control_image": 1,
+      "blocked_css": 0,
+      "blocked_image": 0
+    },
+    "local_resource_scope": "Synthetic loopback server used only by checker, not a production adapter endpoint.",
+    "mount_wait_and_cancellation_no_provider_request": true,
+    "permanent_cancel_and_single_use_checked": true,
+    "cookies": "Fresh nonpersistent store, request cookie handling disabled, fixed content rule blocks cookies; no external packet capture claim.",
+    "no_model_credentials_or_personal_store_used": true
+  },
+  "live": {
+    "candidates": [
+      {
+        "dom_index": 0,
+        "title": "Concurrency - Documentation",
+        "url": "https://docs.swift.org/latest/documentation/the-swift-programming-language/concurrency/"
+      },
+      {
+        "dom_index": 1,
+        "title": "Concurrency | Apple Developer Documentation",
+        "url": "https://developer.apple.com/documentation/swift/concurrency"
+      },
+      {
+        "dom_index": 2,
+        "title": "Migrating to Swift 6 | Documentation",
+        "url": "https://docs.swift.org/latest/documentation/migrationguide/"
+      },
+      {
+        "dom_index": 3,
+        "title": "Adopting strict concurrency in Swift 6 apps - Apple Developer",
+        "url": "https://developer.apple.com/documentation/Swift/AdoptingSwift6"
+      },
+      {
+        "dom_index": 4,
+        "title": "Incremental Adoption - Documentation",
+        "url": "https://www.swift.org/migration/documentation/swift-6-concurrency-migration-guide/incrementaladoption/"
+      },
+      {
+        "dom_index": 5,
+        "title": "Runtime Behavior - Documentation",
+        "url": "https://www.swift.org/migration/documentation/swift-6-concurrency-migration-guide/runtimebehavior/"
+      },
+      {
+        "dom_index": 6,
+        "title": "Fucking Approachable Swift Concurrency",
+        "url": "https://fuckingapproachableswiftconcurrency.com/en/"
+      },
+      {
+        "dom_index": 7,
+        "title": "Swift Concurrency by Example - free quick start tutorials for Swift ...",
+        "url": "https://www.hackingwithswift.com/quick-start/concurrency"
+      },
+      {
+        "dom_index": 8,
+        "title": "apple-dev-docs/documentation/Swift/concurrency.md at main · Averyy ...",
+        "url": "https://github.com/Averyy/apple-dev-docs/blob/main/documentation/Swift/concurrency.md"
+      },
+      {
+        "dom_index": 9,
+        "title": "Updating an App to Use Swift Concurrency | Apple Developer Documentation",
+        "url": "https://developers.apple.com/documentation/swift/updating_an_app_to_use_swift_concurrency"
+      }
+    ],
+    "dom_sha256": "97229fd33cffab3dd5cef292e60dce2d0b520d17c528f314ca6a6cbc284fa32b",
+    "html_bytes": 29200,
+    "http_status": 200,
+    "main_load_requests": 1,
+    "observed_at": "2026-11-10T18:45:24Z",
+    "page_url": "https://html.duckduckgo.com/html/?q=Swift%20concurrency%20documentation",
+    "provider": "duckDuckGoHTML",
+    "query": "Swift concurrency documentation",
+    "rejected_links": 0,
+    "seconds": 1.0269280672073364,
+    "status": "PASS",
+    "truncated": false,
+    "candidate_count": 10,
+    "all_candidates_matched_exact_dom_anchors": true
+  },
+  "limitations": [
+    "macOS WebKit does not establish iOS acceptance",
+    "DOM/advertised Content-Length bounds do not limit all unknown-length network bytes",
+    "candidates are discovery leads, not read-body citation receipts",
+    "public provider availability and DOM may change; no fallback or CAPTCHA bypass",
+    "Acceptance compiles the actual discovery dependency closure, not the entire App or every AssistantBrowser file.",
+    "Passing this fixed query once does not establish universal search coverage or eliminate provider challenges.",
+    "Distinct origins do not establish independent publishers or endorsement of candidate content."
+  ],
+  "source_sha256": {
+    "Sources/AssistantBrowser/BrowserPolicy.swift": "a09b109a19083ebcf644de972e42df3046da28a1d794efd7e8b9467807e5fafc",
+    "Sources/AssistantBrowser/ResearchSourceDiscoveryTypes.swift": "5fa96ef5e733204a0935f6b15d8895ae794b6c63f32e9a57473155b6f050ff52",
+    "Sources/AssistantBrowser/ResearchSourceDiscoveryWebKit.swift": "fc35dcedbe3ab776abbd70e8fd2326f9d72e540e97164ba0e587627df047bedc",
+    "Sources/AssistantBrowser/WebsiteKnowledgeSafety.swift": "eef4c8ad1deddd60d1062d8928aebaab5e5b5afa4cd3c87e7270d5686641ee64",
+    "Tests/AssistantDomainTests/ResearchSourceDiscoveryTests.swift": "c107427fefcb67f5b8e601b5dfcae33fd2653401b39b24890e167bc4433a3818",
+    "scripts/CheckResearchSourceDiscovery.swift": "c5cf653a5f85e6385a4c0020604df23e16acccb077a35f3462807bd6f45ab151",
+    "scripts/check_research_source_discovery.py": "797a07a68c78f9f9a5b1266bb4fec4f15032cf03ba83252c94fba35dbb0d70ae"
+  },
+  "original_local_report_sha256": "00199d91f6c528385d2fa972b2978fd27ddca2db15203939785c7c618d1e8321"
+}

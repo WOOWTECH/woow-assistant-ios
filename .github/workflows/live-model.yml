@@ -12,7 +12,7 @@ on:
       ui_scope:
         description: Live App UI coverage (native probes always run)
         type: choice
-        options: [all, browser, browser-learning, browser-interaction, multi-source, user-profile, profile-tool, memory-tools, skill-authoring, self-configuration, browser-transcript, transcript-files, transcript-formats, document-query]
+        options: [all, browser, browser-learning, browser-interaction, multi-source, source-discovery, user-profile, profile-tool, memory-tools, skill-authoring, self-configuration, browser-transcript, transcript-files, transcript-formats, document-query]
         default: all
 
 permissions:
@@ -145,7 +145,7 @@ jobs:
           test_runs=(build/LiveDerivedData/Build/Products/*.xctestrun)
           [ "${#test_runs[@]}" -eq 1 ] || { echo 'Expected one generated test runner'; exit 1; }
           python3 scripts/prepare_live_xctestrun.py "${test_runs[0]}"
-          ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests -only-testing:WoowAssistantUITests/LiveTranscriptUITests -only-testing:WoowAssistantUITests/LiveDocumentQueryUITests)
+          ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests -only-testing:WoowAssistantUITests/LiveTranscriptUITests -only-testing:WoowAssistantUITests/LiveDocumentQueryUITests -only-testing:WoowAssistantUITests/LiveSourceDiscoveryUITests)
           if [ '${{ inputs.ui_scope }}' = 'browser' ]; then
             ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealWebKitResearchUsesPublicWebsiteAndJudgesOutcome)
           elif [ '${{ inputs.ui_scope }}' = 'browser-learning' ]; then
@@ -170,6 +170,8 @@ jobs:
             ui_filters=(-only-testing:WoowAssistantUITests/LiveTranscriptUITests)
           elif [ '${{ inputs.ui_scope }}' = 'document-query' ]; then
             ui_filters=(-only-testing:WoowAssistantUITests/LiveDocumentQueryUITests)
+          elif [ '${{ inputs.ui_scope }}' = 'source-discovery' ]; then
+            ui_filters=(-only-testing:WoowAssistantUITests/LiveSourceDiscoveryUITests)
           fi
           test_exit=0
           xcodebuild -xctestrun "${test_runs[0]}" \

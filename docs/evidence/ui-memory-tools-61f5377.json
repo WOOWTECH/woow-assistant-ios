@@ -1,0 +1,205 @@
+{
+  "schema_version": 1,
+  "run_id": 42866520782,
+  "source_commit": "61f5377254d15c99736223efbc7dae3d57a577ca",
+  "scope": "Native three-device ui-memory-tools fixture; current device still pending at this report capture.",
+  "source_declared_methods": [
+    "testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch",
+    "testDeclinedSavePreservesDraftAndCreatesNoData",
+    "testReviewedDeleteCanBeUndoneAndRestoresManualMemoryAfterRelaunch",
+    "testReviewedUpdateOfManualMemoryPersistsAfterRelaunch",
+    "testSavedProcedureCanBeRejectedAndRelaunchesAbsent",
+    "testSavedProcedureRequiresSeparateApprovalAndRelaunchesActive"
+  ],
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/MemoryToolUITests.swift": "6a31a4326590bfef5e048b443710fc59a3194bbdca7dc2ea2741efc117362e1f",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+    "Sources/App/ChatSession.swift": "c6947419729bcc6f3b07ea24c0b4be3a8d522df2cb6d65471579dd82c295fb34",
+    "Sources/App/LearningStore.swift": "3446c43afdb2cbf2992f1eb29f63a33cdb13fa2550e7761a034d2b0c3cc783c5",
+    "Sources/App/MemoryToolReviewView.swift": "e94e40f52c694ea751fccb31103766da52c81aaee1742be60e28ccb673d66da3",
+    "Sources/App/MemoryDataView.swift": "e4f8474bae029f8443c15350a739aad007f65d7f04a8b0f5ce633f97f9dea091",
+    "Sources/App/UITestModelFixture.swift": "9801e1c6e3193eeed5927d4930ed7dde3cb0b42d12832f27b855bed8a5c98db6",
+    "Sources/AssistantMemory/MemoryTools.swift": "2f12e8276d19140883f9d462776bcffc68acf164ab553c7cc51f0d4018b4f86b",
+    "Sources/AssistantMemory/UserProfileChatFlow.swift": "17b2651600ebfea58738ca2e9db0986229e81893512470d7c620cf849d2ed7f4",
+    ".github/workflows/ios.yml": "c8a083f417a90e0d16f5a2f31f304b9476747f488eb88a990cbf4f4979c96fe9",
+    "scripts/release_ios17.py": "18b7789e6606f87ca8e04a4654713e0de9ded2e0b141538f7ed862b5e2f90eb8"
+  },
+  "devices": {
+    "compact": {
+      "job_id": 130006842074,
+      "records": [
+        {
+          "class": "MemoryToolUITests",
+          "method": "testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch",
+          "outcome": "passed",
+          "seconds": 188.13
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testDeclinedSavePreservesDraftAndCreatesNoData",
+          "outcome": "passed",
+          "seconds": 110.76
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testReviewedDeleteCanBeUndoneAndRestoresManualMemoryAfterRelaunch",
+          "outcome": "passed",
+          "seconds": 210.091
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testReviewedUpdateOfManualMemoryPersistsAfterRelaunch",
+          "outcome": "passed",
+          "seconds": 192.316
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testSavedProcedureCanBeRejectedAndRelaunchesAbsent",
+          "outcome": "passed",
+          "seconds": 152.475
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testSavedProcedureRequiresSeparateApprovalAndRelaunchesActive",
+          "outcome": "passed",
+          "seconds": 151.266
+        }
+      ],
+      "completion": {
+        "completed_ui_count": 6,
+        "counts": {
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 6,
+          "skippedTests": 0,
+          "totalTestCount": 6
+        },
+        "expected_ui_count": 6,
+        "missing_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": [],
+        "result": "Passed",
+        "unexpected_ui_tests": [],
+        "verified": true
+      },
+      "job_conclusion": "success",
+      "source_listed_methods_exactly_completed_once": true,
+      "runtime": {
+        "device_name": "iPhone SE (3rd generation)",
+        "runtime_build": "22F77",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-5",
+        "runtime_version": "18.5"
+      },
+      "xcresult_summary_counts": {
+        "totalTestCount": 6,
+        "passedTests": 6,
+        "failedTests": 0,
+        "skippedTests": 0
+      },
+      "artifact": {
+        "id": 13793185042,
+        "size_bytes": 39576885,
+        "digest": "sha256:3f0458e7d11fb0e68f0f4a00318d7f1ce9e8821a99fdf40a2221e7dd124dff90",
+        "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866520782/artifacts/13793185042"
+      }
+    },
+    "large": {
+      "job_id": 130006841752,
+      "records": [
+        {
+          "class": "MemoryToolUITests",
+          "method": "testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch",
+          "outcome": "passed",
+          "seconds": 193.866
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testDeclinedSavePreservesDraftAndCreatesNoData",
+          "outcome": "passed",
+          "seconds": 167.505
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testReviewedDeleteCanBeUndoneAndRestoresManualMemoryAfterRelaunch",
+          "outcome": "passed",
+          "seconds": 216.981
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testReviewedUpdateOfManualMemoryPersistsAfterRelaunch",
+          "outcome": "passed",
+          "seconds": 205.342
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testSavedProcedureCanBeRejectedAndRelaunchesAbsent",
+          "outcome": "passed",
+          "seconds": 169.223
+        },
+        {
+          "class": "MemoryToolUITests",
+          "method": "testSavedProcedureRequiresSeparateApprovalAndRelaunchesActive",
+          "outcome": "passed",
+          "seconds": 162.477
+        }
+      ],
+      "completion": {
+        "completed_ui_count": 6,
+        "counts": {
+          "expectedFailures": 0,
+          "failedTests": 0,
+          "passedTests": 6,
+          "skippedTests": 0,
+          "totalTestCount": 6
+        },
+        "expected_ui_count": 6,
+        "missing_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": [],
+        "result": "Passed",
+        "unexpected_ui_tests": [],
+        "verified": true
+      },
+      "job_conclusion": "success",
+      "source_listed_methods_exactly_completed_once": true,
+      "runtime": {
+        "device_name": "iPhone 16 Pro Max",
+        "runtime_build": "22F77",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-5",
+        "runtime_version": "18.5"
+      },
+      "xcresult_summary_counts": {
+        "totalTestCount": 6,
+        "passedTests": 6,
+        "failedTests": 0,
+        "skippedTests": 0
+      },
+      "artifact": {
+        "id": 13793135259,
+        "size_bytes": 43217323,
+        "digest": "sha256:04d2810952f56e4f76b75ba90688b22145279b4880461a943b99a0061c89c21f",
+        "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866520782/artifacts/13793135259"
+      }
+    },
+    "current": {
+      "job_id": 130006841353,
+      "job_conclusion": null,
+      "status_at_last_observation": "in_progress",
+      "counts": null,
+      "acceptance": null
+    }
+  },
+  "completed_device_aggregate": {
+    "devices": 2,
+    "total": 12,
+    "passed": 12,
+    "failed": 0,
+    "skipped": 0
+  },
+  "fixture_deadline_seconds": 240,
+  "retries": 0,
+  "limits": [
+    "Synthetic ordinary-Chat model commands exercise real native review UI and encrypted storage; not live model HTTP acceptance.",
+    "SE and Large each completed all six source-listed methods once, with zero skips. Current is excluded until actual completion.",
+    "Passing methods assert native approval/decline, save/update/delete/undo, separate pending-procedure approval/rejection and relaunch persistence.",
+    "No private configuration or raw logs included."
+  ]
+}
