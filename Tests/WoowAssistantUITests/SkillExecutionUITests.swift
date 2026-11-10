@@ -357,7 +357,10 @@ final class SkillExecutionUITests: XCTestCase {
 
     private func openNativePicker() {
         tap("skillExecutionSelectPDF", scroll: true)
-        requireHittable(nativeCancel)
+        // iOS 17 evidence: Files initialization can exhaust the old 15-second
+        // readiness budget. Wait for the actual native control once;
+        // do not retap the launch button or bypass the document picker.
+        requireHittable(nativeCancel, timeout: 45)
         XCTAssertFalse(app.buttons["skillExecutionApproveStep"].isHittable,
                        "Native picker must be shown before any runtime plan is approved.")
     }
@@ -572,9 +575,9 @@ final class SkillExecutionUITests: XCTestCase {
         if scroll { revealLearningElement(button, in: app) }
         requireHittable(button); button.tap()
     }
-    private func requireHittable(_ element: XCUIElement) {
+    private func requireHittable(_ element: XCUIElement, timeout: TimeInterval = 15) {
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: element)
-        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 15), .completed)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: timeout), .completed)
     }
     private func wait(_ element: XCUIElement, _ format: String, _ value: String) {
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: format, value), object: element)

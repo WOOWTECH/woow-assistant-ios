@@ -9,6 +9,15 @@ final class BrowserLibraryTests: XCTestCase {
         for address in ["https://example.com/path?next=host:999999999999999999999999#part", "https://example.com:443/", "https://example.com:00080/", "https://[2606:4700::1111]:65535/"] {
             XCTAssertEqual(BrowserManualNavigationPolicy.resolve(address: address), URL(string: address))
         }
+        // Modern Foundation converts these hosts to IDNA; older parsers can
+        // reject them. Raw port validation must preserve existing host handling.
+        for address in ["https://bücher.de/", "https://例子.tw/"] {
+            if let parsed = URL(string: address) {
+                XCTAssertEqual(BrowserManualNavigationPolicy.resolve(address: address), parsed)
+            } else {
+                XCTAssertNil(BrowserManualNavigationPolicy.resolve(address: address))
+            }
+        }
     }
 
     func testManualNavigationDoesNotRelaxResearchPolicy() throws {

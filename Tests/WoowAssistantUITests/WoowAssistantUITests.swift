@@ -60,8 +60,8 @@ final class WoowAssistantUITests: XCTestCase {
         XCTAssertTrue(app.textFields["browser.address"].exists)
         XCTAssertTrue(app.buttons["browser.open"].isEnabled)
         XCTAssertFalse(app.buttons["browser.research"].isEnabled)
-        XCTAssertTrue(app.staticTexts["browser.explanation"].label.contains("同站唯讀研究"))
-        XCTAssertTrue(app.staticTexts["browser.explanation"].label.contains("仍待整合"))
+        XCTAssertEqual(app.staticTexts["browser.explanation"].label,
+                       "可手動登入網站及選取上傳檔案；網站資料保留於此 App。模型研究與每次核准的操作各自受限。")
         XCTAssertFalse(app.staticTexts["公開 HTTPS 頁面已通過第一層安全政策"].exists)
         XCTAssertFalse(app.staticTexts["browser.answer"].exists)
         XCTAssertFalse(app.staticTexts["browser.learning"].exists)

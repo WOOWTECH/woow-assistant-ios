@@ -388,7 +388,9 @@ final class BrowserLoginUITests: XCTestCase {
     private func loginByTyping() {
         let username = app.webViews.textFields["測試帳號"].firstMatch
         let password = app.webViews.secureTextFields["測試密碼"].firstMatch
-        tap(username); username.typeText("fixture-user")
+        tap(username)
+        dismissKeyboardIntroductionIfPresented()
+        username.typeText("fixture-user")
         revealPasswordByNativeScrolling(password)
         tap(password); password.typeText("fixture-password-v1\n")
         // Native keyboard Go submits the real form. No evaluateJavaScript,
@@ -398,17 +400,37 @@ final class BrowserLoginUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["browser.error"].exists)
     }
 
+    private func dismissKeyboardIntroductionIfPresented() {
+        // e1024aa SE recording shows the system's first-use QuickPath tutorial
+        // (English "Continue") covering the keyboard during the login failure.
+        // Dismiss that exact native control once, only inside the keyboard.
+        let keyboard = app.keyboards.firstMatch
+        XCTAssertTrue(keyboard.waitForExistence(timeout: 10))
+        let button = app.buttons["Continue"].firstMatch
+        guard button.waitForExistence(timeout: 3) else { return }
+        let center = CGPoint(x: button.frame.midX, y: button.frame.midY)
+        guard keyboard.frame.contains(center) else {
+            XCTFail("The expected system keyboard tutorial control is outside the keyboard.")
+            return
+        }
+        print("LOGIN_KEYBOARD_INTRO_PRESENTED")
+        tap(button)
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: button)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed,
+                       "The native keyboard tutorial must dismiss before typing synthetic credentials.")
+    }
+
     private func revealPasswordByNativeScrolling(_ password: XCUIElement) {
-        // d160a24: both iOS 18 compact and iOS 26 reach native username entry,
-        // then the existing password control is not hittable with the keyboard.
+        // d160a24: iOS 17/18/26 reach native username entry, then the password
+        // is below the keyboard's remaining viewport. e1024aa's fast upward
+        // drag overshot it (relative Y 169 -> -121 in a 123-point viewport).
         // Use ordinary page scrolling, never JS focus/value or cookie injection.
         let web = app.webViews.firstMatch
         XCTAssertTrue(web.waitForExistence(timeout: 10))
         XCTAssertTrue(password.waitForExistence(timeout: 10))
-        for attempt in 0...3 {
-            if password.exists && password.isHittable && password.isEnabled { return }
-            let frame = web.frame
-            var visible = frame.intersection(app.frame)
+
+        func visibleFrame() -> CGRect {
+            var visible = web.frame.intersection(app.frame)
             let keyboard = app.keyboards.firstMatch
             if keyboard.exists {
                 let overlap = visible.intersection(keyboard.frame)
@@ -416,10 +438,27 @@ final class BrowserLoginUITests: XCTestCase {
                     visible.size.height = max(0, min(visible.maxY, keyboard.frame.minY) - visible.minY)
                 }
             }
-            let fieldY = password.exists ? Int(password.frame.minY - frame.minY) : -1
+            return visible
+        }
+        func passwordIsReady() -> Bool {
+            guard password.exists else { return false }
+            let visible = visibleFrame()
+            let field = password.frame
+            // XCTest can throw while calculating an offscreen web control's
+            // activation point. Check geometry before asking for hittability.
+            guard !visible.isNull, visible.width >= 64, visible.height >= 64,
+                  !field.isEmpty, visible.insetBy(dx: 1, dy: 1).contains(field) else { return false }
+            return password.isEnabled && password.isHittable
+        }
+        for attempt in 0...3 {
+            if passwordIsReady() { return }
+            let frame = web.frame
+            let visible = visibleFrame()
+            let field = password.frame
+            let fieldY = Int(field.minY - frame.minY)
             // Only fixed synthetic field geometry; no values, labels, URLs,
             // accessibility tree or keyboard contents are attached.
-            print("LOGIN_FORM_GEOMETRY attempt=\(attempt) webHeight=\(Int(frame.height)) visibleHeight=\(Int(visible.height)) passwordY=\(fieldY) keyboard=\(keyboard.exists)")
+            print("LOGIN_FORM_GEOMETRY attempt=\(attempt) webHeight=\(Int(frame.height)) visibleHeight=\(Int(visible.height)) passwordY=\(fieldY) keyboard=\(app.keyboards.firstMatch.exists)")
             guard !visible.isNull, visible.width >= 64, visible.height >= 64 else {
                 XCTFail("Browser WebView has insufficient visible space above the keyboard for native form scrolling.")
                 return
@@ -430,10 +469,18 @@ final class BrowserLoginUITests: XCTestCase {
             }
             let origin = web.coordinate(withNormalizedOffset: .zero)
             let x = visible.minX - frame.minX + visible.width * 0.88
-            let start = origin.withOffset(CGVector(dx: x, dy: visible.minY - frame.minY + visible.height * 0.8))
-            let end = origin.withOffset(CGVector(dx: x, dy: visible.minY - frame.minY + visible.height * 0.2))
-            start.press(forDuration: 0.1, thenDragTo: end)
-            let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: password)
+            let limit = visible.height * 0.6
+            let delta = max(-limit, min(limit, visible.midY - field.midY))
+            let middle = visible.midY - frame.minY
+            // Move toward the viewport center in either direction; hold at the
+            // end to stop momentum before remeasuring the native field frame.
+            if abs(delta) >= 1 {
+                let start = origin.withOffset(CGVector(dx: x, dy: middle - delta / 2))
+                let end = origin.withOffset(CGVector(dx: x, dy: middle + delta / 2))
+                start.press(forDuration: 0.1, thenDragTo: end,
+                            withVelocity: .slow, thenHoldForDuration: 0.3)
+            }
+            let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in passwordIsReady() }, object: nil)
             if XCTWaiter.wait(for: [ready], timeout: 3) == .completed { return }
         }
     }

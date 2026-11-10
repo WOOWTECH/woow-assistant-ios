@@ -68,14 +68,14 @@ final class BrowserInteractionUITests: XCTestCase {
         wait(app.staticTexts["browser.interaction.status"], "label == %@", "已拒絕；沒有執行動作。")
         XCTAssertFalse(app.buttons["browser.interaction.approve"].exists)
         tap("browser.interaction.close")
-        XCTAssertEqual(note.value as? String, "initial")
+        assertInitialNote()
         XCTAssertTrue(dom("NOT SAVED").exists)
         openControls()
         choose("Save locally")
         XCTAssertTrue(app.buttons["browser.interaction.approve"].exists)
         tap("browser.interaction.close")
         XCTAssertTrue(dom("NOT SAVED").exists)
-        XCTAssertEqual(note.value as? String, "initial")
+        assertInitialNote()
         openControls()
         XCTAssertFalse(app.buttons["browser.interaction.approve"].exists,
                        "Dismissing approval cannot leave a reusable grant.")
@@ -92,7 +92,7 @@ final class BrowserInteractionUITests: XCTestCase {
         tap("browser.interaction.close")
         wait(app.staticTexts["browser.status"], "label == %@", "頁面已載入", timeout: 75)
         XCTAssertTrue(dom("NOT SAVED").exists)
-        XCTAssertEqual(note.value as? String, "initial")
+        assertInitialNote()
         openControls()
         XCTAssertFalse(app.buttons["browser.interaction.approve"].exists)
         choose("Save locally")
@@ -139,7 +139,15 @@ final class BrowserInteractionUITests: XCTestCase {
         let multiline = app.textViews["browser.interaction.text"]
         return multiline.exists ? multiline : app.textFields["browser.interaction.text"]
     }
-    private var note: XCUIElement { app.webViews.textFields["Public note"].firstMatch }
+    private func assertInitialNote(file: StaticString = #filePath, line: UInt = #line) {
+        // iOS 17 exposes this DOM input as "Public note initial". Locate by
+        // its label prefix, independently of the value under test. Its WebView
+        // ancestors also have inconsistent legacy/modern AX types on iOS 17.
+        let matches = app.textFields.matching(NSPredicate(
+            format: "label == %@ OR label BEGINSWITH %@", "Public note", "Public note "))
+        XCTAssertEqual(matches.count, 1, "Expected the unique fixture input.", file: file, line: line)
+        XCTAssertEqual(matches.firstMatch.value as? String, "initial", file: file, line: line)
+    }
     private func control(_ label: String) -> XCUIElement {
         controls(matching: label).firstMatch
     }
@@ -199,9 +207,19 @@ final class BrowserInteractionUITests: XCTestCase {
     private func enter(_ value: String, into field: XCUIElement) {
         if field.identifier == "browser.address" { waitForFixedChrome(field) }
         else { revealLearningElement(field, in: app) }
-        field.tap()
+        if field.elementType == .textView {
+            // The iOS 17 failure screenshot/AX shows the complete native
+            // multiline editor, but element.tap() left it unfocused. Use a
+            // point inside that verified frame; never tap a screen coordinate
+            // or bypass the keyboard and actual input-value assertions.
+            XCTAssertTrue(field.isHittable)
+            XCTAssertFalse(field.frame.isEmpty)
+            XCTAssertTrue(app.frame.contains(field.frame))
+            field.coordinate(withNormalizedOffset: CGVector(dx: 0.25, dy: 0.5)).tap()
+        } else { field.tap() }
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
         field.typeText(value)
+        if field.elementType == .textView { XCTAssertEqual(field.value as? String, value) }
     }
     private func waitForFixedChrome(_ element: XCUIElement) {
         wait(element, "exists == true AND hittable == true AND enabled == true")

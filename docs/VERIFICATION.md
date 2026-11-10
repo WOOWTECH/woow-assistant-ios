@@ -4,6 +4,21 @@
 
 Latest completed evidence:
 
+- iOS 17 now has actual App execution evidence, with failures retained:
+  [17.5 42748380772](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748380772)
+  completed on `d160a24`: native/hosted 106 passed/one failed (two assertions),
+  UI 31 passed/15 failed/ten live-service skips.
+  [17.0.1 42748375007](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748375007)
+  booted and recorded native 96 passed/one failed and UI 26 passed/15 failed/ten
+  skips, then reached the old 55-minute limit before finishing all UI and hosted
+  cases. Neither run is a full pass. Both exposed Foundation discarding malformed
+  ports: `1153d5a` adds raw-address validation at manual entry, with 1,034 local
+  direct Swift checks passing and new iOS regression assertions pending. Browser
+  focus/accessibility and PDF native-picker failures remain under team repair.
+- [Files retest 42755073369](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42755073369)
+  on `4dbbddb` is pending. It includes the conditional cold Files presentation
+  wait, lazy status-row lookup correction and exact PDF thumbnail targeting;
+  App Swift implementation is still `d160a24` for that run.
 - [Live model 42751407713](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42751407713)
   on `e1024aa`: seven native model calls across transport/memory/skill probes and
   all seven live UI cases passed, zero failures/skips. Actual browser cases cover

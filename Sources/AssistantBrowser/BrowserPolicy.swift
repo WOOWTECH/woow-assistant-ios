@@ -30,7 +30,9 @@ public enum BrowserPolicy {
     /// Callers receiving text must not lose that evidence by constructing URL first.
     public static func evaluate(address: String) -> BrowserURLDecision {
         guard let url = URL(string: address) else { return .block(reason: Denial.authority) }
-        let raw = evaluate(url, address: address)
+        // Preserve Foundation's existing IDNA host handling. The original
+        // authority syntax/port is checked here; the parsed host is checked below.
+        let raw = evaluate(url, address: address, validateHost: false)
         if case .block = raw { return raw }
         return evaluate(url)
     }
@@ -44,7 +46,7 @@ public enum BrowserPolicy {
         evaluate(url, address: url.absoluteURL.absoluteString)
     }
 
-    private static func evaluate(_ url: URL, address: String) -> BrowserURLDecision {
+    private static func evaluate(_ url: URL, address: String, validateHost: Bool = true) -> BrowserURLDecision {
         guard let scheme = url.scheme?.lowercased(), ["https", "http"].contains(scheme) else {
             return .block(reason: Denial.scheme)
         }
@@ -86,6 +88,8 @@ public enum BrowserPolicy {
                 return .block(reason: Denial.port)
             }
         }
+
+        guard validateHost else { return .allow(url) }
 
         if isIPv6 {
             guard !host.contains("%") else { return .block(reason: Denial.ipv6Zone) }

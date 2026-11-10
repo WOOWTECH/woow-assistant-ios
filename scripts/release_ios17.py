@@ -126,11 +126,16 @@ def execute(output, requested, download):
             report["simulator_state"] = [{key: item.get(key) for key in ("state", "isAvailable", "availabilityError")} for item in own]
         checkpoint("testing")
         with (output / "tests.log").open("wb") as log:
-            result = subprocess.run(common + ["-destination", "platform=iOS Simulator,id=" + simulator,
-                "-resultBundlePath", str(output / "Tests.xcresult"), "-parallel-testing-enabled", "NO",
-                "-test-timeouts-enabled", "YES", "-default-test-execution-time-allowance", "240",
-                "-maximum-test-execution-time-allowance", "300", "test", "CODE_SIGN_IDENTITY=-",
-                "CODE_SIGNING_ALLOWED=YES"], stdout=log, stderr=subprocess.STDOUT, timeout=3300)
+            try:
+                result = subprocess.run(common + ["-destination", "platform=iOS Simulator,id=" + simulator,
+                    "-resultBundlePath", str(output / "Tests.xcresult"), "-parallel-testing-enabled", "NO",
+                    "-test-timeouts-enabled", "YES", "-default-test-execution-time-allowance", "240",
+                    "-maximum-test-execution-time-allowance", "300", "test", "CODE_SIGN_IDENTITY=-",
+                    "CODE_SIGNING_ALLOWED=YES"], stdout=log, stderr=subprocess.STDOUT, timeout=4800)
+            except subprocess.TimeoutExpired:
+                report["test_timed_out"] = True
+                raise ReleaseError("iOS 17 編譯／完整測試超過 80 分鐘；保留已執行結果，不視為通過。") from None
+        report["test_exit_code"] = result.returncode
         if result.returncode:
             raise ReleaseError("iOS 17 建置／XCTest 失敗；請查看 tests.log 與 Tests.xcresult。")
         report["runtime_tested"] = True

@@ -1,6 +1,6 @@
 # iOS 簽章與最低版本驗證
 
-查核日期：2026-11-10。整合提交：`d160a24`。本版 Release 裝置編譯通過，最低系統為 17.0，文件共享設定亦通過產物檢查；iOS 17.0.1 runtime 曾成功安裝但啟動逾時。目前尚無 iOS 17 App 執行成功、真機驗收、distribution 簽章成功或可安裝發行包。
+查核日期：2026-11-10。整合提交 `d160a24` 已通過 Release 裝置編譯；17.0.1／17.5 模擬器均已啟動並實際執行 App 與 XCTest，但驗收尚未全數通過。`1153d5a` 修正已重現的原始網址連接埠檢查，待 iOS 重測。目前尚無真機驗收、distribution 簽章成功或可安裝發行包。
 
 ## 已確認的環境與缺口
 
@@ -83,7 +83,7 @@ python3 scripts/release_ios17.py --os 17.0.1 --download --output build/ios17
 ```yaml
 minimum-ios17:
   runs-on: macos-15-intel
-  timeout-minutes: 90
+  timeout-minutes: 125
   env:
     DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
   steps:
@@ -108,7 +108,7 @@ minimum-ios17:
 
 ## 測試與待補輸入
 
-本機已通過 24 個 Python tests，包含真實子程序的 secrets 環境隔離、錯誤輸出隔離、缺少 secrets 的 CLI 失敗，以及 profile／身分匹配、簽章清理、framework 設定隔離、最低版本、隱私 manifest 與 runtime 選擇；另驗證 ad-hoc seal 與不同 leaf certificate 不能通過 distribution 驗證。ATS 測試以真實 XML／binary plist 驗證拒絕 Debug loopback 設定、全域例外、空字典與錯誤型別，並驗證 unsigned／signed 無 ATS 的通過回報。簽章匯入清理、Mach-O 及產物憑證測試使用合成資料與替代命令；不代表真實 iOS 編譯或簽章已成功。實際本機 CLI 的缺少 Xcode 失敗路徑另確認退出 1、即時 preflight 訊息與 `runtime_tested: false` 的完整報告，沒有遺留半寫入的暫存報告。shell 語法、YAML 解析及 actionlint 1.7.12 已通過。
+本機已通過 25 個 Python tests，包含真實子程序的 secrets 環境隔離、錯誤輸出隔離、缺少 secrets 的 CLI 失敗，以及 profile／身分匹配、簽章清理、framework 設定隔離、最低版本、隱私 manifest 與 runtime 選擇；另驗證 ad-hoc seal 與不同 leaf certificate 不能通過 distribution 驗證。ATS 測試以真實 XML／binary plist 驗證拒絕 Debug loopback 設定、全域例外、空字典與錯誤型別，並驗證 unsigned／signed 無 ATS 的通過回報。簽章匯入清理、Mach-O 及產物憑證測試使用合成資料與替代命令；不代表真實 iOS 編譯或簽章已成功。實際本機 CLI 的缺少 Xcode 失敗路徑另確認退出 1、即時 preflight 訊息與 `runtime_tested: false` 的完整報告，沒有遺留半寫入的暫存報告。shell 語法、YAML 解析及 actionlint 1.7.12 已通過。
 
 已實際下載並核對固定 XcodeGen 2.44.1 的 SHA-256，在本機暫存目錄產生真實專案，套用合成簽章設定後以 `plutil -lint` 驗證，確認 App 有 profile、其他 target 沒有 App profile。首次產生因 session 缺少 `USER` 失敗；只在驗證子程序補入 OS 帳號名稱後成功，未修改系統設定。此為專案產生／設定驗證，不是 Xcode 編譯。
 
@@ -131,7 +131,11 @@ Read-only reuse research found the related Apporo project's [signing configurati
 
 Integrated `d160a24` [unsigned-device 42748369961](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748369961) passed: nine binaries, minimum OS 17.0, Xcode/SDK 26.2, `native_documents_enabled: true`, `ats_key_absent: true`. The report explicitly records `signature_verified: false`, `runtime_tested: false`, `uploaded: false`, and `unsigned-device-build-not-installable`.
 
-[iOS 17.0.1 42748375007](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748375007) and [iOS 17.5 42748380772](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748380772) on `d160a24` are running; results pending.
+[iOS 17.5 42748380772](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748380772) on `d160a24` installed 21F79, booted and completed XCTest: native/hosted 106 passed, one failed test containing two malformed-port assertions; UI 31 passed, 15 failed, ten explicitly skipped live-service cases. `runtime_tested: false` means the full acceptance suite did not pass, not that no App code executed.
+
+[iOS 17.0.1 42748375007](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748375007) on `d160a24` installed 21A342 and booted. Recorded completed cases: native 96 passed/one failed, UI 26 passed/15 failed/ten skipped. The 55-minute build/test limit interrupted the startup suite before all remaining cases and the ten hosted WebKit cases could run. The `.xcresult`, logs and boot report are retained; incomplete cases are not counted as passes. The next run allows 80 minutes for build/test, 125 minutes for the job including download/boot/evidence upload; individual case allowances stay 240/300 seconds. Timeout and nonzero XCTest exit are now distinguished in the report and failure/cleanup behavior has synthetic regression coverage.
+
+Both runs exposed the same invalid-port normalization and browser/PDF UI failures. `1153d5a` checks the original address before Foundation can erase an empty or overflowing port; the manual address entry now uses that boundary. Local Swift compilation, 1,034 direct address/range checks and syntax parsing passed. The updated native and hosted regression cases still require iOS execution. Other UI repairs are tracked in VERIFICATION.md.
 
 `42745303603` on `7b11555` passed the unsigned iPhoneOS Release build and nine-binary minimum-OS audit: iOS 17.0, Xcode/SDK 26.2, Release ATS dictionary absent. This precedes the later explicit document-sharing plist and AppIcon integration and is not a signed artifact.
 

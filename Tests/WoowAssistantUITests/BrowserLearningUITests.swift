@@ -1,4 +1,5 @@
 import XCTest
+import CoreGraphics
 
 /// Fixture transport and local HTML only; the WKWebView, research runner, review
 /// UI and encrypted persistence are real. Never launch a live model or use a key
@@ -298,7 +299,13 @@ final class BrowserLearningUITests: XCTestCase {
 
     private func openFixture() {
         tap("navigation.browser")
-        waitForLabel(app.staticTexts["browser.status"], "輸入網址開始瀏覽")
+        // iOS 26's failed transition snapshot contained no AX children; the
+        // failure screenshot and final AX both showed this exact initial state.
+        // Use XCTest's existence polling before reading the label, with the
+        // same five-second bound as the previous compound predicate.
+        let initialStatus = app.staticTexts["browser.status"]
+        XCTAssertTrue(initialStatus.waitForExistence(timeout: 5))
+        XCTAssertEqual(initialStatus.label, "輸入網址開始瀏覽")
         XCTAssertFalse(app.buttons["browser.research"].isEnabled)
         // Return submits the address exactly once through BrowserView.onSubmit.
         enter(fixtureURL + "\n", into: app.textFields["browser.address"])
@@ -366,8 +373,19 @@ final class BrowserLearningUITests: XCTestCase {
 
     private func enter(_ text: String, into field: XCUIElement) {
         waitFor(field, predicate: "exists == true AND hittable == true")
-        field.tap()
+        if field.elementType == .textView {
+            // iOS 17 AX/screenshot confirms an unobscured multiline goal
+            // editor, but element.tap() did not focus it. Target the visible
+            // text area within the actual element, then require the keyboard.
+            reveal(field)
+            XCTAssertTrue(field.isHittable)
+            XCTAssertFalse(field.frame.isEmpty)
+            XCTAssertTrue(app.frame.contains(field.frame))
+            field.coordinate(withNormalizedOffset: CGVector(dx: 0.25, dy: 0.5)).tap()
+            XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        } else { field.tap() }
         field.typeText(text)
+        if field.elementType == .textView { XCTAssertEqual(field.value as? String, text) }
     }
 
     private func tap(_ identifier: String, scroll: Bool = false) {
