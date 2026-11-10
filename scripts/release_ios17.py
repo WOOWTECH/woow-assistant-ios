@@ -239,13 +239,14 @@ def execute(output, requested, download, test_scope="all"):
                 report["simulator_state"] = [{key: item.get(key) for key in ("state", "isAvailable", "availabilityError")} for item in own]
             except (ReleaseError, ValueError, TypeError, AttributeError):
                 report["simulator_state_unavailable"] = True
+        report["maximum_case_seconds"] = 420 if test_scope in ("all", "workspace") else 300
         checkpoint("testing")
         with (output / "tests.log").open("wb") as log:
             try:
                 result = subprocess.run(common + ["-destination", "platform=iOS Simulator,id=" + simulator,
                     "-resultBundlePath", str(output / "Tests.xcresult"), "-parallel-testing-enabled", "NO",
                     "-test-timeouts-enabled", "YES", "-default-test-execution-time-allowance", "240",
-                    "-maximum-test-execution-time-allowance", "300"] +
+                    "-maximum-test-execution-time-allowance", str(report["maximum_case_seconds"])] +
                     ["-only-testing:" + target for target in TEST_SCOPES[test_scope]] +
                     ["test", "CODE_SIGN_IDENTITY=-",
                     "CODE_SIGNING_ALLOWED=YES"], stdout=log, stderr=subprocess.STDOUT, timeout=4800)

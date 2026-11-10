@@ -356,6 +356,7 @@ class RuntimeTests(unittest.TestCase):
                 output = Path(folder) / "result"
                 def child(args, **kwargs):
                     if args[0] == "xcodebuild":
+                        self.assertEqual(args[args.index("-maximum-test-execution-time-allowance") + 1], "420" if scope == "all" else "300")
                         if scope == "core": self.assertIn("-only-testing:AssistantDomainTests", args)
                         else: self.assertFalse(any(arg.startswith("-only-testing:") for arg in args))
                         if timed_out: raise subprocess.TimeoutExpired(args, kwargs["timeout"])
@@ -377,6 +378,7 @@ class RuntimeTests(unittest.TestCase):
                 report = json.loads((output / "report.json").read_text())
                 succeeded = not timed_out and exit_code == 0
                 self.assertEqual(report["test_scope"], scope)
+                self.assertEqual(report["maximum_case_seconds"], 420 if scope == "all" else 300)
                 self.assertEqual(report["selected_tests_succeeded"], succeeded)
                 self.assertEqual(report["runtime_tested"], succeeded and scope == "all")
                 self.assertEqual(report["phase"], "passed" if succeeded else "testing")

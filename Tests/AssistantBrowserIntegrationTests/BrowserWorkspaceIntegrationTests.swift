@@ -58,7 +58,10 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
         workspace.removeWebsiteData(records)
         XCTAssertTrue(workspace.isClearingWebsiteData)
         do {
-            try await waitUntil("Website-record removal did not complete") { !workspace.isClearingWebsiteData }
+            // 1747c20 Large: both documents were blank by 35 ms, while WebKit's
+            // persistent removeData callback arrived at 23.066 s. Bound only
+            // this asynchronous deletion phase to the UI's 30-second budget.
+            try await waitUntil("Website-record removal did not complete", timeout: 30) { !workspace.isClearingWebsiteData }
         } catch {
             // Preserve the state before teardown can interrupt a pending blank
             // navigation. Fixed fixture categories only, no cookie contents.
@@ -335,8 +338,8 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
         }
     }
 
-    @MainActor private func waitUntil(_ message: String, condition: () -> Bool) async throws {
-        let deadline = ProcessInfo.processInfo.systemUptime + 15
+    @MainActor private func waitUntil(_ message: String, timeout: TimeInterval = 15, condition: () -> Bool) async throws {
+        let deadline = ProcessInfo.processInfo.systemUptime + timeout
         while !condition(), ProcessInfo.processInfo.systemUptime < deadline {
             try await Task.sleep(nanoseconds: 20_000_000)
         }

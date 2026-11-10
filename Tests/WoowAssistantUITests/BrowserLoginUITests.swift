@@ -359,9 +359,27 @@ final class BrowserLoginUITests: XCTestCase {
         tap(app.segmentedControls["browser.library.sections"].buttons["網站"])
         let clear = app.buttons["browser.sites.clear.127.0.0.1"]
         tap(clear, timeout: 30)
-        tap(app.buttons["browser.sites.confirmClear"])
-        XCTAssertTrue(app.staticTexts["browser.sites.empty"].waitForExistence(timeout: 30),
-                      "Wait for actual WebKit website-data deletion to finish.")
+        // iOS 26 presents the native confirmation but exposes nested buttons
+        // with the same identifier. Select its exact action inside the sheet.
+        let confirm = app.sheets.buttons["browser.sites.confirmClear"].firstMatch
+        XCTAssertTrue(confirm.waitForExistence(timeout: 15))
+        XCTAssertEqual(confirm.label, "清除網站資料")
+        tap(confirm)
+        // 1747c20 SE/Large: removeData completed after 18.8/19.9 s and the
+        // synthetic cookie count was zero, while fetchDataRecords was still
+        // pending at the old combined 30 s deadline. Wait for each WebKit
+        // callback separately; do not retry deletion or infer success from
+        // an enabled button. The empty list and real HTTP checks remain required.
+        let empty = app.staticTexts["browser.sites.empty"]
+        let removed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            empty.exists || (clear.exists && clear.isEnabled)
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [removed], timeout: 30), .completed,
+                       "Wait for the selected-site removeData callback.")
+        XCTAssertFalse(app.staticTexts["browser.library.error"].exists,
+                       "Stopping-page failure must not be mistaken for successful deletion.")
+        XCTAssertTrue(empty.waitForExistence(timeout: 30),
+                      "Wait for the post-deletion WebKit website-record refresh to show an empty list.")
         tap(app.buttons["browser.library.close"])
         openInNewTab(protectedURL)
         XCTAssertTrue(text("LOGIN_PROTECTED_DENIED").waitForExistence(timeout: 30),
@@ -401,16 +419,23 @@ final class BrowserLoginUITests: XCTestCase {
     }
 
     private func dismissKeyboardIntroductionIfPresented() {
-        // e1024aa SE recording shows the system's first-use QuickPath tutorial
-        // (English "Continue") covering the keyboard during the login failure.
-        // Dismiss that exact native control once, only inside the keyboard.
+        // e1024aa SE records this exact first-use QuickPath explanation.
+        // 1747c20 current records the keyboard still animating when Continue
+        // first exists; its frame is not yet a reliable containment boundary.
+        // Require the known explanation and a visible, hittable native button.
         let keyboard = app.keyboards.firstMatch
         XCTAssertTrue(keyboard.waitForExistence(timeout: 10))
         let button = app.buttons["Continue"].firstMatch
         guard button.waitForExistence(timeout: 3) else { return }
-        let center = CGPoint(x: button.frame.midX, y: button.frame.midY)
-        guard keyboard.frame.contains(center) else {
-            XCTFail("The expected system keyboard tutorial control is outside the keyboard.")
+        let explanation = app.staticTexts["Speed up your typing by sliding your finger across the letters to compose a word."].firstMatch
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            guard explanation.exists, button.exists else { return false }
+            let frame = button.frame
+            return !frame.isEmpty && self.app.frame.contains(frame)
+                && explanation.isHittable && button.isEnabled && button.isHittable
+        }, object: nil)
+        guard XCTWaiter.wait(for: [ready], timeout: 10) == .completed else {
+            XCTFail("The exact native QuickPath tutorial must become visible before Continue is tapped.")
             return
         }
         print("LOGIN_KEYBOARD_INTRO_PRESENTED")
