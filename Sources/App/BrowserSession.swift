@@ -248,8 +248,45 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         let generation = pageGeneration
         guard let url = webView.url, permitted(url) else { throw WebResearchError.noPage }
         guard origin == nil || Self.origin(url) == origin else { throw WebResearchError.unsafeNavigation }
+        let value = try await evaluateDocumentScript(Self.observationScript)
+        try Task.checkCancellation()
+        guard pageGeneration == generation, webView.url == url, let data = value.data(using: .utf8),
+              let page = try? JSONDecoder().decode(DOMObservation.self, from: data) else {
+            throw WebResearchError.pageChanged
+        }
+        let links = page.links.enumerated().compactMap { offset, link -> WebResearchLink? in
+            guard let target = URL(string: link.href), permitted(target), Self.origin(target) == Self.origin(url) else { return nil }
+            return WebResearchLink(id: offset, title: String(link.title.prefix(120)), url: target)
+        }
+        let result = WebObservation(url: url, title: page.title, text: page.text, links: links)
+        lastLinks = links; current = result; address = url.absoluteString
+        publishTitle(page.title, for: url)
+        return result
+    }
+
+    /// A separately approved, complete visible-text capture. Research keeps its
+    /// existing 8,000-character excerpt; transcript capture rejects oversized
+    /// pages instead of presenting a silently truncated article as complete.
+    func textForTranscript() async throws -> BrowserTranscriptText {
+        try Task.checkCancellation()
+        let generation = pageGeneration
+        guard let url = webView.url, current?.url == url, permitted(url),
+              !isRunning, !isInteracting else { throw WebResearchError.noPage }
+        guard origin == nil || Self.origin(url) == origin else { throw WebResearchError.unsafeNavigation }
+        let value = try await evaluateDocumentScript(Self.transcriptScript)
+        try Task.checkCancellation()
+        guard pageGeneration == generation, webView.url == url,
+              let data = value.data(using: .utf8), let page = try? JSONDecoder().decode(DOMTranscript.self, from: data) else {
+            throw WebResearchError.pageChanged
+        }
+        guard !page.oversized, page.text.utf8.count <= 64 * 1024 else { throw TranscriptError.tooLarge }
+        guard !page.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw TranscriptError.emptySource }
+        return BrowserTranscriptText(url: url, title: page.title, text: page.text, capturedAt: Date())
+    }
+
+    private func evaluateDocumentScript(_ script: String) async throws -> String {
         let evaluationID = UUID()
-        let value: String = try await withTaskCancellationHandler {
+        return try await withTaskCancellationHandler {
             try await withCheckedThrowingContinuation { continuation in
                 registerEvaluation(evaluationID, continuation: continuation)
                 if Task.isCancelled { finishEvaluation(evaluationID, result: .failure(CancellationError())); return }
@@ -257,7 +294,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
                     do { try await Task.sleep(nanoseconds: 10_000_000_000) } catch { return }
                     self?.finishEvaluation(evaluationID, result: .failure(WebResearchError.observationTimedOut))
                 }
-                webView.evaluateJavaScript(Self.observationScript, in: nil, in: .defaultClient) { [weak self] result in
+                webView.evaluateJavaScript(script, in: nil, in: .defaultClient) { [weak self] result in
                     deadline.cancel()
                     switch result {
                     case .success(let value):
@@ -272,19 +309,6 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         } onCancel: {
             Task { @MainActor [weak self] in self?.finishEvaluation(evaluationID, result: .failure(CancellationError())) }
         }
-        try Task.checkCancellation()
-        guard pageGeneration == generation, webView.url == url, let data = value.data(using: .utf8),
-              let page = try? JSONDecoder().decode(DOMObservation.self, from: data) else {
-            throw WebResearchError.pageChanged
-        }
-        let links = page.links.enumerated().compactMap { offset, link -> WebResearchLink? in
-            guard let target = URL(string: link.href), permitted(target), Self.origin(target) == Self.origin(url) else { return nil }
-            return WebResearchLink(id: offset, title: String(link.title.prefix(120)), url: target)
-        }
-        let result = WebObservation(url: url, title: page.title, text: page.text, links: links)
-        lastLinks = links; current = result; address = url.absoluteString
-        publishTitle(page.title, for: url)
-        return result
     }
 
     private func finishEvaluation(_ id: UUID, result: Result<String, Error>) {
@@ -1010,6 +1034,30 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     <p style="height:1500px">Scroll area</p><p>FIXTURE BOTTOM</p></body></html>
     """#
     #endif
+    private struct DOMTranscript: Decodable {
+        let title: String
+        let text: String
+        let oversized: Bool
+    }
+    private static let transcriptScript = #"""
+    (() => {
+      const out=[]; let size=0, nodes=0;
+      const title=document.title.slice(0,200);
+      const tooLarge=()=>JSON.stringify({title,text:'',oversized:true});
+      const walk=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+      while(walk.nextNode()) {
+        if(++nodes>50000) return tooLarge();
+        const n=walk.currentNode,p=n.parentElement;
+        if(!p || p.closest('script,style,noscript,input,textarea,[contenteditable]') || !p.getClientRects().length) continue;
+        const s=getComputedStyle(p); if(s.visibility==='hidden'||s.display==='none') continue;
+        const t=n.textContent.trim();
+        if(t) {size+=t.length+1;if(size>65536) return tooLarge();out.push(t);}
+      }
+      const text=out.join('\n');
+      if(new TextEncoder().encode(text).byteLength>65536) return tooLarge();
+      return JSON.stringify({title,text,oversized:false});
+    })()
+    """#
     private struct DOMObservation: Decodable {
         let title: String; let text: String; let links: [Link]
         struct Link: Decodable { let href: String; let title: String }
@@ -1029,4 +1077,11 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
       return JSON.stringify({title:document.title.slice(0,200),text:out.join('\n').slice(0,8000),links});
     })()
     """#
+}
+
+struct BrowserTranscriptText: Equatable, Sendable {
+    let url: URL
+    let title: String
+    let text: String
+    let capturedAt: Date
 }

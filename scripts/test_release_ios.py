@@ -76,8 +76,15 @@ class PrivacyManifestTests(unittest.TestCase):
         wrong["NSPrivacyAccessedAPITypes"][1]["NSPrivacyAccessedAPITypeReasons"] = ["8FFB.1"]
         duplicate = copy.deepcopy(payload)
         duplicate["NSPrivacyAccessedAPITypes"].append(copy.deepcopy(duplicate["NSPrivacyAccessedAPITypes"][1]))
+        missing_selected_file = copy.deepcopy(payload)
+        missing_selected_file["NSPrivacyAccessedAPITypes"] = [entry for entry in missing_selected_file["NSPrivacyAccessedAPITypes"]
+            if entry["NSPrivacyAccessedAPIType"] != "NSPrivacyAccessedAPICategoryFileTimestamp"]
+        wrong_selected_file = copy.deepcopy(payload)
+        for entry in wrong_selected_file["NSPrivacyAccessedAPITypes"]:
+            if entry["NSPrivacyAccessedAPIType"] == "NSPrivacyAccessedAPICategoryFileTimestamp":
+                entry["NSPrivacyAccessedAPITypeReasons"] = ["C617.1"]
         variants = [None, b"not-a-plist", plistlib.dumps(missing), plistlib.dumps(wrong),
-                    plistlib.dumps(duplicate), plistlib.dumps([])]
+                    plistlib.dumps(duplicate), plistlib.dumps([]), plistlib.dumps(missing_selected_file), plistlib.dumps(wrong_selected_file)]
         with tempfile.TemporaryDirectory() as directory:
             app = Path(directory)
             target = app / "PrivacyInfo.xcprivacy"

@@ -10,6 +10,7 @@ struct BrowserView: View {
     @State private var showResearch = false
     @State private var showInteractions = false
     @State private var showLibrary = false
+    @State private var showTranscript = false
     @FocusState private var addressFocused: Bool
     var body: some View {
         VStack(spacing: 8) {
@@ -58,10 +59,10 @@ struct BrowserView: View {
                     Button("停止") { browser.cancel() }.accessibilityIdentifier("browser.cancel")
                 }
             }
-            BrowserWebView(webView: browser.webView, coveredByResearch: showResearch || showInteractions || showLibrary || browser.pageDialog != nil)
+            BrowserWebView(webView: browser.webView, coveredByResearch: showResearch || showInteractions || showLibrary || showTranscript || browser.pageDialog != nil)
                 .id(ObjectIdentifier(browser))
                 .allowsHitTesting(!browser.isRunning && !browser.isInteracting && !workspace.isClearingWebsiteData)
-                .accessibilityHidden(showResearch || showInteractions || showLibrary || browser.pageDialog != nil)
+                .accessibilityHidden(showResearch || showInteractions || showLibrary || showTranscript || browser.pageDialog != nil)
             Text("可手動登入網站及選取上傳檔案；網站資料保留於此 App。模型研究與每次核准的操作各自受限。")
                 .font(.caption2).foregroundStyle(.secondary).padding(.horizontal)
                 .accessibilityIdentifier("browser.explanation")
@@ -73,11 +74,21 @@ struct BrowserView: View {
             BrowserInteractionView(browser: browser, chat: chat)
         }
         .sheet(isPresented: $showLibrary) { BrowserLibraryView(workspace: workspace) }
+        .sheet(isPresented: $showTranscript) { TranscriptBrowserView(browser: browser, chat: chat) }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button { addressFocused = false; browser.webView.endEditing(true); showTranscript = true } label: {
+                    Image(systemName: "doc.text")
+                }
+                .accessibilityLabel("整理此頁文字").accessibilityIdentifier("browser.transcript")
+                .disabled(browser.current == nil || browser.isRunning || browser.isInteracting || workspace.isClearingWebsiteData)
+            }
+        }
         .sheet(item: $browser.pageDialog, onDismiss: { browser.resolveDialog(nil) }) { dialog in
             BrowserDialogView(dialog: dialog, browser: browser)
         }
         .onAppear { workspace.activateSelected() }
-        .onChange(of: ObjectIdentifier(browser)) { _, _ in showResearch = false; showInteractions = false }
+        .onChange(of: ObjectIdentifier(browser)) { _, _ in showResearch = false; showInteractions = false; showTranscript = false }
         .onChange(of: browser.interactionProposal?.id) { _, value in
             if value != nil && !showResearch { addressFocused = false; showInteractions = true }
         }

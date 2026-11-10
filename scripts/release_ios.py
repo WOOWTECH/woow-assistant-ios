@@ -206,7 +206,8 @@ def verify_required_reasons(app):
     if not isinstance(entries, list) or any(not isinstance(entry, dict) for entry in entries):
         raise ReleaseError("App 的 required-reason API 宣告格式不正確。")
     for category, reason in [("NSPrivacyAccessedAPICategoryUserDefaults", "CA92.1"),
-                             ("NSPrivacyAccessedAPICategorySystemBootTime", "35F9.1")]:
+                             ("NSPrivacyAccessedAPICategorySystemBootTime", "35F9.1"),
+                             ("NSPrivacyAccessedAPICategoryFileTimestamp", "3B52.1")]:
         matches = [entry for entry in entries if entry.get("NSPrivacyAccessedAPIType") == category]
         reasons = matches[0].get("NSPrivacyAccessedAPITypeReasons") if len(matches) == 1 else None
         if not isinstance(reasons, list) or reason not in reasons or any(not isinstance(value, str) for value in reasons):

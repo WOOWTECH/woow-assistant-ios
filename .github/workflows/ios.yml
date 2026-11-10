@@ -21,7 +21,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, pdf-export, authoring, skill-settings, memory-ui, memory-rollback, learning, browser, core, startup]
+        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, pdf-export, authoring, skill-settings, transcript, memory-ui, memory-rollback, learning, browser, core, startup]
         default: all
 
 permissions:
@@ -146,6 +146,9 @@ jobs:
               ;;
             authoring)
               test_filters=(-only-testing:AssistantSkillsTests/SkillAuthoringBridgeTests -only-testing:WoowAssistantUITests/SkillAuthoringUITests)
+              ;;
+            transcript)
+              test_filters=(-only-testing:AssistantSkillsTests/TranscriptRuntimeTests -only-testing:AssistantBrowserIntegrationTests/BrowserSessionNavigationTests -only-testing:WoowAssistantUITests/TranscriptUITests)
               ;;
             skill-settings)
               test_filters=(-only-testing:AssistantSkillsTests/SelfConfigurationTests -only-testing:WoowAssistantUITests/SelfConfigurationUITests -only-testing:WoowAssistantUITests/SkillWorkerSettingsUITests)

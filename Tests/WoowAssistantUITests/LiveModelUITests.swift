@@ -402,6 +402,49 @@ final class LiveModelUITests: XCTestCase {
         XCTAssertFalse(app.buttons["selfConfiguration.start"].exists)
     }
 
+    func testRealModelTranscribesApprovedPublicWebTextWithVerifiedQuotes() throws {
+        executionTimeAllowance = 300
+        let app = try launchLiveApp()
+        openPublicIANA(in: app)
+        app.buttons["browser.transcript"].tap()
+        tapLearningButton("transcript.browser.capture", in: app)
+        let sourceURL = app.staticTexts["transcript.browser.url"]
+        XCTAssertTrue(sourceURL.waitForExistence(timeout: 15))
+        XCTAssertEqual(sourceURL.label, "https://www.iana.org/")
+        XCTAssertFalse(app.staticTexts["transcript.browser.error"].exists)
+        XCTAssertFalse(app.buttons["transcript.start"].exists)
+        tapLearningButton("transcript.browser.approve", in: app)
+        let retainedURL = app.staticTexts["transcript.sourceURL"]
+        revealLearningElement(retainedURL, in: app)
+        XCTAssertEqual(retainedURL.label, "https://www.iana.org/")
+        tapLearningButton("transcript.confirmDestination", in: app)
+        let start = app.buttons["transcript.start"]
+        revealLearningElement(start, in: app)
+        XCTAssertTrue(start.isEnabled)
+        start.tap()
+        let finished = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"), object: start)
+        XCTAssertEqual(XCTWaiter.wait(for: [finished], timeout: 185), .completed)
+        let status = app.staticTexts["transcript.status"]
+        revealLearningElement(status, in: app)
+        XCTAssertEqual(status.label, "全文讀取與原文證據逐字核對已完成；請再核對整理內容。")
+        XCTAssertFalse(app.staticTexts["transcript.error"].exists)
+        XCTAssertFalse(app.staticTexts["transcript.refusal"].exists)
+        let result = app.staticTexts["transcript.result"]
+        revealLearningElement(result, in: app)
+        XCTAssertFalse(result.label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        let quote = app.staticTexts["transcript.evidence.0.0"]
+        revealLearningElement(quote, in: app, visibility: .readableText)
+        XCTAssertFalse(quote.label.isEmpty, "Actual model output must contain a byte-verified source quote.")
+        // No page text, model output, screenshots or configured endpoint are logged.
+        app.buttons["transcript.close"].tap()
+        app.buttons["transcript.browser.close"].tap()
+        navigate(to: "memory", in: app)
+        selectLearningSegment("skills", in: app)
+        XCTAssertTrue(app.staticTexts["skills.empty"].exists)
+        selectLearningSegment("pending", in: app)
+        XCTAssertTrue(app.staticTexts["memory.pending.empty"].exists)
+    }
+
     private func openPublicIANA(in app: XCUIApplication) {
         navigate(to: "browser", in: app)
         let address = app.textFields["browser.address"]

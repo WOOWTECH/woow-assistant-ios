@@ -66,6 +66,7 @@ public struct SkillCatalogEntry: Decodable, Equatable, Sendable, Identifiable {
         case "configure-mika": return "可調整本 App 外觀；原版能力未完整支援"
         case "skill-authoring": return "可請模型編寫並核准儲存；原版能力未完整支援"
         case "documents": return "可選取 PDF 擷取文字；原版能力未完整支援"
+        case "content-transcribe": return "可整理核准的文字、字幕與網頁文字；原版能力未完整支援"
         default: return "可匯入 iOS 文字改寫；原版能力未完整支援"
         }
     }

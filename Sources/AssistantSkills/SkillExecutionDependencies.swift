@@ -37,9 +37,10 @@ public enum SkillExecutionDependencies {
         switch id {
         case "configure-mika": return [
             row("settings_list / settings_set", .implementedInRuntime, "在外觀頁開啟模型權限後，可列出並修改本 App 的跟隨系統／淺色／深色；會讀回實際設定。模型、金鑰、登入、刪資料與容器網路不提供給此工具。")]
-        case "content-transcribe": return [browser,
-            row("read_file /workspace/inbox", .unavailable, "此增量只接受使用者選取的 PDF；尚未實作字幕或文字檔讀取。"),
-            row("references/transcript-output-formats.md", .hostIntegrationRequired, "完整原文已固定封存並驗證雜湊；格式指引不產生執行權限。"),
+        case "content-transcribe": return [
+            row("web_read_page", .implementedInRuntime, "瀏覽器可擷取使用者核准之目前頁面文字；64 KiB 上限，不截斷全文，不讀表單或隱藏文字，來源網址隨快照保留。"),
+            row("read_file /workspace/inbox", .implementedInRuntime, "原生選檔後逐檔核准讀取 UTF-8 文字或字幕，再確認模型目的服務。模型分段重疊讀取記憶體快照；不開放任意檔案路徑。"),
+            row("references/transcript-output-formats.md", .implementedInRuntime, "將固定版本原文與完整格式參考送入模型；支援摘要、章節、文章、逐字稿及引文，需讀完全部位元組並逐字驗證每段引文才能完成。"),
             row("語音辨識", .unavailable, "原版也沒有本機語音轉文字；只有音訊時需要文字稿。")]
         case "documents": return [browser,
             row("/workspace/inbox /workspace/downloads / web_downloads", .implementedInRuntime,

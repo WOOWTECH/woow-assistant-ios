@@ -7,7 +7,7 @@ on:
       ui_scope:
         description: Live App UI coverage (native probes always run)
         type: choice
-        options: [all, browser, browser-learning, browser-interaction, skill-authoring, self-configuration]
+        options: [all, browser, browser-learning, browser-interaction, skill-authoring, self-configuration, browser-transcript, transcript-files]
         default: all
 
 permissions:
@@ -116,21 +116,25 @@ jobs:
           test_runs=(build/LiveDerivedData/Build/Products/*.xctestrun)
           [ "${#test_runs[@]}" -eq 1 ] || { echo 'Expected one generated test runner'; exit 1; }
           python3 scripts/prepare_live_xctestrun.py "${test_runs[0]}"
-          ui_filter='-only-testing:WoowAssistantUITests/LiveModelUITests'
+          ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests -only-testing:WoowAssistantUITests/LiveTranscriptUITests)
           if [ '${{ inputs.ui_scope }}' = 'browser' ]; then
-            ui_filter='-only-testing:WoowAssistantUITests/LiveModelUITests/testRealWebKitResearchUsesPublicWebsiteAndJudgesOutcome'
+            ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealWebKitResearchUsesPublicWebsiteAndJudgesOutcome)
           elif [ '${{ inputs.ui_scope }}' = 'browser-learning' ]; then
-            ui_filter='-only-testing:WoowAssistantUITests/LiveModelUITests/testRealMultiPageResearchLearnsPendingSkillAndApprovalSurvivesRelaunch'
+            ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealMultiPageResearchLearnsPendingSkillAndApprovalSurvivesRelaunch)
           elif [ '${{ inputs.ui_scope }}' = 'browser-interaction' ]; then
-            ui_filter='-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelProposesObservedDOMLinkAndApprovedClickNavigates'
+            ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelProposesObservedDOMLinkAndApprovedClickNavigates)
           elif [ '${{ inputs.ui_scope }}' = 'skill-authoring' ]; then
-            ui_filter='-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelReadsOriginalSkillAndReviewedSaveSurvivesRelaunch'
+            ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelReadsOriginalSkillAndReviewedSaveSurvivesRelaunch)
           elif [ '${{ inputs.ui_scope }}' = 'self-configuration' ]; then
-            ui_filter='-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelListsAndChangesAppearanceAndRelaunchPreservesIt'
+            ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelListsAndChangesAppearanceAndRelaunchPreservesIt)
+          elif [ '${{ inputs.ui_scope }}' = 'browser-transcript' ]; then
+            ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelTranscribesApprovedPublicWebTextWithVerifiedQuotes)
+          elif [ '${{ inputs.ui_scope }}' = 'transcript-files' ]; then
+            ui_filters=(-only-testing:WoowAssistantUITests/LiveTranscriptUITests)
           fi
           xcodebuild -xctestrun "${test_runs[0]}" \
             -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
-            "$ui_filter" \
+            "${ui_filters[@]}" \
             -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 300 test-without-building
       - name: Clear private runner configuration
         if: always()

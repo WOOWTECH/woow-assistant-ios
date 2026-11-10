@@ -23,6 +23,7 @@ struct ContentView: View {
                     MCPToolsView(session: mcpSession)
                 case .memory:
                     MemoryDataView(store: session.learning, browser: browser, modelAccess: session.modelAccess,
+                                   modelChanges: session.$savedSettings.dropFirst().map { _ in () }.eraseToAnyPublisher(),
                                    onOpenBrowser: { selection = .browser })
                 case .browser:
                     BrowserView(browser: browser, chat: session, workspace: browserWorkspace)

@@ -204,6 +204,7 @@ targets:
     dependencies:
       - target: WoowAssistant
       - target: AssistantBrowser
+      - target: AssistantSkills
 
 schemes:
   WoowAssistant:

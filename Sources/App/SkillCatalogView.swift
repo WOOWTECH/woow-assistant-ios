@@ -1,4 +1,5 @@
 import AssistantSkills
+import Combine
 import SwiftUI
 
 /// Source archive with explicit entry points to supported local capabilities.
@@ -6,6 +7,7 @@ import SwiftUI
 struct SkillCatalogView: View {
     @ObservedObject var store: LearningStore
     let modelAccess: () throws -> ModelAccess
+    let modelChanges: AnyPublisher<Void, Never>
     @Environment(\.dismiss) private var dismiss
     @State private var catalog: BundledSkillCatalog?
     @State private var failure: String?
@@ -33,7 +35,7 @@ struct SkillCatalogView: View {
                     Section("原始技能與 iOS 文字改寫") {
                         ForEach(catalog.search(query)) { entry in
                             NavigationLink {
-                                SkillCatalogDetail(store: store, catalog: catalog, entry: entry, modelAccess: modelAccess)
+                                SkillCatalogDetail(store: store, catalog: catalog, entry: entry, modelAccess: modelAccess, modelChanges: modelChanges)
                             } label: {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(verbatim: entry.title)
@@ -97,6 +99,7 @@ private struct SkillCatalogDetail: View {
     let catalog: BundledSkillCatalog
     let entry: SkillCatalogEntry
     let modelAccess: () throws -> ModelAccess
+    let modelChanges: AnyPublisher<Void, Never>
     @State private var failure: String?
 
     private var pending: Bool { store.skills.pending.contains { $0.name == entry.adaptationName } }
@@ -104,6 +107,15 @@ private struct SkillCatalogDetail: View {
 
     var body: some View {
         List {
+            if entry.id == "content-transcribe" {
+                Section("整理文字稿與字幕") {
+                    NavigationLink { TranscriptView(modelAccess: modelAccess, modelChanges: modelChanges) } label: {
+                        Text("選取文字稿或字幕檔")
+                    }.accessibilityIdentifier("catalog.content-transcribe.open")
+                    Text("核准讀檔並確認目的服務後，由模型分段閱讀原文、整理內容與核對引文。")
+                        .font(.caption)
+                }
+            }
             if entry.id == "configure-mika" {
                 Section("調整本 App 外觀") {
                     NavigationLink { SelfConfigurationView(store: preferences, modelAccess: modelAccess) } label: {

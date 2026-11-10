@@ -27,11 +27,11 @@ UI_SHARDS = {
     "ui-browser": ["BrowserInteractionUITests", "BrowserUploadUITests"],
     "ui-learning": ["BrowserLearningUITests"],
     "ui-memory": ["MemoryUITests", "MemoryRaceUITests"],
-    "ui-skills": ["SkillCatalogUITests", "SkillAuthoringUITests"],
+    "ui-skills": ["SkillCatalogUITests", "SkillAuthoringUITests", "TranscriptUITests"],
     "ui-documents": ["SkillExecutionUITests", "SkillWorkerSettingsUITests"],
     "ui-mcp": ["MCPConversationUITests"],
 }
-LIVE_UI_CLASSES = {"LiveMCPUITests", "LiveMCPConversationUITests", "LiveModelUITests"}
+LIVE_UI_CLASSES = {"LiveMCPUITests", "LiveMCPConversationUITests", "LiveModelUITests", "LiveTranscriptUITests"}
 
 TEST_SCOPES = {
     "all": [],

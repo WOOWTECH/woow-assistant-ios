@@ -1,0 +1,158 @@
+import AssistantModels
+import AssistantSkills
+import Combine
+import Foundation
+
+@MainActor final class TranscriptSession: ObservableObject {
+    @Published private(set) var review: TranscriptFileReview?
+    @Published private(set) var snapshot: TranscriptSnapshot?
+    @Published private(set) var result: TranscriptResult?
+    @Published private(set) var refusal: String?
+    @Published private(set) var destination: String?
+    @Published private(set) var running = false
+    @Published private(set) var status = "請選取文字稿或字幕檔。"
+    @Published private(set) var error: String?
+    #if DEBUG
+    @Published private(set) var audit = TranscriptUITestAudit()
+    #endif
+    private let files = TranscriptFileAccess()
+    private var access: ModelAccess?
+    private var runtime: TranscriptRuntime?
+    private var task: Task<Void, Never>?
+    private var operationID: UUID?
+
+    func select(_ url: URL) {
+        cancel(notice: false); snapshot = nil; result = nil; refusal = nil; error = nil
+        do {
+            review = try files.select(url); status = "請核對檔名與讀取範圍，尚未讀取內容。"
+            #if DEBUG
+            audit.record(.selected)
+            #endif
+        }
+        catch { fail(error) }
+    }
+
+    func approveRead() {
+        guard let review, !running else { return }
+        let id = UUID(); operationID = id; running = true; error = nil
+        status = "正在讀取核准的文字檔，尚未傳送模型…"
+        task = Task { [weak self] in
+            guard let self else { return }
+            do {
+                let source = try await self.files.read(approving: review.id)
+                guard self.operationID == id, !Task.isCancelled else { return }
+                self.snapshot = source; self.review = nil; self.running = false; self.task = nil
+                #if DEBUG
+                self.audit.record(.fileRead(bytes: source.byteCount))
+                #endif
+                self.status = "已讀取文字快照。請核對目的服務，再明確開始模型整理。"
+            } catch {
+                guard self.operationID == id else { return }
+                self.fail(error)
+            }
+        }
+    }
+
+    func confirmDestination(modelAccess: () throws -> ModelAccess) {
+        guard !running else { return }
+        do {
+            let current = try modelAccess()
+            guard let host = current.configuration.baseURL.host, current.configuration.baseURL.scheme == "https" else {
+                throw TranscriptError.modelFailed
+            }
+            access = current
+            destination = "https://" + host + (current.configuration.baseURL.port.map { ":\($0)" } ?? "")
+                + "\n模型：" + current.configuration.model
+            error = nil
+        } catch {
+            access = nil; destination = nil
+            self.error = "無法取得已設定的模型服務，請先儲存模型設定。"
+        }
+    }
+
+    func start(format: TranscriptFormat, modelAccess: @escaping () throws -> ModelAccess) {
+        guard let source = snapshot, let approvedAccess = access, !running else { return }
+        do {
+            try validate(approvedAccess, current: modelAccess())
+            let runtime = try TranscriptRuntime(source: source, format: format, catalog: .bundled())
+            self.runtime = runtime; error = nil; result = nil; refusal = nil
+            let id = UUID(); operationID = id; running = true
+            task = Task { [weak self] in
+                do {
+                    let configuration = ModelConfiguration(baseURL: approvedAccess.configuration.baseURL,
+                        model: approvedAccess.configuration.model, maxOutputTokens: 8192)
+                    let outcome = try await runtime.run(client: approvedAccess.client, configuration: configuration,
+                        apiKey: approvedAccess.key, validateContext: { [weak self] in
+                            guard let self, self.operationID == id else { throw TranscriptError.cancelled }
+                            try self.validate(approvedAccess, current: modelAccess())
+                        }, onEvent: { [weak self] event in
+                            guard let self, self.operationID == id else { return }
+                            switch event {
+                            case .requestingModel(let count):
+                                self.status = "正在請模型整理（第 \(count) 回合）…"
+                                #if DEBUG
+                                self.audit.record(.modelRequest)
+                                #endif
+                            case .read(let covered, let total):
+                                self.status = "模型已讀取 \(covered)／\(total) 位元組。"
+                                #if DEBUG
+                                self.audit.record(.rangeRead(covered: covered, total: total))
+                                #endif
+                            }
+                        })
+                    guard let self, self.operationID == id, !Task.isCancelled else { return }
+                    try self.validate(approvedAccess, current: modelAccess())
+                    self.running = false; self.task = nil; self.runtime = nil
+                    switch outcome {
+                    case .completed(let result):
+                        self.result = result
+                        #if DEBUG
+                        self.audit.record(.completed)
+                        #endif
+                        self.status = "全文讀取與原文證據逐字核對已完成；請再核對整理內容。"
+                    case .refused(let reason):
+                        self.refusal = reason; self.status = "模型未完成整理，沒有新增記憶或技能。"
+                    }
+                } catch {
+                    guard let self, self.operationID == id else { return }
+                    self.fail(error)
+                }
+            }
+        } catch { fail(error) }
+    }
+
+    func cancel(notice: Bool = true) {
+        operationID = nil; files.cancel(); task?.cancel(); task = nil; runtime?.cancel(); runtime = nil
+        running = false; review = nil
+        if notice { status = TranscriptError.cancelled.errorDescription! }
+    }
+
+    func hostChanged() {
+        cancel(notice: false); access = nil; destination = nil
+        status = result == nil ? TranscriptError.contextChanged.errorDescription!
+            : "模型設定已變更；已交付的整理與原文仍保留，再次整理前請重新確認目的服務。"
+    }
+
+    /// The host has already obtained explicit approval for this exact source.
+    /// Loading a snapshot never reads a URL or automatically starts the model.
+    func loadApprovedSource(_ source: TranscriptSnapshot) {
+        cancel(notice: false); result = nil; refusal = nil; error = nil
+        access = nil; destination = nil; snapshot = source
+        status = "已接收你核准的文字快照。請確認目的服務，再明確開始模型整理。"
+    }
+
+    func selectionFailed() { error = "選檔未完成，尚未讀取新的內容。" }
+
+    private func validate(_ prior: ModelAccess, current: ModelAccess) throws {
+        guard prior.configuration.baseURL == current.configuration.baseURL,
+              prior.configuration.model == current.configuration.model,
+              prior.configuration.maxOutputTokens == current.configuration.maxOutputTokens,
+              prior.key == current.key else { throw TranscriptError.contextChanged }
+    }
+
+    private func fail(_ error: Error) {
+        cancel(notice: false); result = nil
+        status = "本次文字整理未完成。"
+        self.error = (error as? TranscriptError)?.errorDescription ?? "無法完成本次整理，沒有新增記憶或技能。"
+    }
+}

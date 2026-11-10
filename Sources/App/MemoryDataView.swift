@@ -1,5 +1,6 @@
 import AssistantMemory
 import AssistantSkills
+import Combine
 import SwiftUI
 
 @MainActor
@@ -7,6 +8,7 @@ struct MemoryDataView: View {
     @ObservedObject var store: LearningStore
     @ObservedObject var browser: BrowserSession
     let modelAccess: () throws -> ModelAccess
+    let modelChanges: AnyPublisher<Void, Never>
     let onOpenBrowser: () -> Void
     @State private var segment: LearningSegment = .memories
     @State private var query = ""
@@ -89,6 +91,10 @@ struct MemoryDataView: View {
                         } label: { Text("請模型協助編寫技能") }
                             .disabled(!store.available)
                             .accessibilityIdentifier("skills.agent.open")
+                        NavigationLink {
+                            TranscriptView(modelAccess: modelAccess, modelChanges: modelChanges)
+                        } label: { Text("整理文字稿與字幕") }
+                            .accessibilityIdentifier("skills.transcript.open")
                         Text("閱讀完整原文與授權、匯入 iOS 文字技能，或選取 PDF 執行文件處理；每個執行步驟仍需核准。")
                             .font(.footnote).foregroundStyle(.secondary)
                     }
@@ -141,7 +147,7 @@ struct MemoryDataView: View {
                 case .websites:
                     WebsiteDataView(store: store, browser: browser, modelAccess: modelAccess, onOpenBrowser: onOpenBrowser)
                 case .catalog:
-                    SkillCatalogView(store: store, modelAccess: modelAccess)
+                    SkillCatalogView(store: store, modelAccess: modelAccess, modelChanges: modelChanges)
                 }
             }
         }
