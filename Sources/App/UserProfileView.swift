@@ -6,6 +6,7 @@ struct UserProfileView: View {
     @ObservedObject var store: LearningStore
     @Environment(\.dismiss) private var dismiss
     @State private var editor: ProfileEditorDestination?
+    @State private var historyExpanded = false
 
     var body: some View {
         List {
@@ -62,7 +63,21 @@ struct UserProfileView: View {
                 let history = store.profile.entries.filter { $0.status == .superseded }
                 if !history.isEmpty {
                     Section {
-                        DisclosureGroup("已替換或刪除的紀錄（\(history.count)）") {
+                        // A DisclosureGroup identifier propagates to its rows
+                        // on iOS 18/26, replacing their individual AX identifiers.
+                        // Keep the disclosure control and history rows siblings.
+                        Button {
+                            historyExpanded.toggle()
+                        } label: {
+                            HStack {
+                                Text("已替換或刪除的紀錄（\(history.count)）")
+                                Spacer()
+                                Image(systemName: historyExpanded ? "chevron.down" : "chevron.right")
+                            }
+                        }
+                        .accessibilityIdentifier("profile.history")
+                        .accessibilityValue(historyExpanded ? "已展開" : "已收合")
+                        if historyExpanded {
                             ForEach(history.reversed()) { entry in
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(verbatim: entry.text)
@@ -72,7 +87,6 @@ struct UserProfileView: View {
                                 }
                             }
                         }
-                        .accessibilityIdentifier("profile.history")
                         Text("歷史紀錄不會加入對話；清除所有記憶與 Skills 也會清除個人檔案及其歷史。")
                             .font(.footnote).foregroundStyle(.secondary)
                     }

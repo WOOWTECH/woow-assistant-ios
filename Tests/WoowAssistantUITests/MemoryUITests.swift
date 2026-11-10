@@ -29,16 +29,16 @@ final class MemoryUITests: XCTestCase {
     func testSegmentsAndPreferencePersistence() {
         launch()
         openMemory()
-        XCTAssertTrue(app.staticTexts["memory.empty"].exists)
+        XCTAssertTrue(app.staticTexts["memory.empty"].firstMatch.exists)
         select("skills")
-        XCTAssertTrue(app.staticTexts["skills.empty"].exists)
+        XCTAssertTrue(app.staticTexts["skills.empty"].firstMatch.exists)
         select("pending")
-        XCTAssertTrue(app.staticTexts["memory.pending.empty"].exists)
-        reveal(app.staticTexts["memory.browserPending"])
-        XCTAssertTrue(app.staticTexts["memory.browserPending"].label.contains("瀏覽器的網站頁面"))
+        XCTAssertTrue(app.staticTexts["memory.pending.empty"].firstMatch.exists)
+        reveal(app.staticTexts["memory.browserPending"].firstMatch)
+        XCTAssertTrue(app.staticTexts["memory.browserPending"].firstMatch.label.contains("瀏覽器的網站頁面"))
         select("memories")
         for name in ["useMemory", "autoRemember", "learnSkills"] {
-            let toggle = app.switches["memory.toggle.\(name)"]
+            let toggle = app.switches["memory.toggle.\(name)"].firstMatch
             reveal(toggle)
             XCTAssertEqual(toggle.value as? String, "1")
             setSwitch(toggle, value: "0")
@@ -46,20 +46,20 @@ final class MemoryUITests: XCTestCase {
         launch(reset: false)
         openMemory()
         for name in ["useMemory", "autoRemember", "learnSkills"] {
-            let toggle = app.switches["memory.toggle.\(name)"]
+            let toggle = app.switches["memory.toggle.\(name)"].firstMatch
             reveal(toggle)
             XCTAssertEqual(toggle.value as? String, "0")
         }
-        XCTAssertTrue(app.staticTexts["memory.preferenceScope"].exists)
+        XCTAssertTrue(app.staticTexts["memory.preferenceScope"].firstMatch.exists)
     }
 
-    func testMemoryValidationEditPinSearchAndDeletePersist() {
+    func testOversizedMemoryIsRejectedAndCorrectedTextPersists() {
         launch()
         openMemory()
         tap("memory.add", scroll: true)
-        XCTAssertFalse(app.buttons["memory.editor.save"].isEnabled)
+        XCTAssertFalse(app.buttons["memory.editor.save"].firstMatch.isEnabled)
         let invalid = String(repeating: "a", count: 201)
-        let content = app.textViews["memory.editor.content"]
+        let content = app.textViews["memory.editor.content"].firstMatch
         waitUntilHittable(content)
         content.tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
@@ -77,30 +77,41 @@ final class MemoryUITests: XCTestCase {
         }
         XCTAssertEqual(content.value as? String, invalid)
         tap("memory.editor.save")
-        XCTAssertTrue(app.staticTexts["memory.editor.error"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.textViews["memory.editor.content"].value as? String, invalid)
+        XCTAssertTrue(app.staticTexts["memory.editor.error"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertEqual(app.textViews["memory.editor.content"].firstMatch.value as? String, invalid)
         replaceEditor("memory", text: "Prefer green tea")
         tap("memory.editor.done")
         waitForAbsence(app.keyboards.firstMatch)
-        reveal(app.textFields["memory.editor.keywords"])
-        enter("tea", into: app.textFields["memory.editor.keywords"])
+        reveal(app.textFields["memory.editor.keywords"].firstMatch)
+        enter("tea", into: app.textFields["memory.editor.keywords"].firstMatch)
         saveMemoryEditor()
+        XCTAssertTrue(memory("Prefer green tea").waitForExistence(timeout: 5))
+        launch(reset: false)
+        openMemory()
+        XCTAssertTrue(memory("Prefer green tea").waitForExistence(timeout: 5))
+        XCTAssertFalse(memory(invalid).exists)
+    }
+
+    func testMemoryEditPinSearchAndDeletePersist() {
+        launch()
+        openMemory()
+        addMemory("Prefer green tea")
         tapFirst(prefix: "memory.pin.")
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@", "memory.pinned.")).firstMatch.exists)
         tapFirst(prefix: "memory.edit.")
         replaceEditor("memory", text: "Prefer jasmine tea")
         saveMemoryEditor()
-        enter("tea\n", into: app.textFields["memory.search"])
+        enter("tea\n", into: app.textFields["memory.search"].firstMatch)
         XCTAssertTrue(memory("Prefer jasmine tea").waitForExistence(timeout: 5))
         launch(reset: false)
         openMemory()
         XCTAssertTrue(memory("Prefer jasmine tea").exists)
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@", "memory.pinned.")).firstMatch.exists)
         tapFirst(prefix: "memory.delete.")
-        XCTAssertTrue(app.staticTexts["memory.empty"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["memory.empty"].firstMatch.waitForExistence(timeout: 5))
         launch(reset: false)
         openMemory()
-        XCTAssertTrue(app.staticTexts["memory.empty"].exists)
+        XCTAssertTrue(app.staticTexts["memory.empty"].firstMatch.exists)
     }
 
     func testProceduresRequireApprovalAndCanBeRejected() {
@@ -111,13 +122,13 @@ final class MemoryUITests: XCTestCase {
         select("pending")
         XCTAssertTrue(memory("Check details before answering").exists)
         tapFirst(prefix: "memory.approve.")
-        XCTAssertTrue(app.staticTexts["memory.pending.empty"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["memory.pending.empty"].firstMatch.waitForExistence(timeout: 5))
         select("memories")
         XCTAssertTrue(memory("Check details before answering").exists)
         addMemory("Ask before changing a plan", procedure: true)
         select("pending")
         tapFirst(prefix: "memory.reject.")
-        XCTAssertTrue(app.staticTexts["memory.pending.empty"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["memory.pending.empty"].firstMatch.waitForExistence(timeout: 5))
         launch(reset: false)
         openMemory()
         XCTAssertTrue(memory("Check details before answering").exists)
@@ -129,31 +140,31 @@ final class MemoryUITests: XCTestCase {
         openMemory()
         select("skills")
         tap("skills.import", scroll: true)
-        enter("not a skill document", into: app.textViews["skills.editor.markdown"])
+        enter("not a skill document", into: app.textViews["skills.editor.markdown"].firstMatch)
         tap("skills.editor.save")
-        XCTAssertTrue(app.staticTexts["skills.editor.error"].waitForExistence(timeout: 5))
-        XCTAssertEqual(app.textViews["skills.editor.markdown"].value as? String, "not a skill document")
+        XCTAssertTrue(app.staticTexts["skills.editor.error"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertEqual(app.textViews["skills.editor.markdown"].firstMatch.value as? String, "not a skill document")
         replaceEditor("skills", text: markdown(version: "VersionOne"))
         saveSkillEditor()
-        XCTAssertTrue(app.staticTexts["skills.draft.notes-test"].exists)
+        XCTAssertTrue(app.staticTexts["skills.draft.notes-test"].firstMatch.exists)
         select("skills")
-        XCTAssertTrue(app.staticTexts["skills.empty"].exists)
+        XCTAssertTrue(app.staticTexts["skills.empty"].firstMatch.exists)
         select("pending")
         tap("skills.edit.notes-test", scroll: true)
         replaceEditor("skills", text: markdown(version: "ReviewedVersion"))
         saveSkillEditor()
-        XCTAssertTrue(app.staticTexts["skills.item.notes-test"].exists)
-        let enabled = app.switches["skills.enabled.notes-test"]
+        XCTAssertTrue(app.staticTexts["skills.item.notes-test"].firstMatch.exists)
+        let enabled = app.switches["skills.enabled.notes-test"].firstMatch
         reveal(enabled)
         setSwitch(enabled, value: "0")
-        XCTAssertEqual(app.staticTexts["skills.state.notes-test"].label, "已停用")
+        XCTAssertEqual(app.staticTexts["skills.state.notes-test"].firstMatch.label, "已停用")
         setSwitch(enabled, value: "1")
-        XCTAssertTrue(app.buttons["skills.share.notes-test"].exists)
+        XCTAssertTrue(app.buttons["skills.share.notes-test"].firstMatch.exists)
         launch(reset: false)
         openMemory()
         select("skills")
-        reveal(app.switches["skills.enabled.notes-test"])
-        XCTAssertEqual(app.switches["skills.enabled.notes-test"].value as? String, "1")
+        reveal(app.switches["skills.enabled.notes-test"].firstMatch)
+        XCTAssertEqual(app.switches["skills.enabled.notes-test"].firstMatch.value as? String, "1")
         assertSkillText(contains: "ReviewedVersion")
     }
 
@@ -163,9 +174,9 @@ final class MemoryUITests: XCTestCase {
         importSkill(version: "VersionOne")
         tap("skills.approve.notes-test", scroll: true)
         importSkill(version: "RejectedVersion")
-        XCTAssertTrue(app.staticTexts["skills.update.notes-test"].exists)
+        XCTAssertTrue(app.staticTexts["skills.update.notes-test"].firstMatch.exists)
         tap("skills.reject.notes-test", scroll: true)
-        XCTAssertTrue(app.staticTexts["memory.pending.empty"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["memory.pending.empty"].firstMatch.waitForExistence(timeout: 5))
         importSkill(version: "VersionTwo")
         tap("skills.approve.notes-test", scroll: true)
         select("skills")
@@ -180,43 +191,45 @@ final class MemoryUITests: XCTestCase {
     func testTwoStepClearCancellationAndModelSettingsIsolation() {
         launch()
         tap("navigation.settings")
-        enter("https://model.example.invalid/v1\n", into: app.textFields["settings.baseURL"])
-        reveal(app.textFields["settings.model"])
-        enter("fixture-model\n", into: app.textFields["settings.model"])
-        reveal(app.secureTextFields["settings.apiKey"])
-        enter("fixture-only-not-a-real-key\n", into: app.secureTextFields["settings.apiKey"])
+        enter("https://model.example.invalid/v1\n", into: app.textFields["settings.baseURL"].firstMatch)
+        reveal(app.textFields["settings.model"].firstMatch)
+        enter("fixture-model\n", into: app.textFields["settings.model"].firstMatch)
+        reveal(app.secureTextFields["settings.apiKey"].firstMatch)
+        enter("fixture-only-not-a-real-key\n", into: app.secureTextFields["settings.apiKey"].firstMatch)
         tap("settings.save", scroll: true)
-        XCTAssertTrue(app.staticTexts["settings.notice"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["settings.notice"].firstMatch.waitForExistence(timeout: 5))
         openMemory()
         addMemory("Keep until both confirmations")
         XCTAssertTrue(memory("Keep until both confirmations").waitForExistence(timeout: 5),
                       "Verify the exact saved fixture before testing cancellation or deletion.")
         importSkill(version: "PendingVersion")
         tap("memory.clear", scroll: true)
-        XCTAssertFalse(app.buttons["memory.clear.confirm"].exists)
+        XCTAssertFalse(app.buttons["memory.clear.confirm"].firstMatch.exists)
         tap("memory.clear.cancel")
         tap("memory.clear", scroll: true)
         tap("memory.clear.continue")
-        XCTAssertTrue(app.buttons["memory.clear.confirm"].exists)
+        XCTAssertTrue(app.buttons["memory.clear.confirm"].firstMatch.exists)
         tap("memory.clear.cancel")
         select("memories")
         XCTAssertTrue(memory("Keep until both confirmations").exists)
         select("pending")
-        XCTAssertTrue(app.staticTexts["skills.draft.notes-test"].exists)
+        XCTAssertTrue(app.staticTexts["skills.draft.notes-test"].firstMatch.exists)
         tap("memory.clear", scroll: true)
         tap("memory.clear.continue")
         tap("memory.clear.confirm")
-        waitForAbsence(app.buttons["memory.clear.confirm"])
+        waitForAbsence(app.buttons["memory.clear.confirm"].firstMatch)
         select("memories")
-        XCTAssertTrue(app.staticTexts["memory.empty"].exists)
+        XCTAssertTrue(app.staticTexts["memory.empty"].firstMatch.exists)
         select("skills")
-        XCTAssertTrue(app.staticTexts["skills.empty"].exists)
+        let emptySkills = app.staticTexts["skills.empty"].firstMatch
+        revealLearningElement(emptySkills, in: app, visibility: .readableText)
+        XCTAssertTrue(emptySkills.exists)
         select("pending")
-        XCTAssertTrue(app.staticTexts["memory.pending.empty"].exists)
+        XCTAssertTrue(app.staticTexts["memory.pending.empty"].firstMatch.exists)
         launch(reset: false)
-        XCTAssertEqual(app.staticTexts["chat.status"].label, "模型已設定")
+        XCTAssertEqual(app.staticTexts["chat.status"].firstMatch.label, "模型已設定")
         openMemory()
-        XCTAssertTrue(app.staticTexts["memory.empty"].exists)
+        XCTAssertTrue(app.staticTexts["memory.empty"].firstMatch.exists)
     }
 
     private func launch(reset: Bool = true) {
@@ -225,29 +238,29 @@ final class MemoryUITests: XCTestCase {
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW", "-UITestMode", "-UITestNamespace", namespace]
         if reset { app.launchArguments.append("-UITestResetStorage") }
         app.launch()
-        XCTAssertTrue(app.staticTexts["chat.status"].waitForExistence(timeout: 10))
-        XCTAssertTrue(app.staticTexts["uitest.banner"].exists)
+        XCTAssertTrue(app.staticTexts["chat.status"].firstMatch.waitForExistence(timeout: 10))
+        XCTAssertTrue(app.staticTexts["uitest.banner"].firstMatch.exists)
     }
 
     private func openMemory() {
         tap("navigation.memory")
-        XCTAssertTrue(app.staticTexts["memory.status"].waitForExistence(timeout: 5))
-        XCTAssertFalse(app.staticTexts["memory.unavailable"].exists)
+        XCTAssertTrue(app.staticTexts["memory.status"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertFalse(app.staticTexts["memory.unavailable"].firstMatch.exists)
     }
 
     private func select(_ name: String) {
         tap("memory.segment.\(name)")
-        XCTAssertEqual(app.buttons["memory.segment.\(name)"].value as? String, "已選取")
+        XCTAssertEqual(app.buttons["memory.segment.\(name)"].firstMatch.value as? String, "已選取")
     }
 
     private func addMemory(_ text: String, procedure: Bool = false) {
         tap("memory.add", scroll: true)
         if procedure {
-            let kind = app.segmentedControls.buttons["做法"]
+            let kind = app.segmentedControls.buttons["做法"].firstMatch
             waitUntilHittable(kind)
             kind.tap()
         }
-        let content = app.textViews["memory.editor.content"]
+        let content = app.textViews["memory.editor.content"].firstMatch
         waitUntilHittable(content)
         content.tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
@@ -273,24 +286,24 @@ final class MemoryUITests: XCTestCase {
 
     private func saveMemoryEditor() {
         tap("memory.editor.save")
-        waitForAbsence(app.buttons["memory.editor.save"])
+        waitForAbsence(app.buttons["memory.editor.save"].firstMatch)
     }
 
     private func saveSkillEditor() {
         tap("skills.editor.save")
-        waitForAbsence(app.buttons["skills.editor.save"])
+        waitForAbsence(app.buttons["skills.editor.save"].firstMatch)
     }
 
     private func importSkill(version: String) {
         select("skills")
         tap("skills.import", scroll: true)
-        enter(markdown(version: version), into: app.textViews["skills.editor.markdown"])
+        enter(markdown(version: version), into: app.textViews["skills.editor.markdown"].firstMatch)
         saveSkillEditor()
     }
 
     private func assertSkillText(contains value: String) {
         tap("skills.fullText.notes-test", scroll: true)
-        let document = app.staticTexts["skills.document"]
+        let document = app.staticTexts["skills.document"].firstMatch
         XCTAssertTrue(document.waitForExistence(timeout: 5))
         XCTAssertTrue(document.label.contains(value))
         tap("skills.document.close")
@@ -321,8 +334,8 @@ final class MemoryUITests: XCTestCase {
 
     private func replaceEditor(_ prefix: String, text: String) {
         let id = prefix == "memory" ? "memory.editor.content" : "skills.editor.markdown"
-        let editor = app.textViews[id]
-        let clear = app.buttons["\(prefix).editor.clear"]
+        let editor = app.textViews[id].firstMatch
+        let clear = app.buttons["\(prefix).editor.clear"].firstMatch
         // After failed validation the SE editor remains keyboard-focused, but
         // XCTest may not report its resized TextView as hittable. The visible
         // native toolbar already belongs to this editor; no second tap is needed.
@@ -361,7 +374,7 @@ final class MemoryUITests: XCTestCase {
     }
 
     private func tap(_ id: String, scroll: Bool = false) {
-        let button = app.buttons[id]
+        let button = app.buttons[id].firstMatch
         if scroll && (id == "skills.import" || id.hasPrefix("skills.rollback.")) {
             guard revealSkillButton(button, identifier: id) else { return }
         } else if scroll { reveal(button) } else { waitUntilHittable(button) }
@@ -382,7 +395,7 @@ final class MemoryUITests: XCTestCase {
         for attempt in 0...8 {
             let listFrame = list.frame
             var viewport = listFrame.intersection(app.frame)
-            let navigation = app.buttons["navigation.chat"]
+            let navigation = app.buttons["navigation.chat"].firstMatch
             if navigation.exists {
                 viewport.size.height = max(0, min(viewport.maxY, navigation.frame.minY) - viewport.minY)
             }
@@ -453,7 +466,7 @@ final class MemoryUITests: XCTestCase {
         target.tap()
         let changed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", value), object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [changed], timeout: 5), .completed)
-        XCTAssertFalse(app.staticTexts["memory.error"].exists, "Memory settings could not be persisted.")
+        XCTAssertFalse(app.staticTexts["memory.error"].firstMatch.exists, "Memory settings could not be persisted.")
     }
 
     private func waitForAbsence(_ element: XCUIElement) {

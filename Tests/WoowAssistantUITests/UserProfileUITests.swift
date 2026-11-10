@@ -23,19 +23,19 @@ final class UserProfileUITests: XCTestCase {
 
     func testCreateReplaceDeleteAndHistorySurviveRelaunch() {
         launch(); openProfile()
-        add("Prefer quiet hotels")
-        let original = item("Prefer quiet hotels")
+        add("Prefer quiet")
+        let original = item("Prefer quiet")
         XCTAssertTrue(original.waitForExistence(timeout: 5))
         let originalID = original.identifier.replacingOccurrences(of: "profile.item.", with: "")
         tap("profile.edit." + originalID, scroll: true)
-        write("Prefer central hotels", clearing: true)
+        write("Prefer central", clearing: true)
         save()
-        XCTAssertTrue(item("Prefer central hotels").waitForExistence(timeout: 5))
-        XCTAssertFalse(item("Prefer quiet hotels").exists)
-        showHistory("Prefer quiet hotels")
+        XCTAssertTrue(item("Prefer central").waitForExistence(timeout: 5))
+        XCTAssertFalse(item("Prefer quiet").exists)
+        showHistory("Prefer quiet")
 
         launch(reset: false); openProfile()
-        let replacement = item("Prefer central hotels")
+        let replacement = item("Prefer central")
         XCTAssertTrue(replacement.waitForExistence(timeout: 5))
         let nextID = replacement.identifier.replacingOccurrences(of: "profile.item.", with: "")
         XCTAssertNotEqual(nextID, originalID, "Replacement must create a new row")
@@ -43,26 +43,38 @@ final class UserProfileUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["profile.empty"].firstMatch.waitForExistence(timeout: 5))
         launch(reset: false); openProfile()
         XCTAssertTrue(app.staticTexts["profile.empty"].firstMatch.waitForExistence(timeout: 5))
-        showHistory("Prefer central hotels")
-        let oldHistory = history("Prefer quiet hotels")
+        showHistory("Prefer central")
+        let oldHistory = history("Prefer quiet")
         revealLearningElement(oldHistory, in: app, visibility: .readableText)
         XCTAssertTrue(oldHistory.exists, "Both superseded rows survive relaunch")
     }
 
-    func testInvalidSensitiveAndDuplicateTextNeverPublish() {
+    func testSensitiveTextNeverPublishes() {
         launch(); openProfile()
         add("Prefer tea")
-        for invalid in ["password: dummy1234", "Two. Sentences.", "Prefer tea"] {
-            tap("profile.add", scroll: true)
-            write(invalid)
-            tap("profile.editor.save")
-            let error = app.staticTexts["profile.editor.error"].firstMatch
-            revealLearningElement(error, in: app, visibility: .readableText)
-            XCTAssertTrue(error.exists)
-            XCTAssertTrue(app.buttons["profile.editor.save"].firstMatch.exists, "Rejected edit must remain open")
-            tap("profile.editor.cancel")
-            absent(app.buttons["profile.editor.save"].firstMatch)
-        }
+        reject("password: dummy1234")
+        launch(reset: false); openProfile()
+        XCTAssertTrue(item("Prefer tea").waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["profile.count"].firstMatch.label, "現用 1／20 條")
+        XCTAssertFalse(item("password: dummy1234").exists)
+        XCTAssertFalse(app.buttons["profile.history"].firstMatch.exists)
+    }
+
+    func testMultipleSentencesNeverPublish() {
+        launch(); openProfile()
+        add("Prefer tea")
+        reject("Two. Sentences.")
+        launch(reset: false); openProfile()
+        XCTAssertTrue(item("Prefer tea").waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["profile.count"].firstMatch.label, "現用 1／20 條")
+        XCTAssertFalse(item("Two. Sentences.").exists)
+        XCTAssertFalse(app.buttons["profile.history"].firstMatch.exists)
+    }
+
+    func testDuplicateAndCancelledTextNeverPublish() {
+        launch(); openProfile()
+        add("Prefer tea")
+        reject("Prefer tea")
         tap("profile.add", scroll: true)
         write("Cancelled profile")
         tap("profile.editor.cancel")
@@ -70,7 +82,6 @@ final class UserProfileUITests: XCTestCase {
         XCTAssertTrue(item("Prefer tea").waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["profile.count"].firstMatch.label, "現用 1／20 條")
         XCTAssertFalse(item("Cancelled profile").exists)
-        XCTAssertFalse(item("password: dummy1234").exists)
         XCTAssertFalse(app.buttons["profile.history"].firstMatch.exists)
     }
 
@@ -127,6 +138,18 @@ final class UserProfileUITests: XCTestCase {
         tap("profile.add", scroll: true); write(text); save()
     }
 
+    private func reject(_ text: String) {
+        tap("profile.add", scroll: true)
+        write(text)
+        tap("profile.editor.save")
+        let error = app.staticTexts["profile.editor.error"].firstMatch
+        revealLearningElement(error, in: app, visibility: .readableText)
+        XCTAssertTrue(error.exists)
+        XCTAssertTrue(app.buttons["profile.editor.save"].firstMatch.exists, "Rejected edit must remain open")
+        tap("profile.editor.cancel")
+        absent(app.buttons["profile.editor.save"].firstMatch)
+    }
+
     private func write(_ text: String, clearing: Bool = false) {
         let editor = app.textViews["profile.editor.text"].firstMatch
         ready(editor); editor.tap()
@@ -162,6 +185,7 @@ final class UserProfileUITests: XCTestCase {
 
     private func showHistory(_ text: String) {
         tap("profile.history", scroll: true)
+        XCTAssertEqual(app.buttons["profile.history"].firstMatch.value as? String, "已展開")
         let row = history(text)
         revealLearningElement(row, in: app, visibility: .readableText)
         XCTAssertTrue(row.exists)
