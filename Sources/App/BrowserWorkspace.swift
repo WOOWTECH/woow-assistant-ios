@@ -18,6 +18,7 @@ final class BrowserWorkspace: ObservableObject {
     @Published private(set) var library = BrowserLibraryState()
     @Published private(set) var selected: BrowserSession
     @Published private(set) var error: String?
+    @Published private(set) var siteModeNotice: String?
     @Published private(set) var available = false
     @Published private(set) var websiteRecords: [WKWebsiteDataRecord] = []
     @Published private(set) var isClearingWebsiteData = false
@@ -84,6 +85,40 @@ final class BrowserWorkspace: ObservableObject {
         // not during unrelated chat/settings startup or a background relaunch.
     }
 
+    /// Exercise actual workspace persistence with an isolated file/key store.
+    /// Does not open the personal profile, Keychain or download directory.
+    init(dataStore: WKWebsiteDataStore, vault: EncryptedLearningFile, downloadDirectory: URL) {
+        websiteDataStore = dataStore
+        downloads = BrowserDownloadManager(directory: downloadDirectory)
+        selected = BrowserSession(dataStore: dataStore)
+        do {
+            let loaded = try vault.load(BrowserLibraryState.self) ?? BrowserLibraryState()
+            try loaded.validate()
+            library = loaded; self.vault = vault; available = true
+        } catch { self.error = "瀏覽資料目前無法讀取，不會覆寫原有資料。" }
+        selected = makeSession(id: library.selectedID)
+    }
+
+    @discardableResult
+    func setManualSiteMode(_ mode: BrowserManualSiteMode) -> Bool {
+        guard !isClearingWebsiteData, let host = selected.manualSiteModeHost else { return false }
+        siteModeNotice = nil
+        let previous = library.userSiteModes
+        guard update({ try $0.setManualSiteMode(mode, for: host) }) else { return false }
+        var reloading = false
+        for session in sessions.values {
+            let pageHost = session.loadedURL?.host
+            if session === selected || previous.mode(for: pageHost) != library.userSiteModes.mode(for: pageHost) {
+                let changed = previous.mode(for: pageHost) != library.userSiteModes.mode(for: pageHost)
+                let applied = session.manualSiteModeDidChange(applyToCurrentDocument: session === selected && changed)
+                if session === selected { reloading = applied }
+            }
+        }
+        siteModeNotice = reloading ? "網站偏好已儲存，正在重新整理此頁以套用。"
+            : "網站偏好已儲存；為避免重送表單或自動化操作，此頁不會重新整理，下次手動導覽時套用。"
+        return true
+    }
+
     func activateSelected() {
         #if DEBUG
         if !uploadFixtureStarted, let fixture = BrowserUploadFixture.enabled {
@@ -124,6 +159,7 @@ final class BrowserWorkspace: ObservableObject {
     private func makeSession(id: UUID, configuration: WKWebViewConfiguration? = nil) -> BrowserSession {
         if let session = sessions[id] { return session }
         let session = BrowserSession(dataStore: websiteDataStore, configuration: configuration)
+        session.manualSiteMode = { [weak self] host in self?.library.userSiteModes.mode(for: host) ?? .mobile }
         session.downloads = downloads
         session.canPresentUI = { [weak self] in self?.library.selectedID == id && self?.isClearingWebsiteData == false }
         session.address = library.tabs.first(where: { $0.id == id })?.url?.absoluteString ?? ""

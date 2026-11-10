@@ -1,5 +1,16 @@
 # Verification — 2026-11-11
 
+## Manual browser site modes integrated — 2026-11-11
+
+Manual mobile/desktop preferences now persist by normalized hostname in the existing encrypted browser library. A confirmed manual GET reloads once after the explicit mode change, with Cookie storage retained. POST, unknown-method and automation-owned documents defer until the next manual navigation. The navigation delegate retains existing URL/origin/method/download restrictions; mode selection grants no new network or model authority. Details and pinned Mika behavior: [manual website display preferences](MANUAL_BROWSER_SITE_MODES.md).
+
+The integrated source passed actual macOS WebKit checks **118 each in Debug/Release**, plus **12 actual loopback HTTP assertions** including server-observed one-GET reload, retained HttpOnly authentication and no POST replay. Existing research checks passed **238 core assertions** and **378 App assertions each in Debug/Release**. Python tooling: **259/259**; actionlint and XcodeGen passed. The three new core/hosted methods and one UI method are registered without a skip branch; non-Live UI inventory is **91 methods in 12 partitions**. [Source-bound local evidence](evidence/manual-browser-site-modes-local.json). iOS rendering/native execution remains pending; macOS returned effective mode `.recommended` for both preferences. The actual HTTP-specific harness is local Debug evidence, not native iOS HTTP acceptance.
+
+## Exact iOS 17 startup interface — 2026-11-11
+
+At `8c4195f`, the startup/settings partition passed **13/13, zero skips** on iPhone 15 / iOS 17.0.1 / 21A342. Each expected method started and completed once; xcresult and completion report agree, and the downloaded artifact ZIP SHA256 was independently verified. Tests cover navigation, configured chat fixtures, draft/cancellation/error behavior, model/MCP credential separation and appearance persistence. [Evidence](evidence/ui-startup-8c4195f-exact17.json). These are synthetic transport/UI checks, not real model/MCP or later-source acceptance.
+
+
 ## Archive UI completed and live replay diagnosis — 2026-11-11
 
 At `8c4195f`, completed-conversation archive UI passed **4/4 each, zero skips** on exact iOS 17.0.1/21A342, iPhone SE/iOS 18.5 and iPhone 17/iOS 26.2. Each source method started/completed once, with matching xcresult counts. Coverage includes explicit reopening, destination mismatch, delete/relaunch and excluding cancelled/unsent work. [Evidence](evidence/ui-archive-8c4195f.json). This does not accept later product changes or physical devices.

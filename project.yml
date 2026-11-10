@@ -210,6 +210,8 @@ targets:
     deploymentTarget: "17.0"
     sources:
       - Tests/AssistantBrowserIntegrationTests
+      - scripts/CheckBrowserSiteModesApp.swift
+      - Tests/AssistantDomainTests/BrowserUserSiteModesChecks.swift
       - scripts/CheckResearchSourceDiscoveryApp.swift
       - scripts/CheckLearningRunContextApp.swift
       - scripts/CheckMultiSourceReferenceApp.swift

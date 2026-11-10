@@ -15,6 +15,11 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     var onCloseWindow: (() -> Void)?
     var canPresentUI: () -> Bool = { true }
     var downloads: BrowserDownloadManager?
+    // Workspace supplies only manual preferences. Automated navigation keeps
+    // WebKit's existing recommended policy, independent of this hostname set.
+    var manualSiteMode: (String?) -> BrowserManualSiteMode = { _ in .mobile }
+    private var siteModeReloadState = BrowserSiteModeReloadState()
+    private var automaticSiteModeReload = false
     private var navigationIntent = BrowserNavigationIntent()
     private var discardCompletion: CheckedContinuation<Bool, Never>?
     private var discardTimeout: Task<Void, Never>?
@@ -132,7 +137,39 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         openAddress()
     }
 
+    var manualSiteModeHost: String? {
+        guard !retiredForDataRemoval, !isRunning, !isInteracting,
+              !requestedNavigationPending, let view = storedWebView, !view.isLoading,
+              let url = loadedURL, url == view.url, manualPermitted(url),
+              let host = url.host else { return nil }
+        return BrowserUserSiteModes.key(host)
+    }
+
+    @discardableResult
+    func manualSiteModeDidChange(applyToCurrentDocument: Bool = false) -> Bool {
+        // Only the explicitly selected tab may reload. Other affected tabs
+        // cancel proposals and use the saved preference at their next navigation.
+        let reload = applyToCurrentDocument && !retiredForDataRemoval && !automationOwnsDocument
+            && !isRunning && !isInteracting && !requestedNavigationPending
+            && storedWebView?.isLoading == false && loadedURL == storedWebView?.url
+            && siteModeReloadState.allowsReload(navigation: trackedNavigation, url: loadedURL)
+        cancelInteraction()
+        resolveDialog(nil)
+        guard reload, let url = loadedURL else { return false }
+        // Consume the evidence before issuing exactly one reload. The delegate
+        // additionally rejects non-GET/body-bearing requests during this reload.
+        siteModeReloadState.invalidate()
+        manualNavigation(to: url) {
+            automaticSiteModeReload = true
+            if fixtureMode { loadFixture(url: url); return trackedNavigation }
+            return webView.reload()
+        }
+        if trackedNavigation == nil { automaticSiteModeReload = false }
+        return trackedNavigation != nil
+    }
+
     func cancel() {
+        siteModeReloadState.invalidate(); automaticSiteModeReload = false
         let reference = runReferences; runReferences = nil
         reference?.onRevoke = nil; reference?.revoke()
         navigationIntent.invalidate()
@@ -690,6 +727,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         else { requestedNavigationPending = false; failManualLoad(.navigationFailed) }
     }
     private func claimAutomationDocument(originURL: URL? = nil) {
+        siteModeReloadState.invalidate(); automaticSiteModeReload = false
         if !automationOwnsDocument {
             automationDocumentOrigin = (originURL ?? storedWebView?.url ?? loadedURL).flatMap { Self.origin($0) }
         }
@@ -719,8 +757,24 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                  decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        decideNavigationPolicy(navigationAction, preferences: nil, decisionHandler: decisionHandler)
+    }
+
+    func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
+                 preferences: WKWebpagePreferences,
+                 decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
+        // WebKit calls this overload instead of the older policy delegate.
+        // Both paths must use exactly the same URL/download/approval gate.
+        decideNavigationPolicy(navigationAction, preferences: preferences) { policy in
+            decisionHandler(policy, preferences)
+        }
+    }
+
+    private func decideNavigationPolicy(_ navigationAction: WKNavigationAction,
+                                        preferences: WKWebpagePreferences?,
+                                        decisionHandler completion: (WKNavigationActionPolicy) -> Void) {
         if discardingPage {
-            decisionHandler(navigationAction.request.url?.absoluteString == "about:blank" ? .allow : .cancel)
+            completion(navigationAction.request.url?.absoluteString == "about:blank" ? .allow : .cancel)
             return
         }
         let postPermitted: Bool
@@ -733,6 +787,23 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             && navigationAction.request.httpMethod == "GET"
             && navigationAction.request.url == manualDocumentURL
         let automated = (automationOwnsDocument || isRunning || isInteracting || postPermitted) && !manualRequest
+        func decisionHandler(_ policy: WKNavigationActionPolicy) {
+            if navigationAction.targetFrame?.isMainFrame == true {
+                siteModeReloadState.observePolicy(url: navigationAction.request.url,
+                    method: navigationAction.request.httpMethod,
+                    hasBody: navigationAction.request.httpBody != nil || navigationAction.request.httpBodyStream != nil,
+                    manual: !automated, allowed: policy == .allow,
+                    expectedNavigation: navigationAction.request.url == manualDocumentURL ? manualDocumentNavigation : nil)
+            }
+            completion(policy)
+        }
+        if automaticSiteModeReload, navigationAction.targetFrame?.isMainFrame == true,
+           navigationAction.request.httpMethod != "GET" || navigationAction.request.httpBody != nil
+            || navigationAction.request.httpBodyStream != nil {
+            decisionHandler(.cancel)
+            error = "網站偏好已儲存；此頁無法安全重新整理，將於下次手動導覽套用。"
+            return
+        }
         let restrictedOrigin = automationDocumentOrigin ?? origin
         guard let url = navigationAction.request.url,
               automated ? permitted(url) : manualPermitted(url),
@@ -741,6 +812,10 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             decisionHandler(.cancel); error = "此導覽不在目前允許的公開網站範圍內。"
             if !isRunning, navigationAction.targetFrame?.isMainFrame == true { failManualLoad(.policyRejected) }
             return
+        }
+        if navigationAction.targetFrame?.isMainFrame == true {
+            preferences?.preferredContentMode = automated ? .recommended
+                : (manualSiteMode(url.host) == .desktop ? .desktop : .mobile)
         }
         if !automated, [.linkActivated, .formSubmitted, .backForward, .reload, .formResubmitted].contains(navigationAction.navigationType),
            navigationAction.targetFrame?.isMainFrame != false {
@@ -769,6 +844,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             trackedNavigation = navigation
             if !isRunning { resetLoadTrace() }
         }
+        siteModeReloadState.start(navigation)
         invalidateControls()
         // A normal click/reload changes the displayed document too. Do not
         // offer research/interaction against the preceding page while loading.
@@ -778,6 +854,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
 
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
         guard let navigation, trackedNavigation === navigation, !isRunning else { return }
+        siteModeReloadState.commit(navigation, url: webView.url)
         if !isInteracting, manualDocumentNavigation === navigation, webView.url == manualDocumentURL {
             automationOwnsDocument = false; automationDocumentOrigin = nil
             manualDocumentURL = nil; manualDocumentNavigation = nil
@@ -786,6 +863,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
+        if let navigation { siteModeReloadState.redirect(navigation) }
         guard let navigation, trackedNavigation === navigation,
               !isRunning, !isInteracting, let url = webView.url, manualPermitted(url) else { return }
         if manualDocumentNavigation === navigation {
@@ -846,6 +924,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             return
         }
         guard let navigation, trackedNavigation === navigation else { return }
+        siteModeReloadState.finish(navigation, url: webView.url)
+        automaticSiteModeReload = false
         canGoBack = webView.canGoBack; canGoForward = webView.canGoForward
         loadedURL = webView.url
         pageTitle = Self.displayTitle(webView.title, url: webView.url)
@@ -899,6 +979,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             return
         }
         guard let navigation, trackedNavigation === navigation else { return }
+        siteModeReloadState.invalidate(); automaticSiteModeReload = false
         if expectedNavigation === navigation { navigationFinished = false; expectedNavigation = nil }
         invalidatePageObservation(); requestedNavigationPending = false
         error = "網站載入失敗，請檢查網址或網路。"
@@ -911,6 +992,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        siteModeReloadState.invalidate(); automaticSiteModeReload = false
         manualDocumentURL = nil; manualDocumentNavigation = nil
         invalidatePageObservation(); invalidateControls()
         navigationFinished = false; expectedNavigation = nil; trackedNavigation = nil; requestedNavigationPending = false
@@ -935,6 +1017,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         onPageFinished?(url, updated)
     }
     private func preparePageNavigation() {
+        siteModeReloadState.invalidate(); automaticSiteModeReload = false
         manualDocumentURL = nil; manualDocumentNavigation = nil
         explicitManualDownloadPending = false
         invalidatePageObservation()
@@ -942,6 +1025,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         if !isRunning { resetLoadTrace(); traceLoad(.requested) }
     }
     private func failManualLoad(_ category: ManualLoadFailure) {
+        siteModeReloadState.invalidate(); automaticSiteModeReload = false
         manualDocumentURL = nil; manualDocumentNavigation = nil
         invalidatePageObservation()
         trackedNavigation = nil; requestedNavigationPending = false

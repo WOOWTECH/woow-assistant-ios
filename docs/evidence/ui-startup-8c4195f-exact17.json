@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "source_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+  "run_id": 42911440527,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911440527",
+  "scope": "ui-startup",
+  "status": "PASS",
+  "runtime": {
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "version": "17.0.1",
+    "buildversion": "21A342"
+  },
+  "counts": {
+    "passed": 13,
+    "failed": 0,
+    "skipped": 0
+  },
+  "methods": [
+    {
+      "method": "WoowAssistantUITests.SelfConfigurationUITests testManualAppearanceChangesActualThemePersistsAndModelPermissionDefaultsOff",
+      "result": "passed",
+      "seconds": 40.456
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testBrowserReportsCurrentLimitationsAndToolsIsReachable",
+      "result": "passed",
+      "seconds": 33.973
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testCancellationPreservesDraftAndAllowsAnotherAttempt",
+      "result": "passed",
+      "seconds": 40.462
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testEverySectionIsReachableAndPhoneControlIsExcluded",
+      "result": "passed",
+      "seconds": 25.088
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testFailureRetainsDraftAndRetryProducesReply",
+      "result": "passed",
+      "seconds": 57.935
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testHTTPSValidationThenConfiguredChatWithoutAutomaticHistoryRestore",
+      "result": "passed",
+      "seconds": 53.087
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testKeychainWriteFailureDoesNotPublishConfiguration",
+      "result": "passed",
+      "seconds": 28.508
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testMCPEndpointValidationAndKeychainPersistenceWithoutNetworking",
+      "result": "passed",
+      "seconds": 35.253
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testMCPKeychainWriteFailureIsNotReportedAsSaved",
+      "result": "passed",
+      "seconds": 16.978
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testMCPRemovalClearsOnlyItsSavedEndpoint",
+      "result": "passed",
+      "seconds": 48.227
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testRemovingConfigurationKeepsDraftAndDisablesSending",
+      "result": "passed",
+      "seconds": 41.205
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testStoredKeyCanBeReusedButNotForDifferentHost",
+      "result": "passed",
+      "seconds": 43.214
+    },
+    {
+      "method": "WoowAssistantUITests.WoowAssistantUITests testUnconfiguredSendIsDisabledAndDraftSurvivesNavigation",
+      "result": "passed",
+      "seconds": 25.206
+    }
+  ],
+  "each_expected_method_started_and_completed_once": true,
+  "completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 13,
+      "passedTests": 13,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 13,
+    "completed_ui_count": 13,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "artifact": {
+    "id": 13810526115,
+    "zip_sha256": "13ed3cea59e0a6be271f30ae7f5cf0662af6102c384d258c1643e74721e999f4",
+    "full_zip_digest_verified": true,
+    "members": {
+      "report.json": "4efb91f5754c2840a159fcf15712ec2110b3316c01b1d6a1fb302952a19dd12b",
+      "test-summary.json": "34da51591490cbb62c33193264e15c46617eb70a507fe171c154e9165e1204a3",
+      "tests.log": "6a1e4537a8a3281cc83d39396e74f8cea426db450ecfa8fcc8816a58f3dcdcad"
+    }
+  },
+  "limits": [
+    "Synthetic UI fixture; no live model or MCP network",
+    "Not later source or physical-device acceptance"
+  ]
+}

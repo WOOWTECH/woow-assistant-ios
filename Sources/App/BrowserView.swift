@@ -36,6 +36,12 @@ struct BrowserView: View {
             if let error = browser.error {
                 Text(error).font(.caption).foregroundStyle(.red).accessibilityIdentifier("browser.error")
             }
+            if let notice = workspace.siteModeNotice {
+                Text(notice).font(.caption).accessibilityIdentifier("browser.siteMode.notice")
+            }
+            if let error = workspace.error {
+                Text(error).font(.caption).foregroundStyle(.red).accessibilityIdentifier("browser.workspace.error")
+            }
             if browser.automationOwnsDocument && !browser.isRunning && !browser.isInteracting {
                 HStack {
                     Text("此頁面仍受自動化導覽限制。").font(.caption)
@@ -82,6 +88,24 @@ struct BrowserView: View {
         .sheet(isPresented: $showTranscript) { TranscriptBrowserView(browser: browser, chat: chat) }
         .sheet(isPresented: $showMultiResearch) { MultiSourceResearchView(chat: chat) }
         .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Menu {
+                    Text(workspace.library.userSiteModes.mode(for: browser.loadedURL?.host) == .desktop
+                         ? "目前偏好：電腦版" : "目前偏好：手機版")
+                    Button("手機版網站") { workspace.setManualSiteMode(.mobile) }
+                        .accessibilityIdentifier("browser.siteMode.mobile")
+                    Button("電腦版網站") { workspace.setManualSiteMode(.desktop) }
+                        .accessibilityIdentifier("browser.siteMode.desktop")
+                    Text("可安全重新整理的頁面會立即套用；其他頁面於下次手動導覽套用。")
+                } label: {
+                    Image(systemName: workspace.library.userSiteModes.mode(for: browser.loadedURL?.host) == .desktop
+                          ? "desktopcomputer" : "iphone")
+                }
+                .accessibilityLabel("網站顯示偏好")
+                .accessibilityValue(workspace.library.userSiteModes.mode(for: browser.loadedURL?.host) == .desktop ? "電腦版" : "手機版")
+                .accessibilityIdentifier("browser.siteMode")
+                .disabled(!workspace.available || workspace.isClearingWebsiteData || browser.manualSiteModeHost == nil)
+            }
             ToolbarItem(placement: .primaryAction) {
                 Button { addressFocused = false; browser.webView.endEditing(true); showMultiResearch = true } label: {
                     Image(systemName: "globe")

@@ -57,13 +57,36 @@ public struct BrowserLibraryState: Codable, Equatable, Sendable {
     public private(set) var selectedID: UUID
     public private(set) var bookmarks: [BrowserSavedPage] = []
     public private(set) var history: [BrowserSavedPage] = []
+    public private(set) var userSiteModes = BrowserUserSiteModes()
 
     public init() {
         let tab = BrowserTab(title: "新分頁")
         tabs = [tab]; selectedID = tab.id
     }
 
+    private enum CodingKeys: String, CodingKey {
+        case version, tabs, selectedID, bookmarks, history, userSiteModes
+    }
+
+    public init(from decoder: Decoder) throws {
+        let values = try decoder.container(keyedBy: CodingKeys.self)
+        version = try values.decode(Int.self, forKey: .version)
+        tabs = try values.decode([BrowserTab].self, forKey: .tabs)
+        selectedID = try values.decode(UUID.self, forKey: .selectedID)
+        bookmarks = try values.decode([BrowserSavedPage].self, forKey: .bookmarks)
+        history = try values.decode([BrowserSavedPage].self, forKey: .history)
+        // Additive v1 migration: only an absent field defaults to mobile. A
+        // present malformed/null field must not silently erase saved choices.
+        userSiteModes = values.contains(.userSiteModes)
+            ? try values.decode(BrowserUserSiteModes.self, forKey: .userSiteModes) : .init()
+    }
+
+    public mutating func setManualSiteMode(_ mode: BrowserManualSiteMode, for host: String) throws {
+        try userSiteModes.set(mode, for: host)
+    }
+
     public func validate() throws {
+        try userSiteModes.validate()
         guard version == 1, !tabs.isEmpty, tabs.count <= Self.maximumTabs,
               Set(tabs.map(\.id)).count == tabs.count, tabs.contains(where: { $0.id == selectedID }),
               bookmarks.count <= 300, history.count <= 500 else { throw BrowserLibraryError.invalidState }
