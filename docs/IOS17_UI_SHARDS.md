@@ -5,7 +5,7 @@
 | Scope | 類別 | 目前 methods |
 |---|---|---:|
 | `ui-startup` | `WoowAssistantUITests`、`SelfConfigurationUITests` | 13 |
-| `ui-notifications` | `NotificationUITests` | 1 |
+| `ui-notifications` | `NotificationUITests`、`NotificationApprovalUITests` | 2 |
 | `ui-workspace` | `BrowserWorkspaceUITests`、`BrowserLoginUITests` | 5 |
 | `ui-browser` | `BrowserInteractionUITests`、`BrowserUploadUITests` | 5 |
 | `ui-learning` | `BrowserLearningUITests`、`MultiSourceResearchUITests` | 5 |
@@ -16,7 +16,7 @@
 | `ui-documents` | `SkillExecutionUITests`、`SkillWorkerSettingsUITests` | 14 |
 | `ui-mcp` | `MCPConversationUITests`、`MCPLearningUITests` | 8 |
 
-合計 21 個類別、84 個非 Live methods；另有 22 個 Live methods 明確分開。這是目前來源清單，不是已執行或全面通過的數目。`ui-notifications` 使用真實系統權限與原生通知橫幅，模型仍為固定測資；宜用此次作業專用的新模擬器，不能以 App 偏好重設冒充系統權限重設。
+合計 22 個類別、85 個非 Live methods；另有 22 個 Live methods 明確分開。這是目前來源清單，不是已執行或全面通過的數目。`ui-notifications` 使用真實系統權限與原生通知橫幅，模型仍為固定測資；宜用此次作業專用的新模擬器，不能以 App 偏好重設冒充系統權限重設。
 
 分片以約 10–20 分鐘測試工作量為規劃目標，尚未完成這批分片的原生時間量測；下載 runtime、啟動 simulator 與建置另計。新 `ui-*` scopes 的 build＋test 上限是 30 分鐘，其他 scope 保留原有 80 分鐘上限。每案例 240 秒預設、300 秒最大值保留；含 workspace 的新分片沿用既有 workspace 的 420 秒最大值。沒有以增加逾時或重跑失敗案例達成通過。
 

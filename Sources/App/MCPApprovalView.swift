@@ -1,19 +1,42 @@
 import SwiftUI
 import AssistantMCP
 
+#if DEBUG
+private struct NotificationRouteObservationKey: EnvironmentKey {
+    static let defaultValue = ""
+}
+extension EnvironmentValues {
+    var notificationRouteObservation: String {
+        get { self[NotificationRouteObservationKey.self] }
+        set { self[NotificationRouteObservationKey.self] = newValue }
+    }
+}
+#endif
+
 struct MCPApprovalView: View {
     let proposal: MCPApprovalRequest
     let approve: () -> Void
     let decline: () -> Void
+    #if DEBUG
+    @Environment(\.notificationRouteObservation) private var routeObservation
+    #endif
 
     var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("模型請求執行以下工具。核准只適用於這一次的名稱與參數；結果會提供給已設定的模型。")
-                    Text(verbatim: proposal.name)
-                        .font(.headline).textSelection(.enabled)
-                        .accessibilityIdentifier("mcp.approval.name")
+                    proposalName
+                    #if DEBUG
+                    if Self.exposesFixtureIdentity(arguments: ProcessInfo.processInfo.arguments), !routeObservation.isEmpty {
+                        // The modal can hide root AX. Mirror its read-only route
+                        // value so tests can observe the callback before approval.
+                        Text("通知導頁測試觀測")
+                            .font(.caption2)
+                            .accessibilityIdentifier("mcp.approval.routeObservation")
+                            .accessibilityValue(routeObservation)
+                    }
+                    #endif
                     Text(verbatim: proposal.argumentsText)
                         .font(.system(.body, design: .monospaced)).textSelection(.enabled)
                         .accessibilityIdentifier("mcp.approval.arguments")
@@ -37,6 +60,34 @@ struct MCPApprovalView: View {
             }
         }
     }
+
+    @ViewBuilder private var proposalName: some View {
+        let name = Text(verbatim: proposal.name)
+            .font(.headline).textSelection(.enabled)
+            .accessibilityIdentifier("mcp.approval.name")
+        #if DEBUG
+        if Self.exposesFixtureIdentity(arguments: ProcessInfo.processInfo.arguments) {
+            name.accessibilityValue(proposal.id.uuidString)
+        } else {
+            name
+        }
+        #else
+        name
+        #endif
+    }
+
+    #if DEBUG
+    // Reuse the side-effect-free strict mode/UUID parser; never create a store
+    // or request permission while rendering this read-only fixture observation.
+    static func exposesFixtureIdentity(arguments: [String]) -> Bool {
+        guard arguments.filter({ $0 == "-UITestMode" }).count == 1,
+              arguments.filter({ $0 == "-UITestMCPFixture" }).count == 1,
+              !arguments.contains(where: { $0.hasPrefix("-Live") }),
+              let configuration = try? TaskNotificationStoreConfiguration.resolve(arguments: arguments)
+        else { return false }
+        return configuration.scope != "production"
+    }
+    #endif
 }
 
 struct MCPResultsView: View {

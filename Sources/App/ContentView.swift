@@ -38,6 +38,11 @@ struct ContentView: View {
             }
         }
         .id(notificationNavigationID)
+        #if DEBUG
+        .environment(\.notificationRouteObservation,
+                     MCPApprovalView.exposesFixtureIdentity(arguments: ProcessInfo.processInfo.arguments)
+                     ? "generation=\(notificationNavigationID.uuidString);destination=\(selection.rawValue)" : "")
+        #endif
         .environmentObject(preferences)
         .preferredColorScheme(preferences.preferredColorScheme)
         .taskNotifications(chat: session, store: notifications) { destination in
@@ -70,6 +75,16 @@ struct ContentView: View {
     // Keep every section reachable in a compact iPhone layout, including while typing.
     private var sectionNavigation: some View {
         VStack(spacing: 0) {
+            #if DEBUG
+            if MCPApprovalView.exposesFixtureIdentity(arguments: ProcessInfo.processInfo.arguments) {
+                // Observe the existing route identity only. No test can mutate
+                // it or invoke the notification-open callback through this Text.
+                Text("通知導頁測試觀測")
+                    .font(.caption2)
+                    .accessibilityIdentifier("notifications.routeObservation")
+                    .accessibilityValue("generation=\(notificationNavigationID.uuidString);destination=\(selection.rawValue)")
+            }
+            #endif
             Divider()
             HStack(spacing: 0) {
                 ForEach(AppSection.allCases) { section in
