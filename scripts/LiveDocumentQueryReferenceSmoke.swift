@@ -11,7 +11,63 @@ import PDFKit
 // Opt-in local App probe, not native iOS UI acceptance.
 // Usage: binary --live --catalog /path/to/pinned/MikaBundledSkills.json
 // Configuration comes only from the three authorized WOOW_MODEL_TEST_* fields.
-// Two distinct cases share ONE 12-request allowance; failure stops the probe.
+// Follow-up to the preserved four-request FAIL: two distinct cases share the
+// remaining EIGHT requests. Cumulative authorization is twelve; failure stops.
+private enum PDFReferenceAllowance {
+    static let previous = 4
+    static let remaining = 8
+    static let total = 12
+}
+
+// BEGIN PURE PREFIX DIAGNOSTICS — observation only, never acceptance logic.
+private enum PDFReferenceOutcome: String, Encodable { case notChecked, pass, fail }
+private enum PDFReferencePrefixCategory: String, Encodable {
+    case notChecked, exact, leadingWhitespace, markdownWrapped, newline, tab
+    case otherWhitespace, endWithoutSpace, otherSeparator, laterInAnswer
+    case caseChanged, uuidChanged, tokenAltered, absent
+}
+private struct PDFReferencePrefixObservation: Encodable {
+    var category = PDFReferencePrefixCategory.notChecked
+    var answerUTF8Bytes = 0
+    var exactTokenPresent = false
+    var savedTokenPresent = false
+
+    static func inspect(answer: String, expected: String, saved: String) -> Self {
+        var result = Self()
+        result.answerUTF8Bytes = answer.utf8.count
+        result.exactTokenPresent = answer.contains(expected)
+        result.savedTokenPresent = answer.contains(saved)
+        if answer.hasPrefix(expected + " ") { result.category = .exact; return result }
+        if let range = answer.range(of: expected) {
+            let before = String(answer[..<range.lowerBound])
+            if !before.isEmpty {
+                let trimmed = before.trimmingCharacters(in: .whitespacesAndNewlines)
+                if trimmed.isEmpty { result.category = .leadingWhitespace }
+                else if ["**", "*", "_", "__", "`", "``", "```", "#", "##", "###", ">"].contains(trimmed) {
+                    result.category = .markdownWrapped
+                } else { result.category = .laterInAnswer }
+            } else if range.upperBound == answer.endIndex { result.category = .endWithoutSpace }
+            else {
+                let following = answer[range.upperBound]
+                if following == "\n" || following == "\r\n" || following == "\r" { result.category = .newline }
+                else if following == "\t" { result.category = .tab }
+                else if following.isWhitespace { result.category = .otherWhitespace }
+                else { result.category = .otherSeparator }
+            }
+        } else if answer.range(of: expected, options: .caseInsensitive) != nil {
+            result.category = .caseChanged
+        } else {
+            let stem = expected.hasPrefix("SAVED_PDF_") ? "SAVED_PDF_" : "CURRENT_PDF_"
+            if let stemRange = answer.range(of: stem, options: .caseInsensitive) {
+                let candidate = String(answer[stemRange.upperBound...].prefix(36))
+                result.category = UUID(uuidString: candidate) == nil ? .tokenAltered : .uuidChanged
+            } else { result.category = .absent }
+        }
+        return result
+    }
+}
+// END PURE PREFIX DIAGNOSTICS
+
 private enum PDFReferenceFailure: String, Error {
     case none, optInRequired, missingConfiguration, catalog, storage, pdfCreation
     case extraction, source, consent, task, deadline, inputBoundary, incomplete
@@ -48,7 +104,7 @@ private actor PDFReferenceModel: ChatModelClient {
 
     func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
         try Task.checkCancellation()
-        guard stats.attempts < 12, ContinuousClock.now < deadline else {
+        guard stats.attempts < PDFReferenceAllowance.remaining, ContinuousClock.now < deadline else {
             stats.budgetRejections += 1; throw PDFReferenceFailure.budget
         }
         // Verify the actual Session-produced request without changing it.
@@ -100,6 +156,10 @@ private struct PDFReferenceCase: Encodable {
     var modelCalls = 0, searches = 0, reads = 0, results = 0, citations = 0, corrections = 0
     var prefixMatched = false, exactReadLedger = false, sourceUnchanged = false
     var consentRequired = false
+    var prefixOutcome = PDFReferenceOutcome.notChecked
+    var ledgerOutcome = PDFReferenceOutcome.notChecked
+    var sourceOutcome = PDFReferenceOutcome.notChecked
+    var prefixObservation = PDFReferencePrefixObservation()
     var seconds = 0.0
 }
 
@@ -108,10 +168,14 @@ private struct PDFReferenceReport: Encodable {
     let nativeIOSUI = false
     let syntheticSourceOnly = true
     let maximumHTTPAttempts = 12
+    let previousHTTPAttempts = PDFReferenceAllowance.previous
+    let maximumNewHTTPAttempts = PDFReferenceAllowance.remaining
+    var cumulativeHTTPAttempts = PDFReferenceAllowance.previous
     var result = "FAIL"
     var failure = PDFReferenceFailure.none.rawValue
     var catalogVerified = false, encryptedStoreReopened = false, storageUnchanged = false
     var cleanupSucceeded = false
+    var storageOutcome = PDFReferenceOutcome.notChecked
     var cases: [PDFReferenceCase] = []
     var model = PDFReferenceModelStats()
     var seconds = 0.0
@@ -130,6 +194,7 @@ private struct PDFReferenceReport: Encodable {
             report.failure = (error as? PDFReferenceFailure)?.rawValue ?? PDFReferenceFailure.unknown.rawValue
         }
         report.model = await client.stats
+        report.cumulativeHTTPAttempts = PDFReferenceAllowance.previous + report.model.attempts
         report.seconds = elapsed(started)
         // Only Codable fixed fields, closed categories, counts and booleans.
         // No config, file paths, UUIDs, request/source text or model replies.
@@ -214,7 +279,7 @@ private struct PDFReferenceReport: Encodable {
             row.responses = after.responses - before.responses
             row.verifiedInputs = after.verifiedInputs - before.verifiedInputs
             row.seconds = elapsed(started)
-            if failure == nil && (!(4...12).contains(row.attempts) || row.attempts != row.responses
+            if failure == nil && (!(4...PDFReferenceAllowance.remaining).contains(row.attempts) || row.attempts != row.responses
                 || row.modelCalls != row.attempts || row.verifiedInputs != row.attempts) {
                 failure = PDFReferenceFailure.budget; row.failure = PDFReferenceFailure.budget.rawValue
             }
@@ -222,11 +287,13 @@ private struct PDFReferenceReport: Encodable {
             report.cases.append(row)
             if let failure { throw failure } // No retry and no next-case request after failure.
         }
+        report.storageOutcome = .fail
         guard try Data(contentsOf: vaultURL) == encryptedBefore,
               learning.memory.memories.count == 1, learning.memory.memories.first?.content == preference else {
             throw PDFReferenceFailure.preservation
         }
         report.storageUnchanged = true
+        report.storageOutcome = .pass
     }
 
     @MainActor private static func runCase(source: DocumentTextSnapshot, learning: LearningStore,
@@ -266,12 +333,15 @@ private struct PDFReferenceReport: Encodable {
         guard let result = session.result, session.error == nil, session.refusal == nil, !session.running,
               session.audit.results == 1, session.audit.searches >= 1, session.audit.reads >= 2,
               session.audit.corrections <= 1 else { throw PDFReferenceFailure.incomplete }
+        row.prefixObservation = .inspect(answer: result.answer, expected: prefix, saved: savedPrefix)
         row.prefixMatched = result.answer.hasPrefix(prefix + " ")
             && (prefix == savedPrefix || !result.answer.contains(savedPrefix))
+        row.prefixOutcome = row.prefixMatched ? .pass : .fail
         guard row.prefixMatched else {
             throw prefix == savedPrefix ? PDFReferenceFailure.preference : PDFReferenceFailure.currentRequestPriority
         }
         guard result.answer.contains("42"), result.answer.contains("73") else { throw PDFReferenceFailure.source }
+        row.ledgerOutcome = .fail
         guard result.source.sha256 == source.sha256, result.question == question,
               result.citations.count == 2, result.citations.map(\.pageNumber) == [1, 2] else { throw PDFReferenceFailure.citations }
         for read in result.reads {
@@ -295,7 +365,9 @@ private struct PDFReferenceReport: Encodable {
                   bytes.subdata(in: offset..<(offset + quote.count)) == quote else { throw PDFReferenceFailure.citations }
         }
         row.exactReadLedger = true
+        row.ledgerOutcome = .pass
         row.sourceUnchanged = session.source.sha256 == source.sha256
+        row.sourceOutcome = row.sourceUnchanged ? .pass : .fail
         guard row.sourceUnchanged else { throw PDFReferenceFailure.preservation }
     }
 

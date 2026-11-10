@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "LOCAL_AND_LIVE_PASS_NATIVE_PENDING",
+  "integration_base": "d9cb6a42174155aa81c8ecc92114f61200c889fa",
+  "source_sha256": {
+    "Sources/AssistantModels/RunReferenceContext.swift": "ca1e0b88a5b08e3ac074d167d4d4b5ef5eba414ccb7df0fb189d186edd904fb8",
+    "Tests/AssistantModelsTests/RunReferenceContextTests.swift": "4f79e4b6298d8400fe0c577683cc2bbfff1f82007cae4a17825791edc755d164",
+    "Tests/AssistantSkillsTests/DocumentQueryTests.swift": "b7cd267482d4e3de94c1357e64033a59609eb3ad8bc06962b136d2cf65d45648",
+    "scripts/CheckDocumentQueryApp.swift": "f24b68b3afd63c8c9dd87e710a2a126f5bd8119886943e60e5664576a51efbf1",
+    "scripts/LiveDocumentQueryReferenceSmoke.swift": "de9661c23ae4b326b532a021a907d39fd949a75652c6c730497982326745fa94",
+    "scripts/check_document_query_reference_diagnostics.py": "bbc64fd5698f9d64808dbeb2a541afb154aca6da90f7923d870cd5ea05f3a3aa"
+  },
+  "checks": {
+    "pdf_app_debug": 391,
+    "pdf_app_release": 391,
+    "transcript_app_debug": 238,
+    "transcript_app_release": 238,
+    "transcript_core_suites_each": 17,
+    "prefix_diagnostic_assertions": 68,
+    "parent_live_calls": 0
+  },
+  "reports": {
+    "pdf_app": {
+      "sha256": "ea49da02d61903c5dcc29a1aaec81e3ed16931c4fdd4f258dccad7a474d13a82",
+      "sources_verified_current": true
+    },
+    "transcript": {
+      "sha256": "183a64b0a04f2c19aa6289eda25ff92c1745419837a6c8d7f0a727421ba59040",
+      "sources_verified_current": true
+    }
+  },
+  "live_evidence": "live-document-query-references-3a84-local.json",
+  "limits": [
+    "Real-model success is two local App cases, not native iOS UI acceptance",
+    "Original failure source and evidence retained in commit 3eeaa2d",
+    "The old failed answer was not retained; no single causal root is claimed"
+  ]
+}

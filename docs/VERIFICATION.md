@@ -1,5 +1,16 @@
 # Verification — 2026-11-11
 
+## Compatible saved preferences clarified — 2026-11-11
+
+The common reference message now explicitly asks for saved language/format/style preferences when compatible with the current request. Current explicit instructions and fixed policy still win. References remain user-role JSON data and cannot supply source evidence, authorize actions or add tools; complete-entry 6000-character/24-KiB bounds are unchanged.
+
+The original local PDF-reference probe failed after four actual HTTP calls: it completed search/two reads/answer/two citations but did not match the saved exact prefix. Raw answer was not retained, so the prefix failure category and root cause cannot be reconstructed; later ledger/storage checks were not reached. Its exact probe and [original failure evidence](evidence/live-document-query-references-8c-local.json) are preserved at `3eeaa2d`.
+
+One source-changed validation passed **2/2 local real-model App cases** with eight new requests: saved preference, then explicit current-request override. Both exact prefixes, read-ledger citation bytes, original source and encrypted-storage preservation passed; the second answer excluded the old prefix. Cumulative requests were **12**, no repeat after result. [Live evidence](evidence/live-document-query-references-3a84-local.json). This demonstrates these two runs, not the cause of the older failure or universal compliance.
+
+Parent integration passed actual PDF App checks **391 each Debug/Release**, transcript App regression **238 each** plus **17 core suites each**, and 68 pure diagnostic assertions, with source hashes verified. [Integration evidence](evidence/reference-preference-integration-local.json). The earlier exact17 PDF UI pass did not seed preferences; native acceptance of this header change remains separate.
+
+
 ## Real-model PDF query completed on exact iOS 17 — 2026-11-11
 
 At `956aa9f`, `testRealModelAnswersFromApprovedPDFAndExportCancellationPreservesResult` passed **1/1, zero skips**, in **223.730 seconds** on iOS **17.0.1 / 21A342**. The fixed audit records four model calls, one search, two reads, one result, two citations and zero corrections. Native copy selection, separate read/extract approvals, query, exact citations and exporter cancellation completed; unchanged answer/citations/audit were verified at 185 seconds and the original extraction after returning at 211 seconds. The 300-second test and 285-second cleanup boundaries are unchanged. Parent independently checked the test source hash, actual completed method and fixed phase/audit log markers. [Safe evidence](evidence/live-document-query-956-ios17.json), [run](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42913237285). The original `f49c8f7` timeout remains recorded. This case does not seed a saved preference and does not establish preference effectiveness or a causal performance improvement from one run.
