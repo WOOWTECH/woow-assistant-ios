@@ -71,6 +71,9 @@ jobs:
             -m unittest discover -s scripts/skill-worker -p 'test_*.py' -v 2>&1 | tee build/skill-worker-tests.log
       - name: Test simulator selection
         run: python3 -m unittest discover -s scripts -p 'test_*.py' -v 2>&1 | tee build/scripts-tests.log
+      - name: Test synthetic PDF fixture evidence guards
+        if: github.event_name != 'workflow_dispatch' || contains(fromJSON('["all","files","file-picker"]'), inputs.test_scope)
+        run: python3 scripts/check_skill_fixture_diagnostics.py 2>&1 | tee build/skill-fixture-guards.log
       - name: Test App MCP credential isolation
         run: |
           swiftc -DDEBUG -parse-as-library Sources/App/MCPSettings.swift scripts/MCPSettingsChecks.swift -o build/MCPSettingsChecks
@@ -177,6 +180,15 @@ jobs:
             xcrun xcresulttool export attachments --path build/Tests.xcresult --output-path build/screenshots
             xcrun xcresulttool export diagnostics --path build/Tests.xcresult --output-path build/diagnostics
           fi
+      - name: Collect synthetic PDF fixture evidence
+        if: always()
+        run: |
+          if [ -f build/test-simulator-id.txt ]; then
+            python3 scripts/copy_skill_fixture_diagnostics.py "$(cat build/test-simulator-id.txt)" build/diagnostics build/skill-pdf-fixture-evidence.json
+          else
+            mkdir -p build
+            python3 -c 'import json; from pathlib import Path; Path("build/skill-pdf-fixture-evidence.json").write_text(json.dumps({"version": 1, "observation": "unavailable", "reason": "no-simulator-id"}) + "\n")'
+          fi
       - name: Preserve test evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -188,6 +200,7 @@ jobs:
             build/test-summary.json
             build/app-configuration.json
             build/browser-site-clear.json
+            build/skill-pdf-fixture-evidence.json
             build/screenshots/
             build/diagnostics/
           if-no-files-found: warn
