@@ -1,5 +1,14 @@
 # Verification — 2026-11-10
 
+## 2026-11-10: additional actual-model and exact iOS 17 results
+
+At `6d480d8`, real-model skill authoring [42797710686](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42797710686) passed **1/1 UI, zero skips** in 106.394 seconds. The configured model used actual catalog search/read and prepared a draft; the UI required explicit approval and verified the exact encrypted Markdown after relaunch. [Bounded evidence](evidence/live-authoring-6d480d8.json).
+
+On exact iOS **17.0.1 (21A342)**, ARM macOS 15.8.2/Xcode 16.4, [core 42797718070](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42797718070) passed **121/121**, and [documents 42797731238](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42797731238) passed **7/7 UI**, both zero skips. Documents includes native direct/coordinated PDF selection, both approval refusals, picker cancellation, native export save and export cancellation. These results apply to `6d480d8`; newer settings/transcript changes need separate regression. Other iOS 17 groups have failures or remain running, so this is not complete runtime/physical-device acceptance. [Exact reports](evidence/ios17-core-documents-6d480d8.json).
+
+The iOS 26 workspace failure at `68c49a6` was localized to missing native username input before any authenticated request: all 119 username accessibility snapshots were empty, with a Zhuyin keyboard in the recording. A focused test repair selects the actual English keyboard and asserts exact synthetic username input before moving focus and before submission. It preserves HTTP/cookie/relaunch/logout assertions and does not retry typing. Native retest is pending; why XCTest dropped that insertion is not established. [Diagnosis](evidence/login-input-68c49a6.json).
+
+
 ## iOS 17 ARM environment comparison
 
 At `b5083b7`, both GitHub ARM runs passed the real App UI case

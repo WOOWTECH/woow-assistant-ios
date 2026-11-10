@@ -1,0 +1,51 @@
+{
+  "source": "68c49a6",
+  "run": 42795228599,
+  "artifact": 13755147297,
+  "result": {
+    "passed": 30,
+    "failed": 1,
+    "skipped": 0
+  },
+  "failed_test": "BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+  "original_failure_line": 419,
+  "failed_test_seconds": 117.555,
+  "evidence": {
+    "username_type_action_seconds": 36.14,
+    "post_type_video_seconds": 38,
+    "post_submit_video_seconds": 82,
+    "username_first_webprocess": 15114,
+    "exact_username_AX_snapshots": 119,
+    "username_snapshots_with_value": 0,
+    "failure_keyboard": "Zhuyin; Next keyboard control observed; English (US) observed as next-language value",
+    "failure_username": "empty and keyboard focused",
+    "failure_password": "masked non-empty; mask length is not treated as proof of exact input",
+    "failure_server_markers": [
+      "LOGIN_ANONYMOUS",
+      "LOGIN_SERVER_LOGINS_0",
+      "LOGIN_PROTECTED_CHECKS_0"
+    ],
+    "control": "Same-run clear-site case had exact fixture-user username AX values (WebContent pid 19280) and passed",
+    "target_expanded_bytes": 20035796,
+    "whole_artifact_downloaded": false
+  },
+  "change": {
+    "files": [
+      "Tests/WoowAssistantUITests/BrowserLoginUITests.swift"
+    ],
+    "native_keyboard": "one globe long press, exact English (US) selection, assert Latin keys; handle existing exact QuickPath introduction",
+    "input": "one username type, exact-value assertion before moving focus and again before submit; password/newline separate",
+    "preserved": "30s authenticated response, successful HTTP login count, cross-tab cookie, relaunch cookie, logout revocation, site clear and post-clear relaunch assertions"
+  },
+  "validation": {
+    "parse": {
+      "Debug": 0,
+      "Release": 0
+    },
+    "diff_check": 0,
+    "real_HTTP_fixture_assertions": 42,
+    "native_UI": "pending current CI; no Xcode/XCTest runtime on local host"
+  },
+  "uncertainty": "Observed failure is missing username input, not cookie storage/deletion. The lower-level reason XCTest dropped the first ASCII insertion while Zhuyin was active is not established. Explicit native Latin selection plus readback is the bounded repair candidate; next CI must prove it.",
+  "reference": "https://support.apple.com/en-euro/guide/iphone/iph73b71eb/26/ios/26"
+}

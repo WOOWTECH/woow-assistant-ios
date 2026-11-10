@@ -48,3 +48,5 @@ Native UI and live-service results must be recorded by source revision in
 VERIFICATION.md. Adding this flow or passing its deterministic tests does not by
 itself establish live-model success, full original-runtime parity, or iOS 17
 physical-device acceptance.
+
+Actual-model UI follow-up: source `6d480d8`, run [42797710686](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42797710686), passed the actual search/read/prepare → UI approval → encrypted exact-document relaunch flow, **1/1, zero skips**, 106.394 seconds on iOS 18.5 iPhone 16 Pro Max. This is separate from complete original-tool or physical-device parity.

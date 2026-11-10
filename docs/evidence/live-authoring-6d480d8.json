@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "source_revision": "6d480d8",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42797710686",
+  "job_id": 129767035477,
+  "device": "iPhone 16 Pro Max",
+  "runtime": "iOS 18.5",
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "case_seconds": 106.394,
+  "case": "LiveModelUITests/testRealModelReadsOriginalSkillAndReviewedSaveSurvivesRelaunch",
+  "scope": "Configured real model; actual read/search/prepare-save tools; UI approval; exact encrypted Markdown after App relaunch. Not full original skills, iOS 17 or physical-device acceptance.",
+  "safe_log_excerpt": [
+    "2026-11-10T10:23:08.4761000Z Test Case '-[WoowAssistantUITests.LiveModelUITests testRealModelReadsOriginalSkillAndReviewedSaveSurvivesRelaunch]' started.",
+    "2026-11-10T10:24:54.8480700Z Test Case '-[WoowAssistantUITests.LiveModelUITests testRealModelReadsOriginalSkillAndReviewedSaveSurvivesRelaunch]' passed (106.394 seconds).",
+    "2026-11-10T10:24:54.9081810Z Test Suite 'LiveModelUITests' passed at 2026-11-10 10:24:54.823.",
+    "2026-11-10T10:24:54.9265400Z \t Executed 1 test, with 0 failures (0 unexpected) in 106.394 (106.398) seconds",
+    "2026-11-10T10:24:54.9471740Z \t Executed 1 test, with 0 failures (0 unexpected) in 106.394 (106.399) seconds",
+    "2026-11-10T10:24:54.9675550Z \t Executed 1 test, with 0 failures (0 unexpected) in 106.394 (106.400) seconds"
+  ]
+}

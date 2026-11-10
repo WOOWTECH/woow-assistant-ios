@@ -411,14 +411,73 @@ final class BrowserLoginUITests: XCTestCase {
         let password = app.webViews.secureTextFields["測試密碼"].firstMatch
         tap(username)
         dismissKeyboardIntroductionIfPresented()
+        guard selectLatinKeyboardForSyntheticAccount() else { return }
         username.typeText("fixture-user")
+        // 68c49a6 current: typeText returned successfully with the Zhuyin
+        // keyboard, but the video and every username AX snapshot stayed empty.
+        // Submission returned focus to the required empty username without a
+        // protected HTTP receipt. Verify input before moving focus; never retry.
+        let accountEntered = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value == %@", "fixture-user"), object: username)
+        guard XCTWaiter.wait(for: [accountEntered], timeout: 10) == .completed else {
+            XCTFail("Native keyboard input must populate the exact synthetic username before entering the password.")
+            return
+        }
         revealPasswordByNativeScrolling(password)
-        tap(password); password.typeText("fixture-password-v1\n")
+        tap(password); password.typeText("fixture-password-v1")
+        // Only a boolean for the fixed synthetic account; no password values or
+        // arbitrary keyboard/AX dumps. Keep submission separate from typing so
+        // an input failure cannot be reported as a cookie/network timeout.
+        guard (username.value as? String) == "fixture-user" else {
+            XCTFail("The synthetic username must remain unchanged when the password receives focus.")
+            return
+        }
+        print("LOGIN_NATIVE_ACCOUNT_VERIFIED")
+        password.typeText("\n")
         // Native keyboard Go submits the real form. No evaluateJavaScript,
         // setCookie, URLRequest body injection, or pre-authenticated fixtures.
         XCTAssertTrue(text("LOGIN_PROTECTED_AUTHENTICATED").waitForExistence(timeout: 30))
         XCTAssertTrue(text("LOGIN_SERVER_LOGINS_1").exists)
         XCTAssertFalse(app.staticTexts["browser.error"].exists)
+    }
+
+    private func selectLatinKeyboardForSyntheticAccount() -> Bool {
+        let keyboard = app.keyboards.firstMatch
+        func hasLatinKeys() -> Bool {
+            keyboard.keys.matching(NSPredicate(format: "label IN %@", ["q", "Q", "a", "A"])).count >= 2
+        }
+        if hasLatinKeys() { return true }
+
+        // The failing run exposes this exact native globe control, and its
+        // next-language value includes English (US). Select that keyboard from
+        // the native language menu once instead of cycling unknown layouts or
+        // changing simulator preferences. App language remains zh-Hant.
+        let globe = app.buttons["Next keyboard"].firstMatch
+        let globeReady = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: globe)
+        guard XCTWaiter.wait(for: [globeReady], timeout: 10) == .completed else {
+            XCTFail("The native keyboard switch must be available for the synthetic ASCII account.")
+            return false
+        }
+        globe.press(forDuration: 1)
+        let english = app.descendants(matching: .any)
+            .matching(NSPredicate(format: "label == %@", "English (US)")).firstMatch
+        let englishReady = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: english)
+        guard XCTWaiter.wait(for: [englishReady], timeout: 10) == .completed else {
+            XCTFail("The native language menu must offer the known English (US) keyboard.")
+            return false
+        }
+        english.tap()
+        // First English activation may present the real QuickPath tutorial.
+        dismissKeyboardIntroductionIfPresented()
+        let latinReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in hasLatinKeys() }, object: nil)
+        guard XCTWaiter.wait(for: [latinReady], timeout: 10) == .completed else {
+            XCTFail("The selected native keyboard must expose Latin letter keys before typing the synthetic account.")
+            return false
+        }
+        print("LOGIN_NATIVE_LATIN_KEYBOARD_SELECTED")
+        return true
     }
 
     private func dismissKeyboardIntroductionIfPresented() {
