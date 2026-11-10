@@ -69,10 +69,16 @@ final class BrowserWorkspaceUITests: XCTestCase {
         XCTAssertTrue(bookmark.label.contains("My saved page"))
         chooseSection("歷史"); XCTAssertEqual(history.count, 1)
         app.buttons["browser.history.clear"].tap()
-        // iOS 26 exposes the single confirmation action as nested Buttons
-        // with the same identifier, label and frame. Scope to the sheet so
-        // its first match still names the exact destructive action.
-        let confirmClear = app.sheets.buttons["browser.history.confirmClear"].firstMatch
+        // 6d480d8 iOS 17 uses Other for this exact titled dialog; iOS 26
+        // uses Sheet with duplicate nested Buttons. Retain the dialog boundary
+        // and exact destructive action independently of those AX differences.
+        let confirmation = app.descendants(matching: .any).matching(NSPredicate(
+            format: "(elementType == %d OR elementType == %d) AND label == %@",
+            XCUIElement.ElementType.sheet.rawValue, XCUIElement.ElementType.other.rawValue,
+            "清除瀏覽歷史？書籤與網站登入資料會保留。")).firstMatch
+        let confirmClear = confirmation.buttons.matching(NSPredicate(
+            format: "identifier == %@ AND label == %@",
+            "browser.history.confirmClear", "清除歷史")).firstMatch
         XCTAssertEqual(confirmClear.label, "清除歷史")
         confirmClear.tap()
         XCTAssertTrue(app.staticTexts["browser.history.empty"].waitForExistence(timeout: 5))

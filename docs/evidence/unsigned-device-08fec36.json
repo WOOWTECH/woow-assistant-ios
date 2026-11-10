@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source_revision": "08fec36",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42802907455",
+  "artifact_id": 13756159518,
+  "report": {
+    "xcode": "Xcode 26.2\nBuild version 17C52",
+    "iphoneos_sdk": "26.2",
+    "build_number": "31",
+    "bundle_id": "io.woowtech.assistant",
+    "minimum_os": "17.0",
+    "platform": "iphoneos",
+    "verified_binary_count": 9,
+    "signature_verified": false,
+    "ats_key_absent": true,
+    "native_documents_enabled": true,
+    "required_reason_entries_verified": true,
+    "artifact_kind": "unsigned-device-build-not-installable",
+    "runtime_tested": false,
+    "uploaded": false
+  },
+  "limitation": "No signing identity, physical runtime or installable IPA; subsequent source changes require new validation."
+}

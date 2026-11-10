@@ -359,9 +359,16 @@ final class BrowserLoginUITests: XCTestCase {
         tap(app.segmentedControls["browser.library.sections"].buttons["網站"])
         let clear = app.buttons["browser.sites.clear.127.0.0.1"]
         tap(clear, timeout: 30)
-        // iOS 26 presents the native confirmation but exposes nested buttons
-        // with the same identifier. Select its exact action inside the sheet.
-        let confirm = app.sheets.buttons["browser.sites.confirmClear"].firstMatch
+        // 6d480d8 iOS 17 exposes this titled confirmation as Other; iOS 26
+        // exposes Sheet and nested duplicate Buttons. Scope to the exact
+        // dialog title and action, without assuming a single AX container type.
+        let confirmation = app.descendants(matching: .any).matching(NSPredicate(
+            format: "(elementType == %d OR elementType == %d) AND label == %@",
+            XCUIElement.ElementType.sheet.rawValue, XCUIElement.ElementType.other.rawValue,
+            "清除此網站的資料？可能需要重新登入，所有分頁與下載將停止。")).firstMatch
+        let confirm = confirmation.buttons.matching(NSPredicate(
+            format: "identifier == %@ AND label == %@",
+            "browser.sites.confirmClear", "清除網站資料")).firstMatch
         XCTAssertTrue(confirm.waitForExistence(timeout: 15))
         XCTAssertEqual(confirm.label, "清除網站資料")
         tap(confirm)

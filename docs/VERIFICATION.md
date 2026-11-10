@@ -1,5 +1,12 @@
 # Verification — 2026-11-10
 
+## 2026-11-10: device build and iOS 17 confirmation selectors
+
+Source `08fec36` [unsigned-device run 42802907455](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42802907455) passed on Xcode 26.2 / iPhoneOS SDK 26.2, build 31. All nine device binaries retain minimum iOS 17.0; native Documents configuration, absent ATS exceptions and required-reason manifest were verified. This includes the initial transcript integration but not later DOM fixes. It is an unsigned, **noninstallable** build, not a signed release or physical-device result. [Report](evidence/unsigned-device-08fec36.json).
+
+The `6d480d8` iOS 17 workspace failures exposed the website/history confirmation as an accessibility `Other`, whereas iOS 26 exposes `Sheet`. The selector correction keeps the exact dialog title, destructive button identifier/label, cookie-revocation/relaunch checks and original deadlines. It accepts those observed native container types; corrected UI execution remains pending.
+
+
 ## 2026-11-10: additional actual-model and exact iOS 17 results
 
 At `6d480d8`, real-model skill authoring [42797710686](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42797710686) passed **1/1 UI, zero skips** in 106.394 seconds. The configured model used actual catalog search/read and prepared a draft; the UI required explicit approval and verified the exact encrypted Markdown after relaunch. [Bounded evidence](evidence/live-authoring-6d480d8.json).
