@@ -1,0 +1,284 @@
+{
+  "schema_version": 1,
+  "collected_at_utc": "2026-11-10T16:06:54.025038+00:00",
+  "repository": "WOOWTECH/woow-assistant-ios",
+  "source": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+  "scope": "native",
+  "run_id": 42847878172,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42847878172",
+  "status": "TWO_VARIANTS_PASSED_ONE_QUEUED",
+  "matrix_passed": false,
+  "completed_variants": [
+    {
+      "variant": "ios18-large",
+      "job_id": 129940186514,
+      "job_conclusion": "success",
+      "artifact_id": 13780845061,
+      "job_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42847878172/job/129940186514",
+      "device": {
+        "deviceName": "iPhone 16 Pro Max",
+        "osVersion": "18.5",
+        "osBuildNumber": "22F77",
+        "architecture": "arm64",
+        "platform": "iOS Simulator"
+      },
+      "summary": {
+        "result": "Passed",
+        "totalTestCount": 169,
+        "passedTests": 169,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0,
+        "startTime": 1794326078.222,
+        "finishTime": 1794326280.125
+      },
+      "actual_native_events": {
+        "started": 169,
+        "completed": 169,
+        "passed": 169,
+        "failed": 0,
+        "skipped": 0,
+        "unique_started": 169,
+        "unique_completed": 169,
+        "starts_equal_completions": true,
+        "maximum_occurrences_per_method": 1,
+        "counts_by_target": {
+          "AssistantBrowserIntegrationTests": 21,
+          "AssistantDomainTests": 53,
+          "AssistantMCPTests": 15,
+          "AssistantMemoryTests": 10,
+          "AssistantModelsTests": 6,
+          "AssistantPersistenceTests": 4,
+          "AssistantSkillsTests": 60
+        }
+      },
+      "portable_core": {
+        "started": 147,
+        "completed": 147,
+        "passed": 147,
+        "failed": 0,
+        "skipped": 0
+      },
+      "pdf_assembly_native_methods": [
+        {
+          "method": "AssistantSkillsTests.SkillPDFAssemblyTests/testApprovalSnapshotAndActualCoordinatedStorageRead",
+          "outcome": "passed",
+          "seconds": 0.063
+        },
+        {
+          "method": "AssistantSkillsTests.SkillPDFAssemblyTests/testBoundsAndUnsupportedDocuments",
+          "outcome": "passed",
+          "seconds": 0.312
+        },
+        {
+          "method": "AssistantSkillsTests.SkillPDFAssemblyTests/testExpiryRevocationAndReadCancellation",
+          "outcome": "passed",
+          "seconds": 0.135
+        },
+        {
+          "method": "AssistantSkillsTests.SkillPDFAssemblyTests/testNativeAssemblyCancellationRacesAndOutputBound",
+          "outcome": "passed",
+          "seconds": 0.252
+        },
+        {
+          "method": "AssistantSkillsTests.SkillPDFAssemblyTests/testNativeExtractReorderMergePreservesRasterTextAndGeometry",
+          "outcome": "passed",
+          "seconds": 0.145
+        }
+      ],
+      "shard_completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 169,
+          "passedTests": 169,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 0,
+        "completed_ui_count": 0,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "bounded_evidence": {
+        "whole_archive_downloaded": false,
+        "method": "HTTP Range ZIP central directory and selected entries only",
+        "selected_files": {
+          "test-summary.json": {
+            "bytes": 1567,
+            "sha256": "5918457f0b2d5ccd5537606a02f24bf398ef2a6d101cbfa21f9aaf17fbef2d54"
+          },
+          "ios-tests.log": {
+            "bytes": 915864,
+            "sha256": "a6d3f9124dd6981c24474a9f54249ec40e4fdba6f9f81494f8b9d7f194951c1e"
+          },
+          "core-tests.log": {
+            "bytes": 85189,
+            "sha256": "6ae8eabf72eb1061b93ff8d47953c410f3c3166b6aef3742e65d797ee28b092e"
+          },
+          "ui-shard-completion.json": {
+            "bytes": 335,
+            "sha256": "a290e0dafca18e79e0298dd3b360d167f002bcf17f71fa67af30452c393c97e7"
+          },
+          "test-simulator.json": {
+            "bytes": 693,
+            "sha256": "3c7c5898405effad8f122d0b77809840b234d6aa651cb38aeb77fdfe1faa0cc5"
+          }
+        }
+      }
+    },
+    {
+      "variant": "ios26-current",
+      "job_id": 129940187218,
+      "job_conclusion": "success",
+      "artifact_id": 13779423609,
+      "job_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42847878172/job/129940187218",
+      "device": {
+        "deviceName": "iPhone 17",
+        "osVersion": "26.2",
+        "osBuildNumber": "23C54",
+        "architecture": "arm64",
+        "platform": "iOS Simulator"
+      },
+      "summary": {
+        "result": "Passed",
+        "totalTestCount": 169,
+        "passedTests": 169,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0,
+        "startTime": 1794326109.037,
+        "finishTime": 1794326349.11
+      },
+      "actual_native_events": {
+        "started": 169,
+        "completed": 169,
+        "passed": 169,
+        "failed": 0,
+        "skipped": 0,
+        "unique_started": 169,
+        "unique_completed": 169,
+        "starts_equal_completions": true,
+        "maximum_occurrences_per_method": 1,
+        "counts_by_target": {
+          "AssistantBrowserIntegrationTests": 21,
+          "AssistantDomainTests": 53,
+          "AssistantMCPTests": 15,
+          "AssistantMemoryTests": 10,
+          "AssistantModelsTests": 6,
+          "AssistantPersistenceTests": 4,
+          "AssistantSkillsTests": 60
+        }
+      },
+      "portable_core": {
+        "started": 147,
+        "completed": 147,
+        "passed": 147,
+        "failed": 0,
+        "skipped": 0
+      },
+      "pdf_assembly_native_methods": [
+        {
+          "method": "AssistantSkillsTests.SkillPDFAssemblyTests/testApprovalSnapshotAndActualCoordinatedStorageRead",
+          "outcome": "passed",
+          "seconds": 0.022
+        },
+        {
+          "method": "AssistantSkillsTests.SkillPDFAssemblyTests/testBoundsAndUnsupportedDocuments",
+          "outcome": "passed",
+          "seconds": 0.165
+        },
+        {
+          "method": "AssistantSkillsTests.SkillPDFAssemblyTests/testExpiryRevocationAndReadCancellation",
+          "outcome": "passed",
+          "seconds": 0.121
+        },
+        {
+          "method": "AssistantSkillsTests.SkillPDFAssemblyTests/testNativeAssemblyCancellationRacesAndOutputBound",
+          "outcome": "passed",
+          "seconds": 0.233
+        },
+        {
+          "method": "AssistantSkillsTests.SkillPDFAssemblyTests/testNativeExtractReorderMergePreservesRasterTextAndGeometry",
+          "outcome": "passed",
+          "seconds": 0.053
+        }
+      ],
+      "shard_completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 169,
+          "passedTests": 169,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 0,
+        "completed_ui_count": 0,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "bounded_evidence": {
+        "whole_archive_downloaded": false,
+        "method": "HTTP Range ZIP central directory and selected entries only",
+        "selected_files": {
+          "test-summary.json": {
+            "bytes": 1551,
+            "sha256": "dcc05f4d26c3ad7b2c77dd830398b33542ab9f82e25576327662367b20b32964"
+          },
+          "ios-tests.log": {
+            "bytes": 958355,
+            "sha256": "b4fb785a3f6977ff7659355f63a6aa245faa7bc47eaa88d0db985b46fe799796"
+          },
+          "core-tests.log": {
+            "bytes": 84909,
+            "sha256": "1ea0f9d68d0e1f2532f9d99ed32673cf6c7a9c963ede21065980b8f883bb6a52"
+          },
+          "ui-shard-completion.json": {
+            "bytes": 335,
+            "sha256": "a290e0dafca18e79e0298dd3b360d167f002bcf17f71fa67af30452c393c97e7"
+          },
+          "test-simulator.json": {
+            "bytes": 677,
+            "sha256": "58764fa7c7239ffb47c40f9b38c61d69a6647ff90d88a975a7a498cc927154cc"
+          }
+        }
+      }
+    }
+  ],
+  "pending_variants": [
+    {
+      "variant": "ios18-compact",
+      "job_id": 129940187078,
+      "status": "queued",
+      "conclusion": null,
+      "functional_result": "not_yet_available"
+    }
+  ],
+  "completed_variant_totals": {
+    "variants": 2,
+    "native_case_executions": 338,
+    "native_passed": 338,
+    "native_failed": 0,
+    "native_skipped": 0,
+    "native_expected_failures": 0,
+    "portable_case_executions": 294,
+    "portable_passed": 294
+  },
+  "compiler_fix": {
+    "prior_evidence": "native-build-80a1121.json",
+    "file": "Tests/AssistantSkillsTests/SkillPDFAssemblyTests.swift",
+    "corrected_file_sha256": "a1a68dd8af0885d0e6982a3dbe34ad015d510e3610cd0b492fa5a7ad47b9ee5f",
+    "conclusion": "The prior compound-expression typechecking failure cleared on both completed variants. All five actual PDF assembly native methods passed on each; no assertions were removed."
+  },
+  "limitations": [
+    "SE is queued; this is not full matrix acceptance.",
+    "Native/hosted methods were exercised; no UI cases were selected in this scope. PDF picker/export and learning UI are separate runs.",
+    "Counts describe source 74f7b71, not the later uncommitted profile_edit integration or ChatContextWindow files.",
+    "Actual synthetic PDF raster/geometry results do not establish compatibility with every arbitrary PDF."
+  ]
+}

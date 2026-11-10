@@ -1,0 +1,158 @@
+{
+  "scope": "Pure profile_edit parse, prepare and approved in-memory application; local standalone execution of the same assertions used by the native XCTest class.",
+  "recordedAtUTC": "2026-11-10T16:03:44.208622+00:00",
+  "workingTreeBaseRevision": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+  "sourceStatus": "Frozen uncommitted files identified by SHA-256; the base revision alone does not contain this implementation.",
+  "sources": [
+    {
+      "path": "Sources/AssistantMemory/UserProfileTool.swift",
+      "sha256": "e5978187dc6a14edc49fa6ff86664ad73c09b226ccaf9c1d801b21310aa4c90f"
+    },
+    {
+      "path": "Tests/AssistantMemoryTests/UserProfileToolTests.swift",
+      "sha256": "9b667e01baf76155fedc2dbbfda75488fb84ab4acc5efb4eb6e35ef5fab936b7"
+    },
+    {
+      "path": "scripts/CheckUserProfileTool.sh",
+      "sha256": "b93b0c090bd5a2a1d1ec7e6e2e59dc5848275f1aa36d803098c8dc316d7bc6e2"
+    }
+  ],
+  "stateDependencies": [
+    {
+      "path": "Sources/AssistantMemory/UserProfileState.swift",
+      "sha256": "ae70a9a17e20aed0e29f4196e63102169c2d3b7048b3c8566bfb20f7289bbbdf"
+    },
+    {
+      "path": "Sources/AssistantMemory/MemorySafety.swift",
+      "sha256": "8a0fdbef488712c96d840aa1b0c55e62b5e07f6035cec6532ebf754f66b09074"
+    }
+  ],
+  "validation": {
+    "command": "bash scripts/CheckUserProfileTool.sh",
+    "exitCode": 0,
+    "compiler": "Apple Swift 5.8.1 (swiftlang-5.8.0.124.5 clang-1403.0.22.11.100)",
+    "target": "x86_64-apple-darwin22.6.0",
+    "warningsAsErrors": true,
+    "groups": [
+      {
+        "name": "strict arguments",
+        "assertions": 38,
+        "result": "passed"
+      },
+      {
+        "name": "current-user provenance",
+        "assertions": 10,
+        "result": "passed"
+      },
+      {
+        "name": "specific values",
+        "assertions": 14,
+        "result": "passed"
+      },
+      {
+        "name": "reviewed lifecycle",
+        "assertions": 14,
+        "result": "passed"
+      },
+      {
+        "name": "state rules",
+        "assertions": 12,
+        "result": "passed"
+      },
+      {
+        "name": "stale/transactional",
+        "assertions": 9,
+        "result": "passed"
+      }
+    ],
+    "totalGroups": 6,
+    "passedAssertions": 97,
+    "failedAssertions": 0,
+    "nativeXCTest": "Not executed locally; conditional native XCTest class exposes the same six behavior groups and excludes the standalone @main.",
+    "swiftFrontendParse": "passed for the XCTest source branch",
+    "gitDiffCheck": "passed",
+    "parentChatFlowTestsRunByThisAgent": false,
+    "networkOrDiskPersistenceExercised": false,
+    "excluded": "No App/UI/live-model, encrypted-store transaction, model transport, or release acceptance is established by these local assertions."
+  },
+  "api": {
+    "parse": "UserProfileToolRequest.parse(_ argumentsJSON: String) throws -> UserProfileToolRequest",
+    "prepare": "prepare(state: UserProfileState, utterances: [String]) throws -> UserProfileToolReview",
+    "reviewFields": [
+      "id: UUID",
+      "baseRevision: UUID",
+      "op: UserProfileToolOperation",
+      "quote: String",
+      "before: String?",
+      "after: String?"
+    ],
+    "apply": "UserProfileToolReview.apply(to state: inout UserProfileState, now: Date) throws -> UserProfileToolReceipt",
+    "receiptFields": [
+      "applied: Bool",
+      "id: UUID?",
+      "effective: String (next_run)"
+    ],
+    "beforeAfter": "Complete affected sentences, even when replace uses a fragment. Add before=nil; delete after=nil.",
+    "idMeaning": "Review id identifies the proposal. Receipt id identifies the newly created entry for add/replace and is nil/omitted for delete."
+  },
+  "limits": {
+    "activeEntries": 20,
+    "textAndMatchMaximumUTF16": 160,
+    "quoteMaximumUTF16": 1000,
+    "normalizedQuoteMinimumUTF16": 2,
+    "sentence": "Existing state validation enforces one sentence, rejects line breaks, rejects sensitive content, and validates the full sentence after fragment replacement.",
+    "arguments": "Exact op add/replace/delete; op and quote required, text required for add/replace, match required for replace/delete. Only op/text/match/quote keys, string or optional null values. Reject duplicate keys including escaped spellings, unknown fields, wrong types, trailing data and malformed JSON.",
+    "rawBoundsBeforeNormalization": true
+  },
+  "pinnedReference": {
+    "revision": "0c172724f3f0c96f7345262588072f6e95db1138",
+    "localRoot": "/tmp/woow-mika-memory-reference",
+    "sources": [
+      {
+        "path": "core/src/main/kotlin/com/wangzan101/mika/core/general/ProfileEdit.kt",
+        "sha256": "34a564bbe51e44e5cd20ccf37e6ae7cb9cdd50b2bdbfd8cce6e0f4fcf5f73959"
+      },
+      {
+        "path": "core/src/main/kotlin/com/wangzan101/mika/core/memory/UserUtterances.kt",
+        "sha256": "8dc19476cbe8cf6ff2694a41325369041971ab3337f76ffe3e9bf9e30a7f9765"
+      },
+      {
+        "path": "core/src/main/kotlin/com/wangzan101/mika/core/memory/NumberText.kt",
+        "sha256": "cd528b2d9d98d2c17bc022d4e0887003b1b32f480f67911fcae8843e10621591"
+      },
+      {
+        "path": "core/src/main/kotlin/com/wangzan101/mika/core/memory/ProfileStore.kt",
+        "sha256": "2214153306339a49eb90e0e6bf9dcaf89c05cb623285232f635fee82f32b23d9"
+      },
+      {
+        "path": "core/src/main/resources/prompts/tools/profile_edit.md",
+        "sha256": "3576076433210ff222139af2a037fb9fd7018f96916fdcd3b75d30feeb0322c2"
+      }
+    ],
+    "preservedSemantics": [
+      "Quote must be a case-sensitive substring of a current-run user utterance after NFKC normalization and trimming. There is no previous-confirmation exception for profile_edit.",
+      "Specific values are checked against the quote plus all current-run user utterances; text is not rewritten into the normalized comparison form.",
+      "Exact unique segment must occur once within one active row. Replace preserves the rest of that row, creates a new entry and supersedes the old row. Delete supersedes the complete matched row; history remains.",
+      "A full profile rejects add without evicting entries; replacement at capacity is allowed. Existing snapshots remain unchanged and the receipt states next_run.",
+      "No automatic profile consolidation is introduced; original automatic extraction concerns ordinary memory."
+    ],
+    "reviewRequiredDifference": "Pinned ProfileEdit.execute directly applies a validated tool call; its prompt restricts edits to explicit user requests. This iOS core only prepares an immutable review, and the host must obtain explicit approval before apply. Negated utterance membership is not an authorization parser; a test proves prepare remains pure even when the quote contains negation.",
+    "transactionDifference": "Review pins baseRevision. Apply rejects stale/replayed/cleared state, mutates a value copy, and publishes only after successful state validation. The host must apply to its own candidate, atomically persist the complete encrypted snapshot, then publish and emit the receipt/recordCommitted; core apply alone does not establish disk success.",
+    "strictJSONDifference": "Raw duplicate argument keys, including escaped equivalents, are rejected before constructing a dictionary; callers must preserve original argument JSON bytes."
+  },
+  "specificsHeuristicLimits": [
+    "Extracted specifics are quoted strings, ASCII digit runs after NFKC/number normalization, Latin words/identifiers of at least three characters, and pinned Han place fragments ending in the specified simplified-Chinese suffixes.",
+    "Chinese digit runs of at least three characters map digit-by-digit, discarding ten/hundred/thousand markers when mapped digits exist. Separators collapse only when at least three digits are present; this is matching normalization, not numeric interpretation.",
+    "Only the pinned simplified-Chinese person markers are removed. The shared memory grammar allowlist is deliberately not added.",
+    "Unquoted Chinese personal names and place names without the recognized suffixes can escape extraction. The check is a bounded heuristic, not semantic entailment, factual verification, or proof of explicit consent.",
+    "The host is the provenance boundary: utterances must contain only this run's actual user words. Website, assistant, tool, attachment, old-turn and profile text must never be inferred to be user utterances. The [String] API cannot independently authenticate caller-supplied provenance.",
+    "Quote membership and supported specifics never authorize tools, execution, network access or automatic writes. The host separately gates the memory master switch and explicit proposal review."
+  ],
+  "privacy": {
+    "rawLogsIncluded": false,
+    "environmentsIncluded": false,
+    "configurationIncluded": false,
+    "liveInputOrModelContentIncluded": false,
+    "commitsOrDispatchesPerformed": false
+  }
+}

@@ -1,0 +1,173 @@
+{
+  "schema_version": 1,
+  "collected_at_utc": "2026-11-10T15:55:06.039Z",
+  "repository": "WOOWTECH/woow-assistant-ios",
+  "source": "80a1121047a63ebc7f349d42572035f72a5b4be6",
+  "scope": "native",
+  "run_id": 42842690731,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42842690731",
+  "classification": "PORTABLE_TEST_COMPILATION_FAILED_BEFORE_APP_BUILD_OR_NATIVE_EXECUTION",
+  "primary_failure": {
+    "step": "Test portable core",
+    "file": "Tests/AssistantSkillsTests/SkillPDFAssemblyTests.swift",
+    "line": 99,
+    "column": 17,
+    "diagnostic": "the compiler is unable to type-check this expression in reasonable time; try breaking up the expression into distinct sub-expressions",
+    "expression": "stride(from: 0, to: rendered.count, by: 4).filter { ... RGB channel arithmetic and comparisons ... }.count",
+    "actual_compiler_failure": true,
+    "proactive_only_change": false,
+    "failed_matrix_jobs": 3,
+    "test_case_counts": null,
+    "test_case_counts_note": "Compilation failed before any Test Case started or Executed count appeared in the three retrieved job logs. These are build failures, not three failing PDF assertions or passing native suites.",
+    "downstream_failure": "The shard-completion guard also failed because build/test-summary.json did not exist. This is secondary to compilation and is not an independent functional failure."
+  },
+  "variants": [
+    {
+      "variant": "ios26-current",
+      "requested_simulator": "iPhone 17",
+      "requested_ios": "26.2",
+      "xcode_selection": "26.2",
+      "job_id": 129921802459,
+      "first_compiler_error_at_utc": "2026-11-10T15:35:54.1273310Z",
+      "job_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42842690731/job/129921802459",
+      "job_conclusion": "failure",
+      "portable_core_step": "failure",
+      "app_build_step": "skipped",
+      "native_test_step": "skipped",
+      "native_functional_result": "not_executed",
+      "evidence_source": "GitHub workflow job steps and filtered final job log; no artifact archive download"
+    },
+    {
+      "variant": "ios18-compact",
+      "requested_simulator": "iPhone SE (3rd generation)",
+      "requested_ios": "18.5",
+      "xcode_selection": "16.4",
+      "job_id": 129921803091,
+      "first_compiler_error_at_utc": "2026-11-10T15:37:17.1868330Z",
+      "job_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42842690731/job/129921803091",
+      "job_conclusion": "failure",
+      "portable_core_step": "failure",
+      "app_build_step": "skipped",
+      "native_test_step": "skipped",
+      "native_functional_result": "not_executed",
+      "evidence_source": "GitHub workflow job steps and filtered final job log; no artifact archive download"
+    },
+    {
+      "variant": "ios18-large",
+      "requested_simulator": "iPhone 16 Pro Max",
+      "requested_ios": "18.5",
+      "xcode_selection": "16.4",
+      "job_id": 129921803017,
+      "first_compiler_error_at_utc": "2026-11-10T15:43:10.5420260Z",
+      "job_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42842690731/job/129921803017",
+      "job_conclusion": "failure",
+      "portable_core_step": "failure",
+      "app_build_step": "skipped",
+      "native_test_step": "skipped",
+      "native_functional_result": "not_executed",
+      "evidence_source": "GitHub workflow job steps and filtered final job log; no artifact archive download"
+    }
+  ],
+  "correction": {
+    "integrated_source": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+    "file": "Tests/AssistantSkillsTests/SkillPDFAssemblyTests.swift",
+    "old_file_sha256": "c7988cd1361cc78cf6cc2814e5408c70ec11ce03b57358875bff4f470c60a8a5",
+    "new_file_sha256": "a1a68dd8af0885d0e6982a3dbe34ad015d510e3610cd0b492fa5a7ad47b9ee5f",
+    "implementation": "Replace the compound filter/count expression with an explicit loop, precomputed alternate channel indices and named UInt8 sample values.",
+    "preserved": [
+      "Same RGBA pixel stride of four bytes and all three RGB channels",
+      "Same primary channel > 240 and both alternate channels < 20",
+      "Same per-channel assertion hits > 50",
+      "Same real raster fixture, PDFKit rendering, geometry, output, read, grant and cancellation assertions"
+    ],
+    "production_source_changed_by_this_fix": false,
+    "assertions_removed_or_weakened": false,
+    "tests_skipped_by_this_fix": false,
+    "local_post_fix_validation": {
+      "command": "python3 scripts/check_pdf_assembly.py",
+      "exit_code": 0,
+      "output": "PASS PDF assembly: 284 assertions; actual PDFKit, raster pixels, coordinated reads, grants and cancellation",
+      "assertions_passed": 284,
+      "assertions_failed": 0,
+      "actual_pdfkit_and_existing_coordinated_reader": true,
+      "host": {
+        "os": "macOS 13.7.8",
+        "architecture": "x86_64",
+        "compiler": "Apple Swift 5.8.1",
+        "macos_sdk": "13.3",
+        "full_xcode_available": false,
+        "ios_sdk_available": false
+      },
+      "diff_check_passed": true,
+      "ios_runtime_validation": false,
+      "prior_core_evidence": "pdf-assembly-core-local.json",
+      "limitation": "The CLT check executes the shared native test checks on macOS. It does not establish iOS hosted XCTest, picker/export UI, device installation or universal PDF compatibility."
+    }
+  },
+  "followup_ci": {
+    "source": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+    "run_id": 42847878172,
+    "checked_at_utc": "2026-11-10T15:54:14.382Z",
+    "jobs": [
+      {
+        "variant": "ios18-large",
+        "job_id": 129940186514,
+        "portable_core_step": "success",
+        "app_build_step": "success",
+        "native_test_step": "in_progress",
+        "job_conclusion": null
+      },
+      {
+        "variant": "ios26-current",
+        "job_id": 129940187218,
+        "portable_core_step": "success",
+        "app_build_step": "success",
+        "native_test_step": "in_progress",
+        "job_conclusion": null
+      },
+      {
+        "variant": "ios18-compact",
+        "job_id": 129940187078,
+        "status": "queued",
+        "job_conclusion": null
+      }
+    ],
+    "interpretation": "The original compiler blocker has cleared in the Large and current jobs. Exact test counts and final iOS native acceptance remain pending; do not infer a completed matrix pass."
+  },
+  "cancelled_and_replaced_scopes": {
+    "source": "Parent GitHub API status read immediately before each authorized cancellation.",
+    "original_source": "80a1121",
+    "scopes": [
+      {
+        "scope": "picker-user-copy",
+        "run_id": 42842696382,
+        "statusBeforeCancel": "queued",
+        "replacementRun": 42847890878
+      },
+      {
+        "scope": "pdf-assembly",
+        "run_id": 42842703873,
+        "statusBeforeCancel": "queued",
+        "replacementRun": 42847896649
+      },
+      {
+        "scope": "ui-learning",
+        "run_id": 42842709484,
+        "statusBeforeCancel": "queued",
+        "replacementRun": 42847901710
+      },
+      {
+        "scope": "exact-ios17-ui-documents",
+        "run_id": 42842781250,
+        "statusBeforeCancel": "in_progress",
+        "replacementRun": 42847908760
+      }
+    ],
+    "disposition": "Three scopes were queued and exact iOS17 was in progress when cancellation was requested; all were replaced with source74 runs. Cancellation is neither a functional pass nor a functional failure.",
+    "functional_result": "none"
+  },
+  "separate_evidence": {
+    "unsigned_device_build": "unsigned-device-80a1121.json",
+    "note": "The parent records that separate build. It is not simulator test execution or proof of installability and is not counted as native functional acceptance here."
+  }
+}

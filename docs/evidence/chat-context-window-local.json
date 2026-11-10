@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "collected_at_utc": "2026-11-10T16:17:13.552Z",
+  "status": "LOCAL_PURE_SWIFT_PASSED",
+  "scope": "ChatContextWindow only; no App or HTTP-client changes by this implementation.",
+  "checkout_head_at_collection": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+  "source_sha256": {
+    "Sources/AssistantModels/ModelConfiguration.swift": "b886eede4c8c41247a9010b668849d9fceb67fca4dcd399baffe47b90e951142",
+    "Sources/AssistantModels/ChatContextWindow.swift": "41e04121afe13d5510215a50c4c879907c8c28e03b38650ad3bdfd7fbc9b4d3b",
+    "Tests/AssistantModelsTests/ChatContextWindowTests.swift": "23e9ecb835f541b88682bf25c3563b260c4d7bfb5d3579f1b566a26e41e016a4",
+    "scripts/check_chat_context_window.py": "8a834ccf46443e605b5368ad81121effc4d8c93fe55153e6c32425c1fd69e5f3"
+  },
+  "validated_hashes_still_match": true,
+  "validation": {
+    "command": "python3 scripts/check_chat_context_window.py",
+    "exit_code": 0,
+    "warnings_as_errors": true,
+    "assertions_passed": 48,
+    "assertions_failed": 0,
+    "behavioral_groups": 5,
+    "output": "PASS ChatContextWindow: 48 assertions across 5 groups; actual pure implementation, no HTTP or App execution",
+    "execution": "The same checks are shared by the standalone runner and five XCTest methods. The standalone branch compiled and ran here; XCTest was not run on this CLT host.",
+    "groups": [
+      {
+        "name": "longConversation",
+        "coverage": "Forty-turn history retains the newest fifteen complete turns; beyond-seventeen-turn continuation; short and empty history; original arrays preserved."
+      },
+      {
+        "name": "utf8AndExactCurrentTurn",
+        "coverage": "Exact 65536-byte boundary with three/four-byte Unicode; one-byte overflow; composed/decomposed source bytes unchanged; complete large history pair retained only when its UTF8 bytes fit."
+      },
+      {
+        "name": "contiguousSuffix",
+        "coverage": "Oversized newest user or assistant excludes its entire pair and all older turns; an oversized middle pair stops selection without skipping to older context."
+      },
+      {
+        "name": "currentLimits",
+        "coverage": "Full current context plus prompt has priority; exact 32-message and byte limits; spare message slot cannot hold half a history turn; oversized current input explicitly throws."
+      },
+      {
+        "name": "malformedHistory",
+        "coverage": "Odd-length, reversed, duplicate-user, system/tool and wrong-case roles rejected, including invalid old history that would otherwise be omitted."
+      }
+    ],
+    "python_runner_syntax_passed": true,
+    "new_file_whitespace_check_passed": true,
+    "diff_check_passed": true,
+    "compile_timeout_seconds": 120,
+    "execution_timeout_seconds": 30,
+    "validation_time_note": "Collected after the successful local execution; source hashes were rechecked against that execution checkpoint. No separate execution timestamp was captured."
+  },
+  "host": {
+    "os": "macOS 13.7.8",
+    "architecture": "x86_64",
+    "compiler": "Apple Swift 5.8.1",
+    "macos_sdk": "13.3",
+    "full_xcode_available": false,
+    "ios_sdk_available": false
+  },
+  "contract": {
+    "initializer": "public ChatContextWindow(history: [ModelMessage], context: [ModelMessage], prompt: String) throws",
+    "outputs": [
+      "messages: [ModelMessage]",
+      "retainedTurns: Int",
+      "omittedTurns: Int"
+    ],
+    "errors": [
+      "ChatContextWindowError.invalidHistory",
+      "ChatContextWindowError.currentTurnTooLarge"
+    ],
+    "maximum_returned_messages": 32,
+    "maximum_returned_content_utf8_bytes": 65536,
+    "current_turn": "Preserve context and prompt completely. Reject instead of truncating them.",
+    "history": "Validate every original history message as chronological user/assistant pairs. Select only a contiguous suffix of whole pairs, newest first for fitting, returned in chronological order.",
+    "mutation": "No source history/context/prompt mutation, persistence, model call or App side effect.",
+    "accounting": "Counts cover returned ModelMessage.content UTF8 bytes, not serialized JSON, role names or instructions appended by other layers."
+  },
+  "limitations": [
+    "Local pure Swift behavior and type checking only; this evidence does not claim iOS compilation, native UI or network execution.",
+    "The fixed window leaves parent ChatSession responsible for showing omittedTurns and preserving the draft on errors.",
+    "Context messages are supplied by the host and retained unchanged; this helper does not grant tool authority or replace other layers' role/policy checks.",
+    "Separate parent App integration checks and native-74f7b71 results are not counted among these 48 assertions; source 74 predates this window."
+  ]
+}

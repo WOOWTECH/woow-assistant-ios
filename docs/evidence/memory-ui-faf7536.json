@@ -1,0 +1,753 @@
+{
+  "revision": "faf753657c4912ca70bdd4f63623b5262fc53d4b",
+  "run": 42838016543,
+  "scope": "ui-memory; thirteen source-defined fixture UI methods per simulator destination; complete results for all three jobs",
+  "aggregate": {
+    "expectedTests": 39,
+    "totalTestCount": 39,
+    "passedTests": 32,
+    "failedTests": 7,
+    "skippedTests": 0,
+    "expectedFailures": 0,
+    "completedCaseEvents": 39,
+    "completedPassingCaseEvents": 32,
+    "completedFailingCaseEvents": 7,
+    "missingCompletionEvents": 0,
+    "pendingJobs": 0
+  },
+  "countInterpretation": [
+    "All 39 UI methods started and have terminal completion events. xcresult and the completion verifier agree on 32 passed, 7 failed and 0 skipped.",
+    "Two profile failures and one skill-import failure contain five-second XCTWaiter predicate timeouts within completed failed cases. They are not missing-completion events or additional tests.",
+    "No method-level 180/240-second allowance exhaustion is recorded in this run. These are actual started UI cases, not synthetic runner bootstrap failures.",
+    "This report does not combine the prior 1ea3d08 failure counts or claim that unexecuted candidate fixes pass native UI."
+  ],
+  "jobs": [
+    {
+      "matrixLabel": "ios18-compact",
+      "job": 129905336023,
+      "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42838016543/job/129905336023",
+      "status": "completed",
+      "conclusion": "failure",
+      "matrixDestination": {
+        "runtimeLabel": "iOS 18.5",
+        "device": "iPhone SE (3rd generation)",
+        "runtimeBuildVerifiedInThisReport": false
+      },
+      "xcresultCounts": {
+        "expectedFailures": 0,
+        "failedTests": 2,
+        "passedTests": 11,
+        "skippedTests": 0,
+        "totalTestCount": 13
+      },
+      "completionVerifier": {
+        "logLine": 14567,
+        "completed_ui_count": 13,
+        "counts": {
+          "expectedFailures": 0,
+          "failedTests": 2,
+          "passedTests": 11,
+          "skippedTests": 0,
+          "totalTestCount": 13
+        },
+        "expected_ui_count": 13,
+        "missing_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": [
+          "WoowAssistantUITests/MemoryUITests/testMemoryEditPinSearchAndDeletePersist",
+          "WoowAssistantUITests/UserProfileUITests/testMultipleSentencesNeverPublish"
+        ],
+        "result": "Failed",
+        "unexpected_ui_tests": [],
+        "verified": false
+      },
+      "completedCases": [
+        {
+          "line": 8567,
+          "class": "MemoryRaceUITests",
+          "method": "testClearWhileReplyPendingDoesNotRepopulateAndNewChatHidesOldNotes",
+          "result": "passed",
+          "seconds": 94.268
+        },
+        {
+          "line": 8925,
+          "class": "MemoryUITests",
+          "method": "testMemoryEditPinSearchAndDeletePersist",
+          "result": "failed",
+          "seconds": 123.773
+        },
+        {
+          "line": 9268,
+          "class": "MemoryUITests",
+          "method": "testOversizedMemoryIsRejectedAndCorrectedTextPersists",
+          "result": "passed",
+          "seconds": 106
+        },
+        {
+          "line": 9565,
+          "class": "MemoryUITests",
+          "method": "testProceduresRequireApprovalAndCanBeRejected",
+          "result": "passed",
+          "seconds": 82.45
+        },
+        {
+          "line": 9879,
+          "class": "MemoryUITests",
+          "method": "testSegmentsAndPreferencePersistence",
+          "result": "passed",
+          "seconds": 62.493
+        },
+        {
+          "line": 10333,
+          "class": "MemoryUITests",
+          "method": "testSkillImportFailureReviewAndEnablementPersist",
+          "result": "passed",
+          "seconds": 125.515
+        },
+        {
+          "line": 10949,
+          "class": "MemoryUITests",
+          "method": "testSkillUpdateRejectionAndRollback",
+          "result": "passed",
+          "seconds": 121.726
+        },
+        {
+          "line": 11614,
+          "class": "MemoryUITests",
+          "method": "testTwoStepClearCancellationAndModelSettingsIsolation",
+          "result": "passed",
+          "seconds": 138.731
+        },
+        {
+          "line": 12288,
+          "class": "UserProfileUITests",
+          "method": "testCreateReplaceDeleteAndHistorySurviveRelaunch",
+          "result": "passed",
+          "seconds": 170.675
+        },
+        {
+          "line": 12933,
+          "class": "UserProfileUITests",
+          "method": "testDuplicateAndCancelledTextNeverPublish",
+          "result": "passed",
+          "seconds": 179.72
+        },
+        {
+          "line": 13724,
+          "class": "UserProfileUITests",
+          "method": "testMasterSwitchAndTwiceConfirmedClearPersist",
+          "result": "passed",
+          "seconds": 177.536
+        },
+        {
+          "line": 13841,
+          "class": "UserProfileUITests",
+          "method": "testMultipleSentencesNeverPublish",
+          "result": "failed",
+          "seconds": 42.252
+        },
+        {
+          "line": 14350,
+          "class": "UserProfileUITests",
+          "method": "testSensitiveTextNeverPublishes",
+          "result": "passed",
+          "seconds": 141.87
+        }
+      ],
+      "assertionFailures": [
+        {
+          "logLine": 8917,
+          "message": "MemoryUITests.swift:105: error: -[WoowAssistantUITests.MemoryUITests testMemoryEditPinSearchAndDeletePersist] : XCTAssertTrue failed"
+        },
+        {
+          "logLine": 13833,
+          "message": "UserProfileUITests.swift:165: error: -[WoowAssistantUITests.UserProfileUITests testMultipleSentencesNeverPublish] : XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\") - Every native character must arrive exactly before saving"
+        }
+      ],
+      "artifact": {
+        "id": 13779160453,
+        "name": "ios-test-evidence-ios18-compact-42838016543",
+        "sizeBytes": 420899757,
+        "digest": "sha256:70e92485d4b0f95e7ecaccdb9ab42ccf6ca830ce37ffdeb976c27c6a2b45b897",
+        "reference": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42838016543/artifacts/13779160453"
+      },
+      "fixtureAttachments": [
+        {
+          "case": "MemoryUITests/testMemoryEditPinSearchAndDeletePersist()",
+          "kind": "screenshot",
+          "exportedFileName": "641B8A12-F705-4439-97DD-61B09BED8593.png",
+          "sha256": "e390e7941ec266e8ef95e8b55efc42ec7788e0538546b33672856ffb076fefde"
+        },
+        {
+          "case": "MemoryUITests/testMemoryEditPinSearchAndDeletePersist()",
+          "kind": "AX",
+          "exportedFileName": "C141354D-A4E6-4483-B522-266F11893F1E.txt",
+          "sha256": "79ef52401bb05a80e08240b1419a645cdcf651d3d53ea298522d86b5a7249ba5"
+        },
+        {
+          "case": "UserProfileUITests/testMultipleSentencesNeverPublish()",
+          "kind": "screenshot",
+          "exportedFileName": "4B7A26F7-B781-455D-A997-09811940FEDF.png",
+          "sha256": "7659a480a844272e935dc82c23663049143cfb59988a4bad42182d613b8c5250"
+        },
+        {
+          "case": "UserProfileUITests/testMultipleSentencesNeverPublish()",
+          "kind": "AX",
+          "exportedFileName": "8C623FF7-3FC4-4B1F-A06B-90F14C4F3F48.txt",
+          "sha256": "da5a719aa5ad21471a9925394b86db7912880033a9c5c1a376f4c96662d31fd1"
+        }
+      ],
+      "fixtureAttachmentsInspected": true
+    },
+    {
+      "matrixLabel": "ios18-large",
+      "job": 129905336281,
+      "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42838016543/job/129905336281",
+      "status": "completed",
+      "conclusion": "failure",
+      "matrixDestination": {
+        "runtimeLabel": "iOS 18.5",
+        "device": "iPhone 16 Pro Max",
+        "runtimeBuildVerifiedInThisReport": false
+      },
+      "xcresultCounts": {
+        "expectedFailures": 0,
+        "failedTests": 1,
+        "passedTests": 12,
+        "skippedTests": 0,
+        "totalTestCount": 13
+      },
+      "completionVerifier": {
+        "logLine": 14162,
+        "completed_ui_count": 13,
+        "counts": {
+          "expectedFailures": 0,
+          "failedTests": 1,
+          "passedTests": 12,
+          "skippedTests": 0,
+          "totalTestCount": 13
+        },
+        "expected_ui_count": 13,
+        "missing_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": [
+          "WoowAssistantUITests/MemoryUITests/testMemoryEditPinSearchAndDeletePersist"
+        ],
+        "result": "Failed",
+        "unexpected_ui_tests": [],
+        "verified": false
+      },
+      "completedCases": [
+        {
+          "line": 8531,
+          "class": "MemoryRaceUITests",
+          "method": "testClearWhileReplyPendingDoesNotRepopulateAndNewChatHidesOldNotes",
+          "result": "passed",
+          "seconds": 95.721
+        },
+        {
+          "line": 8889,
+          "class": "MemoryUITests",
+          "method": "testMemoryEditPinSearchAndDeletePersist",
+          "result": "failed",
+          "seconds": 112.036
+        },
+        {
+          "line": 9232,
+          "class": "MemoryUITests",
+          "method": "testOversizedMemoryIsRejectedAndCorrectedTextPersists",
+          "result": "passed",
+          "seconds": 117.387
+        },
+        {
+          "line": 9529,
+          "class": "MemoryUITests",
+          "method": "testProceduresRequireApprovalAndCanBeRejected",
+          "result": "passed",
+          "seconds": 88.823
+        },
+        {
+          "line": 9778,
+          "class": "MemoryUITests",
+          "method": "testSegmentsAndPreferencePersistence",
+          "result": "passed",
+          "seconds": 69.775
+        },
+        {
+          "line": 10108,
+          "class": "MemoryUITests",
+          "method": "testSkillImportFailureReviewAndEnablementPersist",
+          "result": "passed",
+          "seconds": 93.948
+        },
+        {
+          "line": 10502,
+          "class": "MemoryUITests",
+          "method": "testSkillUpdateRejectionAndRollback",
+          "result": "passed",
+          "seconds": 101.346
+        },
+        {
+          "line": 11026,
+          "class": "MemoryUITests",
+          "method": "testTwoStepClearCancellationAndModelSettingsIsolation",
+          "result": "passed",
+          "seconds": 136.566
+        },
+        {
+          "line": 11697,
+          "class": "UserProfileUITests",
+          "method": "testCreateReplaceDeleteAndHistorySurviveRelaunch",
+          "result": "passed",
+          "seconds": 161.983
+        },
+        {
+          "line": 12342,
+          "class": "UserProfileUITests",
+          "method": "testDuplicateAndCancelledTextNeverPublish",
+          "result": "passed",
+          "seconds": 173.856
+        },
+        {
+          "line": 12985,
+          "class": "UserProfileUITests",
+          "method": "testMasterSwitchAndTwiceConfirmedClearPersist",
+          "result": "passed",
+          "seconds": 164.746
+        },
+        {
+          "line": 13462,
+          "class": "UserProfileUITests",
+          "method": "testMultipleSentencesNeverPublish",
+          "result": "passed",
+          "seconds": 120.678
+        },
+        {
+          "line": 13971,
+          "class": "UserProfileUITests",
+          "method": "testSensitiveTextNeverPublishes",
+          "result": "passed",
+          "seconds": 143.103
+        }
+      ],
+      "assertionFailures": [
+        {
+          "logLine": 8881,
+          "file": "MemoryUITests.swift",
+          "sourceLine": 105,
+          "message": "XCTAssertTrue failed"
+        }
+      ],
+      "artifact": {
+        "id": 13778394324,
+        "name": "ios-test-evidence-ios18-large-42838016543",
+        "sizeBytes": 455028261,
+        "digest": "sha256:77628fa8fdcefd056e87a8096bf5c3c53d0bcbea676416d6e7536116dfe8eee6",
+        "reference": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42838016543/artifacts/13778394324"
+      },
+      "fixtureAttachmentsInspected": false,
+      "fixtureEvidenceLimit": "Completed logs and source inspected; artifact is referenced but no Large AX/screenshot attachment was downloaded for this report."
+    },
+    {
+      "matrixLabel": "ios26-current",
+      "job": 129905335445,
+      "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42838016543/job/129905335445",
+      "status": "completed",
+      "conclusion": "failure",
+      "matrixDestination": {
+        "runtimeLabel": "iOS 26.2",
+        "device": "iPhone 17",
+        "runtimeBuildVerifiedInThisReport": false
+      },
+      "xcresultCounts": {
+        "expectedFailures": 0,
+        "failedTests": 4,
+        "passedTests": 9,
+        "skippedTests": 0,
+        "totalTestCount": 13
+      },
+      "completionVerifier": {
+        "logLine": 14521,
+        "completed_ui_count": 13,
+        "counts": {
+          "expectedFailures": 0,
+          "failedTests": 4,
+          "passedTests": 9,
+          "skippedTests": 0,
+          "totalTestCount": 13
+        },
+        "expected_ui_count": 13,
+        "missing_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": [
+          "WoowAssistantUITests/MemoryUITests/testMemoryEditPinSearchAndDeletePersist",
+          "WoowAssistantUITests/MemoryUITests/testSkillImportFailureReviewAndEnablementPersist",
+          "WoowAssistantUITests/MemoryUITests/testSkillUpdateRejectionAndRollback",
+          "WoowAssistantUITests/UserProfileUITests/testSensitiveTextNeverPublishes"
+        ],
+        "result": "Failed",
+        "unexpected_ui_tests": [],
+        "verified": false
+      },
+      "completedCases": [
+        {
+          "line": 8813,
+          "class": "MemoryRaceUITests",
+          "method": "testClearWhileReplyPendingDoesNotRepopulateAndNewChatHidesOldNotes",
+          "result": "passed",
+          "seconds": 104.554
+        },
+        {
+          "line": 9171,
+          "class": "MemoryUITests",
+          "method": "testMemoryEditPinSearchAndDeletePersist",
+          "result": "failed",
+          "seconds": 123.805
+        },
+        {
+          "line": 9513,
+          "class": "MemoryUITests",
+          "method": "testOversizedMemoryIsRejectedAndCorrectedTextPersists",
+          "result": "passed",
+          "seconds": 149.275
+        },
+        {
+          "line": 9810,
+          "class": "MemoryUITests",
+          "method": "testProceduresRequireApprovalAndCanBeRejected",
+          "result": "passed",
+          "seconds": 108.711
+        },
+        {
+          "line": 10081,
+          "class": "MemoryUITests",
+          "method": "testSegmentsAndPreferencePersistence",
+          "result": "passed",
+          "seconds": 79.927
+        },
+        {
+          "line": 10179,
+          "class": "MemoryUITests",
+          "method": "testSkillImportFailureReviewAndEnablementPersist",
+          "result": "failed",
+          "seconds": 39.79
+        },
+        {
+          "line": 10648,
+          "class": "MemoryUITests",
+          "method": "testSkillUpdateRejectionAndRollback",
+          "result": "failed",
+          "seconds": 127.43
+        },
+        {
+          "line": 11255,
+          "class": "MemoryUITests",
+          "method": "testTwoStepClearCancellationAndModelSettingsIsolation",
+          "result": "passed",
+          "seconds": 173.59
+        },
+        {
+          "line": 11921,
+          "class": "UserProfileUITests",
+          "method": "testCreateReplaceDeleteAndHistorySurviveRelaunch",
+          "result": "passed",
+          "seconds": 189.916
+        },
+        {
+          "line": 12559,
+          "class": "UserProfileUITests",
+          "method": "testDuplicateAndCancelledTextNeverPublish",
+          "result": "passed",
+          "seconds": 197.046
+        },
+        {
+          "line": 13308,
+          "class": "UserProfileUITests",
+          "method": "testMasterSwitchAndTwiceConfirmedClearPersist",
+          "result": "passed",
+          "seconds": 211.117
+        },
+        {
+          "line": 13782,
+          "class": "UserProfileUITests",
+          "method": "testMultipleSentencesNeverPublish",
+          "result": "passed",
+          "seconds": 155.3
+        },
+        {
+          "line": 14132,
+          "class": "UserProfileUITests",
+          "method": "testSensitiveTextNeverPublishes",
+          "result": "failed",
+          "seconds": 116.381
+        }
+      ],
+      "assertionFailures": [
+        {
+          "logLine": 9163,
+          "file": "MemoryUITests.swift",
+          "sourceLine": 105,
+          "message": "XCTAssertTrue failed"
+        },
+        {
+          "logLine": 10171,
+          "file": "MemoryUITests.swift",
+          "sourceLine": 459,
+          "message": "XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\")"
+        },
+        {
+          "logLine": 10635,
+          "file": "MemoryUITests.swift",
+          "sourceLine": 459,
+          "message": "Failed to determine hittability of \"memory.segment.skills\" Button: Activation point invalid and no suggested hit points based on element frame"
+        },
+        {
+          "logLine": 14124,
+          "file": "UserProfileUITests.swift",
+          "sourceLine": 165,
+          "message": "XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\") - Every native character must arrive exactly before saving"
+        }
+      ],
+      "artifact": {
+        "id": 13778893538,
+        "name": "ios-test-evidence-ios26-current-42838016543",
+        "sizeBytes": 568604927,
+        "digest": "sha256:c777580d415272947f17247f5883be06470d294733869be8eae216432dc0677b",
+        "reference": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42838016543/artifacts/13778893538"
+      },
+      "fixtureAttachments": [
+        {
+          "case": "MemoryUITests/testMemoryEditPinSearchAndDeletePersist()",
+          "kind": "screenshot",
+          "exportedFileName": "52C4E425-91EF-42F5-9DFE-9AD3BA10782D.png",
+          "sha256": "4ba8d8f94a1d63ee40f576dde0bde232411a762d51a1412587c2cbd6372f2805"
+        },
+        {
+          "case": "MemoryUITests/testMemoryEditPinSearchAndDeletePersist()",
+          "kind": "AX",
+          "exportedFileName": "26C61FAD-E670-44A1-9175-DE95B494466A.txt",
+          "sha256": "ef893a0c6b9b0d928fa4b5643ccd9e0bf4be006f0918955f8af139f4ed86d030"
+        },
+        {
+          "case": "MemoryUITests/testSkillImportFailureReviewAndEnablementPersist()",
+          "kind": "screenshot",
+          "exportedFileName": "D08E71D9-6216-46D6-8288-8237EB56F0B1.png",
+          "sha256": "c27991be5fa5fd306c2cc3edeb8b903b03acd83c36a59b697af6f27fb1d79b0f"
+        },
+        {
+          "case": "MemoryUITests/testSkillImportFailureReviewAndEnablementPersist()",
+          "kind": "AX",
+          "exportedFileName": "C723E464-2EC0-4697-8C55-FD7E5522E6D2.txt",
+          "sha256": "e6bdd33fbfafde5cb6255358de553ae19ffbf1eb5684f99a77f2120643f04ef5"
+        },
+        {
+          "case": "MemoryUITests/testSkillUpdateRejectionAndRollback()",
+          "kind": "screenshot",
+          "exportedFileName": "CB6BEA06-CC6D-43DB-B417-47B223A30A6B.png",
+          "sha256": "c5a66c70ce44f54bf1e313f91d4d82490ef2b2ef63aee0b5be493b15443e4bc3"
+        },
+        {
+          "case": "MemoryUITests/testSkillUpdateRejectionAndRollback()",
+          "kind": "AX",
+          "exportedFileName": "D86D6EFC-74E8-4474-8926-A2AFBBF6538B.txt",
+          "sha256": "97ca1d4db24c4d906de040b517d2874efd342a55ba763281806c70374ff2b193"
+        },
+        {
+          "case": "UserProfileUITests/testSensitiveTextNeverPublishes()",
+          "kind": "screenshot",
+          "exportedFileName": "BB5E5DFE-E114-4AAF-BA59-F035D36EA391.png",
+          "sha256": "e6816e5d62272e3f29d3122b1fb46d674073566cf008221c4027f2df5fa31df0"
+        },
+        {
+          "case": "UserProfileUITests/testSensitiveTextNeverPublishes()",
+          "kind": "AX",
+          "exportedFileName": "7D3A8F43-6B69-481D-B78B-CD91888C313E.txt",
+          "sha256": "4586e82c2e1b30da25128fcabd416b0cbd22ec30600e4f6096764c5bf4741c6d"
+        }
+      ],
+      "fixtureAttachmentsInspected": true
+    }
+  ],
+  "findings": {
+    "searchFixture": {
+      "classification": "Fixture regression introduced by splitting validation from CRUD; keyword setup omitted",
+      "devices": [
+        "ios18-compact",
+        "ios18-large",
+        "ios26-current"
+      ],
+      "assertion": {
+        "file": "Tests/WoowAssistantUITests/MemoryUITests.swift",
+        "line": 105
+      },
+      "observed": "All three cases fail the same post-search assertion. SE and current failure AX show memory.search value tea and memory.empty label 找不到符合的記憶。 The earlier save/edit/pin steps completed.",
+      "sourceEvidence": "The original combined method supplied keyword tea. The split CRUD method did not. MemoryRanking intentionally requires a keyword hit or sufficient multi-token support; a lone content-word tea does not qualify.",
+      "productSearchChangeRequired": false,
+      "candidate": "Restore keywords: tea in the CRUD fixture before Save, verify exact keyword input, and retain the real search, pin, relaunch and delete assertions."
+    },
+    "profileInput": {
+      "classification": "Exact-value predicate timeout; failure attachment already shows the expected accumulated native text",
+      "cases": [
+        {
+          "job": 129905336023,
+          "method": "testMultipleSentencesNeverPublish",
+          "failureLogLine": 13833,
+          "sourceLine": 165,
+          "expectedFixtureText": "P",
+          "predicateFirstCheckElapsedSeconds": 29.31,
+          "failureCaptureElapsedSeconds": 33.52,
+          "reachedInvalidSentenceProbe": false
+        },
+        {
+          "job": 129905335445,
+          "method": "testSensitiveTextNeverPublishes",
+          "failureLogLine": 14124,
+          "sourceLine": 165,
+          "expectedFixtureText": "password: d",
+          "predicateFirstCheckElapsedSeconds": 105.12,
+          "failureCaptureElapsedSeconds": 109.4,
+          "reachedSensitiveSaveProbe": false
+        }
+      ],
+      "observed": "Both failure AX and screenshots contain the exact expected text in profile.editor.text with a visible keyboard. No missing-character repair is justified by these attachments.",
+      "rootCauseLimit": "Attachments are captured after the assertion. They do not prove when the character arrived or identify why the timed predicate failed.",
+      "candidate": "After each synchronous native typeText, read editor.value directly and require exact accumulated equality; keep the final equality and all rejection/persistence assertions. No retyping, retry, deadline increase or synthesized input repair."
+    },
+    "currentSkillImport": {
+      "classification": "Pre-tap readiness predicate timeout; product rejection not exercised",
+      "job": 129905335445,
+      "method": "testSkillImportFailureReviewAndEnablementPersist",
+      "failureLogLine": 10171,
+      "sourceLine": 459,
+      "identifier": "skills.editor.save",
+      "observed": "The exact invalid fixture text is present. The toolbar import button appears fully visible in the failure screenshot and AX at x=324,y=82,width=58,height=36. The exists/hittable predicate began at 31.47s, existence query at 31.48s, Find at 34.66s, and failure capture at 35.74s. No Save tap occurred.",
+      "productImportFailureEstablished": false,
+      "candidate": "For this fixed toolbar control only, require existence, enabled state and a full frame above keyboard/navigation, then use native element.tap to resolve and validate the hit point. No coordinate fallback or retry."
+    },
+    "currentSkillRelaunch": {
+      "classification": "Native preflight hittability query throws invalid activation-point error",
+      "job": 129905335445,
+      "method": "testSkillUpdateRejectionAndRollback",
+      "failureLogLine": 10635,
+      "sourceLine": 459,
+      "identifier": "memory.segment.skills",
+      "observed": "The initial rollback and VersionOne full-text assertion completed. After relaunch, Memory opened, then the segment readiness query failed before tapping. Failure AX and screenshot show the unselected skills segment fully visible at x=142,y=158.3,width=118,height=58.",
+      "fixedReason": "Failed to determine hittability: Activation point invalid and no suggested hit points based on element frame",
+      "persistedSkillRollbackResultAfterRelaunch": "Not reached; this run does not establish success or failure of the final retained-skill assertion.",
+      "candidate": "For fixed memory.segment controls only, assert existence, enabled state and complete visibility before native element.tap. Preserve the selected-value assertion and later retained-skill content assertion.",
+      "rootCauseLimit": "The visible post-failure frame does not prove why the earlier activation-point query failed. The candidate is a bounded fixture change pending native execution."
+    },
+    "passingProfileCoverage": {
+      "allThreeDestinations": [
+        "testCreateReplaceDeleteAndHistorySurviveRelaunch",
+        "testDuplicateAndCancelledTextNeverPublish",
+        "testMasterSwitchAndTwiceConfirmedClearPersist"
+      ],
+      "largeAllFiveProfileCasesPassed": true,
+      "historyAXFix": "All three CRUD/history cases now complete successfully, unlike the earlier 1ea3d08 run.",
+      "limits": "This fixture run does not exercise the new profile_edit review flow or live model behavior."
+    }
+  },
+  "candidateFix": {
+    "status": "Uncommitted fixture changes; local static/readiness validation only; native regression pending",
+    "paths": [
+      "Tests/WoowAssistantUITests/MemoryUITests.swift",
+      "Tests/WoowAssistantUITests/UserProfileUITests.swift"
+    ],
+    "changes": [
+      "Restore the CRUD keyword fixture and assert its value.",
+      "Keep per-character exact profile-input assertions while replacing the separate timed predicate with a direct resulting-value assertion.",
+      "Use explicit geometry/enabled checks followed by native tap only for fixed skills.editor.save and memory.segment controls; preserve existing bounded reveal behavior for List controls."
+    ],
+    "unchangedConstraints": {
+      "methodCount": 13,
+      "memoryExecutionTimeAllowanceSeconds": 180,
+      "profileExecutionTimeAllowanceSeconds": 240,
+      "retriesAdded": 0,
+      "blindCoordinateTapsAdded": 0,
+      "assertedBusinessOutcomesRemoved": 0,
+      "appOrFlowSourcesEditedForTheseFixes": false
+    },
+    "localValidation": {
+      "swiftFrontendParse": "passed",
+      "gitDiffCheck": "passed",
+      "releaseIOS17Readiness": {
+        "command": "python3 scripts/test_release_ios17_readiness.py",
+        "passed": 10,
+        "failed": 0
+      },
+      "nativeExecution": "pending",
+      "currentExistingClassInventory": {
+        "MemoryUITests": 7,
+        "MemoryRaceUITests": 1,
+        "UserProfileUITests": 5
+      },
+      "testedExistingClassInventory": {
+        "MemoryUITests": 7,
+        "MemoryRaceUITests": 1,
+        "UserProfileUITests": 5
+      }
+    },
+    "sources": [
+      {
+        "path": "Tests/WoowAssistantUITests/MemoryUITests.swift",
+        "sha256": "6517e1a715119b6948d15f28e18cba9eb57154ee1f5d236e47eb1e1f3ab55c4f"
+      },
+      {
+        "path": "Tests/WoowAssistantUITests/UserProfileUITests.swift",
+        "sha256": "d41343a51a90bd7c718359257b1ecdea2df4b79f757a762278e25f4a815304fa"
+      }
+    ],
+    "workingTreeBaseRevision": "74f7b71b4a4691814ba8b7867d34efe17a6dc072"
+  },
+  "privacy": {
+    "rawLogsIncluded": false,
+    "fullAXTreesIncluded": false,
+    "environmentsIncluded": false,
+    "configurationIncluded": false,
+    "liveInputOrModelContentIncluded": false,
+    "fixtureOnlyTextAndGeometryIncluded": true,
+    "artifactUploadsPerformedByThisAgent": false,
+    "commitsOrDispatchesPerformed": false
+  },
+  "recordedAtUTC": "2026-11-10T16:07:04.906078+00:00",
+  "testedSources": [
+    {
+      "path": "Tests/WoowAssistantUITests/MemoryUITests.swift",
+      "gitBlob": "ab64bd707688222107e03f4412d8d7ea44e7cd8d",
+      "sha256": "d0c69d04e15dbe54ca4029f1f73667d71a9654888a3f0ebd6af3bdf8549c64bf"
+    },
+    {
+      "path": "Tests/WoowAssistantUITests/UserProfileUITests.swift",
+      "gitBlob": "c6c886babe9406f4343defdbde033a051ff8bf63",
+      "sha256": "88c5b0d6686b38111321ecf18205e36805b7850be94d94ba2e3b54dc6768f991"
+    },
+    {
+      "path": "Tests/WoowAssistantUITests/MemoryRaceUITests.swift",
+      "gitBlob": "1153a9fe4583652d0268010fd6fba2822df0daf4",
+      "sha256": "8a3eca91e48906d92d4e267993513b48ea9928500fc25f4b2ccb083a36db95a0"
+    },
+    {
+      "path": "Tests/WoowAssistantUITests/LearningUITestSupport.swift",
+      "gitBlob": "2a1d410b80296b48f270c0faad2a766e8a8e6522",
+      "sha256": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204"
+    },
+    {
+      "path": "Sources/App/UserProfileView.swift",
+      "gitBlob": "9aed5fca5c56fa2db8c96c54ad6325949addac06",
+      "sha256": "69ebbc881e5ec6bee50f5eefa79be14dc1bd2a7752b7621692c357d2dd18c783"
+    },
+    {
+      "path": "Sources/App/MemoryDataView.swift",
+      "gitBlob": "3796db7445586502f8ee0ea163541d51a75af7eb",
+      "sha256": "e4f8474bae029f8443c15350a739aad007f65d7f04a8b0f5ce633f97f9dea091"
+    },
+    {
+      "path": "Sources/AssistantMemory/MemoryContext.swift",
+      "gitBlob": "5d008996d002ee0471ddad5513287247a0259a05",
+      "sha256": "37850875953b46eae9c0862dafdab1c8c81bd58f551c2799cf9644eb14129ca2"
+    },
+    {
+      "path": "scripts/release_ios17.py",
+      "gitBlob": "c60af73ed17c0d2f0494c75bb07a6b560d84912b",
+      "sha256": "33452a618919aebaa49774265fde6993d9bd93f8a4c9e6ced4725148cebe750d"
+    }
+  ]
+}

@@ -1,4 +1,14 @@
-# Verification — 2026-11-10
+# Verification — 2026-11-11
+
+## Reviewed profile tool and bounded chat history: local integration complete
+
+Ordinary chat now offers one reviewed `profile_edit` per turn. The host checks the exact current utterance, stale state and master switch, then atomically persists before returning a receipt. Review rejection and failed persistence cannot publish success; a later model failure retains the actual committed receipt. Duplicate JSON argument keys remain visible to the strict parser. This is an additional explicit user review compared with Mika's prompt-authorized profile tool.
+
+Local checks passed **97 tool assertions**, **3 flow groups**, **48 context-window assertions**, and **213 Debug / 184 Release actual App assertions**. App checks use the unchanged production logic and real AES-GCM files with synthetic model replies and isolated key stores. Twenty completed turns retain all 40 displayed messages; the last window contains 32 messages (15 recent pairs, complete reference and current prompt), plus the Flow system instruction. An oversized current prompt preserves draft/history without another model request. [App checks and source hashes](evidence/profile-chat-app-local.json), [tool checks](evidence/profile-tool-core-local.json), [flow checks](evidence/profile-chat-flow-local.json). Ten Debug hosted XCTest methods, four fixture UI methods and one actual-model method are wired for native acceptance; local macOS checks do not establish iOS execution.
+
+The completed `faf7536` memory UI matrix is **32/39 passed, 7 failed, zero skipped**, with all expected methods completed. Three failures exposed missing keyword fixture data; two stopped on native profile-input predicates; two iOS 26 skill cases failed native save/segment hittability. Candidate test repairs preserve exact input, native taps and all business assertions, with no additional retry or method allowance. [Full failed matrix and repair evidence](evidence/memory-ui-faf7536.json). These repairs require a new run.
+
+At `74f7b71`, native iOS 18.5 Large and iOS 26.2 each passed **169/169**, including all five PDF assembly methods; SE remained queued at evidence collection. [Actual event counts](evidence/native-74f7b71.json). This result predates the profile-tool batch above and is not its acceptance.
 
 ## Exact iOS 17 actual HA MCP flow passed
 
@@ -21,6 +31,18 @@ The documents catalog now exposes real 1–3-file static PDF extraction/reorderi
 The final local core executes **284/284 assertions**, including actual raster Image XObjects/pixel comparisons, text/page order, repeated pages, fractional boxes, aggregate 200-page bounds, actual coordinated reads and cancellation races. A strict equality negative control rejects a valid fractional roundtrip with a 1.1368683772161603e-13-point difference; finite four-ULP comparison accepts it while meaningful geometry changes and NaN/Inf remain rejected. [Core evidence](evidence/pdf-assembly-core-local.json). Unchanged production App Session and FileDocument then pass **57 assertions per local Debug/Release configuration**, with actual held coordinated-read cancellation, stale-order refusal, immutable output and disk export/readback. [App evidence](evidence/pdf-assembly-app-local.json). These local results are not iOS UI passes or full Python tool parity.
 
 The earlier DEBUG copy experiment at `e09db96`, [42828634934](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828634934), completes **1/1, zero skips**, in 214.259 seconds within the unchanged 240-second allowance: one real native import callback, both approvals, complete two-page output and final audit. The old intro-query interval is 0.14 seconds in this run and summary-to-text is 1.87 seconds without the redundant top scroll; other AX stalls still occur, so this is not a controlled speed benchmark. [Bounded evidence](evidence/file-provider-import-copy-e09db96.json). The new user-copy and page-assembly UI methods have dedicated strict count/completion scopes and remain to be executed natively. The source inventory now contains **68 non-Live / 16 Live methods**; inventory is not execution.
+
+## Completed workspace matrix and new Release build
+
+The `faf7536` SE job [129905353706](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42838022703/job/129905353706) also completed **41/41, zero skips**, with 41 unique starts and completions. [SE evidence](evidence/workspace-se-faf7536.json). The complete same-source workspace matrix is **122 passed / 1 failed / zero skipped**: all 108 native/hosted instances pass; UI is 14/15, retaining the current-runtime secure-field targeting failure. Its geometry-verified single-touch repair and unchanged real POST/cookie assertions are documented in [original failure evidence](evidence/browser-login-faf7536-current.json); new login matrix [42847884733](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42847884733) is pending.
+
+Release source `80a1121`, [42843044229](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42843044229), successfully builds device code including the new PDF features: **build 45, minimum iOS 17.0, nine verified binaries**. [Build evidence](evidence/unsigned-device-80a1121.json). This artifact is unsigned and not installable; it does not establish XCTest, physical-device or TestFlight acceptance.
+
+The same source's three native-matrix jobs failed earlier during portable test compilation: the raster assertion's compound expression exceeded the Swift type-checker's limit. Revision `74f7b71` uses an equivalent loop, retaining every RGB threshold and assertion; actual local PDFKit still passes **284/284**. [Original compiler errors and follow-up state](evidence/native-build-80a1121.json). Queued/in-progress scopes were cancelled and replaced with corrected-source runs; cancellation is not a functional verdict.
+
+## Actual multi-source research stops with an unclassified error
+
+The actual-model `0448126` retest [42839708011](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42839708011) failed **0/1, zero skips**, at the App's research-error check, before citation assertions. Its native transport probe separately failed with only a generic `HTTPChatModelError` category. [Bounded events](evidence/live-multi-source-0448126.json). No shared cause or authentication, quota, provider, transport, command or citation root cause is inferred. New fixed-category diagnostics expose only failure labels and page counts; they do not themselves fix or pass the workflow.
 
 ## Large workspace accepts permanent retirement; current login still fails
 

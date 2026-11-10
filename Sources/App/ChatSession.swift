@@ -1,5 +1,6 @@
 import AssistantModels
 import AssistantMCP
+import AssistantMemory
 import Combine
 import Foundation
 
@@ -28,7 +29,7 @@ struct MCPApprovalRequest: Identifiable {
 
 @MainActor
 final class ChatSession: ObservableObject {
-    let learning = LearningStore()
+    let learning: LearningStore
     private var conversationID = UUID().uuidString
     @Published var draft = ""
     @Published var baseURLDraft = ""
@@ -47,6 +48,10 @@ final class ChatSession: ObservableObject {
     @Published private(set) var mcpActivity: String?
     @Published private(set) var mcpSteps: [MCPConversationStep] = []
     @Published private(set) var mcpDiagnostics: String?
+    @Published private(set) var pendingProfileReview: UserProfileToolReview?
+    @Published private(set) var profileReceipt: UserProfileToolReceipt?
+    private var profileReceiptRequestID: UUID?
+    private var profileApprovalContinuation: CheckedContinuation<Bool, Never>?
     private var mcpPhase = "idle"
     private var mcpModelCalls = 0
     private var mcpFormatCorrections = 0
@@ -62,6 +67,7 @@ final class ChatSession: ObservableObject {
     private var requestID: UUID?
 
     init() {
+        learning = LearningStore()
         var bootstrapFailure: String?
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
@@ -92,6 +98,21 @@ final class ChatSession: ObservableObject {
         client = HTTPChatModelClient()
         isUITestMode = false
         #endif
+        loadSettings()
+        if let bootstrapFailure { settingsError = "Live UI 測試設定未完成。\(bootstrapFailure)" }
+    }
+
+    /// Dependency boundary for exercising actual App transactions and request
+    /// lifecycles with isolated storage; production uses the initializer above.
+    init(learning: LearningStore, repository: ModelSettingsRepository, client: any ChatModelClient) {
+        self.learning = learning
+        self.repository = repository
+        self.client = client
+        isUITestMode = false
+        loadSettings()
+    }
+
+    private func loadSettings() {
         do {
             savedSettings = try repository.load()
             if let savedSettings {
@@ -103,7 +124,6 @@ final class ChatSession: ObservableObject {
         } catch {
             settingsError = Self.settingsMessage(error)
         }
-        if let bootstrapFailure { settingsError = "Live UI 測試設定未完成。\(bootstrapFailure)" }
     }
 
     var canSend: Bool {
@@ -118,6 +138,7 @@ final class ChatSession: ObservableObject {
     }
 
     var chatStatus: String {
+        if pendingProfileReview != nil { return "等待你核對個人檔案修改…" }
         if pendingMCPApproval != nil { return "等待你核准 MCP 工具…" }
         if isSubmitting && isMCPRun { return "正在使用 MCP 處理對話…" }
         if isSubmitting { return "正在等待模型回覆…" }
@@ -142,6 +163,8 @@ final class ChatSession: ObservableObject {
             keyDraft = ""
             if changed {
                 entries = []
+                profileReceipt = nil
+                profileReceiptRequestID = nil
                 conversationID = UUID().uuidString
                 learning.resetConversationPresentation()
             }
@@ -169,6 +192,8 @@ final class ChatSession: ObservableObject {
             modelDraft = ""
             keyDraft = ""
             entries = []
+            profileReceipt = nil
+            profileReceiptRequestID = nil
             conversationID = UUID().uuidString
             learning.resetConversationPresentation()
             chatError = nil
@@ -200,10 +225,20 @@ final class ChatSession: ObservableObject {
             return
         }
         let prompt = draft
-        let messages = entries.map { ModelMessage(role: $0.role, content: $0.content) }
-            + learning.contextMessages(for: prompt)
-            + [ModelMessage(role: "user", content: prompt)]
+        let window: ChatContextWindow
+        do {
+            window = try ChatContextWindow(
+                history: entries.map { ModelMessage(role: $0.role, content: $0.content) },
+                context: learning.contextMessages(for: prompt), prompt: prompt)
+        } catch {
+            chatError = ((error as? ChatContextWindowError)?.errorDescription ?? "無法準備本次對話。")
+                + "草稿已保留。"
+            return
+        }
+        let messages = window.messages
         let learningGeneration = learning.generation
+        let profileState = learning.profile
+        let useProfileTools = mcpConnection == nil && learning.available && learning.memory.preferences.useMemory
         let configuration = savedSettings.configuration
         let id = UUID()
         requestID = id
@@ -214,7 +249,8 @@ final class ChatSession: ObservableObject {
         mcpSentCount = 0
         mcpModelCalls = 0; mcpFormatCorrections = 0; mcpPhase = "starting"; updateMCPDiagnostics()
         chatError = nil
-        chatNotice = nil
+        chatNotice = window.omittedTurns == 0 ? nil
+            : "本次傳送最近 \(window.retainedTurns) 輪對話、本輪完整訊息及參考資料；較早 \(window.omittedTurns) 輪仍在畫面中，但未傳送。"
         let client = client
         request = Task { [weak self] in
             do {
@@ -222,6 +258,10 @@ final class ChatSession: ObservableObject {
                 if let (connection, tools, resources) = mcpConnection {
                     reply = try await self?.completeWithMCP(messages: messages, configuration: configuration,
                         key: key, client: client, connection: connection, tools: tools, resources: resources, requestID: id) ?? ""
+                } else if useProfileTools {
+                    reply = try await self?.completeWithProfile(messages: messages, utterance: prompt,
+                        state: profileState, generation: learningGeneration, configuration: configuration,
+                        key: key, client: client, requestID: id) ?? ""
                 } else {
                     reply = try await client.complete(messages: messages, configuration: configuration, apiKey: key)
                 }
@@ -250,12 +290,15 @@ final class ChatSession: ObservableObject {
                 }
                 // Do not surface provider error bodies/URLs: they may contain secrets.
                 let message = (error as? MCPChatStop)?.message
+                    ?? (error as? ProfileChatStop)?.message
+                    ?? Self.profileFailureMessage(error)
                     ?? Self.modelFailureMessage(error as? MCPConversationError)
                     ?? ((error as? MCPConversationError) == .invalidCommand
                         ? "模型仍未提供可用的單一步驟指令，已停止；草稿與先前工具結果保留。" : nil)
                     ?? (mcpConnection == nil ? "傳送失敗，草稿已保留。請檢查模型設定或網路後重試。"
                         : "MCP 對話未完成，草稿與已收到的工具結果保留；請先確認已送出操作，不會自動重試。")
-                self.finish(id: id, error: message)
+                self.finish(id: id, error: self.profileReceiptRequestID != id ? message
+                    : "個人檔案已儲存，但後續模型回覆未完成；請先查看已保存內容，避免重複修改。草稿保留。")
             }
         }
         deadline = Task { [weak self] in
@@ -265,7 +308,9 @@ final class ChatSession: ObservableObject {
             guard let self, self.requestID == id else { return }
             self.request?.cancel()
             if mcpConnection != nil { self.updateMCPDiagnostics(failure: "hostDeadline") }
-            self.finish(id: id, error: "等待超過 \(seconds) 秒，已停止等待；草稿已保留，可重試。")
+            self.finish(id: id, error: self.profileReceiptRequestID != id
+                ? "等待超過 \(seconds) 秒，已停止等待；草稿已保留，可重試。"
+                : "個人檔案已儲存，但後續回覆等待超過 \(seconds) 秒；請先查看保存內容。草稿保留。")
         }
     }
 
@@ -301,6 +346,80 @@ final class ChatSession: ObservableObject {
     func cancelMCP() {
         guard isMCPRun else { return }
         cancel()
+    }
+
+    /// Ordinary pending model replies remain deliverable after memory clearing;
+    /// a profile review is invalidated immediately, and late proposals recheck
+    /// generation/master-switch state before they can even be shown.
+    func invalidateProfileReview() {
+        guard pendingProfileReview != nil else { return }
+        cancel()
+    }
+
+    private func completeWithProfile(messages: [ModelMessage], utterance: String,
+                                     state: UserProfileState, generation: UUID,
+                                     configuration: ModelConfiguration, key: String,
+                                     client: any ChatModelClient, requestID: UUID) async throws -> String {
+        let flow = try UserProfileChatFlow(messages: messages)
+        defer { flow.cancel() }
+        while true {
+            let step = try await flow.advance(client: client, configuration: configuration, apiKey: key)
+            try Task.checkCancellation()
+            guard self.requestID == requestID else { throw CancellationError() }
+            switch step {
+            case .answer(let answer): return answer
+            case .proposedEdit(let arguments):
+                guard learning.available, learning.memory.preferences.useMemory,
+                      learning.generation == generation, learning.profile.revision == state.revision else {
+                    throw UserProfileToolError.staleRevision
+                }
+                // Only the actual draft sent for this run is evidence. Context,
+                // old messages and model replies cannot authorize an edit.
+                let proposal = try UserProfileToolRequest.parse(arguments).prepare(state: state, utterances: [utterance])
+                let approved = await approveProfile(proposal, requestID: requestID)
+                try Task.checkCancellation()
+                guard self.requestID == requestID else { throw CancellationError() }
+                guard approved else { throw ProfileChatStop.declined }
+                try flow.validateReview()
+                let receipt = try learning.commitProfileTool(proposal, expectedGeneration: generation)
+                profileReceipt = receipt // Retained even if the next model call fails.
+                profileReceiptRequestID = requestID
+                try flow.recordCommitted(entryID: receipt.id)
+            }
+        }
+    }
+
+    func resolveProfileReview(id: UUID, approved: Bool) {
+        guard pendingProfileReview?.id == id else { return }
+        pendingProfileReview = nil
+        let continuation = profileApprovalContinuation
+        profileApprovalContinuation = nil
+        continuation?.resume(returning: approved)
+    }
+
+    private func approveProfile(_ review: UserProfileToolReview, requestID: UUID) async -> Bool {
+        guard self.requestID == requestID, !Task.isCancelled else { return false }
+        return await withTaskCancellationHandler {
+            await withCheckedContinuation { continuation in
+                guard self.requestID == requestID, !Task.isCancelled else {
+                    continuation.resume(returning: false); return
+                }
+                profileApprovalContinuation = continuation
+                pendingProfileReview = review
+            }
+        } onCancel: { [weak self] in
+            Task { @MainActor [weak self] in
+                guard let self, self.requestID == requestID, let proposal = self.pendingProfileReview else { return }
+                self.resolveProfileReview(id: proposal.id, approved: false)
+            }
+        }
+    }
+
+    private static func profileFailureMessage(_ error: Error) -> String? {
+        if error is UserProfileToolError || error is UserProfileError || error is UserProfileChatError {
+            return "個人檔案工具未通過檢查或已超過執行限制，已停止；草稿保留。已完成的儲存會另外顯示。"
+        }
+        return nil
     }
 
     private func completeWithMCP(messages: [ModelMessage], configuration: ModelConfiguration,
@@ -377,12 +496,15 @@ final class ChatSession: ObservableObject {
         entries = []; conversationID = UUID().uuidString
         mcpActivity = nil; mcpSteps = []; mcpSentCount = 0
         mcpDiagnostics = nil
+        profileReceipt = nil
+        profileReceiptRequestID = nil
         chatError = nil; chatNotice = "已開啟新對話；已確認的記憶與技能保留。"
     }
 
     private func finish(id: UUID, error: String? = nil) {
         guard requestID == id else { return }
         if let pending = pendingMCPApproval { resolveMCPApproval(id: pending.id, approved: false) }
+        if let pending = pendingProfileReview { resolveProfileReview(id: pending.id, approved: false) }
         requestID = nil
         isSubmitting = false
         isMCPRun = false
@@ -399,6 +521,11 @@ final class ChatSession: ObservableObject {
     private static func settingsMessage(_ error: Error) -> String {
         (error as? ModelSettingsError)?.errorDescription ?? "無法讀取或儲存模型設定，請移除設定後重新填寫。"
     }
+}
+
+private enum ProfileChatStop: Error {
+    case declined
+    var message: String { "你已拒絕這次個人檔案修改；尚未儲存，訊息草稿已保留。" }
 }
 
 private struct MCPChatStop: Error {

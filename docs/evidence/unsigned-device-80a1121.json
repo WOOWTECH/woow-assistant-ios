@@ -1,0 +1,19 @@
+{
+  "revision": "80a1121047a63ebc7f349d42572035f72a5b4be6",
+  "run": 42843044229,
+  "job": 129923060138,
+  "artifact": 13777354066,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42843044229/job/129923060138",
+  "mode": "unsigned-device",
+  "jobConclusion": "success",
+  "buildNumber": "45",
+  "minimumOS": "17.0",
+  "verifiedBinaryCount": 9,
+  "artifactKind": "unsigned-device-build-not-installable",
+  "limits": [
+    "Build acceptance only, no native method or UI execution.",
+    "No signing, provisioning, physical install, Transporter or TestFlight upload.",
+    "Includes PDF assembly product source, predates new profile chat working tree.",
+    "The separate test-target compilation failure remains recorded; this Release build does not override it."
+  ]
+}

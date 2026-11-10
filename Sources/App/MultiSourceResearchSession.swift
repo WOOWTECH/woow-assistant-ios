@@ -11,6 +11,7 @@ import WebKit
     @Published private(set) var receipts: [MultiSourceResearchReceipt] = []
     @Published private(set) var result: MultiSourceResearchResult?
     @Published private(set) var browsers: [BrowserSession] = []
+    @Published private(set) var diagnostic = "phase=idle;failure=none;pages=0"
     private var task: Task<Void, Never>?
     private var operationID: UUID?
     private var settingsChanges: AnyCancellable?
@@ -18,6 +19,7 @@ import WebKit
     func start(plan: MultiSourceResearchPlan, using chat: ChatSession) {
         cancel(showNotice: false)
         receipts = []; result = nil; error = nil
+        diagnostic = "phase=starting;failure=none;pages=0"
         do {
             let access = try chat.modelAccess()
             let executor = MultiSourceResearchWebKitExecutor(sources: plan.sources)
@@ -39,17 +41,21 @@ import WebKit
                     try Task.checkCancellation()
                     guard let self, self.operationID == id else { return }
                     self.result = result
+                    self.diagnostic = "phase=finished;failure=none;pages=\(self.receipts.count)"
                     self.status = result.partial ? "已交付部分結果；仍有來源或證據不足。" : "已整理多來源引用；來源獨立性與內容仍需判讀。"
                     self.finish()
                 } catch {
                     guard let self, self.operationID == id else { return }
                     self.error = (error as? MultiSourceResearchError)?.errorDescription
                         ?? WebResearchRunner.failureDescription(for: error).message
+                    let code = Self.failureCode(error)
+                    self.diagnostic = "phase=failed;failure=\(code);pages=\(self.receipts.count)"
                     self.status = "研究未完成；實際讀取紀錄保留。"
                     self.finish()
                 }
             }
         } catch {
+            diagnostic = "phase=failed;failure=model_configuration;pages=0"
             self.error = "請先在設定完成模型服務與金鑰設定。"
             status = "尚未開始研究。"
         }
@@ -59,10 +65,29 @@ import WebKit
         error = (failure as? MultiSourceResearchError)?.errorDescription ?? "請檢查研究問題與來源網址。"
     }
 
+    /// Closed enum mapping: diagnostic values never contain page/model content
+    /// or arbitrary error descriptions.
+    private static func failureCode(_ error: Error) -> String {
+        guard let error = error as? MultiSourceResearchError else {
+            return WebResearchRunner.failureDescription(for: error).code
+        }
+        switch error {
+        case .invalidPlan: return "invalid_plan"
+        case .invalidCommand: return "invalid_command"
+        case .invalidModelJSON: return "invalid_model_json"
+        case .invalidCitation: return "invalid_citation"
+        case .unsafeObservation: return "unsafe_observation"
+        case .staleObservation: return "stale_observation"
+        case .deadline: return "deadline"
+        }
+    }
+
     private func record(_ event: MultiSourceResearchEvent, for id: UUID) {
         guard operationID == id, running else { return }
         switch event {
-        case .observed(let receipt): receipts.append(receipt); status = "已讀取 \(receipts.count) 個頁面，正在核對來源…"
+        case .observed(let receipt):
+            receipts.append(receipt); status = "已讀取 \(receipts.count) 個頁面，正在核對來源…"
+            diagnostic = "phase=reading;failure=none;pages=\(receipts.count)"
         case .sourceUnavailable: status = "有來源暫時無法讀取，會標示資料不足。"
         }
     }
@@ -73,6 +98,7 @@ import WebKit
         settingsChanges = nil
         browsers.forEach { $0.cancel() }; browsers = []
         running = false
+        if wasRunning { diagnostic = "phase=cancelled;failure=cancelled;pages=\(receipts.count)" }
         if showNotice && wasRunning { status = "已取消研究；已讀取紀錄保留，晚到回應不會更新結果。" }
     }
 

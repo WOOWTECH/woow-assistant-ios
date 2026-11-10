@@ -47,7 +47,7 @@ complete locations rather than treating shortened table paths as filesystem path
 
 ## Deliberate capability boundaries / outstanding integration
 
-Manual personal profiles now have a pinned-behavior state core, encrypted LearningStore integration, active/superseded history, master-switch gating and a frozen ordinary/MCP chat context. Local core and actual vault tests passed; native UI and real-model acceptance remain separate. The original model `profile_edit` tool and profile injection into every independent skill/browser runner are still absent. See [personal profile scope](USER_PROFILE.md).
+Manual personal profiles now have a pinned-behavior state core, encrypted LearningStore integration, active/superseded history, master-switch gating and a frozen ordinary/MCP chat context. Local core and actual vault tests passed; native UI and real-model acceptance remain separate. Ordinary chat now has a quote-grounded `profile_edit` proposal/review/atomic-save path, pending native and live acceptance. It adds explicit per-operation review and a one-operation turn limit. MCP-mode profile tools and profile injection into every independent skill/browser runner are still absent. See [personal profile scope](USER_PROFILE.md).
 
 - Browser website logins now use persistent WebKit website-data records with
   per-site deletion; they are not stored in memory. The new integration and
@@ -64,7 +64,7 @@ Manual personal profiles now have a pinned-behavior state core, encrypted Learni
   constrained DOM interaction are separate increments; catalog evidence below
   does not establish their acceptance or full browser parity.
   Drafting/promotion must be accepted with separate core, App UI and live evidence.
-- Model-controlled memory mutation and `profile_edit` remain unimplemented. Pinned Mika performs post-run memory extraction, not automatic profile consolidation; profile changes belong to the explicit `profile_edit` tool and take effect on the next run.
+- Model-controlled memory mutation remains unimplemented; ordinary-chat `profile_edit` is implemented with the additional review boundary above and still requires acceptance. Pinned Mika performs post-run memory extraction, not automatic profile consolidation; profile changes belong to the explicit `profile_edit` tool and take effect on the next run.
   Skill search/read and reviewed-save now have actual-model App acceptance at
   `6d480d8`; this does not grant automatic approval or general mutation authority. The complete pinned bundled-source archive and separately labeled
   iOS text adaptations are implemented below; this is not original-skill execution

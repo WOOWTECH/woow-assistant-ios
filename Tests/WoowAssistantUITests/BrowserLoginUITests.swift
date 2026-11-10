@@ -497,26 +497,48 @@ final class BrowserLoginUITests: XCTestCase {
         // e1024aa SE records this exact first-use QuickPath explanation.
         // 1747c20 current records the keyboard still animating when Continue
         // first exists; its frame is not yet a reliable containment boundary.
-        // Require the known explanation and a visible, hittable native button.
+        // Use the full App viewport, not the moving keyboard, as the boundary.
         let keyboard = app.keyboards.firstMatch
         XCTAssertTrue(keyboard.waitForExistence(timeout: 10))
         let button = app.buttons["Continue"].firstMatch
         guard button.waitForExistence(timeout: 3) else { return }
-        let explanation = app.staticTexts["Speed up your typing by sliding your finger across the letters to compose a word."].firstMatch
+        let explanationLabel = "Speed up your typing by sliding your finger across the letters to compose a word."
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            guard explanation.exists, button.exists else { return false }
-            // e941 SE video shows both controls visible. The multi-attribute
-            // AX query reached the explanation's hittability only as its waiter
-            // expired. Static explanatory text need not be an interaction target;
-            // require the exact text and the actual native button's readiness.
-            return button.isEnabled && button.isHittable
+            // 74f7b71 SE: the exact explanation exists query took 7.641s,
+            // then another Continue query was interrupted by this 10s waiter.
+            // The recording shows both controls throughout. Bind their exact
+            // roles, labels and geometry in ONE public snapshot; reading its
+            // children/attributes locally does not issue separate AX queries.
+            let snapshot: XCUIElementSnapshot
+            do { snapshot = try self.app.snapshot() }
+            catch {
+                XCTFail("Unable to snapshot the exact native QuickPath tutorial; no touch was sent.")
+                return false
+            }
+            var pending = [snapshot]
+            var explanations: [XCUIElementSnapshot] = []
+            var buttons: [XCUIElementSnapshot] = []
+            while let node = pending.popLast() {
+                if node.elementType == .staticText && node.label == explanationLabel { explanations.append(node) }
+                if node.elementType == .button && node.label == "Continue" { buttons.append(node) }
+                pending.append(contentsOf: node.children)
+            }
+            guard explanations.count == 1, buttons.count == 1, buttons[0].isEnabled else { return false }
+            let viewport = snapshot.frame, explanation = explanations[0].frame, target = buttons[0].frame
+            let frames = [viewport, explanation, target]
+            guard frames.allSatisfy({ frame in
+                !frame.isEmpty && [frame.minX, frame.minY, frame.width, frame.height].allSatisfy { $0.isFinite }
+            }), viewport.contains(explanation), viewport.contains(target), target.minY >= explanation.maxY else { return false }
+            return true
         }, object: nil)
         guard XCTWaiter.wait(for: [ready], timeout: 10) == .completed else {
             XCTFail("The exact native QuickPath tutorial must become visible before Continue is tapped.")
             return
         }
         print("LOGIN_KEYBOARD_INTRO_PRESENTED")
-        tap(button)
+        // Native button tap still resolves its actionable target. Do not repeat
+        // the helper's exists/enabled/hittable queries or substitute a screen tap.
+        button.tap()
         let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: button)
         XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed,
                        "The native keyboard tutorial must dismiss before typing synthetic credentials.")

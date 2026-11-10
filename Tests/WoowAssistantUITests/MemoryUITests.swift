@@ -95,7 +95,7 @@ final class MemoryUITests: XCTestCase {
     func testMemoryEditPinSearchAndDeletePersist() {
         launch()
         openMemory()
-        addMemory("Prefer green tea")
+        addMemory("Prefer green tea", keywords: "tea")
         tapFirst(prefix: "memory.pin.")
         XCTAssertTrue(app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@", "memory.pinned.")).firstMatch.exists)
         tapFirst(prefix: "memory.edit.")
@@ -253,7 +253,7 @@ final class MemoryUITests: XCTestCase {
         XCTAssertEqual(app.buttons["memory.segment.\(name)"].firstMatch.value as? String, "已選取")
     }
 
-    private func addMemory(_ text: String, procedure: Bool = false) {
+    private func addMemory(_ text: String, procedure: Bool = false, keywords: String? = nil) {
         tap("memory.add", scroll: true)
         if procedure {
             let kind = app.segmentedControls.buttons["做法"].firstMatch
@@ -281,6 +281,16 @@ final class MemoryUITests: XCTestCase {
                            "Memory editor must receive the exact fixture text before Save.")
         }
         XCTAssertEqual(content.value as? String, text)
+        if let keywords {
+            // The pre-split fixture supplied this keyword. Pinned retrieval
+            // intentionally rejects a lone content-word hit without it.
+            tap("memory.editor.done")
+            waitForAbsence(app.keyboards.firstMatch)
+            let field = app.textFields["memory.editor.keywords"].firstMatch
+            reveal(field)
+            enter(keywords, into: field)
+            XCTAssertEqual(field.value as? String, keywords)
+        }
         saveMemoryEditor()
     }
 
@@ -375,6 +385,32 @@ final class MemoryUITests: XCTestCase {
 
     private func tap(_ id: String, scroll: Bool = false) {
         let button = app.buttons[id].firstMatch
+        if id == "skills.editor.save" || id.hasPrefix("memory.segment.") {
+            // faf iOS 26: these fixed controls were visible in failure AX and
+            // screenshots, but the extra hittability predicate timed out or
+            // threw an invalid activation-point error before any tap. Check
+            // actual geometry/state, then let native tap resolve its hit point.
+            // Keep List controls on the existing bounded reveal path below.
+            let exists = button.waitForExistence(timeout: 5)
+            XCTAssertTrue(exists, "The fixed control must exist before tapping.")
+            guard exists else { return }
+            var viewport = app.frame
+            let navigation = app.buttons["navigation.chat"].firstMatch
+            if navigation.exists {
+                viewport.size.height = max(0, min(viewport.maxY, navigation.frame.minY) - viewport.minY)
+            }
+            let keyboard = app.keyboards.firstMatch
+            if keyboard.exists {
+                viewport.size.height = max(0, min(viewport.maxY, keyboard.frame.minY) - viewport.minY)
+            }
+            let visible = learningFrameIsVisible(button.frame, in: viewport, visibility: .fullyVisible)
+            let enabled = button.isEnabled
+            XCTAssertTrue(visible, "The fixed control must be fully visible above navigation and keyboard.")
+            XCTAssertTrue(enabled, "The fixed control must be enabled before tapping.")
+            guard visible && enabled else { return }
+            button.tap()
+            return
+        }
         if scroll && (id == "skills.import" || id.hasPrefix("skills.rollback.")) {
             guard revealSkillButton(button, identifier: id) else { return }
         } else if scroll { reveal(button) } else { waitUntilHittable(button) }

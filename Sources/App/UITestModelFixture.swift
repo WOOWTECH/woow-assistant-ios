@@ -50,6 +50,29 @@ actor UITestChatModelClient: ChatModelClient {
 
     func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
         let instructions = messages.first?.content ?? ""
+        if instructions.hasPrefix("Ordinary chat with an available profile_edit tool.") {
+            if messages.last?.content.hasPrefix("Host profile_edit receipt") == true {
+                return #"{"action":"finish","answer":"個人檔案工具已完成。"}"#
+            }
+            let prompt = messages.last?.content ?? ""
+            let operation: [String: String]?
+            switch prompt {
+            case "Remember Prefer tea": operation = ["op": "add", "text": "Prefer tea", "quote": prompt]
+            case "Remember Prefer quiet": operation = ["op": "add", "text": "Prefer quiet", "quote": prompt]
+            case "Replace Prefer tea with Prefer walks":
+                operation = ["op": "replace", "match": "Prefer tea", "text": "Prefer walks", "quote": prompt]
+            case "Delete Prefer walks": operation = ["op": "delete", "match": "Prefer walks", "quote": prompt]
+            default: operation = nil
+            }
+            if let operation {
+                // An actual proposal only; the fixture never applies or stores
+                // it. Native review, approval and persistence remain required.
+                return String(decoding: try JSONSerialization.data(withJSONObject:
+                    ["action": "profile_edit", "arguments": operation]), as: UTF8.self)
+            }
+            let answer = try await complete(messages: Array(messages.dropFirst()), configuration: configuration, apiKey: apiKey)
+            return String(decoding: try JSONSerialization.data(withJSONObject: ["action": "finish", "answer": answer]), as: UTF8.self)
+        }
         if instructions.hasPrefix("You operate selected MCP tools") {
             if let result = messages.last?.content, result.hasPrefix("MCP execution result") {
                 let raw = result.components(separatedBy: "\n").dropFirst().joined(separator: "\n")

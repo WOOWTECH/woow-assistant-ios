@@ -160,10 +160,14 @@ final class UserProfileUITests: XCTestCase {
         var entered = ""
         for character in text {
             editor.typeText(String(character)); entered.append(character)
-            let received = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", entered), object: editor)
-            let result = XCTWaiter.wait(for: [received], timeout: 5)
-            XCTAssertEqual(result, .completed, "Every native character must arrive exactly before saving")
-            guard result == .completed else { return }
+            // faf SE: the timed predicate expired, but its failure AX and
+            // screenshot contained the exact first character.
+            // typeText already waits for App idle; check its resulting value
+            // directly, preserving exact per-character assertions without a
+            // separate polling deadline, retries or synthesized input repairs.
+            let received = editor.value as? String
+            XCTAssertEqual(received, entered, "Every native character must arrive exactly before saving")
+            guard received == entered else { return }
         }
         XCTAssertEqual(editor.value as? String, text)
         tap("profile.editor.done")

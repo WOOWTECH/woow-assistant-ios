@@ -118,6 +118,23 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
         } catch { self.error = Self.message(error); return false }
     }
 
+    /// Reviewed tool transaction. Recheck the master switch and both revisions
+    /// synchronously, persist a disposable value, then publish its receipt.
+    func commitProfileTool(_ review: UserProfileToolReview,
+                           expectedGeneration: UUID) throws -> UserProfileToolReceipt {
+        guard available else { throw LearningFileError.notLoaded }
+        guard memory.preferences.useMemory else { throw MemoryError.disabled }
+        guard generation == expectedGeneration else { throw UserProfileToolError.staleRevision }
+        var next = profile
+        let receipt = try review.apply(to: &next, now: Date())
+        do { try persist(memory: memory, skills: skills, profile: next) }
+        catch { self.error = Self.message(error); throw error }
+        profile = next
+        error = nil
+        notice = "個人檔案已儲存，下一次對話任務開始時生效。"
+        return receipt
+    }
+
     @discardableResult
     func mutateSkills(_ change: (inout SkillsState) throws -> Void) -> Bool {
         onUserChange?()

@@ -12,7 +12,7 @@ on:
       ui_scope:
         description: Live App UI coverage (native probes always run)
         type: choice
-        options: [all, browser, browser-learning, browser-interaction, multi-source, user-profile, skill-authoring, self-configuration, browser-transcript, transcript-files, transcript-formats]
+        options: [all, browser, browser-learning, browser-interaction, multi-source, user-profile, profile-tool, skill-authoring, self-configuration, browser-transcript, transcript-files, transcript-formats]
         default: all
 
 permissions:
@@ -134,7 +134,7 @@ jobs:
             "$PWD/Sources/AssistantSkills/Resources/MikaBundledSkills.json"
       - name: Real model App UI tests
         if: ${{ !cancelled() && steps.app-build.outcome == 'success' }}
-        # Thirteen live UI methods include settings, profile and research flows;
+        # Live UI methods include settings, reviewed profile tools and research flows;
         # focused scopes keep their previous 20-minute bound and case limits.
         timeout-minutes: ${{ (inputs.ui_scope || 'all') == 'all' && 40 || 20 }}
         env:
@@ -156,6 +156,8 @@ jobs:
             ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealWebKitMultiSourceResearchCitesBothApprovedRoots)
           elif [ '${{ inputs.ui_scope }}' = 'user-profile' ]; then
             ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelRecallsManualProfileAfterRelaunchAndMasterSwitchDisablesIt)
+          elif [ '${{ inputs.ui_scope }}' = 'profile-tool' ]; then
+            ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelProfileEditRequiresReviewAndPersistsAfterRelaunch)
           elif [ '${{ inputs.ui_scope }}' = 'skill-authoring' ]; then
             ui_filters=(-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelReadsOriginalSkillAndReviewedSaveSurvivesRelaunch)
           elif [ '${{ inputs.ui_scope }}' = 'self-configuration' ]; then

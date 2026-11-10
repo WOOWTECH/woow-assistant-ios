@@ -38,14 +38,16 @@ struct ContentView: View {
         .environmentObject(preferences)
         .preferredColorScheme(preferences.preferredColorScheme)
         .onAppear {
-            session.learning.onUserChange = { [weak browserWorkspace] in
+            session.learning.onUserChange = { [weak browserWorkspace, weak session] in
                 browserWorkspace?.cancelAllWork()
+                session?.invalidateProfileReview()
             }
             mcpSession.onConnectionChange = { [weak session] in session?.cancelMCP() }
         }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active {
                 session.cancelMCP()
+                session.invalidateProfileReview()
                 browserWorkspace.cancelAllWork()
                 if mcpSession.phase == .connected || mcpSession.isBusy { mcpSession.disconnect() }
             }
@@ -176,6 +178,10 @@ private struct ChatView: View {
                     .accessibilityIdentifier("chat.mcpActivity")
                     .accessibilityValue(session.mcpDiagnostics ?? "")
             }
+            if session.profileReceipt != nil {
+                Text("本次對話曾儲存個人檔案；可到資料頁查看目前內容。")
+                    .font(.caption).accessibilityIdentifier("chat.profileReceipt")
+            }
             if !session.mcpSteps.isEmpty {
                 Button("檢視工具結果（\(session.mcpSteps.count)）") { showsMCPResults = true }
                     .font(.caption).accessibilityIdentifier("chat.mcpResults")
@@ -258,6 +264,12 @@ private struct ChatView: View {
                 .interactiveDismissDisabled()
         }
         .sheet(isPresented: $showsMCPResults) { MCPResultsView(steps: session.mcpSteps) }
+        .sheet(item: Binding(get: { session.pendingProfileReview }, set: { _ in })) { review in
+            UserProfileToolReviewView(review: review,
+                approve: { session.resolveProfileReview(id: review.id, approved: true) },
+                decline: { session.resolveProfileReview(id: review.id, approved: false) })
+                .interactiveDismissDisabled()
+        }
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()

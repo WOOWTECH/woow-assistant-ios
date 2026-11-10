@@ -26,7 +26,7 @@ UI_SHARDS = {
     "ui-workspace": ["BrowserWorkspaceUITests", "BrowserLoginUITests"],
     "ui-browser": ["BrowserInteractionUITests", "BrowserUploadUITests"],
     "ui-learning": ["BrowserLearningUITests", "MultiSourceResearchUITests"],
-    "ui-memory": ["MemoryUITests", "MemoryRaceUITests", "UserProfileUITests"],
+    "ui-memory": ["MemoryUITests", "MemoryRaceUITests", "UserProfileUITests", "UserProfileToolUITests"],
     "ui-skills": ["SkillCatalogUITests", "SkillAuthoringUITests", "TranscriptUITests"],
     "ui-documents": ["SkillExecutionUITests", "SkillWorkerSettingsUITests"],
     "ui-mcp": ["MCPConversationUITests"],
@@ -43,6 +43,7 @@ TEST_SCOPES = {
     "startup-smoke": ["WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded"],
     "picker-user-copy": ["WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText"],
     "pdf-assembly": ["WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
+    "profile-tool": ["WoowAssistantUITests/UserProfileToolUITests"],
     **{scope: ["WoowAssistantUITests/" + name for name in classes]
        for scope, classes in UI_SHARDS.items()},
 }

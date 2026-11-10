@@ -25,7 +25,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, picker-uikit, picker-uikit-copy, picker-user-copy, pdf-assembly, pdf-export, authoring, skill-settings, transcript, memory-ui, memory-rollback, learning, browser, core, native, startup, ui-startup, ui-workspace, ui-browser, ui-learning, ui-memory, ui-skills, ui-documents, ui-mcp]
+        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, picker-uikit, picker-uikit-copy, picker-user-copy, pdf-assembly, profile-tool, pdf-export, authoring, skill-settings, transcript, memory-ui, memory-rollback, learning, browser, core, native, startup, ui-startup, ui-workspace, ui-browser, ui-learning, ui-memory, ui-skills, ui-documents, ui-mcp]
         default: all
 
 permissions:
@@ -178,6 +178,9 @@ jobs:
             pdf-assembly)
               test_filters=(-only-testing:WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult)
               ;;
+            profile-tool)
+              test_filters=(-only-testing:WoowAssistantUITests/UserProfileToolUITests)
+              ;;
             pdf-export)
               test_filters=(-only-testing:WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder -only-testing:WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry)
               ;;
@@ -238,7 +241,7 @@ jobs:
             xcrun xcresulttool export diagnostics --path build/Tests.xcresult --output-path build/diagnostics
           fi
       - name: Verify every selected shard case completed without skips
-        if: always() && github.event_name == 'workflow_dispatch' && (startsWith(inputs.test_scope, 'ui-') || contains(fromJSON('["native","picker-user-copy","pdf-assembly"]'), inputs.test_scope))
+        if: always() && github.event_name == 'workflow_dispatch' && (startsWith(inputs.test_scope, 'ui-') || contains(fromJSON('["native","picker-user-copy","pdf-assembly","profile-tool"]'), inputs.test_scope))
         env:
           VALIDATION_SCOPE: ${{ inputs.test_scope }}
         run: |

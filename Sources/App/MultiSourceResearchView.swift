@@ -30,6 +30,7 @@ import WebKit
                     }.disabled(session.running)
                     Section("進度") {
                         Text(session.status).accessibilityIdentifier("multiResearch.status")
+                            .accessibilityValue(testDiagnostic)
                         if let error = session.error { Text(error).foregroundStyle(.red).accessibilityIdentifier("multiResearch.error") }
                         if session.running {
                             Button("取消研究") { session.cancel() }.accessibilityIdentifier("multiResearch.cancel")
@@ -91,6 +92,14 @@ import WebKit
         }
         .onDisappear { session.cancel() }
         .onChange(of: scenePhase) { _, value in if value == .background { session.cancel() } }
+    }
+
+    private var testDiagnostic: String {
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        if arguments.contains("-LiveModelUITest") || MultiSourceResearchFixture.enabled { return session.diagnostic }
+        #endif
+        return ""
     }
 
     private func rootField(_ label: String, text: Binding<String>, number: Int) -> some View {

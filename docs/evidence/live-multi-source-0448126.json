@@ -1,0 +1,29 @@
+{
+  "revision": "0448126",
+  "run": 42839708011,
+  "job": 129911356470,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42839708011/job/129911356470",
+  "scope": "Actual WebKit multi-source research on iOS18.5",
+  "nativeProbe": {
+    "result": "failed",
+    "observedCategory": "HTTPChatModelError",
+    "atUTC": "2026-11-10T15:44:37Z",
+    "specificCauseKnown": false
+  },
+  "ui": {
+    "method": "LiveModelUITests/testRealWebKitMultiSourceResearchCitesBothApprovedRoots",
+    "startedAtUTC": "2026-11-10T15:45:22Z",
+    "seconds": 98.11,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "failureStage": "Actual App multiResearch.error was present after the task finished; source citation assertions were not reached.",
+    "failureSourceLine": 474
+  },
+  "limits": [
+    "The probe and UI failure may have related causes, but no shared cause is established.",
+    "No authentication, quota, provider, transport, parser or citation root cause is inferred from the generic probe error.",
+    "No private App screenshots, AX, endpoint, credentials or model output are published."
+  ],
+  "followup": "Add fixed enum/numeric diagnostic categories to the native smoke and actual App status; preserve every existing success/citation assertion. Diagnostic changes are not a functional fix or a new pass."
+}

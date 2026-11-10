@@ -1,0 +1,35 @@
+{
+  "baseRevision": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+  "recordedAtUTC": "2026-11-10T16:08:45.763787+00:00",
+  "command": "bash scripts/CheckUserProfileChatFlow.sh",
+  "compilation": "warnings-as-errors",
+  "result": "passed",
+  "behaviorGroups": [
+    "reviewed proposal and actual host-commit receipt sequence",
+    "strict envelope/duplicate-key preservation, one cumulative format repair, three total calls and one edit",
+    "cancelled review, noncooperative late response, parent cancellation, expired turn and pre-commit review deadline"
+  ],
+  "passedGroups": 3,
+  "failedGroups": 0,
+  "sources": [
+    {
+      "path": "Sources/AssistantMemory/UserProfileChatFlow.swift",
+      "sha256": "502f99af6683a6c40c82c05a9bdded568f69de37323d91acad356da15c0b9e0e"
+    },
+    {
+      "path": "Tests/AssistantMemoryTests/UserProfileChatFlowTests.swift",
+      "sha256": "dd94eb46a39d172c1b75807ba88aea551d171eb408660dd0ec3204ace7b8d258"
+    },
+    {
+      "path": "scripts/CheckUserProfileChatFlow.sh",
+      "sha256": "34a2f3ff590e4020dfcae493eebb25eee77dd9c28b48f79d758ee29b55d07076"
+    }
+  ],
+  "limits": [
+    "Synthetic model replies; no network, App persistence, UIKit UI or real model is established by this report.",
+    "The host owns the cancellable whole-turn timer and must validateReview immediately before synchronous persistence.",
+    "Original argument bytes are retained so the separate tool parser can reject duplicate argument keys.",
+    "A post-commit format correction explicitly acknowledges the saved operation; it cannot authorize replay."
+  ],
+  "workingTreeSource": true
+}

@@ -45,9 +45,32 @@ struct LiveModelSmoke {
             print("PASS: 2 live native model tests; no response bodies or credentials logged")
         } catch {
             // Do not print arbitrary provider error descriptions, URLs or payloads.
-            print("FAIL: native model request failed (\(String(describing: type(of: error))))")
+            print("FAIL: native model request failed; category=\(failureCode(error))")
             exit(1)
         }
         #endif
+    }
+
+    /// Only fixed categories. Never include NSError metadata, URLs, response
+    /// bodies, underlying descriptions or credentials in the public job log.
+    static func failureCode(_ error: Error) -> String {
+        guard let error = error as? HTTPChatModelError else {
+            return error is CancellationError ? "cancelled" : "unknown"
+        }
+        switch error {
+        case .httpStatus(let status):
+            if status == 401 || status == 403 { return "authentication_rejected" }
+            if status == 429 { return "rate_limited" }
+            if (500...599).contains(status) { return "provider_server_error" }
+            return "http_rejected"
+        case .invalidConfiguration: return "configuration"
+        case .redirectRejected: return "redirect_rejected"
+        case .invalidResponse: return "invalid_response"
+        case .incompleteResponse: return "incomplete_response"
+        case .responseTooLarge: return "response_too_large"
+        case .consumerTooSlow: return "consumer_too_slow"
+        case .timedOut: return "timed_out"
+        case .transportFailure: return "transport_failed"
+        }
     }
 }
