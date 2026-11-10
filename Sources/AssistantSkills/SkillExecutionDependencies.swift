@@ -59,9 +59,9 @@ public enum SkillExecutionDependencies {
                 "現有 MCP 探索、選取工具與單次核准可作為接點；須實際找到該帳號的工具，不假設存在訊息服務。此執行器尚未接入。"),
             row("WeChat / Feishu / Instagram 原生 App 操作", .excluded, "不操作其他 App；原文『不用先問』不授予發送權限。")]
         case "skill-authoring": return [
-            row("skill_search / skill_read", .hostIntegrationRequired, "App 的手動技能寫作可搜尋個人與原始技能、讀取全文；尚未由模型自主呼叫。"),
-            row("ask_user / skill_save(markdown, quote, version)", .hostIntegrationRequired,
-                "手動技能寫作會綁定本次要求，核對完整內容並核准後才儲存；版本衝突與取消會阻擋儲存，模型不能自行核准。")]
+            row("skill_search / skill_read", .implementedInRuntime, "模型協作編寫可實際搜尋個人與內建技能、讀取固定版本原文與附件，再提出草稿。"),
+            row("ask_user / skill_save(markdown, quote, version)", .implementedInRuntime,
+                "模型可詢問補充並準備草稿；綁定本次要求、原文與既有版本，使用者核對全文並核准後才儲存。取消、版本衝突或儲存失敗不會回報成功。")]
         default: return []
         }
     }

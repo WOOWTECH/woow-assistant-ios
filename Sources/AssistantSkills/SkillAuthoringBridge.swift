@@ -183,7 +183,7 @@ public enum SkillAuthoringError: String, Error, Equatable, Sendable, LocalizedEr
         let current = try snapshot()
         guard quote == request.quote else { throw SkillAuthoringError.requestMismatch }
         var candidate = current.state
-        let draft = try candidate.importMarkdown(markdown, availableToolNames: current.availableToolNames,
+        let draft = try candidate.stageUserRequestedMarkdown(markdown, availableToolNames: current.availableToolNames,
             builtinNames: Set(catalog.entries.map(\.id)))
         let existing = current.state.installed.first { $0.name == draft.name }
         if existing?.status == .suspended { throw SkillAuthoringError.disabledNameConflict }
@@ -239,7 +239,7 @@ public enum SkillAuthoringError: String, Error, Equatable, Sendable, LocalizedEr
                 guard existing?.fingerprint == review.replacesFingerprint else { throw SkillAuthoringError.staleRead }
                 guard existing?.status != .suspended else { throw SkillAuthoringError.disabledNameConflict }
                 guard !state.pending.contains(where: { $0.name == review.name }) else { throw SkillAuthoringError.draftConflict }
-                let draft = try state.importMarkdown(review.markdown, availableToolNames: current.availableToolNames,
+                let draft = try state.stageUserRequestedMarkdown(review.markdown, availableToolNames: current.availableToolNames,
                     builtinNames: Set(catalog.entries.map(\.id)), draftID: prepared.draftID)
                 guard draft.document.fingerprint == review.draftFingerprint,
                       draft.baseHash == review.replacesFingerprint else { throw SkillAuthoringError.reviewChanged }

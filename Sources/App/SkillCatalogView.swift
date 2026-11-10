@@ -5,6 +5,7 @@ import SwiftUI
 @MainActor
 struct SkillCatalogView: View {
     @ObservedObject var store: LearningStore
+    let modelAccess: () throws -> ModelAccess
     @Environment(\.dismiss) private var dismiss
     @State private var catalog: BundledSkillCatalog?
     @State private var failure: String?
@@ -32,7 +33,7 @@ struct SkillCatalogView: View {
                     Section("原始技能與 iOS 文字改寫") {
                         ForEach(catalog.search(query)) { entry in
                             NavigationLink {
-                                SkillCatalogDetail(store: store, catalog: catalog, entry: entry)
+                                SkillCatalogDetail(store: store, catalog: catalog, entry: entry, modelAccess: modelAccess)
                             } label: {
                                 VStack(alignment: .leading, spacing: 4) {
                                     Text(verbatim: entry.title)
@@ -94,6 +95,7 @@ private struct SkillCatalogDetail: View {
     @ObservedObject var store: LearningStore
     let catalog: BundledSkillCatalog
     let entry: SkillCatalogEntry
+    let modelAccess: () throws -> ModelAccess
     @State private var failure: String?
 
     private var pending: Bool { store.skills.pending.contains { $0.name == entry.adaptationName } }
@@ -108,7 +110,12 @@ private struct SkillCatalogDetail: View {
                     }
                     .disabled(!store.available)
                     .accessibilityIdentifier("catalog.skill-authoring.open")
-                    Text("手動編寫並核准後儲存至個人技能；目前不會由模型自主編寫或儲存。")
+                    NavigationLink { SkillAgentView(store: store, modelAccess: modelAccess) } label: {
+                        Text("請模型協助編寫技能")
+                    }
+                    .disabled(!store.available)
+                    .accessibilityIdentifier("catalog.skill-authoring.agent")
+                    Text("可自行編寫，或請模型查詢、讀取原文並提出草稿；核對全文並核准後，才會儲存至個人技能。")
                         .font(.caption)
                 }
             }

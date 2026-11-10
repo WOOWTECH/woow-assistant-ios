@@ -120,6 +120,10 @@ private final class SkillAuthoringTestKeys: LearningKeyStore {
         try expect(restored.installed.count == 1 && restored.pending.isEmpty && store.writes == 1, "one durable atomic install")
         try expect(restored.installed[0].fingerprint == receipt.fingerprint && receipt.status == .trial && !receipt.updated,
                    "receipt matches actual reloaded trial skill")
+        try expect(restored.installed[0].source == .user
+            && restored.installed[0].document.frontMatter["source"] == .string("user")
+            && restored.installed[0].markdown == review.markdown,
+                   "manual authoring keeps user provenance and the exact reviewed text on encrypted reload")
         try expect(!String(decoding: Data(contentsOf: store.url), as: UTF8.self).contains("article-notes"), "disk contains ciphertext")
         try rejects(SkillAuthoringError.approvalRequired) {
             _ = try session.commitReviewedSave(reviewID: review.id, draftFingerprint: review.draftFingerprint, approval: approval)
@@ -134,6 +138,8 @@ private final class SkillAuthoringTestKeys: LearningKeyStore {
         try expect(updated.updated && updated.fingerprint != receipt.fingerprint && latest.installed.count == 1,
                    "update replaces the same name without duplication")
         try expect(latest.revisions.last?.previous?.fingerprint == receipt.fingerprint, "previous version retained")
+        try expect(latest.installed[0].source == .user && latest.installed[0].markdown == changed.markdown,
+                   "manual update preserves authoring provenance and normalized reviewed text")
     }
 
     static func refusalAndBinding(_ catalog: BundledSkillCatalog) throws {
@@ -288,6 +294,36 @@ private final class SkillAuthoringTestKeys: LearningKeyStore {
             _ = try dataOnly.prepareSave(markdown: text("unsafe-secret", detail: "api_key: sk-test-not-a-real-key-12345678901234567890"), quote: quote)
         }
     }
+
+    static func hostOwnedProvenance(_ catalog: BundledSkillCatalog) throws {
+        let store = try SkillAuthoringTestStore(); defer { store.cleanup() }
+        for claimedSource in ["user", "learned"] {
+            let name = "import-claims-" + claimedSource
+            let raw = text(name, extra: "source: \(claimedSource)\nlearned_from: invented-run\nupdates: 99\nstatus: active")
+            try store.mutate { state in
+                let draft = try state.importMarkdown(raw, availableToolNames: [])
+                try expect(draft.source == .imported && draft.document.frontMatter["source"] == .string("imported"),
+                           "ordinary import ignores forged authoring/learning source")
+                _ = try state.approveDraft(id: draft.id, availableToolNames: [])
+            }
+            let reopened = try store.reopened()
+            let imported = reopened.installed.first { $0.name == name }
+            try expect(imported?.source == .imported && imported?.status == .trial
+                && imported?.document.frontMatter["source"] == .string("imported")
+                && imported?.document.frontMatter["learned_from"] == nil
+                && imported?.document.frontMatter["updates"] == nil,
+                       "encrypted import retains host provenance and cannot forge learning or active status")
+        }
+        let session = try bridge(store, catalog)
+        let authored = try session.prepareSave(markdown: text("author-claims-import",
+            extra: "source: imported\nlearned_from: invented-run\nupdates: 99"), quote: quote)
+        _ = try commit(session, authored)
+        let reopened = try store.reopened()
+        let saved = reopened.installed.first { $0.name == authored.name }
+        try expect(saved?.source == .user && saved?.document.frontMatter["source"] == .string("user")
+            && saved?.markdown == authored.markdown && saved?.document.frontMatter["learned_from"] == nil,
+                   "authoring source is user even when raw Markdown claims imported")
+    }
 }
 
 #if SKILL_AUTHORING_SMOKE
@@ -299,7 +335,8 @@ private final class SkillAuthoringTestKeys: LearningKeyStore {
         try SkillAuthoringChecks.conflicts(catalog)
         try SkillAuthoringChecks.changedDraftAndCapabilities(catalog)
         try SkillAuthoringChecks.persistenceFailureAndInstructionData(catalog)
-        print("PASS skill authoring: real encrypted save/reload, atomic failure, refusal, request/read/draft binding, replay, disabled conflicts and instruction data")
+        try SkillAuthoringChecks.hostOwnedProvenance(catalog)
+        print("PASS 6 skill authoring suites: encrypted save/reload, atomic failure, refusal, request/read/draft binding, replay, disabled conflicts, instruction data and host-owned provenance")
     }
 }
 #else
@@ -309,6 +346,7 @@ final class SkillAuthoringBridgeTests: XCTestCase {
     @MainActor func testReadVersionsDisabledNamesAndPendingConflicts() throws { try SkillAuthoringChecks.conflicts(BundledSkillCatalog.bundled()) }
     @MainActor func testReviewedDraftReplayExpiryAndRevokedTools() throws { try SkillAuthoringChecks.changedDraftAndCapabilities(BundledSkillCatalog.bundled()) }
     @MainActor func testActualVaultFailuresAndInstructionDataSafety() throws { try SkillAuthoringChecks.persistenceFailureAndInstructionData(BundledSkillCatalog.bundled()) }
+    @MainActor func testHostOwnedAuthoringAndOrdinaryImportProvenance() throws { try SkillAuthoringChecks.hostOwnedProvenance(BundledSkillCatalog.bundled()) }
 }
 #endif
 #endif

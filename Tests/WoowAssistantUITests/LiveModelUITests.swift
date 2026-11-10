@@ -302,6 +302,61 @@ final class LiveModelUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["memory.error"].exists)
     }
 
+    func testRealModelReadsOriginalSkillAndReviewedSaveSurvivesRelaunch() throws {
+        executionTimeAllowance = 300
+        var app = try launchLiveApp()
+        let name = "live-author-" + UUID().uuidString.prefix(6).lowercased()
+        navigate(to: "memory", in: app)
+        selectLearningSegment("skills", in: app)
+        tapLearningButton("skills.agent.open", in: app)
+        let request = app.textViews["skillAgent.request"]
+        waitUntilHittable(request); request.tap()
+        request.typeText("請建立一個純文字個人技能，名稱必須為 \(name)，顯示名稱為閱讀摘要。用途是將使用者提供的文章整理成三個重點；內文必須含『三個重點』。不需要任何外部工具、不存個資。請先讀內建 skill-authoring 全文並搜尋重複技能，再提出簡短但完整的草稿給我核准；不需要額外提問。")
+        app.buttons["skillAgent.keyboard.done"].tap()
+        let start = app.buttons["skillAgent.start"]
+        waitUntilHittable(start); start.tap()
+        let approve = app.buttons["skillAgent.approve"]
+        let reviewReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            approve.exists || app.staticTexts["skillAgent.error"].exists
+                || app.staticTexts["skillAgent.question"].exists
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [reviewReady], timeout: 185), .completed)
+        XCTAssertFalse(app.staticTexts["skillAgent.error"].exists, "The real authoring tool loop failed.")
+        XCTAssertFalse(app.staticTexts["skillAgent.question"].exists, "The complete request must produce a reviewable draft.")
+        XCTAssertTrue(approve.exists, "The model must prepare an actual validated review.")
+        XCTAssertFalse(app.staticTexts["skillAgent.receipt"].exists, "A model response cannot approve its own save.")
+        for label in ["查詢技能：完成", "讀取技能全文：完成", "準備待審草稿：完成"] {
+            let step = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND label == %@", "skillAgent.step.", label)).firstMatch
+            revealLearningElement(step, in: app)
+            XCTAssertTrue(step.exists, "The actual authoring tools must each complete.")
+        }
+        let review = app.staticTexts["skillAgent.review.markdown"]
+        revealLearningElement(review, in: app, visibility: .readableText)
+        XCTAssertTrue(review.exists)
+        let reviewedMarkdown = review.label
+        XCTAssertTrue(reviewedMarkdown.contains(name) && reviewedMarkdown.contains("三個重點"),
+                      "The real draft must satisfy the requested identity and content.")
+        waitUntilHittable(approve); approve.tap()
+        let receipt = app.staticTexts["skillAgent.receipt"]
+        revealLearningElement(receipt, in: app)
+        XCTAssertTrue(receipt.exists, "Approval must complete an actual encrypted save.")
+        XCTAssertTrue(receipt.label == name)
+        app.buttons["skillAgent.close"].tap()
+        assertLiveTrialSkill(name, in: app)
+        app.terminate()
+        app = try launchLiveApp()
+        navigate(to: "memory", in: app)
+        selectLearningSegment("skills", in: app)
+        assertLiveTrialSkill(name, in: app)
+        tapLearningButton("skills.fullText.\(name)", in: app)
+        let persisted = app.staticTexts["skills.document"]
+        XCTAssertTrue(persisted.waitForExistence(timeout: 5))
+        XCTAssertTrue(Data(persisted.label.utf8) == Data(reviewedMarkdown.utf8),
+                      "Relaunch must preserve the exact Markdown reviewed before approval.")
+        app.buttons["skills.document.close"].tap()
+        XCTAssertFalse(app.staticTexts["memory.error"].exists)
+    }
+
     private func openPublicIANA(in app: XCUIApplication) {
         navigate(to: "browser", in: app)
         let address = app.textFields["browser.address"]

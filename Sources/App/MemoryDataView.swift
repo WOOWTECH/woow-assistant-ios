@@ -84,6 +84,11 @@ struct MemoryDataView: View {
                             .accessibilityIdentifier("skills.catalog.open")
                         NavigationLink { SkillExecutionView() } label: { Text("選取 PDF 並擷取文字") }
                             .accessibilityIdentifier("skills.documents.execute")
+                        NavigationLink {
+                            SkillAgentView(store: store, modelAccess: modelAccess)
+                        } label: { Text("請模型協助編寫技能") }
+                            .disabled(!store.available)
+                            .accessibilityIdentifier("skills.agent.open")
                         Text("閱讀完整原文與授權、匯入 iOS 文字技能，或選取 PDF 執行文件處理；每個執行步驟仍需核准。")
                             .font(.footnote).foregroundStyle(.secondary)
                     }
@@ -136,7 +141,7 @@ struct MemoryDataView: View {
                 case .websites:
                     WebsiteDataView(store: store, browser: browser, modelAccess: modelAccess, onOpenBrowser: onOpenBrowser)
                 case .catalog:
-                    SkillCatalogView(store: store)
+                    SkillCatalogView(store: store, modelAccess: modelAccess)
                 }
             }
         }

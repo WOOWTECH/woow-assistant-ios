@@ -30,7 +30,7 @@ public enum SkillCatalogRequirement: String, Codable, Sendable, CaseIterable {
         case .crossOriginResearch: return "原版跨網站自動研究：未提供"
         case .accountAccess: return "原版跨 App 帳號／收件匣讀取：未提供；MCP 能力另依伺服器與授權"
         case .externalSend: return "原版跨 App 訊息傳送：未提供；MCP 工具須另行核准"
-        case .skillMutationTools: return "模型自行儲存／修改技能工具：未提供"
+        case .skillMutationTools: return "模型可查詢、讀取並提出技能草稿；儲存須由你核准"
         }
     }
 }
@@ -61,7 +61,13 @@ public struct SkillCatalogEntry: Decodable, Equatable, Sendable, Identifiable {
     public let original: SkillCatalogDocument
     public let assets: [SkillCatalogDocument]
     public var originalExecutionSupported: Bool { false }
-    public var readiness: String { "僅可匯入 iOS 文字改寫；原版能力未完整支援" }
+    public var readiness: String {
+        switch id {
+        case "skill-authoring": return "可請模型編寫並核准儲存；原版能力未完整支援"
+        case "documents": return "可選取 PDF 擷取文字；原版能力未完整支援"
+        default: return "可匯入 iOS 文字改寫；原版能力未完整支援"
+        }
+    }
 }
 
 /// Mika 0c172724's six bundled skills, their three supporting files, LICENSE and

@@ -23,6 +23,16 @@ public struct SkillsState: Codable, Equatable, Sendable {
                   builtinNames: builtinNames, now: now, draftID: draftID)
     }
 
+    /// Trusted authoring bridge only: provenance comes from the captured user
+    /// request, never from imported Markdown or a model-supplied source field.
+    @discardableResult
+    mutating func stageUserRequestedMarkdown(_ raw: String, availableToolNames: Set<String>,
+                                            builtinNames: Set<String> = [], now: Date = Date(),
+                                            draftID: UUID = UUID()) throws -> SkillDraft {
+        try stage(raw, source: .user, availableToolNames: availableToolNames,
+                  builtinNames: builtinNames, now: now, draftID: draftID)
+    }
+
     /// Low-level compatibility hook for trusted orchestrators. Prefer applying a
     /// SkillLearningService assessment: it carries an optimistic snapshot guard.
     @discardableResult
