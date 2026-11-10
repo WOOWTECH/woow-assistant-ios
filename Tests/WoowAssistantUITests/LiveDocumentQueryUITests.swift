@@ -133,21 +133,23 @@ final class LiveDocumentQueryUITests: XCTestCase {
                 || self.app.staticTexts["documentQuery.error"].exists
                 || self.app.staticTexts["documentQuery.refusal"].exists
         }
-        let audit = try queryAudit()
-        print(audit.safeLine)
         XCTAssertFalse(app.staticTexts["documentQuery.error"].exists, "The actual query returned a failure.")
         XCTAssertFalse(app.staticTexts["documentQuery.refusal"].exists, "A refusal is not a completed answer.")
+        // The result is now terminal. Read its invariant text together, taking
+        // a fresh scoped snapshot after each required real scroll.
+        let completed = try readableQueryText(["documentQuery.status", "documentQuery.answeredQuestion",
+                                               "documentQuery.answer"] + citationIdentifiers(markers))
+        let audit = try queryAudit(from: completed)
+        print(audit.safeLine)
         XCTAssertTrue(audit.searches >= 1 && audit.reads >= 2 && audit.results == 1 && audit.citations == 2,
                       "Completion requires real search, two reads and exactly two validated citations.")
         XCTAssertTrue(audit.modelCalls >= 4 && audit.modelCalls <= 12 && audit.corrections <= 1)
-        let answerElement = app.staticTexts["documentQuery.answer"].firstMatch
-        try show(answerElement, readable: true)
-        let answer = answerElement.label
+        let answer = try XCTUnwrap(completed["documentQuery.answer"]?.label,
+                                   "The completed answer must remain readable.")
         XCTAssertTrue(!answer.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                       && markers.allSatisfy { answer.contains($0) }, "The model must answer the two requested source facts.")
-        let answeredQuestion = app.staticTexts["documentQuery.answeredQuestion"].firstMatch
-        XCTAssertTrue(answeredQuestion.exists && answeredQuestion.label == question)
-        try assertCitations(markers)
+        XCTAssertTrue(completed["documentQuery.answeredQuestion"]?.label == question)
+        try assertCitations(markers, values: completed)
         phase("verified")
         try tap("documentQuery.export", scroll: true)
         try wait("The real native exporter must appear.", timeout: 15) { self.nativeNavigation.exists }
@@ -155,17 +157,20 @@ final class LiveDocumentQueryUITests: XCTestCase {
         try cancelExporter()
         phase("export_cancel_tapped")
         try nativeDismissed()
-        let exportStatus = app.staticTexts["documentQuery.exportStatus"].firstMatch
-        try show(exportStatus, readable: true)
-        XCTAssertTrue(exportStatus.label == "已取消匯出，回答與引文仍保留。",
+        // Never reuse the pre-export readback. f49 spent 271.64–286.48s
+        // separately resolving status, answer, citations and audit after the
+        // real cancellation. Gather this stable phase in one bounded readback;
+        // native dismissal and the exact callback text remain required.
+        let retained = try readableQueryText(["documentQuery.exportStatus", "documentQuery.status",
+                                              "documentQuery.answer"] + citationIdentifiers(markers))
+        XCTAssertTrue(retained["documentQuery.exportStatus"]?.label == "已取消匯出，回答與引文仍保留。",
                       "Only the actual exporter cancellation callback satisfies this case.")
         phase("export_callback_verified")
-        try show(answerElement, readable: true)
-        XCTAssertTrue(answerElement.label == answer, "Export cancellation must preserve the exact answer.")
+        XCTAssertTrue(retained["documentQuery.answer"]?.label == answer, "Export cancellation must preserve the exact answer.")
         phase("retained_answer_verified")
-        try assertCitations(markers)
+        try assertCitations(markers, values: retained)
         phase("retained_citations_verified")
-        XCTAssertTrue(try queryAudit() == audit, "Export must not send another model request or replace its result.")
+        XCTAssertTrue(try queryAudit(from: retained) == audit, "Export must not send another model request or replace its result.")
         phase("export_cancelled")
         try tap("documentQuery.close")
         try wait("The query sheet must close.", timeout: 10) { !self.app.buttons["documentQuery.close"].exists }
@@ -252,7 +257,10 @@ final class LiveDocumentQueryUITests: XCTestCase {
     }
 
     private func queryAudit() throws -> DocumentQueryUIAudit {
-        let values = try readableQueryText(["documentQuery.status"])
+        try queryAudit(from: readableQueryText(["documentQuery.status"]))
+    }
+
+    private func queryAudit(from values: [String: QueryTextValue]) throws -> DocumentQueryUIAudit {
         guard let status = values["documentQuery.status"],
               let audit = DocumentQueryUIAudit.parse(status.value) else {
             XCTFail("The fixed query audit is missing or malformed; no raw value was logged."); throw Failure.audit
@@ -265,11 +273,13 @@ final class LiveDocumentQueryUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["documentQuery.answer"].exists)
     }
 
-    private func assertCitations(_ markers: [String]) throws {
-        let identifiers = markers.indices.flatMap {
+    private func citationIdentifiers(_ markers: [String]) -> [String] {
+        markers.indices.flatMap {
             ["documentQuery.citation.page.\($0)", "documentQuery.citation.quote.\($0)"]
         }
-        let values = try readableQueryText(identifiers)
+    }
+
+    private func assertCitations(_ markers: [String], values: [String: QueryTextValue]) throws {
         for (index, marker) in markers.enumerated() {
             guard let page = values["documentQuery.citation.page.\(index)"],
                   let quote = values["documentQuery.citation.quote.\(index)"] else {

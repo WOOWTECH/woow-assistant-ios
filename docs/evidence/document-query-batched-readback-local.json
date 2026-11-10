@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "status": "FROZEN_LOCAL_CHECKS_PASS_NATIVE_PENDING",
+  "baseline_commit": "f49c8f77ff7963f1993daf652069affc0e79c983",
+  "baseline_ui_sha256": "6af6e92babd78e91f248427d07fb58612bee6bc317bc10963f7137a62eeba267",
+  "changed_repo_files_sha256": {
+    "Tests/WoowAssistantUITests/LiveDocumentQueryUITests.swift": "698178488eb69b8d13044ffc0a215eb7bed5e1db3250ce86e3e318a743acc496",
+    "docs/evidence/live-document-query-f49-ios17.json": "004718e252dc4121e72fe092af53cb1d468ef98c71b86b0158e79d9d0489be70"
+  },
+  "diff_sha256": "4c438aa79fbfc939a3477823b870f6088c945f4db556351d257b6ec202b23de8",
+  "change": "Batch invariant result text at each of two separate stable stages through the existing public XCUIElementSnapshot reader; retain fresh snapshots after each actual scroll. No pre-export snapshot/readback satisfies post-cancel assertions.",
+  "local_checks": {
+    "swift_parse": "PASS",
+    "ios17_target_parse": "PASS_CLT_ONLY",
+    "diff_check": "PASS",
+    "actual_extracted_pure_helper_checks": {
+      "passed": 64,
+      "failed": 0
+    },
+    "actual_extracted_value_consumer_cases": {
+      "passed": 8,
+      "failed": 0,
+      "cases": [
+        "exact values accepted",
+        "altered quote rejected",
+        "wrong page rejected",
+        "missing quote rejected",
+        "third citation rejected",
+        "malformed audit rejected",
+        "missing post-operation values rejected",
+        "zero post-operation audit cannot equal completed audit"
+      ]
+    },
+    "actual_extracted_wait_virtual_clock_cases": {
+      "passed": 16,
+      "failed": 0
+    },
+    "unchanged_driver_functions": [
+      "wait",
+      "requireBudget",
+      "ready",
+      "show",
+      "tap",
+      "extractionAudit",
+      "approvePDFStep",
+      "readableQueryText",
+      "choosePDFCopy",
+      "navigateFiles",
+      "nativeDismissed",
+      "cancelExporter"
+    ],
+    "all_original_assertions_preserved_semantically": true,
+    "exact_question_unchanged": true,
+    "native_actions_and_action_visibility_unchanged": true,
+    "after_query_close_extraction_checks_byte_identical": true,
+    "snapshot_role_geometry_and_missing_row_guards_byte_identical": true,
+    "case_seconds": 300,
+    "cleanup_boundary_seconds": 285
+  },
+  "local_proof_sources_sha256": {
+    "woow-document-query-batch-geometry.swift": "d56c6e1e607c3d2f136504d3014f3f2b444034211855ac1af53220e5a32560e5",
+    "woow-document-query-batch-values.swift": "56a5cd54da9195b1855fb6a2e03915a16cba4e4926c6710fd3bb9ff23933d058",
+    "woow-document-query-wait-current.swift": "fb1760c0a44da703969048cbb06f07652f7689ab0b206441ec5491601e80d1a5"
+  },
+  "failure_history": "The f49 report is copied byte-for-byte, remains FAIL (0/1, zero skips) and is not replaced by local driver checks.",
+  "limitations": [
+    "No local Xcode/XCTest SDK; the full UI target has only syntax checks, not iOS SDK typecheck or execution.",
+    "Assertion adapters execute actual extracted value-consumer bodies, not accessibility transactions.",
+    "No speedup, exact17 acceptance or full E2E pass is claimed until the new native run.",
+    "No product changes, model calls, endpoint/config/reply output, commit or dispatch."
+  ]
+}

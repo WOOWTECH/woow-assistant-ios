@@ -1,25 +1,51 @@
+#if PDF_ASSEMBLY_ADD_APP_CHECKS || canImport(WoowAssistant)
 #if PDF_ASSEMBLY_ADD_APP_CHECKS
 import AppKit
+#else
+import XCTest
+@testable import WoowAssistant
+#endif
+import CoreGraphics
 import AssistantSkills
 import CoreText
 import Foundation
 import PDFKit
 
 /// Actual App session and native PDFKit; no native picker/exporter UI claim.
-@main enum PDFAssemblyAddAppChecks {
+#if PDF_ASSEMBLY_ADD_APP_CHECKS
+@main
+#endif
+private enum PDFAssemblyAddAppChecks {
     struct Failure: Error { let code: String }
     @MainActor static var count = 0
     @MainActor static func require(_ value: Bool, _ code: String) throws {
         count += 1
         if !value { throw Failure(code: code) }
     }
+    #if PDF_ASSEMBLY_ADD_APP_CHECKS
     @MainActor static func main() {
         let app = NSApplication.shared
         app.setActivationPolicy(.prohibited)
         Task { @MainActor in
             do {
-                try await check()
-                print("ADD_APP_CHECKS passed=\(count) nativePicker=false")
+                let cases: [(String, () async throws -> Void)] = [
+                    ("selectionAndReadConsent", selectionAndReadConsent),
+                    ("cancelledAndInvalidAdd", cancelledAndInvalidAdd),
+                    ("separateGrantsAndSourceLimit", separateGrantsAndSourceLimit),
+                    ("clearFencesLateCompletion", clearFencesLateCompletion)
+                ]
+                var groups: [String: Int] = [:]
+                for (name, body) in cases {
+                    let before = count
+                    try await body(); groups[name] = count - before
+                }
+                let payload: [String: Any] = [
+                    "passed": count, "failed": 0, "groups": groups,
+                    "actual_app_sources": true, "actual_pdfkit": true,
+                    "actual_file_document": true, "native_picker_UI": false
+                ]
+                let output = try JSONSerialization.data(withJSONObject: payload, options: [.sortedKeys])
+                print(String(decoding: output, as: UTF8.self))
                 exit(0)
             } catch {
                 print("ADD_APP_FAILED code=\((error as? Failure)?.code ?? "native_operation")")
@@ -28,6 +54,7 @@ import PDFKit
         }
         app.run() // Parent process bounds this entire executable to 60 seconds.
     }
+    #endif
     @MainActor static func pending(_ session: SkillPDFAssemblySession) throws -> Task<Void, Never> {
         // Read only the App's own Task handle; wait for actual completion even
         // if clear() removes it. No private OS API or synthetic completion.
@@ -64,14 +91,57 @@ import PDFKit
         guard let pdf = PDFDocument(data: data) else { throw Failure(code: "pdf_readback") }
         return (0..<pdf.pageCount).map { (pdf.page(at: $0)?.string ?? "").trimmingCharacters(in: .whitespacesAndNewlines) }
     }
-    @MainActor static func check() async throws {
-        let root = FileManager.default.temporaryDirectory.appendingPathComponent("assembly-add-" + UUID().uuidString)
-        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: false)
-        defer { try? FileManager.default.removeItem(at: root) }
-        let files = ["A", "B", "C", "D"].map { root.appendingPathComponent($0 + ".pdf") }
-        let bytes = try ["A", "B", "C", "D"].map { try pdf([$0 + "1", $0 + "2"]) }
-        for (file, data) in zip(files, bytes) { try data.write(to: file, options: .withoutOverwriting) }
+    @MainActor private final class Fixture {
+        let root: URL
+        let files: [URL]
+        let bytes: [Data]
         let session = SkillPDFAssemblySession()
+        init() throws {
+            let root = FileManager.default.temporaryDirectory.appendingPathComponent("assembly-add-" + UUID().uuidString)
+            self.root = root
+            files = ["A", "B", "C", "D"].map { root.appendingPathComponent($0 + ".pdf") }
+            bytes = try ["A", "B", "C", "D"].map { try PDFAssemblyAddAppChecks.pdf([$0 + "1", $0 + "2"]) }
+            try FileManager.default.createDirectory(at: root, withIntermediateDirectories: false)
+            do {
+                for (file, data) in zip(files, bytes) { try data.write(to: file, options: .withoutOverwriting) }
+            } catch {
+                try? FileManager.default.removeItem(at: root)
+                throw error
+            }
+        }
+        func close() {
+            session.clear()
+            try? FileManager.default.removeItem(at: root)
+        }
+        func originalsUnchanged() throws {
+            for (file, original) in zip(files, bytes) {
+                try require(try Data(contentsOf: file) == original, "original_bytes_unchanged")
+            }
+        }
+    }
+
+    /// Real setup shared by independent XCTest groups; no injected Session
+    /// state, fake read receipt, assembly grant or output bytes.
+    @MainActor private static func singleResult(_ fixture: Fixture) async throws -> (UUID, SkillPDFAssemblyPlan, SkillPDFAssemblyResult, String) {
+        let session = fixture.session
+        let selection = try request(session, adding: false)
+        guard session.finishPicker(selection, urls: [fixture.files[0]]), let source = session.sources.first else {
+            throw Failure(code: "setup_selection")
+        }
+        session.read(source.id); try await drain(session)
+        session.prepare(); try await drain(session)
+        session.assemble(); try await drain(session)
+        guard let plan = session.plan, let output = session.result,
+              session.receipts.map(\.id) == [source.id], try texts(output.data) == ["A1", "A2"] else {
+            throw Failure(code: "setup_actual_result")
+        }
+        return (source.id, plan, output, session.orderText)
+    }
+
+    @MainActor static func selectionAndReadConsent() async throws {
+        let fixture = try Fixture()
+        defer { fixture.close() }
+        let session = fixture.session, files = fixture.files
         try require(!session.canAdd && session.beginPicker(adding: true) == nil, "cannot_add_before_initial")
         for urls in [[], [files[0], files[1]]] {
             let invalid = try request(session, adding: false)
@@ -100,8 +170,17 @@ import PDFKit
         try require(!session.running && session.result == nil && session.plan?.id == plan.id, "pending_picker_blocks_assembly_preserves_review")
         session.cancelPicker(beforeAssembly)
         session.assemble(); try await drain(session)
-        let firstResult = session.result!, firstOrder = session.orderText
+        let firstResult = session.result!
         try require(try texts(firstResult.data) == ["A1", "A2"], "first_actual_output")
+        try fixture.originalsUnchanged()
+    }
+
+    @MainActor static func cancelledAndInvalidAdd() async throws {
+        let fixture = try Fixture()
+        defer { fixture.close() }
+        let session = fixture.session, files = fixture.files
+        let root = fixture.root
+        let (a, plan, firstResult, firstOrder) = try await singleResult(fixture)
         let cancelled = try request(session, adding: true)
         session.cancelPicker(cancelled)
         try require(session.result?.data == firstResult.data && session.orderText == firstOrder && session.plan?.id == plan.id,
@@ -121,6 +200,14 @@ import PDFKit
             try require(session.result?.data == firstResult.data && session.sources.map(\.id) == [a]
                         && session.plan?.id == plan.id && session.receipts.map(\.id) == [a], "invalid_add_is_nondestructive")
         }
+        try fixture.originalsUnchanged()
+    }
+
+    @MainActor static func separateGrantsAndSourceLimit() async throws {
+        let fixture = try Fixture()
+        defer { fixture.close() }
+        let session = fixture.session, files = fixture.files
+        let (a, _, _, _) = try await singleResult(fixture)
         let second = try request(session, adding: true)
         try require(session.finishPicker(second, urls: [files[1]]), "second_deliberate_pick")
         let ids = session.sources.map(\.id)
@@ -147,6 +234,18 @@ import PDFKit
         try require(Array(session.sources.prefix(2)).map(\.id) == ids && session.receipts.isEmpty && session.result == nil, "third_preserves_identity_revokes_snapshots")
         try require(!session.canAdd && session.beginPicker(adding: true) == nil, "fourth_source_disallowed")
         try require(document.data == result.data, "export_snapshot_survives_added_source")
+        try fixture.originalsUnchanged()
+    }
+
+    @MainActor static func clearFencesLateCompletion() async throws {
+        let fixture = try Fixture()
+        defer { fixture.close() }
+        let session = fixture.session, files = fixture.files
+        // Match the original scenario's three-source state before clear().
+        for index in 0..<3 {
+            let selection = try request(session, adding: index > 0)
+            guard session.finishPicker(selection, urls: [files[index]]) else { throw Failure(code: "setup_selection") }
+        }
         session.clear()
         let stale = try request(session, adding: false)
         session.clear()
@@ -158,9 +257,27 @@ import PDFKit
         session.clear(); await reading.value
         try require(session.sources.isEmpty && session.receipts.isEmpty && session.result == nil && session.status == nil,
                     "late_actual_read_cannot_republish_after_clear")
-        for (file, original) in zip(files, bytes) {
-            try require(try Data(contentsOf: file) == original, "original_bytes_unchanged")
-        }
+        try fixture.originalsUnchanged()
     }
 }
+#if !PDF_ASSEMBLY_ADD_APP_CHECKS
+final class PDFAssemblyAddAppIntegrationTests: XCTestCase {
+    override func setUpWithError() throws {
+        executionTimeAllowance = 60
+        continueAfterFailure = false
+    }
+    @MainActor func testSingleSelectionRequestsRequireReadApproval() async throws {
+        try await PDFAssemblyAddAppChecks.selectionAndReadConsent()
+    }
+    @MainActor func testCancelledInvalidAndLateAddPreserveReviewedResult() async throws {
+        try await PDFAssemblyAddAppChecks.cancelledAndInvalidAdd()
+    }
+    @MainActor func testSeparateReadGrantsInterleaveActualPagesAndEnforceSourceLimit() async throws {
+        try await PDFAssemblyAddAppChecks.separateGrantsAndSourceLimit()
+    }
+    @MainActor func testClearFencesLatePickerAndActualReadCompletion() async throws {
+        try await PDFAssemblyAddAppChecks.clearFencesLateCompletion()
+    }
+}
+#endif
 #endif

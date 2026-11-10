@@ -1,0 +1,149 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "actual_exact_runtime_private_model_native_ui",
+  "result": "FAIL",
+  "run_id": 42903804459,
+  "job_id": 130136497570,
+  "source_commit": "f49c8f77ff7963f1993daf652069affc0e79c983",
+  "test_file_sha256": "6af6e92babd78e91f248427d07fb58612bee6bc317bc10963f7137a62eeba267",
+  "runtime": {
+    "requested_runtime": "17.0.1",
+    "selected_runtime": {
+      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+      "version": "17.0.1",
+      "buildversion": "21A342"
+    },
+    "boot_succeeded": true,
+    "host_architecture": "arm64",
+    "xcode": "16.4 (16F6)"
+  },
+  "method": {
+    "method": "testRealModelAnswersFromApprovedPDFAndExportCancellationPreservesResult",
+    "result": "failed",
+    "seconds": 300.288
+  },
+  "counts": {
+    "expectedFailures": 0,
+    "expectedTests": 1,
+    "failedTests": 1,
+    "passedTests": 0,
+    "skippedTests": 0,
+    "totalTestCount": 1,
+    "code": "NOT_PASSED"
+  },
+  "audit": {
+    "modelCalls": 4,
+    "searches": 1,
+    "reads": 2,
+    "results": 1,
+    "citations": 2,
+    "corrections": 0
+  },
+  "phases": [
+    {
+      "phase": "selected",
+      "elapsedSeconds": 68
+    },
+    {
+      "phase": "extracted",
+      "elapsedSeconds": 91
+    },
+    {
+      "phase": "question_input_started",
+      "elapsedSeconds": 115
+    },
+    {
+      "phase": "question_input_delivered",
+      "elapsedSeconds": 133
+    },
+    {
+      "phase": "question_keyboard_dismissed",
+      "elapsedSeconds": 139
+    },
+    {
+      "phase": "question_verified",
+      "elapsedSeconds": 140
+    },
+    {
+      "phase": "model_started",
+      "elapsedSeconds": 183
+    },
+    {
+      "phase": "verified",
+      "elapsedSeconds": 229
+    },
+    {
+      "phase": "export_presented",
+      "elapsedSeconds": 248
+    },
+    {
+      "phase": "export_cancel_tapped",
+      "elapsedSeconds": 268
+    },
+    {
+      "phase": "export_callback_verified",
+      "elapsedSeconds": 276
+    },
+    {
+      "phase": "retained_answer_verified",
+      "elapsedSeconds": 283
+    },
+    {
+      "phase": "retained_citations_verified",
+      "elapsedSeconds": 284
+    }
+  ],
+  "failure": {
+    "file": "Tests/WoowAssistantUITests/LiveDocumentQueryUITests.swift",
+    "line": 213,
+    "category": "CASE_BUDGET_EXHAUSTED",
+    "fixed_message": "The 300-second case budget is exhausted.",
+    "internal_cleanup_boundary_seconds": 285,
+    "xctest_case_cap_seconds": 300,
+    "last_native_event_seconds": 286.48,
+    "teardown_started_native_seconds": 287.21,
+    "stage": "post-export audit readback after exact answer and citations preservation"
+  },
+  "confirmed_stages": [
+    "native PDF copy picker callback",
+    "separate file read and PDF extraction approvals",
+    "actual PDFKit extraction and selected synthetic source identity",
+    "exact unchanged question and destination approval before Start",
+    "actual search and two reads",
+    "answer with two exact original-page citations",
+    "native exporter presentation and cancellation callback",
+    "exact retained answer",
+    "both exact retained page/quote citations"
+  ],
+  "not_completed": [
+    "post-export unchanged audit comparison",
+    "query sheet close",
+    "original extracted PDF exact text retained after returning",
+    "final extraction audit assertion"
+  ],
+  "privacy": {
+    "raw_private_logs_exported": false,
+    "private_artifact_downloaded": false,
+    "endpoints_or_configuration_exported": false,
+    "raw_model_or_source_text_exported": false
+  },
+  "cleanup": {
+    "private_runner_configuration": "success",
+    "own_simulator_deletion": "success"
+  },
+  "interpretation": {
+    "functional_pass": false,
+    "model_completed": true,
+    "no_model_failure_seen": true,
+    "observed_failure": "The existing global cleanup guard fired during final audit snapshot work; it did not finish the end-to-end sequence.",
+    "root_cause_limit": "This run proves cumulative budget exhaustion, not a specific OS/provider defect or one dominant blocking AX call.",
+    "source_attribution": "Does not include newly frozen DocumentQuery saved-reference implementation."
+  },
+  "history": {
+    "previous_same_test_source_ios18_run": 42900646333,
+    "previous_ios18_result": "PASS",
+    "previous_ios18_method_seconds": 275.255,
+    "previous_failures_retained": true,
+    "no_retry_or_source_change_after_this_failure": true
+  }
+}

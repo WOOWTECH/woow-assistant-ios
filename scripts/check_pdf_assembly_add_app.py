@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Snapshot exact App selection logic; actual PDFKit, no native picker UI claim."""
+"""Snapshot shared standalone/hosted App checks; execute real macOS PDFKit."""
 from pathlib import Path
 import argparse
 import hashlib
@@ -11,6 +11,28 @@ import tempfile
 from check_pdf_assembly_pair import run
 
 
+GROUPS = {"selectionAndReadConsent", "cancelledAndInvalidAdd", "separateGrantsAndSourceLimit", "clearFencesLateCompletion"}
+HOSTED_METHODS = {
+    "testSingleSelectionRequestsRequireReadApproval",
+    "testCancelledInvalidAndLateAddPreserveReviewedResult",
+    "testSeparateReadGrantsInterleaveActualPagesAndEnforceSourceLimit",
+    "testClearFencesLatePickerAndActualReadCompletion",
+}
+
+
+def local_result(stdout):
+    value = json.loads(stdout)
+    groups = value.get('groups')
+    if (not isinstance(groups, dict) or set(groups) != GROUPS
+            or any(type(n) is not int or n <= 0 for n in groups.values())
+            or type(value.get('passed')) is not int or value['passed'] != sum(groups.values())
+            or type(value.get('failed')) is not int or value['failed'] != 0
+            or any(value.get(k) is not True for k in ['actual_app_sources', 'actual_pdfkit', 'actual_file_document'])
+            or value.get('native_picker_UI') is not False):
+        raise ValueError('unexpected_check_output')
+    return value
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report', type=Path)
@@ -18,7 +40,9 @@ def main():
     repo = Path(__file__).resolve().parents[1]
     hashes = {}
     result = {'uses_stubs': False, 'native_picker_or_exporter_UI_test': False,
-              'source_snapshot_sha256': hashes}
+              'source_snapshot_sha256': hashes, 'hosted_xctest_executed': False,
+              'hosted_xctest_selectors': ['AssistantSkillsTests/PDFAssemblyAddAppIntegrationTests/' + name
+                                          for name in sorted(HOSTED_METHODS)]}
     with tempfile.TemporaryDirectory(prefix='woow-assembly-add-') as temporary:
         output = Path(temporary)
 
@@ -33,6 +57,9 @@ def main():
         support, session, view, harness = map(snapshot, [
             'Sources/App/SkillExecutionUITestSupport.swift', 'Sources/App/SkillPDFAssemblySession.swift',
             'Sources/App/SkillPDFAssemblyView.swift', 'scripts/CheckPDFAssemblyAddApp.swift'])
+        declarations = set(re.findall(r'func (test\w+)\(\) async throws', harness.read_text()))
+        if declarations != HOSTED_METHODS:
+            raise ValueError('hosted_entry_inventory')
         picker = snapshot('Sources/App/PDFNativePicker.swift')
         legacy = snapshot('scripts/SkillPDFAssemblyAppChecks.swift')
         ui = [snapshot('Tests/WoowAssistantUITests/' + name) for name in
@@ -60,10 +87,9 @@ def main():
                  *flags, '-I', output, '-L', output, '-lAssistantSkills',
                  support, session, view, harness, '-o', binary], repo, 180)
             stdout = run([binary], repo, 60)
-            match = re.fullmatch(r'ADD_APP_CHECKS passed=(\d+) nativePicker=false\n?', stdout)
-            if not match:
-                raise ValueError('unexpected_check_output')
-            result[name + '_passed'] = int(match.group(1))
+            checked = local_result(stdout)
+            result[name + '_passed'] = checked['passed']
+            result[name + '_groups'] = checked['groups']
             # Existing actual read/prepare/cancel/export-snapshot regressions,
             # including a held NSFileCoordinator read, remain unchanged.
             run(['swiftc', '-warnings-as-errors', '-parse-as-library', *flags,
@@ -82,11 +108,14 @@ def main():
                 raise ValueError('picker_gates_output')
             result[name + '_picker_gate_passed'] = int(matched.group(1))
             run(['swiftc', '-parse', '-target', 'arm64-apple-ios17.0', *flags,
-                 support, session, view, picker, *ui], repo, 30)
+                 support, session, view, picker, harness, *ui], repo, 30)
             result[name + '_ios17_syntax_parse'] = True
-            print(name.upper() + ' ' + stdout.strip(), flush=True)
+            print(name.upper() + ' ADD_APP_CHECKS=' + str(checked['passed']) + ' GROUPS=' + str(len(checked['groups'])), flush=True)
             print(name.upper() + ' EXISTING_APP=' + str(previous['passed']) + ' PICKER_GATES=' + matched.group(1), flush=True)
-        result['live_sources_match_snapshot'] = all(
+        captured_module = {path for path in hashes if path.startswith('Sources/AssistantSkills/') and path.endswith('.swift')}
+        current_module = {str(path.relative_to(repo)) for path in (repo / 'Sources/AssistantSkills').glob('*.swift')
+                          if path.name != 'SkillLearningService.swift'}
+        result['live_sources_match_snapshot'] = captured_module == current_module and all(
             hashlib.sha256((repo / path).read_bytes()).hexdigest() == digest for path, digest in hashes.items())
         if not result['live_sources_match_snapshot']:
             raise ValueError('sources_changed_during_check')
