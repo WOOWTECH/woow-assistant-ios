@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-11-10T22:27:07.060271+00:00",
-  "status": "PARTIAL_PENDING_EXACT17",
+  "observed_at": "2026-11-10T22:42:47.971866+00:00",
+  "status": "PASS",
   "source_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
   "scope": "Four actual native archive fixture methods on each requested runtime",
   "accepted_devices": [
@@ -186,23 +186,137 @@
           "ui-shard-completion.json"
         ]
       }
-    }
-  ],
-  "pending_devices": [
+    },
     {
       "device_group": "exact17_prebuild",
       "run_id": 42911189682,
       "job_id": 130161988591,
-      "last_observed_status": "in_progress",
-      "last_observed_step": "執行指定 iOS 17 runtime 與測試範圍",
-      "last_observed_at": "2026-11-10T22:25:54Z",
-      "actual_method_counts": null,
-      "runtime_metadata": null
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911189682",
+      "job_conclusion": "success",
+      "source_commit": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+      "runtime": {
+        "device_name": "iPhone 15",
+        "runtime_version": "17.0.1",
+        "runtime_build": "21A342",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "platform": "iOS Simulator",
+        "architecture": "arm64",
+        "requested_runtime": "17.0.1",
+        "selection_and_xcresult_metadata_agree": true
+      },
+      "ui": {
+        "source_expected": 4,
+        "started": 4,
+        "unique_started": 4,
+        "completed": 4,
+        "unique_completed": 4,
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0,
+        "each_source_method_started_and_completed_once": true,
+        "runner_restart_messages": 0,
+        "method_completions": [
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testCancelledRunAndUnsentDraftAreNotClaimedAsSaved",
+            "result": "passed",
+            "seconds": 129.319
+          },
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testChangedModelAllowsViewingButDisablesContinuation",
+            "result": "passed",
+            "seconds": 96.023
+          },
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testDeletionRemainsAbsentAfterRelaunch",
+            "result": "passed",
+            "seconds": 73.646
+          },
+          {
+            "class": "ConversationArchiveUITests",
+            "method": "testTwoCompletedConversationsSurviveRelaunchAndOpenExplicitly",
+            "result": "passed",
+            "seconds": 108.636
+          }
+        ]
+      },
+      "xcresult_summary_counts": {
+        "totalTestCount": 4,
+        "passedTests": 4,
+        "failedTests": 0,
+        "skippedTests": 0
+      },
+      "completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 4,
+          "passedTests": 4,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 4,
+        "completed_ui_count": 4,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "prebuild_experiment": {
+        "experimental_build_before_boot": true,
+        "prebuild_exit_code": 0,
+        "prebuild_elapsed_seconds": 178.322,
+        "build_test_timeout_seconds": 1800,
+        "remaining_test_timeout_seconds": 1621.678382792,
+        "prebuilt_xctestrun": {
+          "path": "DerivedData/Build/Products/WoowAssistant_iphonesimulator18.5-arm64.xctestrun",
+          "sha256": "9978e367f9653f556eb13135435df6a6257e0d78a60f4fcc7482c857ec8b63e2"
+        },
+        "test_daemon_prelaunch": {
+          "budget_seconds": 120,
+          "attempts": 1,
+          "status": "process_started_handshake_unverified",
+          "handshake_verified": false,
+          "process_alive": true,
+          "elapsed_seconds": 19.827
+        },
+        "boot_succeeded": true,
+        "test_exit_code": 0
+      },
+      "phase_sequence": [
+        "preflight",
+        "checking_runtime",
+        "downloading_runtime",
+        "checking_installed_runtime",
+        "generating_project",
+        "checking_build_settings",
+        "building_before_boot",
+        "prebuilt_tests_ready",
+        "creating_simulator",
+        "booting",
+        "prelaunching_test_daemon",
+        "testing",
+        "verifying_test_completion",
+        "passed"
+      ],
+      "artifact": {
+        "id": 13809986564,
+        "size_bytes": 13892181,
+        "digest": "sha256:f4048de7b46bf32995a52210d3a0343f063a5f15d43dc50dc2430452b90ce6c9",
+        "inspected_members": [
+          "report.json",
+          "test-summary.json",
+          "tests.log"
+        ]
+      }
     }
   ],
+  "pending_devices": [],
   "accepted_aggregate": {
-    "devices": 2,
-    "passed": 8,
+    "devices": 3,
+    "passed": 12,
     "failed": 0,
     "skipped": 0,
     "expected_final_devices": 3,
@@ -240,10 +354,13 @@
     "Cancelled model run and unsent draft produce no archived row; history control disabled during submission."
   ],
   "limits": [
-    "Only current iOS26.2 and SE iOS18.5 are accepted so far; exact17 remains pending, not zero executed or passed.",
+    "All three requested runtimes have four actual source-matched method completions and passing zero-skip xcresult summaries. This is archive fixture acceptance, not full application acceptance.",
     "Actual native App and encrypted archive with synthetic model fixture; no real provider request or physical device claim.",
     "Four source-inventoried methods per device; no retry requested and no runner restart observed in completed jobs.",
     "Counts apply only to source 8c4195f. Full native suite is independently collected by parent.",
-    "No environment, credentials, raw logs, live AX trees, or signed artifact URLs published."
+    "No environment, credentials, raw logs, live AX trees, or signed artifact URLs published.",
+    "iOS17 runtime identifier contains iOS-17-0, but selected runtime and xcresult both explicitly report 17.0.1, build 21A342. The xctestrun filename build SDK is not the executed runtime.",
+    "Prebuild is an observed lifecycle experiment, not proof of an installer/testdaemon root-cause fix. The one prelaunch attempt reports process_alive=true, handshake_verified=false; actual XCTest completion independently verifies this run.",
+    "Archive product and UI driver remained frozen throughout these runs; no retries, permission/quota resets, raised deadlines or weakened assertions were introduced."
   ]
 }

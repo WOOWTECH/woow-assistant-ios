@@ -1,5 +1,12 @@
 # Verification — 2026-11-11
 
+## Archive UI completed and live replay diagnosis — 2026-11-11
+
+At `8c4195f`, completed-conversation archive UI passed **4/4 each, zero skips** on exact iOS 17.0.1/21A342, iPhone SE/iOS 18.5 and iPhone 17/iOS 26.2. Each source method started/completed once, with matching xcresult counts. Coverage includes explicit reopening, destination mismatch, delete/relaunch and excluding cancelled/unsent work. [Evidence](evidence/ui-archive-8c4195f.json). This does not accept later product changes or physical devices.
+
+The separate actual-model/WebKit replay-reference probe retains its original **FAIL**: saved preference passed, current-request priority matched but no successful route receipt was saved. One authorized repeat of the same failed case passed, with unchanged goal/preferences/page hashes, an independent `done` judgment, two accepted evidence citations and encrypted readback. **Six HTTP attempts/responses total**; no further calls. The first failure did not retain the judgment category, so the repeat does not prove a fix or identify its cause. Answer URL/prefix checks are not a semantic correctness proof. [Source-bound evidence and limitations](evidence/live-replay-references-local.json). Harness publication checks: 28/28, zero private response/configuration output; actual iOS acceptance remains separate.
+
+
 ## Transcript references and actual cancellation integrated
 
 The Files, catalog and approved browser-text transcript entries now capture the same
