@@ -1,0 +1,480 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "ca3e72ada5d92210a9f3828e22cacbc1b76d48d3",
+  "checkpointUTC": "2026-11-10T12:55:35Z",
+  "purpose": "Completion evidence for the same-source presenter comparison. Preserves the earlier standalone UIKit failure record without rewriting it.",
+  "previousCheckpoint": "file-provider-uikit-ca3e72a.json",
+  "simulatorProvenance": {
+    "workflow": ".github/workflows/ios.yml",
+    "revision": "ca3e72ada5d92210a9f3828e22cacbc1b76d48d3",
+    "method": "Select a pre-existing available exact runtime/model with select_simulator.py; no simulator creation or erase in these runs.",
+    "freshSimulatorExperimentIncluded": false
+  },
+  "allFourArmsCompleted": true,
+  "arms": [
+    {
+      "arm": "current-uikit",
+      "status": "completed",
+      "run": 42806373840,
+      "job": 129796451858,
+      "artifact": 13763842496,
+      "runURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42806373840",
+      "device": {
+        "architecture": "arm64",
+        "deviceName": "iPhone 17",
+        "modelName": "iPhone 17",
+        "osBuildNumber": "23C54",
+        "osVersion": "26.2",
+        "platform": "iOS Simulator"
+      },
+      "test": "SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+      "result": {
+        "started": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "seconds": 122.419
+      },
+      "failure": {
+        "file": "SkillExecutionUITests.swift",
+        "line": 513,
+        "message": "Files selection must reach the real importer callback."
+      },
+      "namespace": "F378FB9C-DD4C-49D1-98F3-94A1975C51E9",
+      "fixtureWriteMode": "coordinated",
+      "fixtureCreated": {
+        "utc": "2026-11-10T12:11:07.247530Z",
+        "appStdoutLine": 32998
+      },
+      "presentation": {
+        "source": "uikit",
+        "mode": "open",
+        "allowsMultipleSelection": false,
+        "utc": "2026-11-10T12:11:17.895423Z",
+        "appStdoutLine": 61115
+      },
+      "callbackTraceCount": 0,
+      "callbacks": [],
+      "providerErrors": [
+        {
+          "utc": "2026-11-10T12:11:40.093333Z",
+          "appStdoutLine": 119733,
+          "errorDomain": "NSFileProviderErrorDomain",
+          "code": -1005,
+          "underlyingDomain": "NSFileProviderResolverErrorDomain",
+          "underlyingCode": -1012,
+          "itemIdentifier": "did=3"
+        }
+      ],
+      "internalEmptyItemsMessages": [
+        {
+          "utc": "2026-11-10T12:11:40.093600Z",
+          "appStdoutLine": 119734,
+          "isAppCallbackEvidence": false
+        }
+      ],
+      "appAuditStates": [
+        {
+          "selections": 0,
+          "reads": 0,
+          "extractionAttempts": 0,
+          "results": 0,
+          "firstAppStdoutLine": 35304
+        }
+      ],
+      "fixtureInventory": {
+        "baselineUTC": "2026-11-10T12:11:07.238029Z",
+        "postTestUTC": "2026-11-10T12:13:18.501594Z",
+        "sameIdentity": true,
+        "sameHash": true,
+        "sameSize": true,
+        "statusAtBothSamples": "valid",
+        "bytesAtBothSamples": 8372,
+        "deviceAtBothSamples": 16777229,
+        "inodeAtBothSamples": 3553064,
+        "sha256AtBothSamples": "1a45a4d4963a8527a8b99d4927783a37866b017a68edba03632014246e101f73",
+        "modifiedSecondsAtBothSamples": 1794312667,
+        "modifiedNanosecondsAtBothSamples": 237078458,
+        "provesPresenceAtEarlierPickerFailure": false
+      },
+      "evidenceFiles": [
+        {
+          "name": "test-summary.json",
+          "bytes": 1568,
+          "sha256": "3d03a9a8314817bb2f03edae49ae72f74f60712b7af4696b3f0198bc9361c99e"
+        },
+        {
+          "name": "ios-tests.log",
+          "bytes": 904887,
+          "sha256": "fa09c42f792b3028afc38d1a844da68c66b5e543f500b356c9c294658d198a89"
+        },
+        {
+          "name": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+          "bytes": 16016728,
+          "sha256": "432e3ea1f0a664225ea41e0a79c7bb62180f38dd413bf444f0a6ebd03ffbcd93"
+        },
+        {
+          "name": "skill-pdf-fixture-evidence.json",
+          "bytes": 1074,
+          "sha256": "719ce8bc858d79a1b51634c4332e98c2ec9f1b98bbb62e5c5f1799c9ccc9d4ed"
+        }
+      ]
+    },
+    {
+      "arm": "current-swiftui",
+      "status": "completed",
+      "run": 42806381100,
+      "job": 129796473991,
+      "artifact": 13766211467,
+      "runURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42806381100",
+      "device": {
+        "architecture": "arm64",
+        "deviceName": "iPhone 17",
+        "modelName": "iPhone 17",
+        "osBuildNumber": "23C54",
+        "osVersion": "26.2",
+        "platform": "iOS Simulator"
+      },
+      "test": "SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText",
+      "result": {
+        "started": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "seconds": 172.139
+      },
+      "failure": {
+        "file": "SkillExecutionUITests.swift",
+        "line": 513,
+        "message": "Files selection must reach the real importer callback."
+      },
+      "namespace": "0453F5BB-C6F5-4F82-88E5-D55945B0DD68",
+      "fixtureWriteMode": "coordinated",
+      "fixtureCreated": {
+        "utc": "2026-11-10T12:39:06.203253Z",
+        "appStdoutLine": 33000
+      },
+      "presentation": {
+        "source": "swiftui",
+        "mode": "open",
+        "allowsMultipleSelection": false,
+        "utc": "2026-11-10T12:39:23.655171Z",
+        "appStdoutLine": 64832
+      },
+      "callbackTraceCount": 0,
+      "callbacks": [],
+      "providerErrors": [
+        {
+          "utc": "2026-11-10T12:40:27.301716Z",
+          "appStdoutLine": 142875,
+          "errorDomain": "NSFileProviderErrorDomain",
+          "code": -1005,
+          "underlyingDomain": "NSFileProviderResolverErrorDomain",
+          "underlyingCode": -1012,
+          "itemIdentifier": "did=3"
+        }
+      ],
+      "internalEmptyItemsMessages": [
+        {
+          "utc": "2026-11-10T12:40:27.302093Z",
+          "appStdoutLine": 142876,
+          "isAppCallbackEvidence": false
+        }
+      ],
+      "appAuditStates": [
+        {
+          "selections": 0,
+          "reads": 0,
+          "extractionAttempts": 0,
+          "results": 0,
+          "firstAppStdoutLine": 35306
+        }
+      ],
+      "fixtureInventory": {
+        "baselineUTC": "2026-11-10T12:39:06.187185Z",
+        "postTestUTC": "2026-11-10T12:41:50.935201Z",
+        "sameIdentity": true,
+        "sameHash": true,
+        "sameSize": true,
+        "statusAtBothSamples": "valid",
+        "bytesAtBothSamples": 8521,
+        "deviceAtBothSamples": 16777227,
+        "inodeAtBothSamples": 3594367,
+        "sha256AtBothSamples": "52d140eb4590aca868c22cb58c5e4a5c7b6a73ab53e2f6c0ecce287ef886e999",
+        "modifiedSecondsAtBothSamples": 1794314346,
+        "modifiedNanosecondsAtBothSamples": 177867807,
+        "provesPresenceAtEarlierPickerFailure": false
+      },
+      "evidenceFiles": [
+        {
+          "name": "test-summary.json",
+          "bytes": 1582,
+          "sha256": "5ccaf47f90c7b1675675fad6bab96b08b78f971afdab6df153a8d9bae2fa689e"
+        },
+        {
+          "name": "ios-tests.log",
+          "bytes": 904154,
+          "sha256": "2723a9b8068b14a4bdce566885f682ac953ad4febc0ce08dc25ca09c7371c685"
+        },
+        {
+          "name": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+          "bytes": 15486809,
+          "sha256": "3936a9b8df7bf5dcef08a5b24903211228bc35e25851c8f580e22dc9db4e1bee"
+        },
+        {
+          "name": "skill-pdf-fixture-evidence.json",
+          "bytes": 1075,
+          "sha256": "0894d192b65b757eb098ad63b8aaa89844c956634dd318de89e0df69de41288a"
+        }
+      ]
+    },
+    {
+      "arm": "se-swiftui",
+      "status": "completed",
+      "run": 42806393204,
+      "job": 129796518186,
+      "artifact": 13762884092,
+      "runURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42806393204",
+      "device": {
+        "architecture": "arm64",
+        "deviceName": "iPhone SE (3rd generation)",
+        "modelName": "iPhone SE (3rd generation)",
+        "osBuildNumber": "22F77",
+        "osVersion": "18.5",
+        "platform": "iOS Simulator"
+      },
+      "test": "SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText",
+      "result": {
+        "started": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "seconds": 147.326
+      },
+      "failure": null,
+      "namespace": "6D861179-6679-47FA-824B-592004F9A4C7",
+      "fixtureWriteMode": "coordinated",
+      "fixtureCreated": {
+        "utc": "2026-11-10T12:18:31.025468Z",
+        "appStdoutLine": 31218
+      },
+      "presentation": {
+        "source": "swiftui",
+        "mode": "open",
+        "allowsMultipleSelection": false,
+        "utc": "2026-11-10T12:18:43.071369Z",
+        "appStdoutLine": 66605
+      },
+      "callbackTraceCount": 1,
+      "callbacks": [
+        {
+          "outcome": "success",
+          "count": 1,
+          "utc": "2026-11-10T12:19:03.573959Z",
+          "appStdoutLine": 119417
+        }
+      ],
+      "providerErrors": [],
+      "internalEmptyItemsMessages": [],
+      "appAuditStates": [
+        {
+          "selections": 0,
+          "reads": 0,
+          "extractionAttempts": 0,
+          "results": 0,
+          "firstAppStdoutLine": 34166
+        },
+        {
+          "selections": 1,
+          "reads": 0,
+          "extractionAttempts": 0,
+          "results": 0,
+          "firstAppStdoutLine": 119506
+        },
+        {
+          "selections": 1,
+          "reads": 1,
+          "extractionAttempts": 0,
+          "results": 0,
+          "firstAppStdoutLine": 146071
+        },
+        {
+          "selections": 1,
+          "reads": 1,
+          "extractionAttempts": 1,
+          "results": 1,
+          "firstAppStdoutLine": 196397
+        }
+      ],
+      "fixtureInventory": {
+        "baselineUTC": "2026-11-10T12:18:31.021508Z",
+        "postTestUTC": "2026-11-10T12:20:41.667907Z",
+        "sameIdentity": true,
+        "sameHash": true,
+        "sameSize": true,
+        "statusAtBothSamples": "valid",
+        "bytesAtBothSamples": 8483,
+        "deviceAtBothSamples": 16777227,
+        "inodeAtBothSamples": 3578224,
+        "sha256AtBothSamples": "36e97e8a5992b50163de85216a86d815e83b027626937cfccbb11de408c61065",
+        "modifiedSecondsAtBothSamples": 1794313111,
+        "modifiedNanosecondsAtBothSamples": 18128541,
+        "provesPresenceAtEarlierPickerFailure": false
+      },
+      "evidenceFiles": [
+        {
+          "name": "test-summary.json",
+          "bytes": 1004,
+          "sha256": "ea2c35e29eefba0c84dedf83d8208f2b92ebad40ff0b7de09adfc76bc7c2d723"
+        },
+        {
+          "name": "ios-tests.log",
+          "bytes": 887090,
+          "sha256": "e59734f8bbecb163b193f2d8f9c067c5437963baae463b4e3788115e3819af86"
+        },
+        {
+          "name": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+          "bytes": 32960034,
+          "sha256": "2db8bd2bc747250bbbbddbc6bc1efca437ead277520ec808b19a51785014b015"
+        },
+        {
+          "name": "skill-pdf-fixture-evidence.json",
+          "bytes": 1072,
+          "sha256": "490ef1b87bafdf97299ab90b145f5046df6b4f6604d4dd88a1fed4a6862ebca6"
+        }
+      ]
+    },
+    {
+      "arm": "se-uikit",
+      "status": "completed",
+      "run": 42806387359,
+      "job": 129796495709,
+      "artifact": 13765889341,
+      "runURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42806387359",
+      "device": {
+        "architecture": "arm64",
+        "deviceName": "iPhone SE (3rd generation)",
+        "modelName": "iPhone SE (3rd generation)",
+        "osBuildNumber": "22F77",
+        "osVersion": "18.5",
+        "platform": "iOS Simulator"
+      },
+      "test": "SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+      "result": {
+        "started": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "seconds": 162.723
+      },
+      "failure": null,
+      "namespace": "99CFB36C-4708-4052-BC89-DFDB7BBA3928",
+      "fixtureWriteMode": "coordinated",
+      "fixtureCreated": {
+        "utc": "2026-11-10T12:51:15.803757Z",
+        "appStdoutLine": 31221
+      },
+      "presentation": {
+        "source": "uikit",
+        "mode": "open",
+        "allowsMultipleSelection": false,
+        "utc": "2026-11-10T12:51:25.682709Z",
+        "appStdoutLine": 59449
+      },
+      "callbackTraceCount": 1,
+      "callbacks": [
+        {
+          "outcome": "success",
+          "count": 1,
+          "utc": "2026-11-10T12:51:48.256589Z",
+          "appStdoutLine": 124374
+        }
+      ],
+      "providerErrors": [],
+      "internalEmptyItemsMessages": [],
+      "appAuditStates": [
+        {
+          "selections": 0,
+          "reads": 0,
+          "extractionAttempts": 0,
+          "results": 0,
+          "firstAppStdoutLine": 34166
+        },
+        {
+          "selections": 1,
+          "reads": 0,
+          "extractionAttempts": 0,
+          "results": 0,
+          "firstAppStdoutLine": 124463
+        },
+        {
+          "selections": 1,
+          "reads": 1,
+          "extractionAttempts": 0,
+          "results": 0,
+          "firstAppStdoutLine": 151386
+        },
+        {
+          "selections": 1,
+          "reads": 1,
+          "extractionAttempts": 1,
+          "results": 1,
+          "firstAppStdoutLine": 210777
+        }
+      ],
+      "fixtureInventory": {
+        "baselineUTC": "2026-11-10T12:51:15.794214Z",
+        "postTestUTC": "2026-11-10T12:53:32.955154Z",
+        "sameIdentity": true,
+        "sameHash": true,
+        "sameSize": true,
+        "statusAtBothSamples": "valid",
+        "bytesAtBothSamples": 8587,
+        "deviceAtBothSamples": 16777227,
+        "inodeAtBothSamples": 3577755,
+        "sha256AtBothSamples": "ff2d8ef155817e833e9776b689ec69a01d335b14eb6bfa2e9399e0153a9deffb",
+        "modifiedSecondsAtBothSamples": 1794315075,
+        "modifiedNanosecondsAtBothSamples": 791378231,
+        "provesPresenceAtEarlierPickerFailure": false
+      },
+      "evidenceFiles": [
+        {
+          "name": "test-summary.json",
+          "bytes": 1004,
+          "sha256": "a3758a5900a93accd3c586852a964241ae8c788c2fe7b94bd44a6282921f6ae6"
+        },
+        {
+          "name": "ios-tests.log",
+          "bytes": 889029,
+          "sha256": "a2f7d4ab1e7091dc54f561f1dced744ceecfd0cb6344d513570b469ae656b22c"
+        },
+        {
+          "name": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+          "bytes": 34519246,
+          "sha256": "7e735408c4884d5ba7683849f93b2a6fea72d751bfe81e65d3c7bf7b3f746abb"
+        },
+        {
+          "name": "skill-pdf-fixture-evidence.json",
+          "bytes": 1074,
+          "sha256": "8790336814aa9aa9c790e6954694c7bb81ebcba57c36551f18884f9dc5043dbb"
+        }
+      ]
+    }
+  ],
+  "conclusions": [
+    "Both same-source iOS26.2 current arms actually entered their selected method and failed the selection-callback assertion. Each independently observed mode=open and provider -1005/resolver -1012 did=3, with zero App importer callback traces and zero App read/extraction audit.",
+    "Replacing the SwiftUI presenter with explicit UIKit open-in-place did not repair these two current observations. The same error signature does not establish the underlying cause.",
+    "Both SE arms completed their exact PDF text, page/namespace and both approval assertions with mode=open and one successful App callback each. Neither complete App stdout recorded the provider failure signature. This pair did not reproduce a selection failure; it does not prove either presenter repairs intermittent failure.",
+    "Same baseline/post identity and bytes do not prove continuous presence at the intervening failure instant. An internal empty-items delegate message is not an App callback.",
+    "These are selected single-case observations. No global OS-version cause, import-copy repair, fresh-simulator repair or full-suite pass is claimed."
+  ],
+  "separatePendingExperiment": {
+    "run": 42815645050,
+    "sourceRevision": "21c29d232c090a518c9e602c5029fd8de1d5844b",
+    "arm": "current UIKit import-copy",
+    "status": "queued",
+    "includedInSameSourcePair": false,
+    "result": null,
+    "statusObservedUTC": "2026-11-10T12:55:35Z"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "bounded_artifact_report_and_actual_xctest_log",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42815313693",
+  "job_id": 129826798736,
+  "job_conclusion": "success",
+  "artifact_id": 13766073210,
+  "artifact_archive_bytes": 3673250,
+  "artifact_retrieval": "HTTP Range selected report/log/boot metadata; no whole archive download",
+  "source_revision": "01d364669abdffc79aefd101125f9453f9ebacaf",
+  "scope": "startup-smoke",
+  "host_architecture": "arm64",
+  "host_macos": "15.8.2",
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "runtime": {
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "version": "17.0.1",
+    "buildversion": "21A342"
+  },
+  "boot_succeeded": true,
+  "experimental_prelaunch_test_daemon": true,
+  "test_daemon_prelaunch": {
+    "budget_seconds": 120,
+    "attempts": 1,
+    "status": "process_started_handshake_unverified",
+    "handshake_verified": false,
+    "process_alive": true,
+    "elapsed_seconds": 1.071
+  },
+  "phase_timing": [
+    {
+      "phase": "prelaunching_test_daemon",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T12:39:41.512692+00:00",
+      "elapsed_seconds": 444.5
+    },
+    {
+      "phase": "testing",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T12:39:42.590754+00:00",
+      "elapsed_seconds": 445.6
+    },
+    {
+      "phase": "verifying_test_completion",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T12:47:41.675901+00:00",
+      "elapsed_seconds": 924.7
+    },
+    {
+      "phase": "passed",
+      "requested_runtime": "17.0.1",
+      "at": "2026-11-10T12:47:48.690949+00:00",
+      "elapsed_seconds": 931.7
+    }
+  ],
+  "method_counts_from_tests_log": {
+    "started": 1,
+    "completed": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "completed_methods": [
+    {
+      "class": "WoowAssistantUITests.WoowAssistantUITests",
+      "method": "testEverySectionIsReachableAndPhoneControlIsExcluded",
+      "outcome": "passed",
+      "seconds": 32.728,
+      "log_line": 4288
+    }
+  ],
+  "verified_completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 1,
+      "passedTests": 1,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 1,
+    "completed_ui_count": 1,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "test_exit_code": 0,
+  "selected_tests_succeeded": true,
+  "runtime_tested_full_scheme": false,
+  "full_acceptance_succeeded": false,
+  "simulator_deleted": true,
+  "hashes": {
+    "report.json": "1682d03d5290b9413aabba0ff10b82e4b900d5982b709d8d935105b54d741a8c",
+    "tests.log": "50cd3c12fc0cbec67baed96661a726e8b74f7e35951495c51d5b585d3304332a",
+    "simulator-boot.log": "b5fd376a751678ed7e2e95b17316ef3ece730b4bacf9f3acf383c5ad6248c25f"
+  },
+  "interpretation": {
+    "established": [
+      "One selected startup UI method actually completed and passed on exact iOS 17.0.1, ARM64, Xcode 16.4.",
+      "One prelaunch attempt completed in 1.071 seconds and observed a live process; the subsequent unchanged XCTest invocation passed.",
+      "The strict completion gate verified exact selected count, zero failures, zero skips and zero expected failures."
+    ],
+    "not_established": [
+      "Process liveness alone does not establish XCTest or accessibility readiness.",
+      "A single passing smoke method does not prove that prelaunch caused success or resolved earlier bootstrap SIGKILL failures.",
+      "This run does not cover the other startup methods, memory, workspace, core, live services, or full toolchain parity."
+    ],
+    "parser_observation": "The real runner accepted the current bounded PID parser; no parser-format failure was observed and no parser patch is justified by this run."
+  },
+  "recommended_next_experiment": {
+    "status": "proposal_not_dispatched_by_agent",
+    "runtime": "17.0.1",
+    "host_architecture": "arm64",
+    "xcode": "16.4",
+    "scope": "ui-memory",
+    "ios17_prelaunch": true,
+    "expected_ui_methods": 7,
+    "classes": [
+      "MemoryUITests",
+      "MemoryRaceUITests"
+    ],
+    "historical_comparison": {
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805236470",
+      "artifact_id": 13762151204,
+      "source_revision": "32f4ecbe1fe1b51f1f7a15d2d039170592df6da7",
+      "boot_succeeded": true,
+      "methods_started": 0,
+      "classification": "runner_SIGKILL_before_methods"
+    },
+    "reason": "Seven existing UI methods on two classes extend beyond one launch case and revisit a preserved bootstrap-only failure without adding WebKit navigation or new feature assertions.",
+    "unchanged_bounds": {
+      "maximum_case_seconds": 300,
+      "build_test_timeout_seconds": 1800,
+      "prelaunch_attempts": 1,
+      "prelaunch_budget_seconds": 120
+    },
+    "acceptance": "Require all seven expected methods exactly once, Passed summary, zero skipped/expected failures, and preserve actual daemon timing plus any bootstrap diagnostics.",
+    "limits": "Use a recorded source revision and unchanged assertions. Historical different-source runs are not a matched causal control; keep the experiment opt-in pending further evidence."
+  }
+}

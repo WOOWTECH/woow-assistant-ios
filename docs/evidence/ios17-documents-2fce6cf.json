@@ -1,0 +1,95 @@
+{
+  "schema_version": 1,
+  "source_revision": "2fce6cffd41944d4ca9fff29158b6618e5621b52",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805689497",
+  "artifact_id": 13764824593,
+  "scope": "ui-documents",
+  "host_architecture": "arm64",
+  "runtime": {
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "version": "17.0.1",
+    "buildversion": "21A342"
+  },
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "test_completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 8,
+      "passedTests": 8,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 8,
+    "completed_ui_count": 8,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "methods": [
+    {
+      "class": "WoowAssistantUITests.SkillExecutionUITests",
+      "method": "testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText",
+      "outcome": "passed",
+      "seconds": "156.409"
+    },
+    {
+      "class": "WoowAssistantUITests.SkillExecutionUITests",
+      "method": "testNativeExportCancellationPreservesResultAndAllowsRetry",
+      "outcome": "passed",
+      "seconds": "140.232"
+    },
+    {
+      "class": "WoowAssistantUITests.SkillExecutionUITests",
+      "method": "testNativeExportSavesTextToChosenLocalFolder",
+      "outcome": "passed",
+      "seconds": "120.954"
+    },
+    {
+      "class": "WoowAssistantUITests.SkillExecutionUITests",
+      "method": "testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText",
+      "outcome": "passed",
+      "seconds": "127.060"
+    },
+    {
+      "class": "WoowAssistantUITests.SkillExecutionUITests",
+      "method": "testNativePickerCancellationDoesNotReadOrExtract",
+      "outcome": "passed",
+      "seconds": "40.774"
+    },
+    {
+      "class": "WoowAssistantUITests.SkillExecutionUITests",
+      "method": "testRefusingFirstStepDoesNotReadOrExtract",
+      "outcome": "passed",
+      "seconds": "44.204"
+    },
+    {
+      "class": "WoowAssistantUITests.SkillExecutionUITests",
+      "method": "testRefusingSecondStepKeepsExtractionUnauthorized",
+      "outcome": "passed",
+      "seconds": "76.498"
+    },
+    {
+      "class": "WoowAssistantUITests.SkillWorkerSettingsUITests",
+      "method": "testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
+      "outcome": "passed",
+      "seconds": "56.067"
+    }
+  ],
+  "simulator_deleted": true,
+  "hashes": {
+    "report.json": "bdb26b3a522ab030106a4c0519247c5d73162b16623ce94a41e0aca68fb7df6c",
+    "tests.log": "734476c9b4831400c5f6a9d149efab1d641e90384c44ce0cfe0612e4f243e39a"
+  },
+  "established": [
+    "All eight selected native App UI cases executed exactly once with zero skips on exact iOS 17.0.1.",
+    "Actual Files selection, separate PDF read/extraction approvals, exact PDF text, refusal and cancellation, actual export/save and export-cancel recovery passed.",
+    "Dedicated worker endpoint/credential settings persisted across App relaunch without selecting, reading or sending a file."
+  ],
+  "not_established": [
+    "No authenticated production PDF worker was contacted.",
+    "This source predates the explicit UIKit open/copy experiment arms and later feature additions.",
+    "Simulator results do not establish physical iPhone, signing or complete original-skill tool parity."
+  ]
+}

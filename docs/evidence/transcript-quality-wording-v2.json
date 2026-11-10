@@ -1,0 +1,609 @@
+{
+  "schema_version": 1,
+  "runtime_source_sha256": "8dd8b7e66b0397a5cf1c58e94450a6a9706a8651874b976e2ac938c34ad0d131",
+  "base_revision": "d464176",
+  "runtime_changed_scope": "Timestamp and wording instructions only; command/evidence validator unchanged.",
+  "mode": "actual HTTP model through production Runtime on local macOS; not iOS UI",
+  "fixture_variants": {
+    "timed_bytes": 847,
+    "untimed_bytes": 817
+  },
+  "attempted": 10,
+  "completed": 10,
+  "model_calls": 24,
+  "fixed_source_semantic_review": "passed for these ten actual results",
+  "prior_observations": [
+    {
+      "variant": "9a53e61 before timestamp instructions",
+      "result": "Structurally complete but several timed quotations omitted source timestamp metadata."
+    },
+    {
+      "variant": "timestamp instructions candidate before wording correction",
+      "result": "Both five-format variants structurally complete; timed chapters/article introduced an unsupported maximum of three books. Chapter-title length flag included a time prefix and was a false positive against original separated timing/title format."
+    }
+  ],
+  "changes": [
+    "Require exact source time metadata when quote includes an explicit timestamp; timed quotation evidence expands to the whole original timed paragraph.",
+    "Truly untimed sources omit time metadata; no estimated chapter end/duration.",
+    "Keep chapter title separate from timing and preserve source permission without invented maxima/minima/obligations."
+  ],
+  "results": [
+    {
+      "format": "summary",
+      "source_sha256": "98980b1d0a5bf1a15574f70a75bfa6c9f0f1c16f852dd457ea361a450f064a26",
+      "source_bytes": 847,
+      "model_calls": 2,
+      "format_corrections": 0,
+      "last_command_failure_reason": "none",
+      "mechanical_observations": {
+        "citation_order_nondecreasing": true,
+        "evidence_timestamp_count": 3,
+        "literal_anchor_presence_in_prose": {
+          "books_brought_24": true,
+          "books_exchanged_16": true,
+          "books_remaining_8": true,
+          "free_participation": true,
+          "labels_3": true,
+          "no_participant_contact_record": true,
+          "participants_12": true
+        },
+        "punctuation_sentence_units": 6,
+        "quotations_each_section_has_source_timestamp": null,
+        "quotations_each_text_equals_its_evidence": null,
+        "quotes_match_source_bytes": true,
+        "quotes_with_explicit_timestamp_missing_metadata": 0,
+        "review_flags": [],
+        "section_count": 1,
+        "section_first_citation_byte_offsets": [
+          0
+        ],
+        "section_title_character_counts": [
+          4
+        ],
+        "sections_with_timecode_in_title_or_prose": 0,
+        "semantic_pass": null,
+        "source_has_explicit_timestamp": true,
+        "source_paragraph_count": 3,
+        "source_paragraphs_cited": [
+          1,
+          2,
+          3
+        ]
+      },
+      "fixture": "timed",
+      "actual_result_review": {
+        "reviewed_full_prose_against_entire_fixed_source": true,
+        "source_quantities_and_permission_preserved": true,
+        "main_topics_and_order_preserved": true,
+        "unsupported_maximum_not_present": true,
+        "invented_timecode_not_present": true,
+        "no_claim_of_audio_or_video_access": true,
+        "scope": "This exact completed fixed-source result, not general semantic reliability."
+      }
+    },
+    {
+      "format": "chapters",
+      "source_sha256": "98980b1d0a5bf1a15574f70a75bfa6c9f0f1c16f852dd457ea361a450f064a26",
+      "source_bytes": 847,
+      "model_calls": 3,
+      "format_corrections": 1,
+      "last_command_failure_reason": "syntax",
+      "mechanical_observations": {
+        "citation_order_nondecreasing": true,
+        "evidence_timestamp_count": 3,
+        "literal_anchor_presence_in_prose": {
+          "books_brought_24": true,
+          "books_exchanged_16": true,
+          "books_remaining_8": true,
+          "free_participation": true,
+          "labels_3": true,
+          "no_participant_contact_record": true,
+          "participants_12": true
+        },
+        "punctuation_sentence_units": 6,
+        "quotations_each_section_has_source_timestamp": null,
+        "quotations_each_text_equals_its_evidence": null,
+        "quotes_match_source_bytes": true,
+        "quotes_with_explicit_timestamp_missing_metadata": 0,
+        "review_flags": [],
+        "section_count": 3,
+        "section_first_citation_byte_offsets": [
+          0,
+          289,
+          563
+        ],
+        "section_title_character_counts": [
+          7,
+          7,
+          9
+        ],
+        "sections_with_timecode_in_title_or_prose": 0,
+        "semantic_pass": null,
+        "source_has_explicit_timestamp": true,
+        "source_paragraph_count": 3,
+        "source_paragraphs_cited": [
+          1,
+          2,
+          3
+        ]
+      },
+      "fixture": "timed",
+      "actual_result_review": {
+        "reviewed_full_prose_against_entire_fixed_source": true,
+        "source_quantities_and_permission_preserved": true,
+        "main_topics_and_order_preserved": true,
+        "unsupported_maximum_not_present": true,
+        "invented_timecode_not_present": true,
+        "no_claim_of_audio_or_video_access": true,
+        "scope": "This exact completed fixed-source result, not general semantic reliability."
+      }
+    },
+    {
+      "format": "quotations",
+      "source_sha256": "98980b1d0a5bf1a15574f70a75bfa6c9f0f1c16f852dd457ea361a450f064a26",
+      "source_bytes": 847,
+      "model_calls": 3,
+      "format_corrections": 1,
+      "last_command_failure_reason": "syntax",
+      "mechanical_observations": {
+        "citation_order_nondecreasing": true,
+        "evidence_timestamp_count": 3,
+        "literal_anchor_presence_in_prose": {
+          "books_brought_24": true,
+          "books_exchanged_16": true,
+          "books_remaining_8": true,
+          "free_participation": true,
+          "labels_3": true,
+          "no_participant_contact_record": true,
+          "participants_12": true
+        },
+        "punctuation_sentence_units": 12,
+        "quotations_each_section_has_source_timestamp": true,
+        "quotations_each_text_equals_its_evidence": true,
+        "quotes_match_source_bytes": true,
+        "quotes_with_explicit_timestamp_missing_metadata": 0,
+        "review_flags": [],
+        "section_count": 3,
+        "section_first_citation_byte_offsets": [
+          0,
+          289,
+          563
+        ],
+        "section_title_character_counts": [
+          7,
+          4,
+          4
+        ],
+        "sections_with_timecode_in_title_or_prose": 3,
+        "semantic_pass": null,
+        "source_has_explicit_timestamp": true,
+        "source_paragraph_count": 3,
+        "source_paragraphs_cited": [
+          1,
+          2,
+          3
+        ]
+      },
+      "fixture": "timed",
+      "actual_result_review": {
+        "reviewed_full_prose_against_entire_fixed_source": true,
+        "source_quantities_and_permission_preserved": true,
+        "main_topics_and_order_preserved": true,
+        "unsupported_maximum_not_present": true,
+        "invented_timecode_not_present": true,
+        "no_claim_of_audio_or_video_access": true,
+        "scope": "This exact completed fixed-source result, not general semantic reliability.",
+        "ordered_sections_reproduce_entire_source_bytes": true
+      }
+    },
+    {
+      "format": "transcript",
+      "source_sha256": "98980b1d0a5bf1a15574f70a75bfa6c9f0f1c16f852dd457ea361a450f064a26",
+      "source_bytes": 847,
+      "model_calls": 2,
+      "format_corrections": 0,
+      "last_command_failure_reason": "none",
+      "mechanical_observations": {
+        "citation_order_nondecreasing": true,
+        "evidence_timestamp_count": 3,
+        "literal_anchor_presence_in_prose": {
+          "books_brought_24": true,
+          "books_exchanged_16": true,
+          "books_remaining_8": true,
+          "free_participation": true,
+          "labels_3": true,
+          "no_participant_contact_record": true,
+          "participants_12": true
+        },
+        "punctuation_sentence_units": 12,
+        "quotations_each_section_has_source_timestamp": null,
+        "quotations_each_text_equals_its_evidence": null,
+        "quotes_match_source_bytes": true,
+        "quotes_with_explicit_timestamp_missing_metadata": 0,
+        "review_flags": [],
+        "section_count": 3,
+        "section_first_citation_byte_offsets": [
+          0,
+          289,
+          563
+        ],
+        "section_title_character_counts": [
+          7,
+          5,
+          7
+        ],
+        "sections_with_timecode_in_title_or_prose": 3,
+        "semantic_pass": null,
+        "source_has_explicit_timestamp": true,
+        "source_paragraph_count": 3,
+        "source_paragraphs_cited": [
+          1,
+          2,
+          3
+        ]
+      },
+      "fixture": "timed",
+      "actual_result_review": {
+        "reviewed_full_prose_against_entire_fixed_source": true,
+        "source_quantities_and_permission_preserved": true,
+        "main_topics_and_order_preserved": true,
+        "unsupported_maximum_not_present": true,
+        "invented_timecode_not_present": true,
+        "no_claim_of_audio_or_video_access": true,
+        "scope": "This exact completed fixed-source result, not general semantic reliability.",
+        "ordered_sections_reproduce_entire_source_bytes": true
+      }
+    },
+    {
+      "format": "article",
+      "source_sha256": "98980b1d0a5bf1a15574f70a75bfa6c9f0f1c16f852dd457ea361a450f064a26",
+      "source_bytes": 847,
+      "model_calls": 3,
+      "format_corrections": 1,
+      "last_command_failure_reason": "syntax",
+      "mechanical_observations": {
+        "citation_order_nondecreasing": true,
+        "evidence_timestamp_count": 3,
+        "literal_anchor_presence_in_prose": {
+          "books_brought_24": true,
+          "books_exchanged_16": true,
+          "books_remaining_8": true,
+          "free_participation": true,
+          "labels_3": true,
+          "no_participant_contact_record": true,
+          "participants_12": true
+        },
+        "punctuation_sentence_units": 10,
+        "quotations_each_section_has_source_timestamp": null,
+        "quotations_each_text_equals_its_evidence": null,
+        "quotes_match_source_bytes": true,
+        "quotes_with_explicit_timestamp_missing_metadata": 0,
+        "review_flags": [],
+        "section_count": 5,
+        "section_first_citation_byte_offsets": [
+          0,
+          146,
+          289,
+          563,
+          712
+        ],
+        "section_title_character_counts": [
+          2,
+          4,
+          5,
+          7,
+          2
+        ],
+        "sections_with_timecode_in_title_or_prose": 0,
+        "semantic_pass": null,
+        "source_has_explicit_timestamp": true,
+        "source_paragraph_count": 3,
+        "source_paragraphs_cited": [
+          1,
+          2,
+          3
+        ]
+      },
+      "fixture": "timed",
+      "actual_result_review": {
+        "reviewed_full_prose_against_entire_fixed_source": true,
+        "source_quantities_and_permission_preserved": true,
+        "main_topics_and_order_preserved": true,
+        "unsupported_maximum_not_present": true,
+        "invented_timecode_not_present": true,
+        "no_claim_of_audio_or_video_access": true,
+        "scope": "This exact completed fixed-source result, not general semantic reliability."
+      }
+    },
+    {
+      "format": "summary",
+      "source_sha256": "056e4cd5ac455f6fdfd45a1feed6dfde87a395b346d2ed11e2a6db3c225dda8d",
+      "source_bytes": 817,
+      "model_calls": 3,
+      "format_corrections": 1,
+      "last_command_failure_reason": "syntax",
+      "mechanical_observations": {
+        "citation_order_nondecreasing": true,
+        "evidence_timestamp_count": 0,
+        "literal_anchor_presence_in_prose": {
+          "books_brought_24": true,
+          "books_exchanged_16": true,
+          "books_remaining_8": true,
+          "free_participation": true,
+          "labels_3": true,
+          "no_participant_contact_record": true,
+          "participants_12": true
+        },
+        "punctuation_sentence_units": 6,
+        "quotations_each_section_has_source_timestamp": null,
+        "quotations_each_text_equals_its_evidence": null,
+        "quotes_match_source_bytes": true,
+        "quotes_with_explicit_timestamp_missing_metadata": 0,
+        "review_flags": [],
+        "section_count": 1,
+        "section_first_citation_byte_offsets": [
+          0
+        ],
+        "section_title_character_counts": [
+          7
+        ],
+        "sections_with_timecode_in_title_or_prose": 0,
+        "semantic_pass": null,
+        "source_has_explicit_timestamp": false,
+        "source_paragraph_count": 3,
+        "source_paragraphs_cited": [
+          1,
+          2,
+          3
+        ]
+      },
+      "fixture": "untimed",
+      "actual_result_review": {
+        "reviewed_full_prose_against_entire_fixed_source": true,
+        "source_quantities_and_permission_preserved": true,
+        "main_topics_and_order_preserved": true,
+        "unsupported_maximum_not_present": true,
+        "invented_timecode_not_present": true,
+        "no_claim_of_audio_or_video_access": true,
+        "scope": "This exact completed fixed-source result, not general semantic reliability."
+      }
+    },
+    {
+      "format": "chapters",
+      "source_sha256": "056e4cd5ac455f6fdfd45a1feed6dfde87a395b346d2ed11e2a6db3c225dda8d",
+      "source_bytes": 817,
+      "model_calls": 2,
+      "format_corrections": 0,
+      "last_command_failure_reason": "none",
+      "mechanical_observations": {
+        "citation_order_nondecreasing": true,
+        "evidence_timestamp_count": 0,
+        "literal_anchor_presence_in_prose": {
+          "books_brought_24": true,
+          "books_exchanged_16": true,
+          "books_remaining_8": true,
+          "free_participation": true,
+          "labels_3": true,
+          "no_participant_contact_record": true,
+          "participants_12": true
+        },
+        "punctuation_sentence_units": 6,
+        "quotations_each_section_has_source_timestamp": null,
+        "quotations_each_text_equals_its_evidence": null,
+        "quotes_match_source_bytes": true,
+        "quotes_with_explicit_timestamp_missing_metadata": 0,
+        "review_flags": [],
+        "section_count": 3,
+        "section_first_citation_byte_offsets": [
+          0,
+          279,
+          543
+        ],
+        "section_title_character_counts": [
+          7,
+          5,
+          9
+        ],
+        "sections_with_timecode_in_title_or_prose": 0,
+        "semantic_pass": null,
+        "source_has_explicit_timestamp": false,
+        "source_paragraph_count": 3,
+        "source_paragraphs_cited": [
+          1,
+          2,
+          3
+        ]
+      },
+      "fixture": "untimed",
+      "actual_result_review": {
+        "reviewed_full_prose_against_entire_fixed_source": true,
+        "source_quantities_and_permission_preserved": true,
+        "main_topics_and_order_preserved": true,
+        "unsupported_maximum_not_present": true,
+        "invented_timecode_not_present": true,
+        "no_claim_of_audio_or_video_access": true,
+        "scope": "This exact completed fixed-source result, not general semantic reliability."
+      }
+    },
+    {
+      "format": "quotations",
+      "source_sha256": "056e4cd5ac455f6fdfd45a1feed6dfde87a395b346d2ed11e2a6db3c225dda8d",
+      "source_bytes": 817,
+      "model_calls": 2,
+      "format_corrections": 0,
+      "last_command_failure_reason": "none",
+      "mechanical_observations": {
+        "citation_order_nondecreasing": true,
+        "evidence_timestamp_count": 0,
+        "literal_anchor_presence_in_prose": {
+          "books_brought_24": true,
+          "books_exchanged_16": true,
+          "books_remaining_8": true,
+          "free_participation": true,
+          "labels_3": true,
+          "no_participant_contact_record": true,
+          "participants_12": true
+        },
+        "punctuation_sentence_units": 12,
+        "quotations_each_section_has_source_timestamp": false,
+        "quotations_each_text_equals_its_evidence": true,
+        "quotes_match_source_bytes": true,
+        "quotes_with_explicit_timestamp_missing_metadata": 0,
+        "review_flags": [],
+        "section_count": 3,
+        "section_first_citation_byte_offsets": [
+          0,
+          279,
+          543
+        ],
+        "section_title_character_counts": [
+          7,
+          4,
+          4
+        ],
+        "sections_with_timecode_in_title_or_prose": 0,
+        "semantic_pass": null,
+        "source_has_explicit_timestamp": false,
+        "source_paragraph_count": 3,
+        "source_paragraphs_cited": [
+          1,
+          2,
+          3
+        ]
+      },
+      "fixture": "untimed",
+      "actual_result_review": {
+        "reviewed_full_prose_against_entire_fixed_source": true,
+        "source_quantities_and_permission_preserved": true,
+        "main_topics_and_order_preserved": true,
+        "unsupported_maximum_not_present": true,
+        "invented_timecode_not_present": true,
+        "no_claim_of_audio_or_video_access": true,
+        "scope": "This exact completed fixed-source result, not general semantic reliability.",
+        "ordered_sections_reproduce_entire_source_bytes": true
+      }
+    },
+    {
+      "format": "transcript",
+      "source_sha256": "056e4cd5ac455f6fdfd45a1feed6dfde87a395b346d2ed11e2a6db3c225dda8d",
+      "source_bytes": 817,
+      "model_calls": 2,
+      "format_corrections": 0,
+      "last_command_failure_reason": "none",
+      "mechanical_observations": {
+        "citation_order_nondecreasing": true,
+        "evidence_timestamp_count": 0,
+        "literal_anchor_presence_in_prose": {
+          "books_brought_24": true,
+          "books_exchanged_16": true,
+          "books_remaining_8": true,
+          "free_participation": true,
+          "labels_3": true,
+          "no_participant_contact_record": true,
+          "participants_12": true
+        },
+        "punctuation_sentence_units": 12,
+        "quotations_each_section_has_source_timestamp": null,
+        "quotations_each_text_equals_its_evidence": null,
+        "quotes_match_source_bytes": true,
+        "quotes_with_explicit_timestamp_missing_metadata": 0,
+        "review_flags": [],
+        "section_count": 1,
+        "section_first_citation_byte_offsets": [
+          0
+        ],
+        "section_title_character_counts": [
+          2
+        ],
+        "sections_with_timecode_in_title_or_prose": 0,
+        "semantic_pass": null,
+        "source_has_explicit_timestamp": false,
+        "source_paragraph_count": 3,
+        "source_paragraphs_cited": [
+          1,
+          2,
+          3
+        ]
+      },
+      "fixture": "untimed",
+      "actual_result_review": {
+        "reviewed_full_prose_against_entire_fixed_source": true,
+        "source_quantities_and_permission_preserved": true,
+        "main_topics_and_order_preserved": true,
+        "unsupported_maximum_not_present": true,
+        "invented_timecode_not_present": true,
+        "no_claim_of_audio_or_video_access": true,
+        "scope": "This exact completed fixed-source result, not general semantic reliability.",
+        "ordered_sections_reproduce_entire_source_bytes": true
+      }
+    },
+    {
+      "format": "article",
+      "source_sha256": "056e4cd5ac455f6fdfd45a1feed6dfde87a395b346d2ed11e2a6db3c225dda8d",
+      "source_bytes": 817,
+      "model_calls": 2,
+      "format_corrections": 0,
+      "last_command_failure_reason": "none",
+      "mechanical_observations": {
+        "citation_order_nondecreasing": true,
+        "evidence_timestamp_count": 0,
+        "literal_anchor_presence_in_prose": {
+          "books_brought_24": true,
+          "books_exchanged_16": true,
+          "books_remaining_8": true,
+          "free_participation": true,
+          "labels_3": true,
+          "no_participant_contact_record": true,
+          "participants_12": true
+        },
+        "punctuation_sentence_units": 9,
+        "quotations_each_section_has_source_timestamp": null,
+        "quotations_each_text_equals_its_evidence": null,
+        "quotes_match_source_bytes": true,
+        "quotes_with_explicit_timestamp_missing_metadata": 0,
+        "review_flags": [],
+        "section_count": 4,
+        "section_first_citation_byte_offsets": [
+          0,
+          54,
+          279,
+          543
+        ],
+        "section_title_character_counts": [
+          2,
+          7,
+          7,
+          5
+        ],
+        "sections_with_timecode_in_title_or_prose": 0,
+        "semantic_pass": null,
+        "source_has_explicit_timestamp": false,
+        "source_paragraph_count": 3,
+        "source_paragraphs_cited": [
+          1,
+          2,
+          3
+        ]
+      },
+      "fixture": "untimed",
+      "actual_result_review": {
+        "reviewed_full_prose_against_entire_fixed_source": true,
+        "source_quantities_and_permission_preserved": true,
+        "main_topics_and_order_preserved": true,
+        "unsupported_maximum_not_present": true,
+        "invented_timecode_not_present": true,
+        "no_claim_of_audio_or_video_access": true,
+        "scope": "This exact completed fixed-source result, not general semantic reliability."
+      }
+    }
+  ],
+  "private_result_hashes": {
+    "timed": "7b90ca999bca381367bfe405785fc1c73f33e6de4b5b8127236858803603671c",
+    "untimed": "873e7c36c332ba3c3f5449045d744d43ea9a36b2a1cbb3a023e5c26b16cac2c9"
+  },
+  "limitations": [
+    "Fixed synthetic source, one execution per format/variant; not all possible transcripts.",
+    "This does not replace native Files handoff and refusal UI acceptance.",
+    "Exact quotations and full snapshot coverage alone cannot establish every generated claim; full result prose was separately reviewed here."
+  ]
+}

@@ -1,5 +1,19 @@
 # Verification — 2026-11-10
 
+## Actual-model transcript timestamp and wording quality regression
+
+The revised prompt preserves source time markers, keeps chapter titles separate, and avoids turning permission into a maximum/minimum/obligation. The evidence validator is unchanged. Two fixed sources (847 bytes with timecodes; 817 without) completed **10/10 actual HTTP model results, 24 calls** on local macOS. Full-prose review confirmed quantities, permission, principal topics/order and absence of invented times; quotations and transcript sections reproduce the complete respective original source in order. Earlier missing timestamps and unsupported maximum wording remain recorded in [the bounded before/after evidence](evidence/transcript-quality-wording-v2.json). This is a ten-result semantic review over fixed sources, not a universal quality guarantee or a substitute for native Files UI acceptance.
+
+
+## Exact iOS 17 complete selected document UI passed
+
+At `2fce6cf`, [42805689497](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805689497) completed **8/8 UI, zero skips** on iOS 17.0.1 ARM64. The actual native picker, both PDF approvals and extraction, refusal/cancellation, export to a chosen local folder, export cancellation/recovery, and dedicated worker settings/relaunch all passed. [Exact method evidence](evidence/ios17-documents-2fce6cf.json). This does not exercise an authenticated production worker, later UIKit experiment arms or a physical iPhone.
+
+## Opt-in iOS 17 test-daemon prelaunch executed the selected smoke case
+
+At `01d3646`, [42815313693](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42815313693) passed the unchanged section-reachability UI **1/1, zero skips** on exact iOS 17.0.1. The one-shot daemon prelaunch took 1.071 seconds; subsequent XCTest completed. [Evidence](evidence/ios17-prelaunch-01d3646.json). A live process alone is not handshake evidence, and this single result does not establish causality or repair every previous bootstrap failure. The seven-case memory shard is the next opt-in experiment; default execution remains unchanged.
+
+
 ## Complete audited HA live acceptance passed on iOS 18.5
 
 Source `2390926`, [42813278810](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42813278810), passed native read-only HA acceptance and **3/3 actual App UI, zero skips**. Discovery/disconnect/reconnect passed; the model selected two exact approved read-only tools, received both actual results and produced the required answer in **3 model calls**, with no correction or tool error. Refusal preserved the draft. [Fixed evidence](evidence/live-ha-2390926-ios18.json). The earlier provider HTTP rejection remains in the record; this successful run does not identify its cause or cover physical actuation.
