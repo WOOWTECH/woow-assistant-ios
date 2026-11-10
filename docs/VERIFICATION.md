@@ -1,5 +1,48 @@
 # Verification — 2026-11-10
 
+## Browser workspace / files / PDF increment - validation in progress
+
+Source checkpoints: `9ddc30d` (workspace), `a74df45` (file transfers and PDF),
+`bd2f8d0` (iOS file protection fix, hosted workspace and release workflow),
+`7b11555` (build verifier and bookmark test repair). Later source refinements are
+not covered by these runs until explicitly retested.
+
+- `42741528413` on `9ddc30d`: 83 portable tests passed; 6 browser-library and 4
+  hosted WebKit tests passed. Workspace UI 2/3 passed: independent tab state and
+  metadata restoration, manual query page and real JavaScript confirmation.
+  Bookmark rename failed because native tapping placed the cursor inside the
+  prefilled long title; the exact replacement assertion detected the residual
+  suffix. The test now uses native Select All; the original failure is retained.
+- `42743895000` on `a74df45`: iOS build found two wrong FileManager argument labels
+  inside an iOS-only file-protection branch. Corrected in `bd2f8d0`; CLT/macOS
+  validation alone did not cover that branch.
+- `42744271971` on `bd2f8d0`: all three App builds passed. Native file selection
+  could not reach the App Documents folder; cancellation passed on large/current
+  upload and on all PDF variants, but selection-dependent cases failed. Explicit
+  built plist booleans and bounded native routing are now under repair. All three
+  hosted workspace cases stopped on empty published titles; profile deletion also
+  found retained store references. Both product title timing and teardown are
+  corrected for the next run. Real WKDownload passed on both iOS 18.5 sizes;
+  iOS 26.2 reported an InvalidTransition during the direct-start harness path.
+- `42744266742` on `bd2f8d0`: Release iPhoneOS build completed but Mach-O audit
+  failed. The audit incorrectly treated LC_BUILD_VERSION linker-tool version as
+  an OS version; parsing was corrected in `7b11555`, and `42745303603` on `7b11555` passed: Xcode 26.2, iphoneos 26.2 SDK,
+  actual minimum OS 17.0 across nine binaries, Release ATS key absent. Signature
+  and runtime checks are explicitly false; this is not installable release evidence.
+- `42744261931` on `bd2f8d0`: Apple installer exited 0; iOS 17.0.1 build
+  21A342 was installed and selected (runtime identifier iOS-17-0). simctl bootstatus
+  exceeded 300s before any App test. It is a boot-timeout result, not a download
+  failure. `098abd3` adds a bounded 900s first boot and preserved diagnostics.
+  `7b11555` separately fixes the isolated Debug plist input path. No iOS 17 App
+  runtime success is assumed.
+
+Local non-XCTest evidence: browser library 6 scenarios/57 assertions, initial
+navigation permits 4/27, download core 101 assertions, real WKDownload 27,
+upload real HTTP/file/lifecycle 129 plus actual WebKit form/status 7. PDFKit
+standalone assertions and original-script Python suite 12/12 (zero skips) passed,
+including the real Swift HTTP client. These do not substitute for iOS native
+Files interaction. Release/tooling Python suite currently has 64 passing tests.
+
 ## MCP / DOM / bundled-catalog increment — implemented scope accepted
 
 The implemented increment has passing simulator and live-service evidence below.

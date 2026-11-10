@@ -49,6 +49,13 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     @Published private(set) var actions: [WebResearchAction] = []
     @Published private(set) var answer: String?
     @Published private(set) var isRunning = false
+    // Task completion/cancellation cannot grant an existing document broader
+    // navigation rights. Only a matching explicit manual navigation commit can.
+    @Published private(set) var automationOwnsDocument = false
+    private var automationDocumentOrigin: String?
+    private var manualDocumentURL: URL?
+    private var manualDocumentNavigation: WKNavigation?
+    private var explicitManualDownloadPending = false
     @Published private(set) var learningStatus: String?
     @Published private(set) var canGoBack = false
     @Published private(set) var canGoForward = false
@@ -91,7 +98,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         websiteDataStore = dataStore
         suppliedConfiguration = configuration
         #if DEBUG
-        fixtureMode = ProcessInfo.processInfo.arguments.contains("-UITestMode") && !ProcessInfo.processInfo.arguments.contains("-UITestBrowserNetwork") && BrowserUploadFixture.enabled == nil
+        fixtureMode = ProcessInfo.processInfo.arguments.contains("-UITestMode") && !ProcessInfo.processInfo.arguments.contains("-UITestBrowserNetwork") && BrowserUploadFixture.enabled == nil && BrowserLoginFixture.enabled == nil
         #else
         fixtureMode = false
         #endif
@@ -100,20 +107,26 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
 
     func openAddress() {
         guard !isRunning, !isInteracting else { return }
-        invalidateControls()
-        error = nil; answer = nil; current = nil
         guard let url = URL(string: address), manualPermitted(url) else {
             error = "請使用公開 HTTPS 網址，不可把帳密放在網址中。"; return
         }
-        status = "正在載入…"
-        navigationIntent.beginManual(url)
-        preparePageNavigation()
-        if fixtureMode { loadFixture(url: url); return }
-        trackedNavigation = webView.load(URLRequest(url: url))
+        answer = nil
+        manualNavigation(to: url) {
+            if fixtureMode { loadFixture(url: url); return trackedNavigation }
+            return webView.load(URLRequest(url: url))
+        }
+    }
+
+    func returnToManualBrowsing() {
+        guard automationOwnsDocument, !isRunning, !isInteracting,
+              let url = loadedURL ?? storedWebView?.url else { return }
+        address = url.absoluteString
+        openAddress()
     }
 
     func cancel() {
         navigationIntent.invalidate()
+        manualDocumentURL = nil; manualDocumentNavigation = nil
         resolveDialog(nil)
         cancelInteraction()
         invalidatePageObservation()
@@ -132,6 +145,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         error = nil; answer = nil; actions = []; learningStatus = nil
         do {
             let access = try chat.modelAccess()
+            claimAutomationDocument()
             let id = UUID(), generation = chat.learning.generation
             let taskGoal = goal
             let references = chat.learning.skills.instructionContext(query: goal, availableToolNames: Self.toolNames)
@@ -269,6 +283,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         }
         let result = WebObservation(url: url, title: page.title, text: page.text, links: links)
         lastLinks = links; current = result; address = url.absoluteString
+        publishTitle(page.title, for: url)
         return result
     }
 
@@ -289,6 +304,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     private func navigate(to url: URL) async throws -> WebObservation {
         navigationIntent.invalidate()
         guard permitted(url), origin == nil || Self.origin(url) == origin else { throw WebResearchError.unsafeNavigation }
+        claimAutomationDocument(originURL: url)
         // Hosted WebContent cold startup was measured at 57.481s. Only the
         // first navigation without an observation gets this bounded allowance;
         // warmed navigation and the enclosing 180s task deadline are unchanged.
@@ -316,6 +332,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             let plan = try store.routes.replayPlan(id: route.id, originURL: route.origin.url,
                 intent: route.originalGoal, expectedContentHash: route.contentHash)
             guard plan.steps.count <= 13 else { throw WebResearchError.invalidCommand }
+            claimAutomationDocument(originURL: route.origin.url)
             let id = UUID(), generation = store.generation
             navigationIntent.invalidate()
             runID = id; isRunning = true; origin = Self.origin(route.origin.url)
@@ -388,7 +405,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         let lines = snapshot.text.components(separatedBy: .newlines)
         let matches = lines.filter { $0.localizedCaseInsensitiveContains(text) }
         return WebObservation(url: snapshot.url, title: snapshot.title,
-            text: matches.isEmpty ? "此頁未找到指定文字。" : matches.prefix(20).joined(separator: "\n"), links: snapshot.links)
+            text: matches.isEmpty ? "目前可讀取的頁面摘錄中未找到指定文字；未檢查完整頁面。" : matches.prefix(20).joined(separator: "\n"), links: snapshot.links)
     }
 
     // Interaction and readonly research deliberately have separate entry points,
@@ -499,6 +516,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
 
     func cancelInteraction() {
         navigationIntent.invalidate()
+        explicitManualDownloadPending = false
         interactionRunID = nil; interactionWork?.cancel(); interactionWork = nil
         storedDOMExecutor?.cancel(); isInteracting = false; postAllowance = nil
         invalidateControls()
@@ -511,26 +529,37 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         guard !isRunning, !isInteracting, let url = webView.url else { return }
         interactionStatus = "頁面已重新整理；先前的提案已取消。"
         if fixtureMode {
-            invalidateControls(); current = nil; status = "正在載入…"
-            preparePageNavigation(); loadFixture(url: url)
+            manualNavigation(to: url) { loadFixture(url: url); return trackedNavigation }
         }
         else { manualNavigation(to: webView.url) { webView.reload() } }
     }
-    private func manualNavigation(to target: URL?, _ operation: () -> WKNavigation?) {
-        guard !isRunning, !isInteracting else { return }
+    // Internal seam also lets hosted tests load local HTML through the same
+    // explicit-user gate, using real WKNavigation objects and commit callbacks.
+    func manualNavigation(to target: URL?, _ operation: () -> WKNavigation?) {
+        guard !isRunning, !isInteracting, let target, manualPermitted(target) else { return }
         invalidateControls(); error = nil; current = nil
-        if let target { navigationIntent.beginManual(target) }
-        else { navigationIntent.invalidate() }
         preparePageNavigation()
+        navigationIntent.beginManual(target)
+        manualDocumentURL = target
         trackedNavigation = operation()
+        manualDocumentNavigation = trackedNavigation
         if trackedNavigation != nil { status = "正在載入…" }
         else { requestedNavigationPending = false; failManualLoad(.navigationFailed) }
+    }
+    private func claimAutomationDocument(originURL: URL? = nil) {
+        if !automationOwnsDocument {
+            automationDocumentOrigin = (originURL ?? storedWebView?.url ?? loadedURL).flatMap { Self.origin($0) }
+        }
+        automationOwnsDocument = true
+        manualDocumentURL = nil; manualDocumentNavigation = nil
+        explicitManualDownloadPending = false
+        navigationIntent.invalidate()
     }
     private func invalidateControls() {
         interactionGate.reject(); interactionProposal = nil; controlSnapshot = nil; postAllowance = nil
     }
     private func startInteraction(status: String) -> UUID {
-        navigationIntent.invalidate()
+        claimAutomationDocument()
         let id = UUID(); interactionRunID = id; isInteracting = true
         interactionError = nil; interactionStatus = status
         return id
@@ -556,11 +585,16 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
            navigationAction.request.url == allowance.url, navigationAction.request.httpMethod == "POST", Date() < allowance.expires {
             postPermitted = true; postAllowance = nil
         } else { postPermitted = false }
-        let automated = isRunning || isInteracting || postPermitted
+        let manualRequest = !isRunning && !isInteracting && manualDocumentNavigation != nil
+            && navigationAction.targetFrame?.isMainFrame == true
+            && navigationAction.request.httpMethod == "GET"
+            && navigationAction.request.url == manualDocumentURL
+        let automated = (automationOwnsDocument || isRunning || isInteracting || postPermitted) && !manualRequest
+        let restrictedOrigin = automationDocumentOrigin ?? origin
         guard let url = navigationAction.request.url,
               automated ? permitted(url) : manualPermitted(url),
               !automated || navigationAction.request.httpMethod == "GET" || postPermitted,
-              origin == nil || Self.origin(url) == origin else {
+              !automated || restrictedOrigin == nil || Self.origin(url) == restrictedOrigin else {
             decisionHandler(.cancel); error = "此導覽不在目前允許的公開網站範圍內。"
             if !isRunning, navigationAction.targetFrame?.isMainFrame == true { failManualLoad(.policyRejected) }
             return
@@ -570,8 +604,9 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             navigationIntent.beginManual(url)
         }
         if navigationAction.shouldPerformDownload {
-            let authorized = !automated && downloads != nil && navigationAction.targetFrame?.isMainFrame != false
-                && navigationIntent.authorizeDownload(url)
+            let authorized = (!automationOwnsDocument || manualRequest) && !automated && downloads != nil && navigationAction.targetFrame?.isMainFrame != false
+                && navigationIntent.authorizeDownload(url, source: .action(navigationAction))
+            if authorized { explicitManualDownloadPending = manualRequest }
             decisionHandler(authorized ? .download : .cancel)
             return
         }
@@ -600,11 +635,19 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
 
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
         guard let navigation, trackedNavigation === navigation, !isRunning else { return }
+        if !isInteracting, manualDocumentNavigation === navigation, webView.url == manualDocumentURL {
+            automationOwnsDocument = false; automationDocumentOrigin = nil
+            manualDocumentURL = nil; manualDocumentNavigation = nil
+        }
         traceLoad(.committed)
     }
 
     func webView(_ webView: WKWebView, didReceiveServerRedirectForProvisionalNavigation navigation: WKNavigation!) {
-        guard let navigation, trackedNavigation === navigation, !isRunning, !isInteracting, let url = webView.url else { return }
+        guard let navigation, trackedNavigation === navigation,
+              !isRunning, !isInteracting, let url = webView.url, manualPermitted(url) else { return }
+        if manualDocumentNavigation === navigation {
+            manualDocumentURL = url
+        } else if automationOwnsDocument { return }
         navigationIntent.recordManualRedirect(url)
     }
 
@@ -614,16 +657,21 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             decisionHandler(navigationResponse.response.url?.absoluteString == "about:blank" ? .allow : .cancel)
             return
         }
+        let manualResponse = !isRunning && !isInteracting && manualDocumentNavigation != nil
+            && navigationResponse.isForMainFrame && navigationResponse.response.url == manualDocumentURL
+        let automated = (automationOwnsDocument || isRunning || isInteracting) && !manualResponse
+        let restrictedOrigin = automationDocumentOrigin ?? origin
         guard let url = navigationResponse.response.url,
-              isRunning || isInteracting ? permitted(url) : manualPermitted(url),
-              origin == nil || Self.origin(url) == origin else {
+              automated ? permitted(url) : manualPermitted(url),
+              !automated || restrictedOrigin == nil || Self.origin(url) == restrictedOrigin else {
             decisionHandler(.cancel)
             if !isRunning, navigationResponse.isForMainFrame { failManualLoad(.responseRejected) }
             return
         }
         if BrowserDownloadPolicy.isAttachment(navigationResponse.response) || !navigationResponse.canShowMIMEType {
-            let authorized = !isRunning && !isInteracting && downloads != nil && navigationResponse.isForMainFrame
-                && navigationIntent.authorizeDownload(url)
+            let authorized = (!automationOwnsDocument || manualResponse) && !isRunning && !isInteracting && downloads != nil && navigationResponse.isForMainFrame
+                && navigationIntent.authorizeDownload(url, source: .response(navigationResponse))
+            if authorized { explicitManualDownloadPending = manualResponse }
             decisionHandler(authorized ? .download : .cancel)
             if !authorized, !isRunning { failManualLoad(.responseRejected) }
             return
@@ -632,16 +680,19 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
-        acceptDownload(download, source: navigationAction.request.url)
+        acceptDownload(download, source: navigationAction.request.url, issuer: .action(navigationAction))
     }
     func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
-        acceptDownload(download, source: navigationResponse.response.url)
+        acceptDownload(download, source: navigationResponse.response.url, issuer: .response(navigationResponse))
     }
-    private func acceptDownload(_ download: WKDownload, source: URL?) {
-        let approved = navigationIntent.consumeDownload(source) && !isRunning && !isInteracting
+    private func acceptDownload(_ download: WKDownload, source: URL?, issuer: BrowserNavigationIntent.DownloadSource) {
+        let matchedPermit = navigationIntent.consumeDownload(source, source: issuer)
+        let approved = matchedPermit && (!automationOwnsDocument || explicitManualDownloadPending) && !isRunning && !isInteracting
+        if matchedPermit { explicitManualDownloadPending = false }
         guard let downloads else { download.cancel(nil); return }
         if downloads.accept(download, sourceURL: source, allowsDownload: approved) != nil {
             requestedNavigationPending = false; trackedNavigation = nil
+            manualDocumentURL = nil; manualDocumentNavigation = nil
             status = "下載已開始，可在下載項目查看進度。"; error = nil
         }
     }
@@ -654,7 +705,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         guard let navigation, trackedNavigation === navigation else { return }
         canGoBack = webView.canGoBack; canGoForward = webView.canGoForward
         loadedURL = webView.url
-        pageTitle = String((webView.title ?? webView.url?.host ?? "網頁").prefix(256))
+        pageTitle = Self.displayTitle(webView.title, url: webView.url)
         if let url = loadedURL { address = url.absoluteString; onPageFinished?(url, pageTitle) }
         if expectedNavigation === navigation { navigationFinished = true; expectedNavigation = nil }
         if !isRunning {
@@ -663,6 +714,14 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             if let url = loadedURL, !permitted(url) {
                 current = nil; error = nil; status = "頁面已載入；此頁面僅供手動瀏覽"
                 traceLoad(.observed)
+                let generation = pageGeneration
+                // WKWebView.title can still be empty at didFinish. Read the
+                // actual document title once, without exposing page contents.
+                webView.evaluateJavaScript("document.title") { [weak self, weak webView] value, _ in
+                    guard let self, let webView, self.pageGeneration == generation,
+                          self.loadedURL == url, webView.url == url else { return }
+                    self.publishTitle(value as? String, for: url)
+                }
                 return
             }
             let generation = pageGeneration
@@ -709,6 +768,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        manualDocumentURL = nil; manualDocumentNavigation = nil
         invalidatePageObservation(); invalidateControls()
         navigationFinished = false; expectedNavigation = nil; trackedNavigation = nil; requestedNavigationPending = false
         current = nil; error = "網頁程序已停止；請確認後重新開啟，沒有自動重試。"
@@ -720,12 +780,26 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         pageGeneration = UUID()
         pageObservationTask?.cancel(); pageObservationTask = nil
     }
+    private static func displayTitle(_ title: String?, url: URL?) -> String {
+        let trimmed = title?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return String((trimmed.isEmpty ? (url?.host ?? "網頁") : trimmed).prefix(256))
+    }
+    private func publishTitle(_ title: String?, for url: URL) {
+        guard loadedURL == url, storedWebView?.url == url else { return }
+        let updated = Self.displayTitle(title, url: url)
+        guard updated != pageTitle else { return }
+        pageTitle = updated
+        onPageFinished?(url, updated)
+    }
     private func preparePageNavigation() {
+        manualDocumentURL = nil; manualDocumentNavigation = nil
+        explicitManualDownloadPending = false
         invalidatePageObservation()
         trackedNavigation = nil; requestedNavigationPending = true
         if !isRunning { resetLoadTrace(); traceLoad(.requested) }
     }
     private func failManualLoad(_ category: ManualLoadFailure) {
+        manualDocumentURL = nil; manualDocumentNavigation = nil
         invalidatePageObservation()
         trackedNavigation = nil; requestedNavigationPending = false
         current = nil; status = "載入未完成"
@@ -802,6 +876,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     private func manualPermitted(_ url: URL) -> Bool {
         #if DEBUG
         if BrowserUploadFixture.enabled?.allows(url) == true { return true }
+        if BrowserLoginFixture.enabled?.allows(url) == true { return true }
         #endif
         return BrowserManualNavigationPolicy.allows(url) && (!fixtureMode || url.host == "research.example.invalid")
     }
@@ -837,7 +912,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
 
     func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
                  for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        guard !isRunning, !isInteracting, navigationAction.targetFrame == nil,
+        guard !automationOwnsDocument, !isRunning, !isInteracting, navigationAction.targetFrame == nil,
               let url = navigationAction.request.url, manualPermitted(url) else { return nil }
         return onCreateWindow?(configuration, navigationAction.request)
     }
@@ -856,7 +931,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
     private func presentDialog(kind: BrowserPageDialog.Kind, message: String, initial: String,
                                frame: WKFrameInfo, completion: @escaping (String?) -> Void) {
-        guard canPresentUI(), !isRunning, !isInteracting, pageDialog == nil else { completion(nil); return }
+        guard canPresentUI(), !automationOwnsDocument, !isRunning, !isInteracting, pageDialog == nil else { completion(nil); return }
         answerDialog = completion
         pageDialog = BrowserPageDialog(kind: kind, host: frame.securityOrigin.host,
             message: String(message.prefix(2000)), initial: String(initial.prefix(2000)))

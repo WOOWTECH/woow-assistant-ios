@@ -27,6 +27,7 @@ final class BrowserWorkspace: ObservableObject {
     let downloads: BrowserDownloadManager
     #if DEBUG
     private var uploadFixtureStarted = false
+    private var loginFixtureStarted = false
     #endif
 
     init(dataStore injectedDataStore: WKWebsiteDataStore? = nil,
@@ -96,6 +97,18 @@ final class BrowserWorkspace: ObservableObject {
             }
             return
         }
+        if !loginFixtureStarted, let fixture = BrowserLoginFixture.enabled {
+            loginFixtureStarted = true
+            Task { [weak self] in
+                do {
+                    let url = try await fixture.start()
+                    guard let self else { return }
+                    while self.isClearingWebsiteData { try await Task.sleep(nanoseconds: 50_000_000) }
+                    self.open(url)
+                } catch { self?.error = "測試登入頁面未能啟動。" }
+            }
+            return
+        }
         #endif
         guard !isClearingWebsiteData, selected.loadedURL == nil, !selected.address.isEmpty, selected.manualLoadDiagnostics == nil else { return }
         selected.openAddress()
@@ -114,6 +127,11 @@ final class BrowserWorkspace: ObservableObject {
         session.canPresentUI = { [weak self] in self?.library.selectedID == id && self?.isClearingWebsiteData == false }
         session.address = library.tabs.first(where: { $0.id == id })?.url?.absoluteString ?? ""
         session.onPageFinished = { [weak self] url, title in
+            #if DEBUG
+            // Fixture HTTP pages exercise WebKit state, not the public-HTTPS
+            // bookmark library. Do not invent persistent public URLs for them.
+            if BrowserUploadFixture.enabled?.allows(url) == true || BrowserLoginFixture.enabled?.allows(url) == true { return }
+            #endif
             _ = self?.update { try $0.visit(tab: id, url: url, title: title) }
         }
         session.onCreateWindow = { [weak self] configuration, request in

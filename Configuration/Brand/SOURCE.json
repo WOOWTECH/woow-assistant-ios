@@ -1,0 +1,9 @@
+{
+  "repository": "https://github.com/WOOWTECH/woowtech_mika_smart_app",
+  "revision": "48dd3b94b6c025fae4d7a1b25b4b26617e9b7cf6",
+  "path": "app/src/woowtech/res/drawable/woow_launcher_foreground.xml",
+  "sha256": "6a519e4d05ae10b6732f8d4427aaa4952e461a13542d94c11048f01a7f2e7bb9",
+  "background": "#212121",
+  "foreground": "#6183FC",
+  "geometry": "Original Android viewport/group/paths retained; opaque 1024px iOS render."
+}

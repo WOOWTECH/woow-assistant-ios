@@ -30,6 +30,14 @@ struct BrowserView: View {
             if let error = browser.error {
                 Text(error).font(.caption).foregroundStyle(.red).accessibilityIdentifier("browser.error")
             }
+            if browser.automationOwnsDocument && !browser.isRunning && !browser.isInteracting {
+                HStack {
+                    Text("此頁面仍受自動化導覽限制。").font(.caption)
+                    Button("返回手動瀏覽") { addressFocused = false; browser.returnToManualBrowsing() }
+                        .accessibilityIdentifier("browser.returnToManual")
+                        .disabled(workspace.isClearingWebsiteData || browser.loadedURL == nil)
+                }.padding(.horizontal)
+            }
             HStack {
                 Button { browser.goBack() } label: { Image(systemName: "chevron.backward") }
                     .accessibilityLabel("上一頁").accessibilityIdentifier("browser.back")

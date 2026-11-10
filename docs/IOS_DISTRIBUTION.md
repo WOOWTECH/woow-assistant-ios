@@ -120,3 +120,11 @@ minimum-ios17:
 4. 如果 hosted 安裝／啟動失敗而需備援，須配置有 `woow-ios17` label 的 runner 與前述工具鏈；repository runners API 目前為空。USB 查核未見 iOS 裝置，Wi-Fi 配對狀態未確認，也沒有已確認的實體 iOS 17 測試裝置；本流程不連接實體裝置執行測試。
 
 行為來源固定於 Mika `/tmp/woow-mika-memory-reference` 的 `0c172724`（本機短 SHA `0c17272`）；已對照 `core/.../memory/MemoryStore.kt` 的 unavailable 拒寫、更新需重新批准與 undo 行為。發佈檢查不驗證這些產品行為，也不代表 Mika parity；相關 app／memory 測試仍由其 owner 的實作與 XCTest 證據決定。
+
+## Additional recorded results
+
+`42745303603` on `7b11555` passed the unsigned iPhoneOS Release build and nine-binary minimum-OS audit: iOS 17.0, Xcode/SDK 26.2, Release ATS dictionary absent. This precedes the later explicit document-sharing plist and AppIcon integration and is not a signed artifact.
+
+`42744261931` installed iOS 17.0.1 (21A342) successfully through the Apple installer, then timed out booting the disposable simulator after 300 seconds; no XCTest ran. The follow-up captures boot output with a 900-second bound.
+
+The iOS AppIcon is rendered from the unchanged WOOW Android vector recorded in Configuration/Brand/SOURCE.json, with its original geometry and colors, into an opaque 1024-pixel asset. `swift scripts/render_app_icon.swift` reproduces it; no new logo is designed.

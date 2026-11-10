@@ -47,8 +47,9 @@ complete locations rather than treating shortened table paths as filesystem path
 
 ## Deliberate capability boundaries / outstanding integration
 
-- Browser website logins must eventually be backed by real WebKit website-data
-  records, not screenshot counts or invented records. They are not stored in memory.
+- Browser website logins now use persistent WebKit website-data records with
+  per-site deletion; they are not stored in memory. The new integration and
+  synthetic HTTP login/relaunch tests have revision-specific acceptance in VERIFICATION.
 - The screenshot's LINE native-app knowledge is outside the agreed iOS scope.
   Website knowledge/revisions and observed read-only web routes now have a native
   implementation, with fixture App flows passing on three simulators. Live-service
@@ -75,6 +76,18 @@ actions. It is not full Mika browser parity. Outcome assessment adds exact obser
 citations, and deduplicates executed actions before the five-action drafting gate.
 Website quotes are references, not user memory; approval remains separate. Tests
 must distinguish real models over synthetic traces from actual browser execution.
+
+### Selected PDF execution increment - 2026-11-10
+
+The archived six-skill catalog remains complete as source, while execution remains
+partial. The documents entry now opens the native Files picker, reviews a plan,
+requires separate read/extract approvals, and produces actual PDFKit text, selected
+pages and metadata. Cancellation/refusal must not dispatch a later step. The
+original pinned extract_pdf.py also has a bounded worker protocol and real local
+Swift-to-HTTP-to-Python tests, but no deployed authenticated remote service or
+container-isolation acceptance. See SKILL_RUNTIME.md for every original dependency
+and its current availability; the historical text-adaptation table below describes
+that earlier path, not the new PDF execution capability.
 
 ### Bundled Skills catalog increment — 2026-11-10
 

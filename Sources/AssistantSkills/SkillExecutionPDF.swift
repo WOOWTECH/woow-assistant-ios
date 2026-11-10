@@ -14,20 +14,39 @@ enum SkillExecutionPDF {
 
     static func read(_ selected: SkillExecutionSelectedFile) throws -> Data {
         let url = selected.url
+        try Task.checkCancellation()
         let scoped = url.startAccessingSecurityScopedResource()
         defer { if scoped { url.stopAccessingSecurityScopedResource() } }
         do {
-            let values = try url.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
-            guard values.isRegularFile == true, values.isSymbolicLink != true else { throw SkillExecutionError.invalidSelection }
-            guard (values.fileSize ?? 0) <= SkillExecutionLimits.fileBytes else { throw SkillExecutionError.fileTooLarge }
-            let handle = try FileHandle(forReadingFrom: url)
-            defer { try? handle.close() }
-            // Bound the actual read as well as the preflight size (file may change).
-            let bytes = try handle.read(upToCount: SkillExecutionLimits.fileBytes + 1) ?? Data()
-            guard bytes.count <= SkillExecutionLimits.fileBytes else { throw SkillExecutionError.fileTooLarge }
-            guard bytes.starts(with: Data("%PDF-".utf8)) else { throw SkillExecutionError.invalidPDF }
-            return bytes
+            // Coordination can resolve a symlink. Reject the selected link itself
+            // before allowing Foundation to resolve the selected file's location.
+            guard try url.resourceValues(forKeys: [.isSymbolicLinkKey]).isSymbolicLink != true else {
+                throw SkillExecutionError.invalidSelection
+            }
+            var coordinationError: NSError?
+            var snapshot: Result<Data, Error>?
+            NSFileCoordinator(filePresenter: nil).coordinate(readingItemAt: url, options: [], error: &coordinationError) { coordinatedURL in
+                snapshot = Result {
+                    try Task.checkCancellation()
+                    // Use only the accessor URL supplied for this selected item.
+                    // File providers may move/materialize it during coordination.
+                    let values = try coordinatedURL.resourceValues(forKeys: [.isRegularFileKey, .isSymbolicLinkKey, .fileSizeKey])
+                    guard values.isRegularFile == true, values.isSymbolicLink != true else { throw SkillExecutionError.invalidSelection }
+                    guard (values.fileSize ?? 0) <= SkillExecutionLimits.fileBytes else { throw SkillExecutionError.fileTooLarge }
+                    let handle = try FileHandle(forReadingFrom: coordinatedURL)
+                    defer { try? handle.close() }
+                    // Bound the actual read too, including noncooperating writers.
+                    let bytes = try handle.read(upToCount: SkillExecutionLimits.fileBytes + 1) ?? Data()
+                    guard bytes.count <= SkillExecutionLimits.fileBytes else { throw SkillExecutionError.fileTooLarge }
+                    guard bytes.starts(with: Data("%PDF-".utf8)) else { throw SkillExecutionError.invalidPDF }
+                    return bytes
+                }
+            }
+            try Task.checkCancellation()
+            guard coordinationError == nil, let snapshot else { throw SkillExecutionError.invalidSelection }
+            return try snapshot.get()
         } catch let error as SkillExecutionError { throw error }
+        catch is CancellationError { throw CancellationError() }
         catch { throw SkillExecutionError.invalidSelection }
     }
 

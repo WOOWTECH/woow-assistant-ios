@@ -210,6 +210,85 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
         XCTAssertTrue(controls.controls.contains { $0.label == "測試欄位" })
     }
 
+    @MainActor func testDeferredApprovedInputStaysRestrictedUntilExplicitManualDocumentCommits() async throws {
+        let host = try Host()
+        addTeardownBlock { await host.close() }
+        let browser = host.attachSelected()
+        let callback = URL(string: "https://research.example.invalid/oauth/callback?code=FIXTURE_LATE")!
+        XCTAssertTrue(BrowserManualNavigationPolicy.allows(callback))
+        XCTAssertThrowsError(try WebsiteOrigin(url: callback))
+
+        for cancelAfterCompletion in [false, true] {
+            try await host.load(browser, path: "/deferred-navigation-\(cancelAfterCompletion)", marker: "延遲導覽測試")
+            // A real approved input event queues page work. The test releases
+            // that work after completion/cancellation instead of racing timers.
+            _ = try await javascript("""
+                window.releaseDeferredNavigation = null;
+                document.getElementById('note').addEventListener('input', function() {
+                    window.releaseDeferredNavigation = function() { location.href = '\(callback.absoluteString)'; };
+                }, {once: true});
+                'armed'
+                """, in: browser.webView)
+            let proposal = try await proposeTyping(in: browser, text: "已核准的輸入")
+            browser.approveInteraction(id: proposal.id)
+            try await waitUntil("Approved DOM input did not finish") { !browser.isInteracting }
+            XCTAssertNil(browser.interactionError)
+            let queued = try await javascript("typeof window.releaseDeferredNavigation", in: browser.webView)
+            XCTAssertEqual(queued, "function", "The actual approved input must have queued the callback")
+            guard queued == "function" else { throw FixtureFailure.unexpectedJavaScriptValue }
+            if cancelAfterCompletion { browser.cancel() }
+            XCTAssertTrue(browser.automationOwnsDocument, "Completion and cancellation must preserve document restrictions")
+
+            let probe = DeferredNavigationProbe(browser: browser, target: callback)
+            browser.webView.navigationDelegate = probe
+            defer { browser.webView.navigationDelegate = browser }
+            _ = try await javascript("window.releaseDeferredNavigation(); 'released'", in: browser.webView)
+            try await waitUntil("WebKit did not deliver the deferred navigation action") { probe.decision != nil }
+            XCTAssertEqual(probe.navigationType, .other)
+            let decision = try XCTUnwrap(probe.decision)
+            let evidence = XCTAttachment(string: "afterCancel=\(cancelAfterCompletion); real WK action policy=\(decision.rawValue); external request cancelled by probe")
+            evidence.lifetime = .keepAlways
+            add(evidence)
+            XCTAssertEqual(decision, .cancel)
+            XCTAssertTrue(browser.automationOwnsDocument)
+
+            browser.webView.navigationDelegate = browser
+            let manual = URL(string: "https://research.example.invalid/oauth/callback?code=FIXTURE_MANUAL_\(cancelAfterCompletion)")!
+            try await host.load(browser, url: manual, marker: "已返回手動瀏覽", manualOnly: true, explicitManual: true)
+            XCTAssertFalse(browser.automationOwnsDocument, "Only the explicit navigation's real commit releases ownership")
+            let oldWork = try await javascript("typeof window.releaseDeferredNavigation", in: browser.webView)
+            XCTAssertEqual(oldWork, "undefined", "Returning to manual browsing must replace the old document")
+            let manualProbe = DeferredNavigationProbe(browser: browser, target: callback)
+            browser.webView.navigationDelegate = manualProbe
+            _ = try await javascript("location.href = '\(callback.absoluteString)'; 'released'", in: browser.webView)
+            try await waitUntil("Manual document did not deliver its navigation") { manualProbe.decision != nil }
+            XCTAssertEqual(manualProbe.decision, .allow, "The new manual document can navigate to ordinary HTTPS login callbacks")
+            browser.webView.navigationDelegate = browser
+        }
+    }
+
+    @MainActor private final class DeferredNavigationProbe: NSObject, WKNavigationDelegate {
+        let browser: BrowserSession
+        let target: URL
+        private(set) var decision: WKNavigationActionPolicy?
+        private(set) var navigationType: WKNavigationType?
+        init(browser: BrowserSession, target: URL) { self.browser = browser; self.target = target }
+
+        func webView(_ webView: WKWebView, decidePolicyFor action: WKNavigationAction,
+                     decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+            guard action.request.url == target, action.targetFrame?.isMainFrame == true else {
+                decisionHandler(.cancel); return
+            }
+            navigationType = action.navigationType
+            // Use the actual WebKit-created action and production Session
+            // decision. Always stop here, so the fixture sends no external HTTP.
+            browser.webView(webView, decidePolicyFor: action) { [weak self] policy in
+                self?.decision = policy
+                decisionHandler(.cancel)
+            }
+        }
+    }
+
     @MainActor private func proposeTyping(in browser: BrowserSession, text: String) async throws -> BrowserInteractionProposal {
         let snapshot = try await browser.snapshotControls()
         let control = try XCTUnwrap(snapshot.controls.first { $0.label == "測試欄位" && $0.kind == .text })
@@ -257,7 +336,8 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
     @MainActor private final class Host {
         let namespace = UUID()
         let storeID = UUID()
-        let store: WKWebsiteDataStore
+        private var storedStore: WKWebsiteDataStore?
+        var store: WKWebsiteDataStore { storedStore! }
         private(set) var workspace: BrowserWorkspace?
         private var sessions: [BrowserSession] = []
         private let window: UIWindow
@@ -267,8 +347,9 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
 
         init() throws {
             // Never use/reset the personal vault or WKWebsiteDataStore.default().
-            store = WKWebsiteDataStore(forIdentifier: storeID)
-            workspace = BrowserWorkspace(dataStore: store,
+            let dataStore = WKWebsiteDataStore(forIdentifier: storeID)
+            storedStore = dataStore
+            workspace = BrowserWorkspace(dataStore: dataStore,
                 arguments: ["-UITestMode", "-UITestNamespace", namespace.uuidString])
             XCTAssertTrue(workspace?.available == true, "The isolated test vault must be usable")
             guard workspace?.available == true else { throw FixtureFailure.unavailableStorage }
@@ -291,13 +372,24 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
             try await load(browser, url: URL(string: "https://research.example.invalid" + path)!, marker: marker)
         }
 
-        func load(_ browser: BrowserSession, url: URL, marker: String, manualOnly: Bool = false) async throws {
+        func load(_ browser: BrowserSession, url: URL, marker: String, manualOnly: Bool = false, explicitManual: Bool = false) async throws {
             let html = """
             <!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>\(marker)</title></head>
             <body><p>\(marker)</p><label for="note">測試欄位</label><input id="note" type="text" value="原始值">
             <a href="https://research.example.invalid/oauth/callback?code=FIXTURE_ONLY#session=FIXTURE_ONLY">手動登入返回頁面</a></body></html>
             """
-            _ = try XCTUnwrap(browser.webView.loadHTMLString(html, baseURL: url))
+            if explicitManual {
+                let wasOwned = browser.automationOwnsDocument
+                var navigation: WKNavigation?
+                browser.manualNavigation(to: url) {
+                    navigation = browser.webView.loadHTMLString(html, baseURL: url)
+                    return navigation
+                }
+                _ = try XCTUnwrap(navigation)
+                if wasOwned { XCTAssertTrue(browser.automationOwnsDocument, "Issuing a request must not release the old document") }
+            } else {
+                _ = try XCTUnwrap(browser.webView.loadHTMLString(html, baseURL: url))
+            }
             // Same first-document bound as the existing hosted WebKit fixtures;
             // warm transitions are 15s, no retries or fixed settling delays.
             let deadline = ProcessInfo.processInfo.systemUptime + (loadedFirstDocument ? 15 : 75)
@@ -334,6 +426,12 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
                 store.removeData(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes(), modifiedSince: .distantPast) {
                     continuation.resume()
                 }
+            }
+            storedStore = nil
+            // Release the profile and all views before asking WebKit to remove
+            // its NetworkProcess-backed profile; do not retry or extend waits.
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                DispatchQueue.main.async { continuation.resume() }
             }
             // Only this test's random profile IDs and encrypted-vault key service.
             for identifier in [storeID, namespace] {

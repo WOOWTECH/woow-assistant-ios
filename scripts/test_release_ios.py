@@ -179,7 +179,7 @@ class BuildTests(unittest.TestCase):
                     for ats in variants:
                         with self.subTest(signed=signed, fmt=fmt, ats=ats):
                             info = {"CFBundleIdentifier": release.BUNDLE_ID, "CFBundleExecutable": "Example",
-                                    "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos",
+                                    "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True,
                                     "NSAppTransportSecurity": ats}
                             (app / "Info.plist").write_bytes(plistlib.dumps(info, fmt=fmt))
                             with patch.object(release, "run") as native_tool:
@@ -192,7 +192,7 @@ class BuildTests(unittest.TestCase):
             app = Path(directory) / "Example.app"
             app.mkdir()
             (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleIdentifier": release.BUNDLE_ID,
-                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos"},
+                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True},
                 fmt=plistlib.FMT_BINARY))
             (app / "embedded.mobileprovision").write_bytes(b"synthetic")
             def fake_run(args, label, **kwargs):
@@ -212,7 +212,7 @@ class BuildTests(unittest.TestCase):
             app = Path(directory) / "Example.app"
             app.mkdir()
             (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleIdentifier": release.BUNDLE_ID,
-                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos"}))
+                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True}))
             (app / "embedded.mobileprovision").write_bytes(b"synthetic")
             def fake_run(args, label, **kwargs):
                 if "lipo" in args: return b"arm64"
@@ -227,7 +227,7 @@ class BuildTests(unittest.TestCase):
             app = Path(directory) / "Example.app"
             app.mkdir()
             (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleIdentifier": release.BUNDLE_ID,
-                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos"}))
+                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True}))
             (app / "embedded.mobileprovision").write_bytes(b"synthetic")
             def fake_run(args, label, **kwargs):
                 if "lipo" in args: return b"arm64"

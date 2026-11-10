@@ -80,6 +80,75 @@ struct SkillExecutionUIFixtureChecks {
         #endif
     }
 }
+#elseif SKILL_EXECUTION_EXPORT_CHECKS
+import Foundation
+import SwiftUI
+
+/// Host check of the exact FileDocument serialization used by fileExporter.
+/// This verifies real UTF-8 file bytes, not native iOS dialog behavior.
+@main
+struct SkillExecutionTextExportChecks {
+    struct Failure: Error { let message: String }
+    static func require(_ value: @autoclosure () -> Bool, _ message: String) throws {
+        if !value() { throw Failure(message: message) }
+    }
+    static func main() throws {
+        let root = FileManager.default.temporaryDirectory.appendingPathComponent("woow-export-" + UUID().uuidString)
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: root) }
+        let text = "--- page 1 ---\n繁體中文逐字稿 😀\n\n--- page 3 ---\n原文與頁碼保持不變。\n"
+        let document = try SkillExecutionTextDocument(text: text)
+        let destination = root.appendingPathComponent("使用者選擇的文字.txt")
+        try require(!FileManager.default.fileExists(atPath: destination.path), "preparing a document must not write a destination")
+        try document.snapshot().write(to: destination, options: .atomic, originalContentsURL: nil)
+        let saved = try Data(contentsOf: destination)
+        try require(saved == Data(text.utf8), "saved bytes must be exact UTF-8, including page citations and Traditional Chinese")
+        let reopened = try SkillExecutionTextDocument(fileWrapper: FileWrapper(url: destination, options: .immediate))
+        try require(reopened.text == text, "actual exported file must round-trip without normalization")
+        for invalid in [FileWrapper(directoryWithFileWrappers: [:]),
+                        FileWrapper(regularFileWithContents: Data([0xff])),
+                        FileWrapper(regularFileWithContents: Data(repeating: 32, count: SkillExecutionLimits.outputBytes + 1))] {
+            do {
+                _ = try SkillExecutionTextDocument(fileWrapper: invalid)
+                throw Failure(message: "must reject invalid or oversized document data")
+            } catch is CocoaError { }
+        }
+        do {
+            _ = try SkillExecutionTextDocument(text: String(repeating: "字", count: SkillExecutionLimits.outputBytes / 3 + 1))
+            throw Failure(message: "export limit must count UTF-8 bytes, not characters")
+        } catch SkillExecutionError.outputTooLarge { }
+        print("PASS actual export FileDocument UTF-8 round-trip, page citations, invalid input and byte limit")
+    }
+}
+#elseif SKILL_EXECUTION_PICKER_CHECKS
+/// swiftc -D SKILL_EXECUTION_PICKER_CHECKS -parse-as-library <this file> -o /tmp/woow-skill-picker-checks
+@main
+struct SkillExecutionPickerChecks {
+    struct Failure: Error {}
+    static func require(_ condition: Bool) throws { if !condition { throw Failure() } }
+    static func main() throws {
+        var stalled = SkillPickerRoute()
+        try require(stalled.next { $0 == .browseTab } == .browseTab)
+        try require(!stalled.progress(after: .browseTab) { $0 == .browseTab || $0 == .browseButton })
+        try require(stalled.next { $0 == .browseTab } == nil)
+        var local = SkillPickerRoute()
+        try require(local.next { $0 == .back } == .back)
+        try require(local.progress(after: .back) { $0 == .locations })
+        try require(local.next { $0 == .locations } == .locations)
+        try require(local.progress(after: .locations) { $0 == .local })
+        try require(local.next { $0 == .local } == .local)
+        try require(local.progress(after: .local) { $0 == .application })
+        try require(local.next { $0 == .application } == .application)
+        try require(!local.progress(after: .application) { $0 == .application || $0 == .browseButton })
+        try require(local.progress(after: .application) { $0 == .file })
+        try require(local.next { $0 == .file } == .file)
+        try require(local.next { $0 == .file } == nil)
+        var bounded = SkillPickerRoute()
+        for expected in SkillPickerStep.allCases { try require(bounded.next { _ in true } == expected) }
+        try require(bounded.next { _ in true } == nil)
+        print("PASS bounded Skills Files route: no repeated Browse, real successor progress, local folder and exact-file terminal")
+    }
+}
 #else
 import XCTest
 
@@ -93,6 +162,7 @@ final class SkillExecutionUITests: XCTestCase {
     private let namespace = UUID().uuidString
     private var filename: String { "SkillExecution-\(namespace).pdf" }
     private var stem: String { "SkillExecution-\(namespace)" }
+    private var exportStem: String { stem + "-文字" }
 
     override func setUpWithError() throws {
         #if !targetEnvironment(simulator)
@@ -161,6 +231,90 @@ final class SkillExecutionUITests: XCTestCase {
         assertNoExtractionAfterRefusal(selections: 1, reads: 1)
     }
 
+    func testNativeExportSavesTextToChosenLocalFolder() {
+        extractFixtureForExport()
+        openNativeExporter()
+        chooseLocalExportFolder()
+        let save = app.navigationBars.buttons.matching(NSPredicate(format: "label IN %@",
+            ["儲存", "Save", "匯出", "Export", "移動", "Move"])).firstMatch
+        requireHittable(save)
+        save.tap()
+        assertExportStatus("文字已儲存至所選位置。")
+        assertAudit(selections: 1, reads: 1, extractionAttempts: 1, results: 1)
+
+        // Reopen the real system dialog and verify that the selected destination
+        // contains the exported file. Never inject a URL or write from the test.
+        openNativeExporter()
+        chooseLocalExportFolder()
+        let exportedNames = NSPredicate(format: "label IN %@", [exportStem, exportStem + ".txt"])
+        // Restrict evidence to a file-list cell, not the proposed filename field.
+        let exported = app.cells.staticTexts.matching(exportedNames).firstMatch
+        let exportedCell = app.cells.matching(exportedNames).firstMatch
+        for _ in 0..<10 {
+            if exported.exists || exportedCell.exists { break }
+            scrollNativeFileList()
+        }
+        if !exported.exists && !exportedCell.exists { recordPickerDiagnostics(stage: "export-file-not-visible") }
+        XCTAssertTrue(exported.exists || exportedCell.exists, "The actual Files destination must contain this namespace's exact exported text basename.")
+        requireHittable(nativeCancel)
+        nativeCancel.tap()
+        assertExportStatus("已取消匯出，擷取結果仍保留。")
+    }
+
+    func testNativeExportCancellationPreservesResultAndAllowsRetry() {
+        extractFixtureForExport()
+        openNativeExporter()
+        requireHittable(nativeCancel)
+        nativeCancel.tap()
+        assertExportStatus("已取消匯出，擷取結果仍保留。")
+        assertAudit(selections: 1, reads: 1, extractionAttempts: 1, results: 1)
+        let output = app.staticTexts["skillExecution.result.text"]
+        scrollExecutionToTop()
+        revealLearningElement(output, in: app, visibility: .readableText)
+        XCTAssertTrue(output.label.contains(namespace))
+        XCTAssertTrue(output.label.contains("WOOW_SKILL_PDF_PAGE_2"))
+        openNativeExporter()
+        requireHittable(nativeCancel)
+        nativeCancel.tap()
+        assertExportStatus("已取消匯出，擷取結果仍保留。")
+        assertAudit(selections: 1, reads: 1, extractionAttempts: 1, results: 1)
+    }
+
+    private func extractFixtureForExport() {
+        launchFixture(fromCatalog: false)
+        XCTAssertFalse(app.buttons["skillExecutionExportText"].exists)
+        chooseSyntheticPDF()
+        approve(capability: "selectedPDFRead")
+        XCTAssertFalse(app.buttons["skillExecutionExportText"].exists,
+                       "Export must not be available before extraction approval.")
+        approve(capability: "nativePDFText")
+    }
+
+    private func openNativeExporter() {
+        tap("skillExecutionExportText", scroll: true)
+        requireHittable(nativeCancel)
+    }
+
+    private func chooseLocalExportFolder() {
+        _ = navigateNativeFiles(exporting: true)
+    }
+
+    private func scrollNativeFileList() {
+        let lists = app.collectionViews.allElementsBoundByIndex + app.tables.allElementsBoundByIndex
+        guard let list = lists.first(where: { $0.isHittable }) else {
+            XCTFail("Native destination must expose its file list."); return
+        }
+        list.swipeUp()
+    }
+
+    private func assertExportStatus(_ expected: String) {
+        let status = app.staticTexts["skillExecution.export.status"]
+        scrollExecutionToTop()
+        revealLearningElement(status, in: app, visibility: .readableText)
+        wait(status, "label == %@", expected)
+        XCTAssertFalse(nativeCancel.exists)
+    }
+
     private func launchFixture(fromCatalog: Bool) {
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW",
             "-UITestMode", "-UITestNamespace", namespace, "-UITestResetStorage", "-UITestSkillExecution"]
@@ -199,49 +353,102 @@ final class SkillExecutionUITests: XCTestCase {
 
     private func chooseSyntheticPDF() {
         openNativePicker()
-        var enteredAppFolder = false
-        for _ in 0..<10 {
-            if let file = nativeItem(containing: stem) {
-                file.tap()
-                let selected = app.staticTexts["skillExecution.filename"]
-                if !selected.waitForExistence(timeout: 3), let open = knownButton(["開啟", "Open", "完成", "Done"]) {
-                    open.tap()
+        guard let file = navigateNativeFiles(exporting: false) else { return }
+        file.tap()
+        let selected = app.staticTexts["skillExecution.filename"]
+        if !selected.waitForExistence(timeout: 3), let open = knownButton(["開啟", "Open", "完成", "Done"]) { open.tap() }
+        let received = selected.waitForExistence(timeout: 15)
+        if !received { recordPickerDiagnostics(stage: "selection-not-delivered") }
+        XCTAssertTrue(received, "Files selection must reach the real importer callback.")
+        XCTAssertEqual(selected.label, filename)
+        XCTAssertFalse(nativeCancel.exists, "The document picker must have dismissed.")
+    }
+
+    private let applicationLabels = ["渥屋助理", "WoowAssistant"]
+    private let localLabels = ["我的 iPhone", "在我的 iPhone 上", "On My iPhone", "我的 iPad", "On My iPad"]
+    private let browseLabels = ["瀏覽", "Browse"]
+    private let locationsLabels = ["位置", "Locations"]
+    private var selectedFileNames: NSPredicate { NSPredicate(format: "label IN %@", [filename, stem]) }
+    private var localAppFolderTitle: XCUIElement {
+        app.navigationBars.staticTexts.matching(NSPredicate(format: "label IN %@", applicationLabels)).firstMatch
+    }
+
+    /// Port of Raman's bounded known-location route. Import terminates only at
+    /// the exact PDF basename; export requires the actual local folder title.
+    private func navigateNativeFiles(exporting: Bool) -> XCUIElement? {
+        var route = SkillPickerRoute()
+        let mode = exporting ? "export" : "import"
+        while true {
+            if localAppFolderTitle.exists {
+                if exporting { return localAppFolderTitle }
+                // Scroll only after confirming this app's local Documents folder.
+                for attempt in 0...10 {
+                    if let file = pickerElement(for: .file, exporting: false) { return file }
+                    if attempt < 10 { scrollNativeFileList() }
                 }
-                XCTAssertTrue(selected.waitForExistence(timeout: 15), "Files selection must reach the real importer callback.")
-                XCTAssertEqual(selected.label, filename)
-                XCTAssertFalse(nativeCancel.exists, "The document picker must have dismissed.")
-                return
+                recordPickerDiagnostics(stage: mode + "-exact-file-not-visible")
+                XCTFail("The known local app folder did not reveal this namespace's exact PDF basename.")
+                return nil
             }
-            if enteredAppFolder {
-                // Prior cases retain their separately named synthetic PDFs. Only
-                // scroll inside the app folder we deliberately entered; never
-                // search an unknown/cloud provider for a different document.
-                let lists = app.collectionViews.allElementsBoundByIndex + app.tables.allElementsBoundByIndex
-                guard let list = lists.first(where: { $0.isHittable }) else {
-                    XCTFail("Native app Documents folder must expose its file list.")
-                    return
-                }
-                list.swipeUp()
-                continue
+            var target: XCUIElement?
+            guard let step = route.next(where: { candidate in
+                target = pickerElement(for: candidate, exporting: exporting)
+                return target != nil
+            }), let target else {
+                recordPickerDiagnostics(stage: mode + "-no-known-local-destination")
+                XCTFail("Native Files must expose the known local app folder. Check built file-sharing plist keys; no provider or direct-URL fallback is allowed.")
+                return nil
             }
-            if let folder = nativeItem(exact: ["渥屋助理", "WoowAssistant"]) {
-                folder.tap(); enteredAppFolder = true
-            }
-            else if let local = nativeItem(exact: ["我的 iPhone", "在我的 iPhone 上", "On My iPhone", "我的 iPad", "On My iPad"]) { local.tap() }
-            else if let browse = knownButton(["瀏覽", "Browse", "位置", "Locations"]) { browse.tap() }
-            else {
-                XCTFail("Native Files must expose this app's local synthetic PDF; no cloud, real-file or direct-URL fallback is permitted.")
-                return
-            }
+            if step == .file { return target }
+            target.tap()
             let loaded = XCTNSPredicateExpectation(predicate: NSPredicate { [weak self] _, _ in
                 guard let self else { return false }
-                return self.nativeItem(containing: self.stem) != nil
-                    || self.nativeItem(exact: ["渥屋助理", "WoowAssistant", "我的 iPhone", "在我的 iPhone 上", "On My iPhone", "我的 iPad", "On My iPad"]) != nil
-                    || self.knownButton(["瀏覽", "Browse", "位置", "Locations"]) != nil
+                return self.localAppFolderTitle.exists
+                    || route.progress(after: step) { self.pickerElement(for: $0, exporting: exporting) != nil }
             }, object: nil)
-            XCTAssertEqual(XCTWaiter.wait(for: [loaded], timeout: 10), .completed)
+            guard XCTWaiter.wait(for: [loaded], timeout: 12) == .completed else {
+                recordPickerDiagnostics(stage: mode + "-no-progress-after-" + step.rawValue)
+                XCTFail("Native Files did not reveal the next known destination after \(step.rawValue); the same control will not be tapped again.")
+                return nil
+            }
         }
-        XCTFail("Synthetic PDF was not reached within bounded native Files navigation.")
+    }
+
+    private func pickerElement(for step: SkillPickerStep, exporting: Bool) -> XCUIElement? {
+        switch step {
+        case .file: return exporting ? nil : nativeItem(predicate: selectedFileNames)
+        case .application: return nativeItem(predicate: NSPredicate(format: "label IN %@", applicationLabels))
+        case .local: return nativeItem(predicate: NSPredicate(format: "label IN %@", localLabels))
+        case .locations: return knownButton(locationsLabels)
+        case .back:
+            return firstHittable(app.navigationBars.buttons.matching(NSPredicate(format: "label IN %@", browseLabels + locationsLabels)))
+        case .browseTab:
+            return firstHittable(app.tabBars.buttons.matching(NSPredicate(format: "label IN %@", browseLabels)), excludingSelected: true)
+        case .browseButton:
+            return firstHittable(app.buttons.matching(NSPredicate(format: "label IN %@", browseLabels)), excludingSelected: true)
+        }
+    }
+
+    private func recordPickerDiagnostics(stage: String) {
+        // Counts for known labels only: no filenames/provider enumeration,
+        // screenshots, element values, identifiers or accessibility/debug tree.
+        let groups: [(String, NSPredicate)] = [
+            ("synthetic", selectedFileNames),
+            ("exported", NSPredicate(format: "label IN %@", [exportStem, exportStem + ".txt"])),
+            ("application", NSPredicate(format: "label IN %@", applicationLabels)),
+            ("local", NSPredicate(format: "label IN %@", localLabels)),
+            ("local-no-space", NSPredicate(format: "label IN %@", localLabels.map { $0.replacingOccurrences(of: " ", with: "") })),
+            ("local-nbsp", NSPredicate(format: "label IN %@", localLabels.flatMap { name in
+                [name.replacingOccurrences(of: " ", with: "\u{00a0}"), name.replacingOccurrences(of: " ", with: "\u{202f}")]
+            })),
+            ("browse", NSPredicate(format: "label IN %@", browseLabels)),
+            ("locations", NSPredicate(format: "label IN %@", locationsLabels)),
+            ("cancel", NSPredicate(format: "label IN %@", ["取消", "Cancel"]))
+        ]
+        let counts = groups.map { name, predicate in
+            "\(name)[cell=\(app.cells.matching(predicate).count),button=\(app.buttons.matching(predicate).count),text=\(app.staticTexts.matching(predicate).count),other=\(app.otherElements.matching(predicate).count)]"
+        }
+        print("SKILL_PICKER_KNOWN_COUNTS stage=\(stage) " + counts.joined(separator: " "))
     }
 
     private func approve(capability: String) {
@@ -301,16 +508,17 @@ final class SkillExecutionUITests: XCTestCase {
         "SKILL_EXECUTION_AUDIT selections=\(selections) reads=\(reads) extractionAttempts=\(extractionAttempts) results=\(results)"
     }
 
-    private func nativeItem(exact labels: [String]) -> XCUIElement? { nativeItem(predicate: NSPredicate(format: "label IN %@", labels)) }
-    private func nativeItem(containing value: String) -> XCUIElement? { nativeItem(predicate: NSPredicate(format: "label CONTAINS %@", value)) }
     private func nativeItem(predicate: NSPredicate) -> XCUIElement? {
-        let items = app.cells.matching(predicate).allElementsBoundByIndex
-            + app.buttons.matching(predicate).allElementsBoundByIndex
-            + app.staticTexts.matching(predicate).allElementsBoundByIndex
-        return items.first { $0.exists && $0.isHittable }
+        for query in [app.cells, app.buttons, app.staticTexts] {
+            if let element = firstHittable(query.matching(predicate)) { return element }
+        }
+        return nil
+    }
+    private func firstHittable(_ query: XCUIElementQuery, excludingSelected: Bool = false) -> XCUIElement? {
+        query.allElementsBoundByIndex.prefix(6).first { $0.exists && $0.isHittable && $0.isEnabled && (!excludingSelected || !$0.isSelected) }
     }
     private func knownButton(_ labels: [String]) -> XCUIElement? {
-        app.buttons.matching(NSPredicate(format: "label IN %@", labels)).allElementsBoundByIndex.first { $0.exists && $0.isHittable }
+        firstHittable(app.buttons.matching(NSPredicate(format: "label IN %@", labels)))
     }
     private func tap(_ id: String, scroll: Bool = false) {
         let button = app.buttons[id]
@@ -328,3 +536,30 @@ final class SkillExecutionUITests: XCTestCase {
     }
 }
 #endif
+
+private enum SkillPickerStep: String, CaseIterable {
+    case file, application, local, back, locations, browseTab, browseButton
+    var successors: [Self] {
+        switch self {
+        case .file: return []
+        case .application: return [.file]
+        case .local: return [.file, .application]
+        case .locations: return [.file, .application, .local]
+        case .back, .browseTab, .browseButton: return [.file, .application, .local, .locations]
+        }
+    }
+}
+
+private struct SkillPickerRoute {
+    private var attempted = Set<SkillPickerStep>()
+    mutating func next(where available: (SkillPickerStep) -> Bool) -> SkillPickerStep? {
+        for step in SkillPickerStep.allCases where !attempted.contains(step) && available(step) {
+            attempted.insert(step)
+            return step
+        }
+        return nil
+    }
+    func progress(after step: SkillPickerStep, where available: (SkillPickerStep) -> Bool) -> Bool {
+        step.successors.contains { !attempted.contains($0) && available($0) }
+    }
+}

@@ -324,6 +324,45 @@ import WebKit
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { finishes += 1 }
     }
 }
+#elseif BROWSER_UPLOAD_PICKER_SMOKE
+/// Host regression checks for the bounded picker route, not native Files proof.
+/// swiftc -D BROWSER_UPLOAD_PICKER_SMOKE -parse-as-library \
+/// Tests/WoowAssistantUITests/BrowserUploadUITests.swift -o /tmp/upload-picker-checks
+@main enum BrowserUploadPickerChecks {
+    struct Failure: Error { let message: String }
+    static func main() throws {
+        var assertions = 0
+        func expect(_ condition: Bool, _ message: String) throws {
+            assertions += 1
+            if !condition { throw Failure(message: message) }
+        }
+        var stalled = UploadPickerRoute()
+        try expect(stalled.next(where: { $0 == .browseButton }) == .browseButton, "Browse may be attempted once")
+        try expect(!stalled.progress(after: .browseButton, where: { $0 == .browseButton }), "The unchanged Browse button is not progress")
+        try expect(!stalled.progress(after: .browseButton, where: { [.browseTab, .back].contains($0) }), "Another Browse role is not a new local destination")
+        try expect(stalled.next(where: { $0 == .browseButton }) == nil, "Never repeat the CI Browse loop")
+        var route = UploadPickerRoute()
+        try expect(route.next(where: { $0 == .browseTab }) == .browseTab, "Start from Recents")
+        try expect(route.progress(after: .browseTab, where: { $0 == .local }), "Browse reveals the local location")
+        try expect(route.next(where: { [.local, .browseTab].contains($0) }) == .local, "Enter local storage instead of repeating Browse")
+        try expect(!route.progress(after: .local, where: { [.local, .browseTab].contains($0) }), "Unchanged local row is not progress")
+        try expect(route.progress(after: .local, where: { $0 == .application }), "Local storage reveals app folder")
+        try expect(route.next(where: { [.application, .local, .browseTab].contains($0) }) == .application, "Prefer app folder over sidebar controls")
+        try expect(!route.progress(after: .application, where: { $0 == .local }), "Back navigation cannot count as entering app folder")
+        try expect(route.progress(after: .application, where: { $0 == .file }), "App folder reveals the synthetic file")
+        try expect(route.next(where: { _ in true }) == .file, "File wins over persistent navigation controls")
+        var collapsed = UploadPickerRoute()
+        try expect(collapsed.next(where: { [.locations, .browseButton].contains($0) }) == .locations, "Expand known Locations control before generic Browse")
+        try expect(!collapsed.progress(after: .locations, where: { $0 == .locations }), "Unchanged Locations control is not progress")
+        try expect(collapsed.progress(after: .locations, where: { $0 == .local }), "Expanded Locations reveals local storage")
+        var nested = UploadPickerRoute()
+        try expect(nested.next(where: { [.back, .locations, .browseTab, .browseButton].contains($0) }) == .back, "Known navigation-bar role precedes generic Locations/Browse matching")
+        try expect(nested.progress(after: .back, where: { $0 == .locations }), "Back may reveal a collapsed Locations section")
+        var missing = UploadPickerRoute()
+        try expect(missing.next(where: { _ in false }) == nil, "Unknown provider content is never a navigation fallback")
+        print("Browser upload picker: \(assertions) routing assertions passed; native Files/HTTP not exercised")
+    }
+}
 #else
 import XCTest
 
@@ -450,57 +489,100 @@ final class BrowserUploadUITests: XCTestCase {
 
     private func selectSyntheticFile() {
         // Files can reopen in Recents, Locations, or the previously used folder.
-        // Navigate only known local locations and this app's synthetic document.
-        for _ in 0..<8 {
-            if let file = nativeItem(containing: "BrowserUploadFixture") {
-                file.tap()
+        // Every known control is attempted at most once. A persistent Browse
+        // button cannot satisfy the wait for the next local destination.
+        var route = UploadPickerRoute()
+        while true {
+            var target: XCUIElement?
+            guard let step = route.next(where: { candidate in
+                target = pickerElement(for: candidate)
+                return target != nil
+            }), let target else {
+                recordPickerDiagnostics(stage: "no-known-local-destination")
+                XCTFail("Native Files must expose the local app folder and synthetic file. Check built UIFileSharingEnabled/LSSupportsOpeningDocumentsInPlace; no provider fallback is allowed.")
+                return
+            }
+            target.tap()
+            if step == .file {
                 let selected = webText("UPLOAD_SELECTED_1_" + filename)
                 if selected.waitForExistence(timeout: 3) { return }
                 // Some system versions require an explicit Open/Done action.
                 if let open = knownButton(["開啟", "Open", "完成", "Done"]) { open.tap() }
-                XCTAssertTrue(selected.waitForExistence(timeout: 15), "Native selection must reach WKWebView.")
+                let received = selected.waitForExistence(timeout: 15)
+                if !received { recordPickerDiagnostics(stage: "selection-not-delivered") }
+                XCTAssertTrue(received, "Native selection must reach WKWebView.")
                 return
             }
-            if let applicationFolder = nativeItem(exact: ["渥屋助理", "WoowAssistant"]) {
-                applicationFolder.tap()
-            } else if let local = nativeItem(exact: ["我的 iPhone", "在我的 iPhone 上", "On My iPhone", "我的 iPad", "On My iPad"]) {
-                local.tap()
-            } else if let browse = knownButton(["瀏覽", "Browse", "位置", "Locations"]) {
-                browse.tap()
-            } else {
-                XCTFail("Native Files must expose the local app folder containing BrowserUploadFixture.txt; no cloud or real file fallback is allowed.")
-                return
-            }
-            // Wait for the next native location's content instead of fixed sleeps.
             let loaded = XCTNSPredicateExpectation(predicate: NSPredicate { [weak self] _, _ in
                 guard let self else { return false }
-                return self.nativeItem(containing: "BrowserUploadFixture") != nil
-                    || self.nativeItem(exact: ["渥屋助理", "WoowAssistant", "我的 iPhone", "在我的 iPhone 上", "On My iPhone", "我的 iPad", "On My iPad"]) != nil
-                    || self.knownButton(["瀏覽", "Browse", "位置", "Locations"]) != nil
+                return route.progress(after: step) { self.pickerElement(for: $0) != nil }
             }, object: nil)
-            XCTAssertEqual(XCTWaiter.wait(for: [loaded], timeout: 10), .completed)
+            guard XCTWaiter.wait(for: [loaded], timeout: 12) == .completed else {
+                recordPickerDiagnostics(stage: "no-progress-after-" + step.rawValue)
+                XCTFail("Native Files did not reveal the next known local destination after \(step.rawValue); the same control will not be tapped again.")
+                return
+            }
         }
-        XCTFail("Synthetic file was not found within the bounded local Files navigation.")
     }
 
-    private func nativeItem(exact labels: [String]) -> XCUIElement? {
-        nativeItem(predicate: NSPredicate(format: "label IN %@", labels))
+    private let applicationLabels = ["渥屋助理", "WoowAssistant"]
+    // Apple documents these names: https://support.apple.com/zh-tw/102570
+    private let localLabels = ["我的 iPhone", "在我的 iPhone 上", "On My iPhone", "我的 iPad", "On My iPad"]
+    private let browseLabels = ["瀏覽", "Browse"]
+    private let locationsLabels = ["位置", "Locations"]
+
+    private func pickerElement(for step: UploadPickerStep) -> XCUIElement? {
+        switch step {
+        case .file: return nativeItem(predicate: NSPredicate(format: "label CONTAINS %@", "BrowserUploadFixture"))
+        case .application: return nativeItem(predicate: NSPredicate(format: "label IN %@", applicationLabels))
+        case .local: return nativeItem(predicate: NSPredicate(format: "label IN %@", localLabels))
+        case .locations: return knownButton(locationsLabels)
+        case .back:
+            return firstHittable(app.navigationBars.buttons.matching(NSPredicate(format: "label IN %@", browseLabels + locationsLabels)))
+        case .browseTab:
+            return firstHittable(app.tabBars.buttons.matching(NSPredicate(format: "label IN %@", browseLabels)), excludingSelected: true)
+        case .browseButton:
+            return firstHittable(app.buttons.matching(NSPredicate(format: "label IN %@", browseLabels)), excludingSelected: true)
+        }
     }
 
-    private func nativeItem(containing label: String) -> XCUIElement? {
-        nativeItem(predicate: NSPredicate(format: "label CONTAINS %@", label))
+    private func recordPickerDiagnostics(stage: String) {
+        // Query exact known names only; never enumerate providers, filenames,
+        // identifiers, screenshots, values, or an accessibility/debug tree.
+        // The CI log has no evidence yet for whitespace aliases: count them
+        // separately without using unverified aliases as navigation targets.
+        let groups: [(String, NSPredicate)] = [
+            ("synthetic", NSPredicate(format: "label CONTAINS %@", "BrowserUploadFixture")),
+            ("application", NSPredicate(format: "label IN %@", applicationLabels)),
+            ("local", NSPredicate(format: "label IN %@", localLabels)),
+            ("local-no-space", NSPredicate(format: "label IN %@", localLabels.map { $0.replacingOccurrences(of: " ", with: "") })),
+            ("local-nbsp", NSPredicate(format: "label IN %@", localLabels.flatMap { name in
+                [name.replacingOccurrences(of: " ", with: "\u{00a0}"), name.replacingOccurrences(of: " ", with: "\u{202f}")]
+            })),
+            ("browse", NSPredicate(format: "label IN %@", browseLabels)),
+            ("locations", NSPredicate(format: "label IN %@", locationsLabels)),
+            ("cancel", NSPredicate(format: "label IN %@", ["取消", "Cancel"]))
+        ]
+        let counts = groups.map { name, predicate in
+            "\(name)[cell=\(app.cells.matching(predicate).count),button=\(app.buttons.matching(predicate).count),text=\(app.staticTexts.matching(predicate).count),other=\(app.otherElements.matching(predicate).count)]"
+        }
+        print("UPLOAD_PICKER_KNOWN_COUNTS stage=\(stage) " + counts.joined(separator: " "))
     }
 
     private func nativeItem(predicate: NSPredicate) -> XCUIElement? {
-        let candidates = app.cells.matching(predicate).allElementsBoundByIndex
-            + app.buttons.matching(predicate).allElementsBoundByIndex
-            + app.staticTexts.matching(predicate).allElementsBoundByIndex
-        return candidates.first(where: { $0.exists && $0.isHittable })
+        // Stop on the first usable known match, without collecting whole trees.
+        for query in [app.cells, app.buttons, app.staticTexts] {
+            if let element = firstHittable(query.matching(predicate)) { return element }
+        }
+        return nil
+    }
+
+    private func firstHittable(_ query: XCUIElementQuery, excludingSelected: Bool = false) -> XCUIElement? {
+        query.allElementsBoundByIndex.prefix(6).first { $0.exists && $0.isHittable && $0.isEnabled && (!excludingSelected || !$0.isSelected) }
     }
 
     private func knownButton(_ labels: [String]) -> XCUIElement? {
-        app.buttons.matching(NSPredicate(format: "label IN %@", labels)).allElementsBoundByIndex
-            .first(where: { $0.exists && $0.isHittable })
+        firstHittable(app.buttons.matching(NSPredicate(format: "label IN %@", labels)))
     }
 
     private func webText(_ value: String) -> XCUIElement {
@@ -514,3 +596,32 @@ final class BrowserUploadUITests: XCTestCase {
     }
 }
 #endif
+
+/// One-way local picker route. These pure decisions are exercised on the CLT
+/// host; real element visibility, native selection and HTTP receipt require CI.
+private enum UploadPickerStep: String, CaseIterable {
+    case file, application, local, back, locations, browseTab, browseButton
+    var successors: [Self] {
+        switch self {
+        case .file: return []
+        case .application: return [.file]
+        case .local: return [.file, .application]
+        case .locations: return [.file, .application, .local]
+        case .back, .browseTab, .browseButton: return [.file, .application, .local, .locations]
+        }
+    }
+}
+
+private struct UploadPickerRoute {
+    private var attempted = Set<UploadPickerStep>()
+    mutating func next(where available: (UploadPickerStep) -> Bool) -> UploadPickerStep? {
+        for step in UploadPickerStep.allCases where !attempted.contains(step) && available(step) {
+            attempted.insert(step)
+            return step
+        }
+        return nil
+    }
+    func progress(after step: UploadPickerStep, where available: (UploadPickerStep) -> Bool) -> Bool {
+        step.successors.contains { !attempted.contains($0) && available($0) }
+    }
+}

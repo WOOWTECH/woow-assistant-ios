@@ -1,8 +1,36 @@
-#if os(iOS)
+#if os(iOS) || SKILL_EXECUTION_EXPORT_CHECKS
+#if !SKILL_EXECUTION_EXPORT_CHECKS
 import AssistantSkills
+#endif
 import SwiftUI
 import UniformTypeIdentifiers
 
+/// An immutable UTF-8 snapshot of a completed extraction. FileDocument leaves
+/// destination selection and writing to the system exporter, never to a skill.
+struct SkillExecutionTextDocument: FileDocument {
+    static var readableContentTypes: [UTType] { [.utf8PlainText] }
+    let text: String
+
+    init(text: String) throws {
+        guard text.utf8.count <= SkillExecutionLimits.outputBytes else { throw SkillExecutionError.outputTooLarge }
+        self.text = text
+    }
+
+    init(configuration: ReadConfiguration) throws { try self.init(fileWrapper: configuration.file) }
+
+    init(fileWrapper: FileWrapper) throws {
+        guard fileWrapper.isRegularFile, let data = fileWrapper.regularFileContents,
+              data.count <= SkillExecutionLimits.outputBytes,
+              let text = String(data: data, encoding: .utf8) else { throw CocoaError(.fileReadCorruptFile) }
+        try self.init(text: text)
+    }
+
+    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper { snapshot() }
+    func snapshot() -> FileWrapper { FileWrapper(regularFileWithContents: Data(text.utf8)) }
+}
+#endif
+
+#if os(iOS)
 /// Parent integration: present SkillExecutionView() from the documents skill.
 /// A configured worker is optional; no endpoint or background upload is created.
 struct SkillExecutionView: View {
@@ -13,6 +41,11 @@ struct SkillExecutionView: View {
     @State private var password = ""
     @State private var metadataOnly = false
     @State private var useWorker = false
+    @State private var exportingText = false
+    @State private var exportDocument: SkillExecutionTextDocument?
+    @State private var exportPlanID: UUID?
+    @State private var exportFilename = "PDF文字"
+    @State private var exportStatus: String?
 
     init(worker: (any SkillExecutionPDFWorker)? = nil) { self.worker = worker }
 
@@ -69,7 +102,7 @@ struct SkillExecutionView: View {
                         Text("這是經過限定的 iOS 能力實作，並非完整執行原版技能。")
                     }
                     .accessibilityIdentifier("skillExecution.sources")
-                    Button("清除本次計畫", role: .destructive) { model.clear(); password = "" }
+                    Button("清除本次計畫", role: .destructive) { resetExport(); model.clear(); password = "" }
                         .accessibilityIdentifier("skillExecutionClearPlan")
                 }
             }
@@ -80,6 +113,12 @@ struct SkillExecutionView: View {
                     Text(result.notice)
                     if !result.text.isEmpty {
                         Text(result.text).textSelection(.enabled).accessibilityIdentifier("skillExecution.result.text")
+                        Button("匯出文字檔") { beginExport(result) }
+                            .disabled(exportingText)
+                            .accessibilityIdentifier("skillExecutionExportText")
+                    }
+                    if let exportStatus {
+                        Text(exportStatus).accessibilityIdentifier("skillExecution.export.status")
                     }
                     ForEach(result.metadata.keys.sorted(), id: \.self) { key in
                         Text("\(key)：\(result.metadata[key] ?? "")").textSelection(.enabled)
@@ -99,8 +138,37 @@ struct SkillExecutionView: View {
             case .failure: model.status = "未能選取檔案，請重試。"
             }
         }
+        .fileExporter(isPresented: $exportingText, document: exportDocument,
+                      contentTypes: [.utf8PlainText], defaultFilename: exportFilename,
+                      onCompletion: { outcome in
+            switch outcome {
+            case .success: finishExport("文字已儲存至所選位置。")
+            case .failure: finishExport("文字未能儲存，請重新選擇位置再試一次。")
+            }
+        }, onCancellation: { finishExport("已取消匯出，擷取結果仍保留。") })
         .onAppear { model.seedUITestIfRequested() }
-        .onDisappear { model.clear() }
+        .onDisappear { resetExport(); model.clear() }
+    }
+
+    private func beginExport(_ result: SkillExecutionPDFResult) {
+        guard let plan = model.plan, !model.running, !result.text.isEmpty else { return }
+        do {
+            exportDocument = try SkillExecutionTextDocument(text: result.text)
+            exportPlanID = plan.id
+            exportFilename = URL(fileURLWithPath: plan.filename).deletingPathExtension().lastPathComponent + "-文字"
+            exportStatus = nil
+            exportingText = true
+        } catch { exportStatus = "文字結果過大，請縮小頁碼範圍後再匯出。" }
+    }
+
+    private func finishExport(_ message: String) {
+        // A late dialog callback must not affect a cleared or replaced plan.
+        if let exportPlanID, model.plan?.id == exportPlanID { exportStatus = message }
+        exportDocument = nil; exportPlanID = nil
+    }
+
+    private func resetExport() {
+        exportPlanID = nil; exportingText = false; exportDocument = nil; exportStatus = nil
     }
 }
 

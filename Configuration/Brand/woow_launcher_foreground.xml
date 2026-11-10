@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- WOOWTECH fork: generated from the official WOOW symbol (10 paths); do not edit by hand. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:translateX="32.000" android:translateY="36.559" android:scaleX="0.41825" android:scaleY="0.41825">
+        <path android:fillColor="#FF6183FC" android:pathData="M 78.816 5.351 C 68.803 5.351 60.658 13.496 60.658 23.509 C 60.658 33.522 68.803 41.667 78.816 41.667 C 88.829 41.667 96.974 33.522 96.974 23.509 C 96.974 13.496 88.829 5.351 78.816 5.351 M 78.816 47.013 C 65.856 47.013 55.312 36.469 55.312 23.509 C 55.312 10.549 65.856 0.007 78.816 0.007 C 91.776 0.007 102.318 10.549 102.318 23.509 C 102.318 36.469 91.776 47.013 78.816 47.013" />
+        <path android:fillColor="#FF6183FC" android:pathData="M 26.383 41.684 C 16.370 41.684 8.225 49.831 8.225 59.842 C 8.225 69.855 16.370 78.000 26.383 78.000 C 36.396 78.000 44.541 69.855 44.541 59.842 C 44.541 49.831 36.396 41.684 26.383 41.684 M 26.383 83.346 C 13.423 83.346 2.879 72.802 2.879 59.842 C 2.879 46.882 13.423 36.340 26.383 36.340 C 39.343 36.340 49.885 46.882 49.885 59.842 C 49.885 72.802 39.343 83.346 26.383 83.346" />
+        <path android:fillColor="#FF6183FC" android:pathData="M 6.407 41.653 L 12.517 41.649 L 26.034 0.007 L 19.923 0.007 Z" />
+        <path android:fillColor="#FF6183FC" android:pathData="M 46.359 41.653 L 40.249 41.649 L 26.732 0.007 L 32.843 0.007 Z" />
+        <path android:fillColor="#FF6183FC" android:pathData="M 0.094 41.671 L 0.071 0.009 L 5.415 0.007 L 5.438 41.667 Z" />
+        <path android:fillColor="#FF6183FC" android:pathData="M 52.695 41.670 L 47.351 41.670 L 47.351 0.008 L 52.695 0.008 Z" />
+        <path android:fillColor="#FF6183FC" android:pathData="M 58.841 83.328 L 64.951 83.324 L 78.468 41.682 L 72.357 41.682 Z" />
+        <path android:fillColor="#FF6183FC" android:pathData="M 98.792 83.328 L 92.682 83.324 L 79.165 41.682 L 85.276 41.682 Z" />
+        <path android:fillColor="#FF6183FC" android:pathData="M 52.528 83.346 L 52.505 41.684 L 57.849 41.682 L 57.872 83.342 Z" />
+        <path android:fillColor="#FF6183FC" android:pathData="M 105.129 83.345 L 99.785 83.345 L 99.785 41.683 L 105.129 41.683 Z" />
+    </group>
+</vector>

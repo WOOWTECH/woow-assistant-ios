@@ -8,6 +8,20 @@ import AssistantBrowser
 /// Real, locally rendered WebKit documents. Failure/late delegate callbacks
 /// below are explicitly synthetic; no external request or model is involved.
 final class BrowserSessionNavigationTests: XCTestCase {
+    @MainActor func testSearchBeyondExcerptDoesNotClaimAbsenceFromWholePage() async throws {
+        let host = try Host()
+        defer { host.close() }
+        _ = try await host.load(marker: "EXCERPT START")
+        let sourceContainsMarker = try await host.browser.webView.evaluateJavaScript(
+            "document.body.innerHTML='<p>'+('A'.repeat(9000))+'</p><p>ACTUAL_TAIL_MARKER</p>'; document.body.textContent.includes('ACTUAL_TAIL_MARKER')")
+        XCTAssertEqual(sourceContainsMarker as? Bool, true)
+        let observed = try await host.browser.inspect()
+        XCTAssertEqual(observed.text.count, 8000)
+        XCTAssertFalse(observed.text.contains("ACTUAL_TAIL_MARKER"))
+        let found = try await host.browser.find(text: "ACTUAL_TAIL_MARKER")
+        XCTAssertEqual(found.text, "目前可讀取的頁面摘錄中未找到指定文字；未檢查完整頁面。")
+    }
+
     @MainActor func testLocalDocumentBecomesReadyAndMatchingFailuresStayTerminal() async throws {
         let host = try Host()
         defer { host.close() }

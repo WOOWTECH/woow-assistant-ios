@@ -37,14 +37,24 @@ enum BrowserDownloadIntegrationFixtures {
 
         // Both navigation delegate conversion callbacks are used by real WebKit.
         for useDownloadAttribute in [true, false] {
+            trace(useDownloadAttribute ? "navigation-action-begin" : "navigation-response-begin")
             host.navigation.finishedPage = false
             host.webView.loadHTMLString("<html><body><a id='file' href='\(fixture.url("file").absoluteString)?marker=FIXTURE_ONLY' \(useDownloadAttribute ? "download" : "")>download</a></body></html>", baseURL: fixture.url("page"))
             try await wait { host.navigation.finishedPage }
             _ = try await host.webView.evaluateJavaScript("document.getElementById('file').click(); true")
-            try await wait { manager.items.filter { $0.status == .completed }.count == (useDownloadAttribute ? 1 : 2) }
+            try await wait {
+                host.navigation.identityFailure != nil
+                    || manager.items.filter { $0.status == .completed }.count == (useDownloadAttribute ? 1 : 2)
+            }
+            try expect(host.navigation.identityFailure == nil,
+                       host.navigation.identityFailure ?? "Policy object identity and permit consumption succeeded")
+            trace(useDownloadAttribute ? "navigation-action-completed" : "navigation-response-completed")
         }
         try expect(host.navigation.actionDownloads == 1, "Real action didBecome callback")
         try expect(host.navigation.responseDownloads == 1, "Real response didBecome callback")
+        try expect(host.navigation.actionIdentityMatches == 1, "Action callback returns the exact policy-delegate object")
+        try expect(host.navigation.responseIdentityMatches == 1, "Response callback returns the exact policy-delegate object")
+        try expect(host.navigation.staleActionRejected, "Prior action callback cannot consume a new response permit")
         try expect(fixture.authenticatedRequests == 2, "WebKit download uses its originating session cookie")
         let records = manager.items
         try expect(records.count == 2 && records.allSatisfy { $0.status == .completed }, "Real downloads completed")
@@ -58,19 +68,27 @@ enum BrowserDownloadIntegrationFixtures {
         let manifest = try String(contentsOf: directory.appendingPathComponent("completed.json"))
         try expect(!manifest.contains("FIXTURE_ONLY") && !manifest.contains("127.0.0.1") && !manifest.contains("present"), "No signed URL/cookie metadata")
 
+        trace("slow-begin")
         let slow = try await start(host.webView, manager: manager, url: fixture.url("slow"))
-        try await wait { manager.items.first { $0.id == slow }?.receivedBytes ?? 0 > 0 }
+        try await wait {
+            guard let item = manager.items.first(where: { $0.id == slow }) else { return false }
+            return item.receivedBytes > 0 || !item.status.isActive
+        }
+        trace("slow-progress", manager: manager)
         try expect(manager.items.first { $0.id == slow }?.status == .downloading, "Progress is sampled while transfer is active")
         manager.cancel(id: slow)
         try await wait { manager.items.first { $0.id == slow }?.status == .cancelled }
+        trace("slow-cancelled")
         try expect(try FileManager.default.contentsOfDirectory(atPath: directory.appendingPathComponent("Partial").path).isEmpty,
                    "Cancellation acknowledgement removes the partial file")
         do { _ = try manager.fileURL(id: slow); throw Failure(message: "Cancelled file was shareable") }
         catch is BrowserDownloadError { assertions += 1 }
 
+        trace("redirect-begin")
         let redirected = try await start(host.webView, manager: manager, url: fixture.url("redirect"))
         try await wait { manager.items.first { $0.id == redirected }?.status == .completed }
         try expect(try Data(contentsOf: manager.fileURL(id: redirected)) == fixture.payload, "Allowed redirect stays inside WebKit session")
+        trace("blocked-redirect-begin")
         let blocked = try await start(host.webView, manager: manager, url: fixture.url("blocked-redirect"))
         try await wait { manager.items.first { $0.id == blocked }?.status == .failed }
         try expect(manager.items.first { $0.id == blocked }?.failureMessage == BrowserDownloadError.unsafeURL.localizedDescription,
@@ -79,8 +97,9 @@ enum BrowserDownloadIntegrationFixtures {
         // Defence-in-depth accept gate: native download objects received after
         // research cancellation must be cancelled without publishing any record.
         let before = manager.items.count
-        let native = await host.webView.startDownload(using: URLRequest(url: fixture.url("slow")))
-        try expect(manager.accept(native, sourceURL: fixture.url("slow"), allowsDownload: false) == nil, "Research acceptance always rejects")
+        trace("research-accept-begin")
+        let rejected = try await receiveDownload(host.webView, manager: manager, url: fixture.url("slow"), allowsDownload: false)
+        try expect(rejected == nil, "Research acceptance always rejects")
         try expect(manager.items.count == before, "Research never creates a download item")
         // The navigation policy blocks research before converting to WKDownload.
         host.navigation.research = true
@@ -100,6 +119,7 @@ enum BrowserDownloadIntegrationFixtures {
 
         // Known oversized Content-Length and an unknown-length stream are both bounded.
         for endpoint in ["oversize", "unknown"] {
+            trace("limit-" + endpoint + "-begin")
             let limitedRoot = directory.appendingPathComponent("limited-" + endpoint)
             let limited = BrowserDownloadManager(directory: limitedRoot,
                 limits: .init(maximumFileBytes: 1_024), allowsURL: fixture.allows)
@@ -115,15 +135,42 @@ enum BrowserDownloadIntegrationFixtures {
         try expect(FileManager.default.fileExists(atPath: originalFile.path), "Unconfirmed deletion preserves real download")
         try manager.delete(id: records[0].id, confirmed: true)
         try expect(!FileManager.default.fileExists(atPath: originalFile.path), "Confirmed deletion removes real download")
+        trace("all-checks-completed")
         return assertions
     }
 
     private static func start(_ webView: WKWebView, manager: BrowserDownloadManager, url: URL) async throws -> UUID {
-        let download = await webView.startDownload(using: URLRequest(url: url))
-        guard let id = manager.accept(download, sourceURL: url, allowsDownload: true) else {
+        guard let id = try await receiveDownload(webView, manager: manager, url: url, allowsDownload: true) else {
             throw Failure(message: "Fixture download rejected")
         }
         return id
+    }
+
+    private static func receiveDownload(_ webView: WKWebView, manager: BrowserDownloadManager,
+                                        url: URL, allowsDownload: Bool) async throws -> UUID? {
+        var delivered = false
+        var expired = false
+        var id: UUID?
+        // Install WKDownloadDelegate synchronously in WebKit's native callback,
+        // just as the production didBecome integration does. The async overlay
+        // introduces a suspension before accept; do not rely on that timing.
+        webView.startDownload(using: URLRequest(url: url)) { download in
+            guard !expired else { download.cancel(nil); return }
+            id = manager.accept(download, sourceURL: url, allowsDownload: allowsDownload)
+            delivered = true
+            trace("native-download-delivered", manager: manager)
+        }
+        do { try await wait { delivered } }
+        catch { expired = true; trace("native-download-delivery-timeout", manager: manager); throw error }
+        return id
+    }
+
+    private static func trace(_ step: String, manager: BrowserDownloadManager? = nil) {
+        // Fixed stages and status counts only: no URLs, headers, filenames,
+        // cookie values, native descriptions or underlying network errors.
+        guard let manager else { print("WKDOWNLOAD_STEP \(step)"); return }
+        let items = manager.items
+        print("WKDOWNLOAD_STEP \(step) active=\(items.filter { $0.status.isActive }.count) completed=\(items.filter { $0.status == .completed }.count) failed=\(items.filter { $0.status == .failed }.count)")
     }
 
     private static func wait(line: Int = #line, _ condition: () -> Bool) async throws {
@@ -131,7 +178,10 @@ enum BrowserDownloadIntegrationFixtures {
         while !condition(), ProcessInfo.processInfo.systemUptime < deadline {
             try await Task.sleep(nanoseconds: 25_000_000)
         }
-        guard condition() else { throw Failure(message: "Real WebKit fixture timed out at fixture line \(line)") }
+        guard condition() else {
+            trace("wait-timeout-line-\(line)")
+            throw Failure(message: "Real WebKit fixture timed out at fixture line \(line)")
+        }
     }
 
     @MainActor private final class Navigation: NSObject, WKNavigationDelegate {
@@ -141,12 +191,30 @@ enum BrowserDownloadIntegrationFixtures {
         var blockedResearch = 0
         var actionDownloads = 0
         var responseDownloads = 0
+        var actionIdentityMatches = 0
+        var responseIdentityMatches = 0
+        var staleActionRejected = false
+        var identityFailure: String?
+        private var issuedAction: WKNavigationAction?
+        private var issuedResponse: WKNavigationResponse?
+        private var intent = BrowserNavigationIntent()
+        // Only a policy-provenance alias: network traffic still uses the exact
+        // loopback fixture. This tests real WK wrapper identity through the core
+        // permit; it does not exercise BrowserSession or relax production policy.
+        private let provenanceURL = URL(string: "https://download.example.invalid/fixture")!
         init(manager: BrowserDownloadManager) { self.manager = manager }
         func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) { finishedPage = true }
         func webView(_ webView: WKWebView, decidePolicyFor navigationAction: WKNavigationAction,
                      decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
             if navigationAction.shouldPerformDownload {
                 if research { blockedResearch += 1 }
+                else {
+                    issuedAction = navigationAction
+                    intent.beginManual(provenanceURL)
+                    guard intent.authorizeDownload(provenanceURL, source: .action(navigationAction)) else {
+                        identityFailure = "Action permit was not issued"; decisionHandler(.cancel); return
+                    }
+                }
                 decisionHandler(research ? .cancel : .download)
             } else { decisionHandler(.allow) }
         }
@@ -154,16 +222,35 @@ enum BrowserDownloadIntegrationFixtures {
                      decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
             if BrowserDownloadPolicy.isAttachment(navigationResponse.response) || !navigationResponse.canShowMIMEType {
                 if research { blockedResearch += 1 }
+                else {
+                    issuedResponse = navigationResponse
+                    intent.beginManual(provenanceURL)
+                    guard intent.authorizeDownload(provenanceURL, source: .response(navigationResponse)) else {
+                        identityFailure = "Response permit was not issued"; decisionHandler(.cancel); return
+                    }
+                    if let old = issuedAction {
+                        staleActionRejected = !intent.consumeDownload(provenanceURL, source: .action(old))
+                        if !staleActionRejected { identityFailure = "Old action consumed the response permit" }
+                    }
+                }
                 decisionHandler(research ? .cancel : .download)
             } else { decisionHandler(.allow) }
         }
         func webView(_ webView: WKWebView, navigationAction: WKNavigationAction, didBecome download: WKDownload) {
             actionDownloads += 1
-            manager.accept(download, sourceURL: navigationAction.request.url, allowsDownload: !research)
+            let sameObject = issuedAction === navigationAction
+            if sameObject { actionIdentityMatches += 1 }
+            let approved = intent.consumeDownload(provenanceURL, source: .action(navigationAction)) && !research
+            if !sameObject || !approved { identityFailure = "Action didBecome identity or permit did not match" }
+            manager.accept(download, sourceURL: navigationAction.request.url, allowsDownload: sameObject && approved)
         }
         func webView(_ webView: WKWebView, navigationResponse: WKNavigationResponse, didBecome download: WKDownload) {
             responseDownloads += 1
-            manager.accept(download, sourceURL: navigationResponse.response.url, allowsDownload: !research)
+            let sameObject = issuedResponse === navigationResponse
+            if sameObject { responseIdentityMatches += 1 }
+            let approved = intent.consumeDownload(provenanceURL, source: .response(navigationResponse)) && !research
+            if !sameObject || !approved { identityFailure = "Response didBecome identity or permit did not match" }
+            manager.accept(download, sourceURL: navigationResponse.response.url, allowsDownload: sameObject && approved)
         }
     }
 

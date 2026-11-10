@@ -54,6 +54,17 @@ jobs:
           swift --version
       - name: Test portable core
         run: swift test 2>&1 | tee build/core-tests.log
+      - name: Test original PDF script through the Swift HTTP client
+        if: github.event_name != 'workflow_dispatch' || inputs.test_scope == 'files' || inputs.test_scope == 'all'
+        timeout-minutes: 6
+        run: |
+          bash scripts/skill-worker/check_swift.sh 2>&1 | tee build/skill-execution-native.log
+          python3 -m venv "$RUNNER_TEMP/woow-skill-worker-venv"
+          "$RUNNER_TEMP/woow-skill-worker-venv/bin/python" -m pip install --require-hashes -r scripts/skill-worker/requirements.txt
+          test -x "${TMPDIR:-/tmp}/woow-skill-execution-checks"
+          SKILL_EXECUTION_TEST_BINARY="${TMPDIR:-/tmp}/woow-skill-execution-checks" \
+            PYTHONDONTWRITEBYTECODE=1 "$RUNNER_TEMP/woow-skill-worker-venv/bin/python" \
+            -m unittest discover -s scripts/skill-worker -p 'test_*.py' -v 2>&1 | tee build/skill-worker-tests.log
       - name: Test simulator selection
         run: python3 -m unittest discover -s scripts -p 'test_*.py' -v 2>&1 | tee build/scripts-tests.log
       - name: Test App MCP credential isolation
@@ -79,6 +90,17 @@ jobs:
             -sdk iphonesimulator -destination 'generic/platform=iOS Simulator' \
             -derivedDataPath build/DerivedData build CODE_SIGN_IDENTITY=- CODE_SIGNING_ALLOWED=YES \
             2>&1 | tee build/ios-build.log
+      - name: Verify built native Files configuration
+        run: |
+          python3 - <<'PY'
+          import json, plistlib
+          from pathlib import Path
+          app = Path('build/DerivedData/Build/Products/Debug-iphonesimulator/WoowAssistant.app')
+          info = plistlib.loads((app / 'Info.plist').read_bytes())
+          flags = {key: info.get(key) for key in ('UIFileSharingEnabled', 'LSSupportsOpeningDocumentsInPlace')}
+          Path('build/app-configuration.json').write_text(json.dumps(flags, indent=2) + '\n')
+          assert all(value is True for value in flags.values()), 'Built App must expose its Documents folder through native Files'
+          PY
       - name: Test
         # The previous 22-case full UI matrix took 31m34s for this step.
         # Eleven additional UI cases and hosted DOM integration need their own
@@ -96,7 +118,7 @@ jobs:
               test_filters=(-only-testing:AssistantSkillsTests -only-testing:AssistantDomainTests/BrowserDownloadTests -only-testing:AssistantDomainTests/BrowserNavigationIntentTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/BrowserUploadUITests -only-testing:WoowAssistantUITests/SkillExecutionUITests)
               ;;
             workspace)
-              test_filters=(-only-testing:AssistantDomainTests/BrowserLibraryTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/BrowserWorkspaceUITests)
+              test_filters=(-only-testing:AssistantDomainTests/BrowserLibraryTests -only-testing:AssistantDomainTests/BrowserNavigationIntentTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/BrowserWorkspaceUITests -only-testing:WoowAssistantUITests/BrowserLoginUITests)
               ;;
             memory-rollback)
               test_filters=(-only-testing:WoowAssistantUITests/MemoryUITests/testSkillUpdateRejectionAndRollback)
@@ -145,6 +167,7 @@ jobs:
             build/*.log
             build/*.xcresult
             build/test-summary.json
+            build/app-configuration.json
             build/screenshots/
             build/diagnostics/
           if-no-files-found: warn

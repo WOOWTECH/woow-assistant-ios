@@ -205,6 +205,8 @@ def verify_app(app, signed=False, identity=None):
     # Even an empty ATS dictionary is unexpected in the Release configuration.
     if "NSAppTransportSecurity" in info:
         raise ReleaseError("Release App 的 Info.plist 不得含 NSAppTransportSecurity；請檢查 Debug 測試例外是否混入產物。")
+    if not all(info.get(key) is True for key in ("UIFileSharingEnabled", "LSSupportsOpeningDocumentsInPlace")):
+        raise ReleaseError("Release App 缺少系統檔案選擇器所需的 Documents 共享設定。")
     binaries = [app / info["CFBundleExecutable"]]
     for framework in (app / "Frameworks").glob("*.framework"):
         data = plistlib.loads((framework / "Info.plist").read_bytes())
@@ -237,7 +239,7 @@ def verify_app(app, signed=False, identity=None):
                 raise ReleaseError("App 未使用指定 distribution 憑證簽章。")
     return {"bundle_id": BUNDLE_ID, "minimum_os": "17.0", "platform": "iphoneos",
             "verified_binary_count": len(binaries), "signature_verified": signed,
-            "ats_key_absent": True}
+            "ats_key_absent": True, "native_documents_enabled": True}
 
 
 @contextmanager
@@ -299,7 +301,8 @@ def generate_project(root, output):
     # Keep the isolated Debug project usable without changing Release settings.
     configuration = output / "Configuration"
     configuration.mkdir(exist_ok=True)
-    shutil.copyfile(root / "Configuration/Info-Debug.plist", configuration / "Info-Debug.plist")
+    for name in ("Info-Debug.plist", "Info-Release.plist"):
+        shutil.copyfile(root / "Configuration" / name, configuration / name)
     return output / (SCHEME + ".xcodeproj")
 
 

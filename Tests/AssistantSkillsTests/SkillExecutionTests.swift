@@ -80,6 +80,46 @@ enum SkillExecutionChecks {
         try expect(unlocked.pages[0].text == "Alpha evidence", "real encrypted PDF unlock")
     }
 
+    static func coordinatedRead() async throws {
+        let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(at: folder) }
+        let original = pdf()
+        // Same-length text keeps the real fixture's xref offsets intact.
+        let changed = Data(String(decoding: original, as: UTF8.self)
+            .replacingOccurrences(of: "Alpha evidence", with: "Gamma evidence").utf8)
+        func withPresenter(_ replacement: Data?, _ check: (SkillExecutionSelectedFile, PendingPDFPresenter) throws -> Void) throws {
+            let url = folder.appendingPathComponent(UUID().uuidString + ".pdf")
+            try original.write(to: url)
+            let presenter = PendingPDFPresenter(url: url, replacement: replacement)
+            NSFileCoordinator.addFilePresenter(presenter)
+            defer { NSFileCoordinator.removeFilePresenter(presenter) }
+            try check(SkillExecutionSelectedFile(userSelectedURL: url), presenter)
+        }
+        try withPresenter(changed) { selected, presenter in
+            let snapshot = try SkillExecutionPDF.read(selected)
+            try expect(presenter.saveCount > 0, "real file coordination must request pending presenter changes")
+            try expect(snapshot == changed, "snapshot must include the presenter's saved bytes")
+            let result = try SkillExecutionPDF.extract(snapshot, options: .init())
+            try expect(result.pages[0].text == "Gamma evidence", "actual PDFKit sees coordinated content, not stale bytes")
+        }
+        try withPresenter(nil) { selected, presenter in
+            do {
+                _ = try SkillExecutionPDF.read(selected)
+                throw Failure(message: "must not fall back to uncoordinated read after presenter refuses")
+            } catch SkillExecutionError.invalidSelection { }
+            try expect(presenter.saveCount > 0, "real presenter must receive save request before rejecting")
+        }
+        let oversized = Data(repeating: 0, count: SkillExecutionLimits.fileBytes + 1)
+        try withPresenter(oversized) { selected, presenter in
+            do {
+                _ = try SkillExecutionPDF.read(selected)
+                throw Failure(message: "size check must use the post-coordination item")
+            } catch SkillExecutionError.fileTooLarge { }
+            try expect(presenter.saveCount > 0, "oversized replacement must come from real coordination")
+        }
+    }
+
     static func authorization(_ catalog: BundledSkillCatalog) async throws {
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
         try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
@@ -132,6 +172,14 @@ enum SkillExecutionChecks {
         try await rejects(.invalidSelection) { _ = try SkillExecutionPDF.read(.init(userSelectedURL: link)) }
         try Data(repeating: 0, count: SkillExecutionLimits.fileBytes + 1).write(to: url)
         try await rejects(.fileTooLarge) { _ = try SkillExecutionPDF.read(selected) }
+        var maximum = data
+        maximum.append(Data(repeating: 32, count: SkillExecutionLimits.fileBytes - data.count))
+        try maximum.write(to: url)
+        let bounded = try SkillExecutionPDF.read(selected)
+        try expect(bounded == maximum, "exactly 10 MiB is allowed without truncating the selected bytes")
+        let directory = folder.appendingPathComponent("directory.pdf")
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: false)
+        try await rejects(.invalidSelection) { _ = try SkillExecutionPDF.read(.init(userSelectedURL: directory)) }
     }
 
     static func cancellation(_ catalog: BundledSkillCatalog) async throws {
@@ -176,6 +224,29 @@ enum SkillExecutionChecks {
         }
     }
 
+    /// A real Foundation file presenter with unsaved synthetic content. The
+    /// production read must coordinate with it; a direct FileHandle read fails
+    /// these tests by returning stale bytes or ignoring its save refusal.
+    final class PendingPDFPresenter: NSObject, NSFilePresenter, @unchecked Sendable {
+        let presentedItemURL: URL?
+        let presentedItemOperationQueue: OperationQueue = {
+            let queue = OperationQueue(); queue.maxConcurrentOperationCount = 1; return queue
+        }()
+        private let replacement: Data?
+        private let lock = NSLock()
+        private var saves = 0
+        var saveCount: Int { lock.lock(); defer { lock.unlock() }; return saves }
+        init(url: URL, replacement: Data?) { presentedItemURL = url; self.replacement = replacement }
+        func savePresentedItemChanges(completionHandler: @escaping (Error?) -> Void) {
+            lock.lock(); saves += 1; lock.unlock()
+            do {
+                guard let replacement, let url = presentedItemURL else { throw CocoaError(.fileWriteNoPermission) }
+                try replacement.write(to: url, options: .atomic)
+                completionHandler(nil)
+            } catch { completionHandler(error) }
+        }
+    }
+
     final class TestClock: @unchecked Sendable {
         private let lock = NSLock()
         private var value = Date()
@@ -206,6 +277,7 @@ struct SkillExecutionStandalone {
         let catalog = try BundledSkillCatalog.load(data: Data(contentsOf: URL(fileURLWithPath: args[1])))
         try SkillExecutionChecks.provenance(catalog); print("PASS six-skill provenance and dependency mapping")
         try await SkillExecutionChecks.nativePDF(); print("PASS actual PDFKit text, metadata, pages, encryption and invalid inputs")
+        try await SkillExecutionChecks.coordinatedRead(); print("PASS real file presenter save, refusal and post-coordination byte limit")
         try await SkillExecutionChecks.authorization(catalog); print("PASS per-step approval, replay, expiry, selection and byte snapshot")
         try await SkillExecutionChecks.cancellation(catalog); print("PASS upload gating, concurrency and cancellation")
         if args.count >= 3 {
@@ -222,6 +294,7 @@ struct SkillExecutionStandalone {
 final class SkillExecutionTests: XCTestCase {
     func testPinnedProvenanceAndDependencies() throws { try SkillExecutionChecks.provenance(BundledSkillCatalog.bundled()) }
     func testRealPDFKitExtraction() async throws { try await SkillExecutionChecks.nativePDF() }
+    func testCoordinatedSelectedFileRead() async throws { try await SkillExecutionChecks.coordinatedRead() }
     func testSelectedFileAndSingleUseAuthorization() async throws { try await SkillExecutionChecks.authorization(BundledSkillCatalog.bundled()) }
     func testCancellationAndUploadGating() async throws { try await SkillExecutionChecks.cancellation(BundledSkillCatalog.bundled()) }
 }
