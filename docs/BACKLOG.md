@@ -20,7 +20,7 @@
 - [ ] `WKWebView` tab manager: navigation, history, bookmarks, site mode and process recovery.
 - [ ] Decide explicit opt-in local-network browsing policy; the starter URL filter defaults to public destinations and does not yet satisfy full Mika parity.
 - [ ] Files import, attachment metadata and safe download vault.
-- [ ] XCTest / XCUITest fixtures for run cancellation, app relaunch and browser navigation.
+- [x] XCTest / XCUITest fixtures for run cancellation, app relaunch and browser navigation, including hosted WebKit integration (revision-specific acceptance in VERIFICATION).
 
 ## M2 — Controlled connections
 
@@ -30,6 +30,7 @@
 - [x] App-level tool/resource selection and bounded model-to-MCP orchestration with explicit per-call approval cards (simulator/live acceptance tracked in VERIFICATION).
 - [ ] OAuth PKCE, explicit session reinitialization UI and other required transport modes.
 - [ ] Authorized real-device HA control tests (target and allowed actions pending).
+- [x] Complete pinned Mika bundled-source catalog with hashes/licenses and separately reviewed iOS text adaptations.
 - [ ] Declarative Skills registry and remote compute job contracts.
 
 ## M3 — Browser parity and notifications

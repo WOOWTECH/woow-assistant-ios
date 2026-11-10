@@ -138,11 +138,16 @@ Executed local evidence for this increment:
 - Strict native Swift compilation/typechecking, App/UI source parsing and diff checks
   passed. A local SwiftPM build could not start because CLT lacks the SDK `PlatformPath`;
   this is not a successful packaged-resource build or an XCTest run.
-- **Three `SkillCatalogUITests` are implemented but pending execution**: full catalog
-  search/original/support-file/license reading; adaptation import, explicit approval
-  into trial and relaunch; empty search and rejection without enablement. UI parsing
-  is not simulator evidence. Three-device CI and actual bundled-resource loading in
-  the App remain to be verified; earlier browser-learning passes do not cover them.
+- **All three `SkillCatalogUITests` passed on SE, iPhone 16 Pro Max and iPhone 17**
+  at the consolidated App revision `bd1df7f`,
+  [42728389857](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42728389857):
+  full search/original/support-file/license reading; adaptation import, explicit
+  approval into trial and relaunch; empty search and rejection without enablement.
+  These exercised the actual packaged resource in the App. Other failures in that
+  run are documented separately, and this catalog evidence does not imply all UI
+  passed. The original `fe62cf9` catalog cases also passed on all three sizes.
+  The consolidated candidate and current cross-device results are tracked
+  in [VERIFICATION.md](VERIFICATION.md).
 
 ### Website adaptation and review flow
 

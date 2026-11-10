@@ -1,6 +1,13 @@
 # Verification — 2026-11-10
 
-## New MCP / DOM / bundled-catalog increment — acceptance in progress
+## MCP / DOM / bundled-catalog increment — implemented scope accepted
+
+The implemented increment has passing simulator and live-service evidence below.
+The final App source is `bd1df7f`; later `267e295` and `c16a040` change only fixture
+test scrolling and workflow selection. The original three-size run retains its SE
+failure; the affected complete case subsequently passed in the targeted run. This
+is composite, revision-specific evidence, not a claim that the original matrix
+was green or that full Mika parity / iOS 17 physical-device acceptance is complete.
 
 New code connects selected MCP tools/resources to a model conversation, exact
 per-call approval, bounded execution, cancellation and reviewable received results.
@@ -9,7 +16,12 @@ not yet implement provider-native function-call streaming, OAuth, stdio or legac
 Tool schemas are supplied verbatim; schema enforcement remains the server's job.
 Server annotations never grant consent. Limits: 12 model calls, 6 operations, 180s.
 The App reports attempts and received results separately; cancellation cannot undo
-an operation that reached the server. No automatic tool retry occurs.
+an operation that reached the server. No automatic tool retry occurs. Malformed
+model commands receive at most one format correction per conversation, charged to
+the same model-call/time budget; strict command parsing and per-call approval remain
+unchanged. The `31bac09` live diagnostic identified `invalidCommand` on model call 1,
+with zero proposals, dispatch attempts or received results, before this correction
+was added.
 
 Browser additions are observed DOM IDs and individually reviewed click/type/select/
 scroll operations, a single-step model proposer, back/forward/reload. Actual event
@@ -23,29 +35,118 @@ LICENSE and NOTICE; original bytes/hashes are verified. Original scripts remain
 inert. Separately labeled iOS text adaptations use pending-review → approved trial,
 and do not claim execution parity with the original skills.
 
-Local evidence before iOS CI: MCP 333 checks (234 existing + 99 new), catalog 255
+Local evidence before final iOS CI: MCP 458 checks (234 existing + 224 new), catalog 255
 and existing Skills 643, DOM policy 80 and real macOS WebKit DOM 29, App MCP
 network/namespace isolation 16, private-runner injection/cleanup 9. App logic typechecks
 with Swift 5.8 (old macOS WebKit delegate-isolation warnings remain); full SwiftPM is
 unavailable on this CLT-only host. Three new catalog UI, three DOM UI, five MCP UI,
-one real-model/public-site DOM UI and two combined real-model/HA UI cases await CI.
-These local checks do not count as iOS UI or live-service success.
+one real-model/public-site DOM UI and two combined real-model/HA UI cases have separate
+CI evidence below. Three hosted App navigation cases were added after the first live
+load failure; they use real local WebKit documents and explicitly synthetic failure/
+termination delegates, not a claim of actual OS process termination. Local checks do
+not count as iOS UI or live-service success.
 
 USB inventory currently contains no connected iPhone; local Xcode selection is
 Command Line Tools. iOS 17 physical-device validation remains unperformed.
 
-## Previous completed browser/learning checkpoint
+### Increment evidence and resolved test failures retained for review
 
-The implemented browser/learning increment has passed the full simulator matrix and
+Final candidate `bd1df7f` includes the single bounded MCP format correction and
+fixture harness fixes. [Three-size acceptance](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42728389857)
+now includes 21 UI cases: MCP 5, DOM 3, catalog 3, browser learning 3, memory 6,
+and memory race 1, plus native/core coverage. [Real HA acceptance](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42728394145)
+is separate and passed: native audited HA checks, discovery/reconnect UI and both
+real-model/HA cases, zero skips. The successful two-tool flow reported three model
+decisions, zero format corrections, exactly two attempts/two results/zero tool
+errors. Its refusal case preserved the draft. Format-correction behavior was
+exercised by deterministic tests; this successful live run did not need it. No
+HA mutations were sent. The completed matrix and subsequent targeted retests are
+recorded separately:
+
+| Execution / revision | Evidence | Result |
+|---|---|---|
+| App `bd1df7f`, iPhone 16 Pro Max / iOS 18.5 | [129540250710](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42728389857/job/129540250710) | 77 portable + 66 native + 21 UI passed; zero failures/skips |
+| App `bd1df7f`, iPhone 17 / iOS 26.2 | [129540251033](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42728389857/job/129540251033) | 77 portable + 66 native + 21 UI passed; zero failures/skips |
+| App `bd1df7f`, iPhone SE / iOS 18.5 | [129540251078](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42728389857/job/129540251078) | 77 portable + 66 native passed; UI 20 passed, 1 failed; zero skips |
+| Test-only `267e295`, same App source, SE Memory UI group | [42735292745](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42735292745) | 77 portable passed; UI 5/6 passed, zero skips; import now succeeds, rollback button lookup fails later |
+| Test-only `c16a040`, same App source, SE skill update/rollback | [42737745483](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42737745483) | 77 portable and the complete UI case passed (89.321s); zero failures/skips; rollback and relaunch/full-text assertions executed |
+| App `bd1df7f`, actual HA and model | [42728394145](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42728394145) | Native HA checks and all three live UI cases passed; zero skips; zero mutation calls |
+| Browser/learning App source `43e7094`, test revision `bcc7850` | [42727021885](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42727021885) | Seven native model calls and complete real five-page learning UI passed; zero skips; App browser/learning files unchanged in `bd1df7f` |
+
+The matrix's native 66 cases are MCP 15, Skills 15, Domain 32 and hosted Browser 4.
+Its 21 UI cases are MCP 5, DOM interaction 3, browser learning 3, catalog 3,
+Memory 6 and Memory race 1. Each device passed all ten hosted/interaction/learning
+browser cases and all three catalog cases. This targeted suite is not the older
+full 33-case fixture suite. The real-service runs are separate from these fixtures.
+
+The initial SE failure was `testSkillUpdateRejectionAndRollback`, before tapping
+`skills.import`. Its fixture AX evidence placed the import row at y=595.5…639.5,
+with a usable list viewport ending at y=611. Full-list swipes alternated past the
+row. `267e295` changes only the test harness/workflow: a measured, bounded drag
+accounts for the actual gap plus a margin, holds before release to avoid inertia,
+and still requires the entire control to be visible/hittable before a semantic tap.
+It does not coordinate-tap or skip the rollback assertions. Twenty-two local
+geometry cases (93 assertions) passed. The SE retest successfully imported the
+original skill, a rejected update, and an approved second version. It then failed
+at the rollback button in the unchanged generic scrolling helper: the control was
+present before a full swipe, then absent after that swipe and seven more upward
+swipes. The remaining failure is not evidence of a failed rollback operation;
+the button was never tapped. The other five Memory UI cases passed.
+`c16a040` applies the already exercised measured gesture only to `skills.rollback.*`
+in this suite. Its full-text, rollback-content and relaunch assertions are unchanged;
+the other five cases and shared learning UI helper are unchanged. The focused
+workflow reruns the affected complete case rather than only a button tap.
+That focused case passed: the semantic rollback tap, full-text view containing
+`VersionOne`, App termination/relaunch and the repeated document-content assertion
+all executed. This UI assertion checks the version marker, not byte-for-byte equality
+of the entire skill document.
+Together with the unchanged five cases that passed at `267e295`, this closes the
+six-case SE Memory group. It does not change the failed conclusion of the older run.
+The SE two-step clear test now passes with its exact saved-text assertion, without
+any change to production deletion behavior.
+
+Reproduce the selected acceptance suites from a checked-out revision with `gh`:
+
+```sh
+gh workflow run ios.yml --ref main -f test_scope=parity -f current_only=false -f compact_only=false
+gh workflow run ios.yml --ref main -f test_scope=memory-ui -f compact_only=true -f current_only=false
+gh workflow run live-mcp.yml --ref main
+gh workflow run live-model.yml --ref main -f ui_scope=browser-learning
+```
+
+Live runs require the repository secrets/variables documented in README. The
+commands target the branch's current commit; inspect each run's recorded SHA before
+comparing evidence. They do not request or prove signed-device distribution.
+
+- Full `40c6b1b` regression [42721186819](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42721186819): iPhone 17 and Large jobs succeeded; SE failed three fixture UI cases. SE/iPhone 17 each passed 74 portable and 75 native cases. Their UI results were respectively 30/33 and 33/33, with ten opt-in live skips each. Catalog 3/3 and MCP 5/5 passed on both.
+- SE final fixture evidence clarified the failures: the disabled DOM row was absent from the virtualized AX tree, not proven enabled; the skill-import gesture overshot a previously visible row and searched only farther down; the clear test had initially saved `Keep uil both confirmations` rather than its intended text. Cancel had preserved that actual record. `MemoryDataView` already reset list identity on segment changes, so no product scroll reset was added. Tests retain exact assertions and add bounded visible-row search, first-key/chunk verification and a pre-clear saved-text assertion.
+- `43e7094` hosted focus [42724088534](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42724088534): DOM UI 3/3 and the three new App navigation-state cases passed. The older DOM integration fixture failed with `InvalidTransition: idle → failed(deinit)`. `bcc7850` waits for the exact navigation's `didFinish` rather than `isLoading`, uses the callback evaluation API, and prints a fixed fixture stage on failure. All 29 original DOM assertions remain; local macOS execution passed. These fixture changes do not establish the old WebKit failure's exact internal cause.
+- `43e7094` live model [42724084043](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42724084043): seven native probes and 6/7 App UI cases passed. Five-page initial loading completed in 2.237 seconds, with actual six-action research, judged completion and pending draft checks passing. The case then failed on the destination header after tapping Memory; approval/relaunch was not reached. `bcc7850` observes native section selection after the single tap and retains the destination assertion; [targeted real-flow verification](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42727021885) passed all seven native calls and the complete five-page UI case (241.640s, zero skips). Both Memory transitions reported selected=true/status=true; explicit draft review/approval and byte-identical relaunch passed. Its App browser/learning source is unchanged from `43e7094`; the test adds selection observation, not a second tap or a relaxed learning assertion.
+- `31bac09` live HA [42724339138](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42724339138): native HA, discovery/reconnect and refusal passed; the two-tool case failed with `phase=requestingModel; modelCalls=1; attempts=0; results=0; failure=invalidCommand`. This is evidence of a rejected model command, not a network timeout or failed tool call. `bd1df7f` adds the single bounded format correction, without echoing invalid model content into feedback or weakening the parser.
+
+- `fe62cf9`, [42718456191](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42718456191): MCP 5/5 and catalog 3/3 fixture UI cases passed on all three sizes. The first browser cases failed in the test harness: fixed browser navigation was incorrectly checked against the Form viewport, and the WebKit native test had no App host. `40c6b1b` adds a hosted test bundle and separates fixed chrome visibility from Form scrolling.
+- `cfa1761` (App source `40c6b1b`), [42721768042](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42721768042): iPhone 17 passed all three actual-DOM interaction UI cases and the hosted WebKit case; 74 portable cases also passed. No assertions were removed to obtain this result.
+- `fe62cf9`, [42718460902](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42718460902): live HA discovery/reconnect UI and both real-model/HA UI cases passed. Native discovery found 77 tools and 17 resources; audited read-only calls/resource retrieval passed; mutation calls sent = 0.
+- `40c6b1b`, [42721190807](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42721190807): native HA and discovery/reconnect passed, as did the real-model refusal case. The two-tool case timed out waiting for its **first** proposal; no tool was approved. The old logs cannot distinguish the reason. `31bac09` adds fixed phase/counter diagnostics and model failure categories without retrying, changing deadlines, or weakening approval/command validation.
+- `f01f16e`, [42719715579](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42719715579): seven native model probes and 6/7 real UI cases passed, including an observed IANA About link proposed by the model and approved navigation to its actual URL. Five-page learning failed during the initial page load, before research. `43e7094` adds fixed load phases, terminal observation errors, and generation/navigation identity checks so failed or superseded pages cannot become current through late completion. The 75-second initial-page assertion is unchanged.
+- The initial standalone learning probe lacked explicit `observedURL` metadata on its synthetic actions. Adding the complete fixture metadata produced `done` with five citations, five unique actions, five observed URLs and two judge/drafter calls; eligibility rules were unchanged. The original failure log did not include sufficient detail to prove this was its sole cause.
+
+Live model/MCP logs contain only fixed categories, counters and test results; no
+live screenshots, full accessibility trees, tool bodies or xcresult artifacts are
+published. A passing retry on a later revision does not identify an earlier cause
+that was not logged. The final matrix's one SE failure is retained above; earlier
+passes are not silently reassigned to changed production code.
+
+## Previous browser/learning acceptance checkpoint
+
+That earlier browser/learning increment passed the full simulator matrix and
 real-model App flow described below. The broader App remains in development; this
 is not full Mika feature parity. Fixture, native-network and live UI evidence are
 reported separately.
 
-## Current acceptance checkpoint
-
 Application source `2654965` includes the browser/learning integration, the native
 modal container, exact reviewed provenance, trusted UUID validation, bounded
-model-command correction and measured cold-start allowances. The latest full matrix
+model-command correction and measured cold-start allowances. That checkpoint's full matrix
 uses this revision; live test revision `fbe4669` changes only its navigation wait,
 with identical App production source. Earlier evidence remains
 listed by source revision and must not be confused with current acceptance:
