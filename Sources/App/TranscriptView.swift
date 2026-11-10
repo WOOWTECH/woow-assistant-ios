@@ -35,6 +35,7 @@ import UniformTypeIdentifiers
                 Button("選取文字稿或字幕檔") { choosing = true }
                     .disabled(session.running).accessibilityIdentifier("transcript.choose")
                 #if DEBUG
+                Text(session.diagnostic).font(.caption).accessibilityIdentifier("transcript.diagnostic")
                 if let fixtureNotice {
                     Text(verbatim: fixtureNotice).accessibilityIdentifier("transcript.uitest.fixture")
                     Text(session.audit.evidence).font(.caption).accessibilityIdentifier("transcript.uitest.audit")

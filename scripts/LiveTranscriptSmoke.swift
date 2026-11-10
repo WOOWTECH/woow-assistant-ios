@@ -103,7 +103,10 @@ struct LiveTranscriptSmoke {
             totalCalls += counts.calls
             let duration = start.duration(to: .now).components
             let milliseconds = duration.seconds * 1000 + duration.attoseconds / 1_000_000_000_000_000
-            emit("TRANSCRIPT_FORMAT format=\(format.rawValue) status=\(succeeded ? "PASS" : "FAIL") code=\(outcomeCode) calls=\(counts.calls) responses=\(counts.responses) reads=\(reads) covered=\(covered) total=\(source.byteCount) sections=\(sections) citations=\(citations) elapsedMs=\(milliseconds)")
+            // The runtime enum cannot contain model-supplied text or fields.
+            let reason = runtime?.lastCommandFailureReason?.rawValue ?? "none"
+            let corrections = runtime?.formatCorrections ?? 0
+            emit("TRANSCRIPT_FORMAT format=\(format.rawValue) status=\(succeeded ? "PASS" : "FAIL") code=\(outcomeCode) reason=\(reason) corrections=\(corrections) calls=\(counts.calls) responses=\(counts.responses) reads=\(reads) covered=\(covered) total=\(source.byteCount) sections=\(sections) citations=\(citations) elapsedMs=\(milliseconds)")
         }
         emit("TRANSCRIPT_PROBE status=\(passed == 5 ? "PASS" : "FAIL") attempted=5 passed=\(passed) failed=\(5 - passed) calls=\(totalCalls) ui=0 fetchedPage=0")
         if passed != 5 { exit(1) }

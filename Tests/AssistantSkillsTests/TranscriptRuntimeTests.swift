@@ -45,12 +45,13 @@ import XCTest
         return try await reader.read(approving: review.id)
     }
     static func http(_ runtime: TranscriptRuntime, _ scenario: TranscriptHTTPFixture.Scenario,
-                     context: @escaping @MainActor () throws -> Void = {}) async throws -> TranscriptOutcome {
+                     context: @escaping @MainActor () throws -> Void = {},
+                     onEvent: @escaping @MainActor (TranscriptEvent) -> Void = { _ in }) async throws -> TranscriptOutcome {
         let url = TranscriptHTTPFixture.register(scenario); defer { TranscriptHTTPFixture.remove(url) }
         let session = TranscriptHTTPFixture.session(); defer { session.invalidateAndCancel() }
         return try await runtime.run(client: HTTPChatModelClient(session: session),
             configuration: .init(baseURL: url, model: "transcript-fixture", maxOutputTokens: 8192), apiKey: key,
-            validateContext: context)
+            validateContext: context, onEvent: onEvent)
     }
     static func completed(_ outcome: TranscriptOutcome) throws -> TranscriptResult {
         guard case .completed(let result) = outcome else { throw Failure(message: "expected verified result") }
@@ -203,7 +204,7 @@ import XCTest
         try await rejects(.invalidRange) { _ = try await http(TranscriptRuntime(source: unicode, catalog: catalog), .init([try read(0, 1)])) }
         try await rejects(.invalidRange) { _ = try await http(TranscriptRuntime(source: unicode, catalog: catalog), .init([try read(0, 3), try read(1)])) }
         let path = try json(["action": "tool", "name": "read_file", "arguments": ["offset": 0, "limit": 100, "path": "/etc/passwd"] as [String: Any]])
-        try await rejects(.invalidCommand) { _ = try await http(TranscriptRuntime(source: source, catalog: catalog), .init([path])) }
+        try await rejects(.invalidCommand) { _ = try await http(TranscriptRuntime(source: source, catalog: catalog), .init([path, path])) }
     }
 
     static func exactEvidence(_ catalog: BundledSkillCatalog) async throws {
@@ -234,9 +235,9 @@ import XCTest
         let rejected = TranscriptHTTPFixture.Scenario([try read(0)], status: 401)
         try await rejects(.modelFailed) { _ = try await http(TranscriptRuntime(source: source, catalog: catalog), rejected) }
         try expect(rejected.count == 1, "HTTP errors do not retry")
-        let invalid = TranscriptHTTPFixture.Scenario(["not JSON"])
+        let invalid = TranscriptHTTPFixture.Scenario(["not JSON", "not JSON"])
         try await rejects(.invalidCommand) { _ = try await http(TranscriptRuntime(source: source, catalog: catalog), invalid) }
-        try expect(invalid.count == 1, "malformed response stops")
+        try expect(invalid.count == 2, "second malformed response stops after the single format correction")
     }
 
     static func waitForRequest(_ scenario: TranscriptHTTPFixture.Scenario) async throws {
@@ -246,21 +247,34 @@ import XCTest
     }
     static func cancellationAndTimeout(_ catalog: BundledSkillCatalog) async throws {
         let source = try await snapshot()
-        let cancelled = try TranscriptRuntime(source: source, catalog: catalog)
-        let held = TranscriptHTTPFixture.Scenario([], hold: true)
-        let request = Task { try await http(cancelled, held) }
-        try await waitForRequest(held); cancelled.cancel()
-        try await rejects(.cancelled) { _ = try await request.value }
-        try expect(cancelled.reads.isEmpty && held.stops > 0, "cancellation reaches actual URLSession transport")
-        let expired = try TranscriptRuntime(source: source, catalog: catalog, limits: .init(modelTime: .milliseconds(150)))
-        let pending = TranscriptHTTPFixture.Scenario([], hold: true)
-        try await rejects(.timedOut) { _ = try await http(expired, pending) }
-        try expect(pending.stops > 0 && expired.reads.isEmpty, "bounded model timeout cancels URLSession")
-        let outer = try TranscriptRuntime(source: source, catalog: catalog), transport = TranscriptHTTPFixture.Scenario([], hold: true)
-        let outerTask = Task { try await http(outer, transport) }
-        try await waitForRequest(transport); outerTask.cancel()
-        try await rejects(.cancelled) { _ = try await outerTask.value }
-        try expect(transport.stops > 0, "outer task cancellation reaches transport")
+        enum Cancellation { case runtime, timeout, parentTask }
+        for cancellation in [Cancellation.runtime, .timeout, .parentTask] {
+            let runtime = try TranscriptRuntime(source: source, catalog: catalog,
+                limits: .init(modelTime: cancellation == .timeout ? .milliseconds(150) : .seconds(180)))
+            let scenario = TranscriptHTTPFixture.Scenario([], hold: true)
+            let url = TranscriptHTTPFixture.register(scenario), session = TranscriptHTTPFixture.session()
+            // Retain the session until AFTER the stop acknowledgement assertion.
+            // Teardown must not supply the cancellation this test is proving.
+            defer { session.invalidateAndCancel(); TranscriptHTTPFixture.remove(url) }
+            let request = Task {
+                try await runtime.run(client: HTTPChatModelClient(session: session),
+                    configuration: .init(baseURL: url, model: "transcript-fixture", maxOutputTokens: 8192), apiKey: key)
+            }
+            try await waitForRequest(scenario)
+            switch cancellation {
+            case .runtime: runtime.cancel()
+            case .timeout: break
+            case .parentTask: request.cancel()
+            }
+            try await rejects(cancellation == .timeout ? .timedOut : .cancelled) { _ = try await request.value }
+            // URLSession cancel returns before transport acknowledgement. Match
+            // the existing 2s request-observation bound; never substitute sleep
+            // completion for the actual URLProtocol.stopLoading callback.
+            let deadline = ContinuousClock.now + .seconds(2)
+            while scenario.stops == 0 && ContinuousClock.now < deadline { try await Task.sleep(for: .milliseconds(5)) }
+            try expect(scenario.stops > 0, "cancellation must reach actual URLSession transport before session teardown")
+            try expect(runtime.reads.isEmpty && scenario.count == 1, "cancelled transport cannot read source or send another request")
+        }
     }
 
     static func changedContext(_ catalog: BundledSkillCatalog) async throws {
@@ -308,7 +322,7 @@ import XCTest
         try await rejects(.invalidSelection) { _ = try reader.select(url) }
         try await rejects(.invalidCommand) {
             let command = try json(["action": "tool", "name": "web_read_page", "arguments": ["url": url.absoluteString]])
-            _ = try await http(TranscriptRuntime(source: source, catalog: catalog), .init([command]))
+            _ = try await http(TranscriptRuntime(source: source, catalog: catalog), .init([command, command]))
         }
     }
 }
@@ -326,7 +340,12 @@ import XCTest
             ("HTTP refusal/budgets/errors", TranscriptChecks.refusalAndBudgets),
             ("URLSession cancellation/timeout", TranscriptChecks.cancellationAndTimeout),
             ("late HTTP response/model changes", TranscriptChecks.changedContext),
-            ("approved webpage provenance/data-only/file gate", TranscriptChecks.approvedWebSource)
+            ("approved webpage provenance/data-only/file gate", TranscriptChecks.approvedWebSource),
+            ("HTTP one schema correction and safe reasons", TranscriptChecks.schemaCorrection),
+            ("HTTP second invalid command stops across reads", TranscriptChecks.correctionLimit),
+            ("HTTP unknown tools/paths cannot execute", TranscriptChecks.correctionAuthority),
+            ("HTTP correction shares call budget; other errors stop", TranscriptChecks.correctionBudgets),
+            ("HTTP correction cancellation/context/time budget", TranscriptChecks.correctionCancellation)
         ]
         var failures = 0
         for (name, check) in checks {
@@ -335,7 +354,7 @@ import XCTest
         }
         fflush(stdout)
         if failures > 0 { throw TranscriptChecks.Failure(message: "\(failures) transcript suite(s) failed") }
-        print("PASS all 9 transcript suites")
+        print("PASS all \(checks.count) transcript suites")
     }
 }
 #else

@@ -12,6 +12,7 @@ import Foundation
     @Published private(set) var running = false
     @Published private(set) var status = "請選取文字稿或字幕檔。"
     @Published private(set) var error: String?
+    @Published private(set) var diagnostic = "TRANSCRIPT_DIAGNOSTIC terminal=idle reason=none corrections=0"
     #if DEBUG
     @Published private(set) var audit = TranscriptUITestAudit()
     #endif
@@ -20,9 +21,36 @@ import Foundation
     private var runtime: TranscriptRuntime?
     private var task: Task<Void, Never>?
     private var operationID: UUID?
+    private var commandFailureReason: TranscriptCommandFailureReason?
+    private var formatCorrections = 0
+
+    private enum Phase {
+        case idle, reading, running, completed, refused, unknownFailure
+        case failed(TranscriptError)
+        var code: String {
+            switch self {
+            case .idle: return "idle"
+            case .reading: return "reading"
+            case .running: return "running"
+            case .completed: return "completed"
+            case .refused: return "refused"
+            case .unknownFailure: return "unknownFailure"
+            case .failed(let error): return error.rawValue
+            }
+        }
+    }
+
+    private func recordDiagnostic(_ phase: Phase) {
+        diagnostic = "TRANSCRIPT_DIAGNOSTIC terminal=\(phase.code) reason=\(commandFailureReason?.rawValue ?? "none") corrections=\(formatCorrections)"
+    }
+
+    private func resetDiagnostic() {
+        commandFailureReason = nil; formatCorrections = 0; recordDiagnostic(.idle)
+    }
 
     func select(_ url: URL) {
         cancel(notice: false); snapshot = nil; result = nil; refusal = nil; error = nil
+        resetDiagnostic()
         do {
             review = try files.select(url); status = "請核對檔名與讀取範圍，尚未讀取內容。"
             #if DEBUG
@@ -36,6 +64,7 @@ import Foundation
         guard let review, !running else { return }
         let id = UUID(); operationID = id; running = true; error = nil
         status = "正在讀取核准的文字檔，尚未傳送模型…"
+        recordDiagnostic(.reading)
         task = Task { [weak self] in
             guard let self else { return }
             do {
@@ -46,6 +75,7 @@ import Foundation
                 self.audit.record(.fileRead(bytes: source.byteCount))
                 #endif
                 self.status = "已讀取文字快照。請核對目的服務，再明確開始模型整理。"
+                self.recordDiagnostic(.idle)
             } catch {
                 guard self.operationID == id else { return }
                 self.fail(error)
@@ -67,6 +97,7 @@ import Foundation
         } catch {
             access = nil; destination = nil
             self.error = "無法取得已設定的模型服務，請先儲存模型設定。"
+            recordDiagnostic(.failed(.modelFailed))
         }
     }
 
@@ -76,6 +107,7 @@ import Foundation
             try validate(approvedAccess, current: modelAccess())
             let runtime = try TranscriptRuntime(source: source, format: format, catalog: .bundled())
             self.runtime = runtime; error = nil; result = nil; refusal = nil
+            resetDiagnostic(); recordDiagnostic(.running)
             let id = UUID(); operationID = id; running = true
             task = Task { [weak self] in
                 do {
@@ -98,6 +130,12 @@ import Foundation
                                 #if DEBUG
                                 self.audit.record(.rangeRead(covered: covered, total: total))
                                 #endif
+                            case .commandFormatRejected(let reason, let issued):
+                                self.commandFailureReason = reason
+                                if issued { self.formatCorrections += 1 }
+                                self.recordDiagnostic(.running)
+                                self.status = issued ? "模型指令格式無效；正在要求一次格式修正，尚未執行該動作。"
+                                    : "模型指令格式仍無效，本次整理已停止。"
                             }
                         })
                     guard let self, self.operationID == id, !Task.isCancelled else { return }
@@ -110,8 +148,10 @@ import Foundation
                         self.audit.record(.completed)
                         #endif
                         self.status = "全文讀取與原文證據逐字核對已完成；請再核對整理內容。"
+                        self.recordDiagnostic(.completed)
                     case .refused(let reason):
                         self.refusal = reason; self.status = "模型未完成整理，沒有新增記憶或技能。"
+                        self.recordDiagnostic(.refused)
                     }
                 } catch {
                     guard let self, self.operationID == id else { return }
@@ -122,13 +162,16 @@ import Foundation
     }
 
     func cancel(notice: Bool = true) {
+        let wasRunning = running
         operationID = nil; files.cancel(); task?.cancel(); task = nil; runtime?.cancel(); runtime = nil
         running = false; review = nil
+        if notice || wasRunning { recordDiagnostic(.failed(.cancelled)) }
         if notice { status = TranscriptError.cancelled.errorDescription! }
     }
 
     func hostChanged() {
         cancel(notice: false); access = nil; destination = nil
+        if result == nil { recordDiagnostic(.failed(.contextChanged)) }
         status = result == nil ? TranscriptError.contextChanged.errorDescription!
             : "模型設定已變更；已交付的整理與原文仍保留，再次整理前請重新確認目的服務。"
     }
@@ -137,6 +180,7 @@ import Foundation
     /// Loading a snapshot never reads a URL or automatically starts the model.
     func loadApprovedSource(_ source: TranscriptSnapshot) {
         cancel(notice: false); result = nil; refusal = nil; error = nil
+        resetDiagnostic()
         access = nil; destination = nil; snapshot = source
         status = "已接收你核准的文字快照。請確認目的服務，再明確開始模型整理。"
     }
@@ -154,5 +198,6 @@ import Foundation
         cancel(notice: false); result = nil
         status = "本次文字整理未完成。"
         self.error = (error as? TranscriptError)?.errorDescription ?? "無法完成本次整理，沒有新增記憶或技能。"
+        recordDiagnostic((error as? TranscriptError).map { .failed($0) } ?? .unknownFailure)
     }
 }

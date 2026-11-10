@@ -1,5 +1,21 @@
 # Verification — 2026-11-10
 
+## Transcript bounded command repair ready for native and live regression
+
+The runtime now permits one fixed schema correction across the entire task, within the original **24 calls / 180 seconds**. A second invalid command, invalid byte range, incomplete coverage or unverifiable quote stops without executing the rejected operation. Actual HTTP tests cover cancellation acknowledgements before session teardown, context revocation, cumulative deadlines, no unknown tool/path execution and preservation of previous valid reads. All **14 local HTTP/core groups** passed, with DEBUG/Release UI fixture guards and warnings-as-errors compilation of the Session/probe. Native and actual-model runs on the repair are still required.
+
+The original `e493842` native transcript matrix is retained: current and SE each **17/19**, large **16/19**, zero skips. All three hit the too-early transport-cancellation assertion; native selected-file handoff also failed on each variant, and large additionally showed an expensive AX collection query. The test repairs wait for actual cancellation acknowledgement before teardown and use the specific live first-match query. They do not inject a selected URL, retry a native file tap or waive either approval.
+
+The standard simulator workflow now exposes the same eight non-Live UI shards as iOS 17, plus a complete native/hosted scope. Its inventory verifies all **57 current non-Live UI methods** have exactly one owner; this avoids treating a long monolithic timeout or omitted class as acceptance. It does not itself execute those cases.
+
+
+## Actual HA discovery passed; model request rejected before tool execution
+
+At `23b47f4`, iOS 18.5 [42808237063](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42808237063) passed native HA initialization, catalog discovery, audited read-only operations, explicit business-error handling and local rejection of unapproved mutation. Native App discovery/disconnect/reconnect passed **1/1, zero skips**. The actual-model conversation cases failed **0/2**. The two-tool case recorded its first model HTTP request rejected with **zero proposed/attempted/completed MCP operations**; the older refusal test did not preserve a terminal category. [Fixed-category evidence](evidence/live-ha-23b47f4.json).
+
+`2390926` separates authentication rejection, rate limiting, provider server errors and other request rejection into fixed enum categories, without retaining response bodies or retrying a tool. The refusal UI now waits for an actual proposal or terminal App state and prints only App-owned counters/categories. All 15 local MCP groups / 498 checks passed, including transport, exact approvals, single schema correction, deadline/cancellation and no replay after model failure. A new actual HA run is required; diagnostics alone are not a model-service repair.
+
+
 ## Corrected settings matrix and iOS 17 browser interaction passed
 
 At `2fce6cf`, [42805681299](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805681299) passed **10/10 on each of SE/18.5, large/18.5 and current/26.2**, zero failures/skips. This includes eight native appearance cases, actual appearance/persistence UI and dedicated script-service settings save/remove/relaunch with zero automatic PDF reads. The corrected fixed-header selector reached the real settings form. This does not establish deployed worker connectivity. [Exact summaries](evidence/settings-matrix-2fce6cf.json).

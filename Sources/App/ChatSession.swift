@@ -250,6 +250,7 @@ final class ChatSession: ObservableObject {
                 }
                 // Do not surface provider error bodies/URLs: they may contain secrets.
                 let message = (error as? MCPChatStop)?.message
+                    ?? Self.modelFailureMessage(error as? MCPConversationError)
                     ?? ((error as? MCPConversationError) == .invalidCommand
                         ? "模型仍未提供可用的單一步驟指令，已停止；草稿與先前工具結果保留。" : nil)
                     ?? (mcpConnection == nil ? "傳送失敗，草稿已保留。請檢查模型設定或網路後重試。"
@@ -266,6 +267,26 @@ final class ChatSession: ObservableObject {
             if mcpConnection != nil { self.updateMCPDiagnostics(failure: "hostDeadline") }
             self.finish(id: id, error: "等待超過 \(seconds) 秒，已停止等待；草稿已保留，可重試。")
         }
+    }
+
+    private static func modelFailureMessage(_ error: MCPConversationError?) -> String? {
+        let reason: String
+        switch error {
+        case .modelAuthenticationRejected:
+            reason = "模型服務拒絕驗證，請檢查模型金鑰與存取權限。"
+        case .modelRateLimited:
+            reason = "模型服務目前限制請求，請稍後再試。"
+        case .modelServiceUnavailable:
+            reason = "模型服務暫時無法處理請求，請稍後再試。"
+        case .modelRequestRejected, .modelHTTPRejected:
+            reason = "模型服務拒絕這次請求，請檢查服務與模型設定。"
+        case .modelTimedOut:
+            reason = "等待模型回覆已逾時。"
+        case .modelTransportFailed:
+            reason = "無法連線至模型服務，請檢查網路。"
+        default: return nil
+        }
+        return reason + "草稿與已收到的工具結果保留；沒有自動重送操作。"
     }
 
     func cancel() {

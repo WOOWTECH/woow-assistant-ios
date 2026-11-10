@@ -110,9 +110,16 @@ public struct TranscriptResult: Sendable {
     public let modelCalls: Int
 }
 
+/// Fixed diagnostic categories only; never contains a model-supplied field,
+/// value, tool name, path, endpoint or reply excerpt.
+public enum TranscriptCommandFailureReason: String, Error, Sendable, CaseIterable {
+    case syntax, size, fields, action, tool, arguments
+}
+
 public enum TranscriptEvent: Sendable {
     case requestingModel(Int)
     case read(coveredBytes: Int, totalBytes: Int)
+    case commandFormatRejected(reason: TranscriptCommandFailureReason, correctionIssued: Bool)
 }
 
 public struct TranscriptLimits: Sendable {

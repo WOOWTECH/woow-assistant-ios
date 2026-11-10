@@ -74,6 +74,7 @@ final class LiveTranscriptUITests: XCTestCase {
         let finished = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"), object: start)
         XCTAssertEqual(XCTWaiter.wait(for: [finished], timeout: 185), .completed)
         let audit = try driver.audit()
+        recordSafeDiagnostic(audit: audit)
         XCTAssertEqual(audit["selections"], 1); XCTAssertEqual(audit["reads"], 1); XCTAssertEqual(audit["results"], 1)
         XCTAssertTrue((audit["rangeReads"] ?? 0) >= 2)
         XCTAssertTrue((audit["modelAttempts"] ?? 0) >= 3)
@@ -97,6 +98,29 @@ final class LiveTranscriptUITests: XCTestCase {
         try driver.show(app.staticTexts["skills.empty"], readable: true)
         try driver.tap("memory.segment.pending")
         try driver.show(app.staticTexts["memory.pending.empty"], readable: true)
+    }
+
+    /// Never print status/refusal/error prose, AX trees or model replies. These
+    /// allowlists also reject accidental future additions of arbitrary values.
+    private func recordSafeDiagnostic(audit: [String: Int]) {
+        let element = app.staticTexts["transcript.diagnostic"]
+        let tokens = element.exists ? element.label.split(separator: " ").map(String.init) : []
+        let terminals: Set<String> = ["idle", "reading", "running", "completed", "refused", "unknownFailure",
+            "invalidSelection", "unsupportedType", "tooLarge", "invalidEncoding", "emptySource", "approvalRequired",
+            "cancelled", "readTimedOut", "invalidCommand", "invalidRange", "incompleteCoverage", "invalidEvidence",
+            "budgetExceeded", "modelFailed", "timedOut", "contextChanged"]
+        let reasons: Set<String> = ["none", "syntax", "size", "fields", "action", "tool", "arguments"]
+        if tokens.count == 4, tokens[0] == "TRANSCRIPT_DIAGNOSTIC",
+           terminals.map({ "terminal=" + $0 }).contains(tokens[1]),
+           reasons.map({ "reason=" + $0 }).contains(tokens[2]),
+           ["corrections=0", "corrections=1"].contains(tokens[3]) {
+            print(tokens.joined(separator: " "))
+        } else { print("TRANSCRIPT_DIAGNOSTIC unavailable") }
+        let names = ["selections", "reads", "modelAttempts", "rangeReads", "covered", "total", "results"]
+        guard names.allSatisfy({ audit[$0].map { (0...65536).contains($0) } == true }) else {
+            print("TRANSCRIPT_AUDIT unavailable"); return
+        }
+        print("TRANSCRIPT_AUDIT " + names.map { "\($0)=\(audit[$0]!)" }.joined(separator: " "))
     }
     private enum SetupFailure: Error { case missingConfiguration }
 }

@@ -1,0 +1,38 @@
+{
+  "revision": "23b47f4",
+  "run": 42808237063,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42808237063",
+  "runtime": "18.5",
+  "physicalDevice": false,
+  "nativeAcceptance": [
+    "PASS: native MCP initialize + initialized notification",
+    "PASS: native MCP ping",
+    "PASS: native tools discovery; count=77",
+    "PASS: native catalogs; resources=17, prompts=0, templates=0",
+    "PASS: native read-only tool ha_get_overview",
+    "PASS: native read-only tool ha_list_floors_areas",
+    "PASS: native read-only tool ha_list_services",
+    "PASS: native read-only tool ha_search",
+    "PASS: native read-only tool ha_get_skill_guide",
+    "PASS: native read-only tool ha_config_get_dashboard",
+    "PASS: native read-only tool ha_eval_template",
+    "PASS: native discovered-entity state read; target/value redacted",
+    "PASS: native tool business error preserved",
+    "PASS: unapproved mutation blocked locally before network",
+    "PASS: native documentation resource read; body redacted",
+    "PASS: live native MCP acceptance; mutation calls sent=0"
+  ],
+  "uiDiscovery": {
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "uiModelConversation": {
+    "passed": 0,
+    "failed": 2,
+    "skipped": 0
+  },
+  "firstModelTransition": "phase=requestingModel;modelCalls=1;formatCorrections=0;attempts=0;results=0;toolErrors=0;failure=modelHTTPRejected",
+  "refusalCase": "No proposal within 95 seconds; older test did not retain a fixed terminal category.",
+  "limitation": "HTTP category did not preserve status; authentication, rate limit, server error and request rejection are not distinguishable in this run. No MCP operation was dispatched in the two-tool case."
+}

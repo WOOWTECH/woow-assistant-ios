@@ -21,7 +21,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, picker-uikit, pdf-export, authoring, skill-settings, transcript, memory-ui, memory-rollback, learning, browser, core, startup]
+        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, picker-uikit, pdf-export, authoring, skill-settings, transcript, memory-ui, memory-rollback, learning, browser, core, native, startup, ui-startup, ui-workspace, ui-browser, ui-learning, ui-memory, ui-skills, ui-documents, ui-mcp]
         default: all
 
 permissions:
@@ -126,9 +126,25 @@ jobs:
           test_filters=()
           maximum_case_seconds=300
           case '${{ inputs.test_scope }}' in
-            workspace|login|all|'') maximum_case_seconds=420 ;;
+            workspace|login|ui-workspace|all|'') maximum_case_seconds=420 ;;
           esac
           case '${{ inputs.test_scope }}' in
+            ui-*|native)
+              python3 - '${{ inputs.test_scope }}' > build/ui-shard-filters.txt <<'PY'
+          from pathlib import Path
+          import sys
+          sys.path.insert(0, 'scripts')
+          from release_ios17 import TEST_SCOPES, UI_SHARDS, ui_inventory
+          scope = sys.argv[1]
+          if scope != 'native' and scope not in UI_SHARDS:
+              raise SystemExit('Unknown validation scope')
+          ui_inventory(Path.cwd())  # Every non-Live UI method must have one owner.
+          for selector in TEST_SCOPES['core' if scope == 'native' else scope]:
+              print('-only-testing:' + selector)
+          PY
+              while IFS= read -r selector; do test_filters+=("$selector"); done < build/ui-shard-filters.txt
+              test "${#test_filters[@]}" -gt 0
+              ;;
             login)
               test_filters=(-only-testing:WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout)
               ;;
@@ -151,7 +167,7 @@ jobs:
               test_filters=(-only-testing:AssistantSkillsTests/SkillAuthoringBridgeTests -only-testing:WoowAssistantUITests/SkillAuthoringUITests)
               ;;
             transcript)
-              test_filters=(-only-testing:AssistantSkillsTests/TranscriptRuntimeTests -only-testing:AssistantBrowserIntegrationTests/BrowserSessionNavigationTests -only-testing:WoowAssistantUITests/TranscriptUITests)
+              test_filters=(-only-testing:AssistantSkillsTests/TranscriptRuntimeTests -only-testing:AssistantSkillsTests/TranscriptCommandRecoveryTests -only-testing:AssistantBrowserIntegrationTests/BrowserSessionNavigationTests -only-testing:WoowAssistantUITests/TranscriptUITests)
               ;;
             skill-settings)
               test_filters=(-only-testing:AssistantSkillsTests/SelfConfigurationTests -only-testing:WoowAssistantUITests/SelfConfigurationUITests -only-testing:WoowAssistantUITests/SkillWorkerSettingsUITests)

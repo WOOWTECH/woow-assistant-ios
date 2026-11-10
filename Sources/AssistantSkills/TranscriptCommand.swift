@@ -10,16 +10,18 @@ enum TranscriptCommand {
     case refuse(String)
 
     static func parse(_ text: String) throws -> Self {
-        guard text.utf8.count <= 48 * 1024,
-              let object = try? JSONSerialization.jsonObject(with: Data(text.utf8)) as? [String: Any],
-              let action = object["action"] as? String else { throw TranscriptError.invalidCommand }
+        guard text.utf8.count <= 48 * 1024 else { throw TranscriptCommandFailureReason.size }
+        guard let decoded = try? JSONSerialization.jsonObject(with: Data(text.utf8)) else {
+            throw TranscriptCommandFailureReason.syntax
+        }
+        guard let object = decoded as? [String: Any] else { throw TranscriptCommandFailureReason.fields }
+        guard let action = object["action"] as? String else { throw TranscriptCommandFailureReason.action }
         switch action {
         case "tool":
             try keys(object, ["action", "name", "arguments"])
-            guard object["name"] as? String == "read_file", let args = object["arguments"] as? [String: Any] else {
-                throw TranscriptError.invalidCommand
-            }
-            try keys(args, ["offset", "limit"])
+            guard object["name"] as? String == "read_file" else { throw TranscriptCommandFailureReason.tool }
+            guard let args = object["arguments"] as? [String: Any] else { throw TranscriptCommandFailureReason.arguments }
+            try keys(args, ["offset", "limit"], reason: .arguments)
             return .read(offset: try integer(args, "offset"), limit: try integer(args, "limit"))
         case "refuse":
             try keys(object, ["action", "reason"])
@@ -27,7 +29,7 @@ enum TranscriptCommand {
         case "finish":
             try keys(object, ["action", "title", "sections"])
             guard let rows = object["sections"] as? [[String: Any]], (1...40).contains(rows.count) else {
-                throw TranscriptError.invalidCommand
+                throw TranscriptCommandFailureReason.fields
             }
             let sections = try rows.map { row -> Section in
                 try keys(row, ["title", "text", "evidence"])
@@ -43,17 +45,18 @@ enum TranscriptCommand {
                 return Section(title: try string(row, "title", max: 200), text: try string(row, "text", max: 16000), citations: evidence)
             }
             return .finish(title: try string(object, "title", max: 200), sections: sections)
-        default: throw TranscriptError.invalidCommand
+        default: throw TranscriptCommandFailureReason.action
         }
     }
 
-    private static func keys(_ object: [String: Any], _ required: Set<String>, optional: Set<String> = []) throws {
+    private static func keys(_ object: [String: Any], _ required: Set<String>, optional: Set<String> = [],
+                             reason: TranscriptCommandFailureReason = .fields) throws {
         let keys = Set(object.keys)
-        guard required.isSubset(of: keys), keys.isSubset(of: required.union(optional)) else { throw TranscriptError.invalidCommand }
+        guard required.isSubset(of: keys), keys.isSubset(of: required.union(optional)) else { throw reason }
     }
     private static func string(_ object: [String: Any], _ key: String, max: Int) throws -> String {
         guard let value = object[key] as? String, !value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
-              value.utf8.count <= max else { throw TranscriptError.invalidCommand }
+              value.utf8.count <= max else { throw TranscriptCommandFailureReason.fields }
         return value
     }
     private static func integer(_ object: [String: Any], _ key: String) throws -> Int {

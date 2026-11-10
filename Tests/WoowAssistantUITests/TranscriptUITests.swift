@@ -290,7 +290,13 @@ struct TranscriptUIDriver {
         return visible(cells.matching(NSPredicate(format: "identifier IN %@", [stem + ", txt", filename])))
     }
     private func visible(_ query: XCUIElementQuery) -> XCUIElement? {
-        query.allElementsBoundByAccessibilityElement.prefix(6).first { $0.exists && $0.isHittable && $0.isEnabled }
+        // Route labels and namespace filenames identify a specific native
+        // control. Resolving the entire remote collection during a folder
+        // transition can outlive the predicate waiter's deadline (observed on
+        // iOS 18.5). Keep a live query and ask only for its first match.
+        let element = query.firstMatch
+        guard element.exists, element.isHittable, element.isEnabled else { return nil }
+        return element
     }
     private func item(_ labels: [String]) -> XCUIElement? {
         let predicate = NSPredicate(format: "label IN %@", labels)
