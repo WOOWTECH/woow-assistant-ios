@@ -18,7 +18,9 @@ defaults:
     shell: bash
 
 concurrency:
-  group: live-model
+  # A single global group can retain only one pending run, even with cancellation
+  # disabled. Independent acceptance scopes must not evict each other in queue.
+  group: live-model-${{ inputs.ui_scope || 'all' }}
   cancel-in-progress: false
 
 jobs:
