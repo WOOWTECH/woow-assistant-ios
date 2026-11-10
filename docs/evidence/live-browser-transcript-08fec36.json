@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source_revision": "08fec36",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42802827631",
+  "job_id": 129784423274,
+  "device": "iPhone 16 Pro Max",
+  "runtime": "iOS 18.5",
+  "passed": 1,
+  "failed": 0,
+  "skipped": 0,
+  "case_seconds": 76.495,
+  "case": "LiveModelUITests/testRealModelTranscribesApprovedPublicWebTextWithVerifiedQuotes",
+  "scope": "Actual IANA WebKit page capture; explicit source and configured model destination approval; actual model range read and byte-verified quotes; no auto skill creation. Initial DOM implementation only, not later omissions fix or iOS 17/physical-device acceptance.",
+  "safe_log_excerpt": [
+    "2026-11-10T11:22:44.9127670Z Test Suite 'LiveModelUITests' started at 2026-11-10 11:22:44.845.",
+    "2026-11-10T11:22:44.9231610Z Test Case '-[WoowAssistantUITests.LiveModelUITests testRealModelTranscribesApprovedPublicWebTextWithVerifiedQuotes]' started.",
+    "2026-11-10T11:24:01.3502700Z Test Case '-[WoowAssistantUITests.LiveModelUITests testRealModelTranscribesApprovedPublicWebTextWithVerifiedQuotes]' passed (76.495 seconds).",
+    "2026-11-10T11:24:01.3620870Z Test Suite 'LiveModelUITests' passed at 2026-11-10 11:24:01.343.",
+    "2026-11-10T11:24:01.3731760Z \t Executed 1 test, with 0 failures (0 unexpected) in 76.495 (76.498) seconds",
+    "2026-11-10T11:24:01.4203390Z \t Executed 1 test, with 0 failures (0 unexpected) in 76.495 (76.498) seconds",
+    "2026-11-10T11:24:01.4419960Z \t Executed 1 test, with 0 failures (0 unexpected) in 76.495 (76.499) seconds"
+  ]
+}

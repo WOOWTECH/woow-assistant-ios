@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "source_revision": "8ffc4d6",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42802237758",
+  "artifact_id": 13757632688,
+  "device": "iPhone 17",
+  "runtime": "iOS 26.2",
+  "summary": {
+    "result": "Passed",
+    "totalTestCount": 1,
+    "passedTests": 1,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "summary_sha256": "d4554a6934676721cb6708d917e36a65503aa93efbbb5d139ecca9621d21e00e",
+  "case_seconds": 136.61,
+  "scope": "Native synthetic form login, HTTP cookie receipts across tabs/relaunch, and logout. Does not test arbitrary third-party login or iOS 17.",
+  "safe_log_excerpt": [
+    "LOGIN_NATIVE_ACCOUNT_VERIFIED",
+    "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout]' passed (136.610 seconds)."
+  ]
+}

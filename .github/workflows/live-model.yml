@@ -40,7 +40,9 @@ jobs:
         with:
           persist-credentials: false
       - name: Verify exact-runtime preparation and cleanup
-        run: python3 -m unittest discover -s scripts -p 'test_prepare_live_simulator.py' -v
+        run: |
+          python3 -m unittest discover -s scripts -p 'test_prepare_live_simulator.py' -v
+          python3 -m unittest discover -s scripts -p 'test_verify_live_ui.py' -v
       - name: Prepare dedicated exact-runtime simulator
         env:
           WOOW_REQUESTED_RUNTIME: ${{ inputs.ios_version || '18.5' }}
@@ -159,10 +161,18 @@ jobs:
           elif [ '${{ inputs.ui_scope }}' = 'transcript-files' ]; then
             ui_filters=(-only-testing:WoowAssistantUITests/LiveTranscriptUITests)
           fi
+          test_exit=0
           xcodebuild -xctestrun "${test_runs[0]}" \
             -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
+            -resultBundlePath build/LiveModelUI.xcresult \
             "${ui_filters[@]}" \
-            -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 300 test-without-building
+            -parallel-testing-enabled NO -test-timeouts-enabled YES -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 300 test-without-building || test_exit=$?
+          verify_args=()
+          for filter in "${ui_filters[@]}"; do
+            verify_args+=(--selector "${filter#-only-testing:}")
+          done
+          python3 scripts/verify_live_ui.py --result build/LiveModelUI.xcresult "${verify_args[@]}"
+          exit "$test_exit"
       - name: Clear private runner configuration
         if: always()
         run: |

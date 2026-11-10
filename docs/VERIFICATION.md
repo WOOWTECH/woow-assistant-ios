@@ -1,5 +1,15 @@
 # Verification — 2026-11-10
 
+## Public webpage to real-model transcript verified (`08fec36`)
+
+[42802827631](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42802827631) passed **1/1 App UI, zero skips**, 76.495 seconds on iPhone 16 Pro Max / iOS 18.5. It loaded IANA through real WebKit, captured the page text, reviewed the source URL, approved the model destination, and required full snapshot coverage plus byte-verified model quotations. No skill/draft was automatically created. This covers the initial DOM implementation; the subsequent accessible-tree/omission fixes have separate local WebKit evidence and await hosted regression. [Bounded live evidence](evidence/live-browser-transcript-08fec36.json).
+
+
+## Native iOS 26 login repair verified
+
+At `8ffc4d6`, [42802237758](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42802237758) passed **1/1, zero skips**, 136.610 seconds on iPhone 17 / iOS 26.2. The native keyboard delivered the exact synthetic username; the real local HTTP form authenticated, cookies were used across tabs and App relaunch, and logout revoked access. This validates the specific native workflow, not arbitrary third-party identity providers. [Evidence](evidence/login-current-8ffc4d6.json).
+
+
 ## Settings matrix `2055c30`: 9/10 per device, repair submitted
 
 [42800167438](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42800167438) ran the eight native appearance runtime cases plus two UI cases on SE/18.5, large/18.5 and current/26.2. Each variant passed **9/10, zero skips**: all native cases and actual manual appearance/persistence UI passed. Worker settings stopped before opening its form because a fixed Skills segment was incorrectly checked against the scrollable Form viewport. `2fce6cf` uses direct native readiness/tap for that fixed header and verifies its selected state; settings save/remove/relaunch and zero-read assertions remain unchanged. The corrected matrix is [42805681299](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805681299), pending. [Retained evidence](evidence/settings-matrix-2055c30.json).
