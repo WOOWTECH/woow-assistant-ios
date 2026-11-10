@@ -262,11 +262,14 @@ final class SkillExecutionUITests: XCTestCase {
         chooseLocalExportFolder()
         let exportedNames = NSPredicate(format: "label IN %@", [exportStem, exportStem + ".txt"])
         // Restrict evidence to a file-list cell, not the proposed filename field.
-        let exported = app.cells.staticTexts.matching(exportedNames).firstMatch
-        let exportedCell = app.cells.matching(exportedNames).firstMatch
+        let exported = nativeFileList.cells.staticTexts.matching(exportedNames).firstMatch
+        let exportedCell = nativeFileList.cells.matching(exportedNames).firstMatch
         for _ in 0..<10 {
             if exported.exists || exportedCell.exists { break }
-            scrollNativeFileList()
+            guard nativeFileList.exists, nativeFileList.isHittable else {
+                XCTFail("Native destination must expose its file list."); return
+            }
+            nativeFileList.swipeUp()
         }
         if !exported.exists && !exportedCell.exists { recordPickerDiagnostics(stage: "export-file-not-visible") }
         XCTAssertTrue(exported.exists || exportedCell.exists, "The actual Files destination must contain this namespace's exact exported text basename.")
@@ -309,15 +312,21 @@ final class SkillExecutionUITests: XCTestCase {
     }
 
     private var nativeExportConfirmation: XCUIElement {
-        app.navigationBars.buttons.matching(NSPredicate(format: "label IN %@",
+        nativeFilesNavigation.buttons.matching(NSPredicate(format: "label IN %@",
             ["儲存", "Save", "匯出", "Export", "搬移", "移動", "Move"])).firstMatch
     }
+
+    private var nativeFilesNavigation: XCUIElement {
+        app.navigationBars["FullDocumentManagerViewControllerNavigationBar"]
+    }
+
+    private var nativeFileList: XCUIElement { app.collectionViews["File View"] }
 
     private func cancelNativeExporter() {
         // Return only through known local ancestors to the native Cancel button.
         // Each label is tapped at most once; never save or dismiss app state to
         // simulate cancellation. Callers still verify the real cancel callback.
-        let navigation = app.navigationBars["FullDocumentManagerViewControllerNavigationBar"]
+        let navigation = nativeFilesNavigation
         let ancestorLabels = localLabels + browseLabels + locationsLabels
         var attempted = Set<String>()
         for attempt in 0...3 {
@@ -363,7 +372,7 @@ final class SkillExecutionUITests: XCTestCase {
     }
 
     private func assertExportStatus(_ expected: String) {
-        let status = app.staticTexts["skillExecution.export.status"]
+        let status = executionForm.staticTexts["skillExecution.export.status"]
         scrollExecutionToTop()
         revealLearningElement(status, in: app, visibility: .readableText)
         wait(status, "label == %@", expected)
@@ -406,7 +415,7 @@ final class SkillExecutionUITests: XCTestCase {
     }
 
     private var nativeCancel: XCUIElement {
-        app.navigationBars.buttons.matching(NSPredicate(format: "label IN %@", ["取消", "Cancel"])).firstMatch
+        nativeFilesNavigation.buttons.matching(NSPredicate(format: "label IN %@", ["取消", "Cancel"])).firstMatch
     }
 
     private func chooseSyntheticPDF() {
@@ -443,11 +452,11 @@ final class SkillExecutionUITests: XCTestCase {
     private let locationsLabels = ["位置", "Locations"]
     private var selectedFileNames: NSPredicate { NSPredicate(format: "label IN %@", [filename, stem]) }
     private var localAppFolderTitle: XCUIElement {
-        let title = app.navigationBars.staticTexts.matching(NSPredicate(format: "label IN %@", applicationLabels)).firstMatch
+        let title = nativeFilesNavigation.staticTexts.matching(NSPredicate(format: "label IN %@", applicationLabels)).firstMatch
         if title.exists { return title }
         // Actual iOS 18 screenshot/AX: the folder title is an actions-menu button,
         // not a StaticText. This proves the destination without opening that menu.
-        return app.navigationBars.buttons.matching(NSPredicate(format: "label == %@", "渥屋助理, 「動作」選單")).firstMatch
+        return nativeFilesNavigation.buttons.matching(NSPredicate(format: "label == %@", "渥屋助理, 「動作」選單")).firstMatch
     }
 
     private func syntheticPDFCell() -> XCUIElement? {
@@ -582,11 +591,15 @@ final class SkillExecutionUITests: XCTestCase {
         XCTAssertEqual(audit.label, evidence(selections: selections, reads: reads, extractionAttempts: extractionAttempts, results: results))
     }
 
+    private var executionForm: XCUIElement { app.collectionViews["skillExecution.form"] }
+
     private func scrollExecutionToTop() {
         // Begin at a known anchor so virtualized rows above the viewport are
         // never searched by swiping farther down. Scrolling never chooses files.
-        let intro = app.staticTexts["skillExecution.intro"]
-        let form = app.descendants(matching: .any).matching(identifier: "skillExecution.form").firstMatch
+        // Actual SE/current AX exposes a CollectionView with this identifier.
+        // e2b's global intro lookup waited 122s on remote Files AX after Save.
+        let form = executionForm
+        let intro = form.staticTexts["skillExecution.intro"]
         for _ in 0..<6 {
             if intro.exists && intro.isHittable { return }
             if form.exists { form.swipeDown() } else { app.swipeDown() }
