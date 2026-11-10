@@ -1,4 +1,5 @@
 import XCTest
+import CoreGraphics
 
 // Local fixture UI only. Unique namespaces isolate the encrypted learning vault,
 // model defaults and Keychain. These tests never launch a live model or MCP request.
@@ -343,16 +344,17 @@ final class MemoryUITests: XCTestCase {
 
     private func revealSkillImport(_ button: XCUIElement,
                                    file: StaticString = #filePath, line: UInt = #line) -> Bool {
-        // The 40c SE trace saw this row, then one default-speed swipe moved it
-        // above the virtualized viewport. Seven further upward swipes searched
-        // only the bottom. Keep strict full-frame visibility, but use slow
-        // element gestures and reverse if a previously seen row disappears.
+        // bd1 SE alternated eight full-list slow swipes past the import row.
+        // Speed does not bound distance: measure the gap, drag only inside the
+        // uncovered List viewport, and hold before releasing to avoid inertia.
         let list = app.collectionViews.firstMatch
         waitUntilHittable(list)
-        var seen = false
-        var lastSwipeUp = true
+        var previousTargetWasPresent = false
+        var searchUp = true
+        var maximumDistance: CGFloat = 120
         for attempt in 0...8 {
-            var viewport = list.frame.intersection(app.frame)
+            let listFrame = list.frame
+            var viewport = listFrame.intersection(app.frame)
             let navigation = app.buttons["navigation.chat"]
             if navigation.exists {
                 viewport.size.height = max(0, min(viewport.maxY, navigation.frame.minY) - viewport.minY)
@@ -372,16 +374,31 @@ final class MemoryUITests: XCTestCase {
                         file: file, line: line)
                 return false
             }
-            let swipeUp: Bool
-            if exists && !frame.isEmpty {
-                seen = true
-                swipeUp = frame.minY >= viewport.minY
-            } else {
-                swipeUp = seen ? !lastSwipeUp : true
+            let targetIsPresent = exists && !frame.isEmpty
+            if !targetIsPresent && previousTargetWasPresent {
+                // Reverse once on losing a materialized row, then continue the
+                // smaller search step until it reappears; do not oscillate.
+                searchUp.toggle()
+                maximumDistance = max(24, maximumDistance / 2)
             }
-            if swipeUp { list.swipeUp(velocity: .slow) }
-            else { list.swipeDown(velocity: .slow) }
-            lastSwipeUp = swipeUp
+            guard let drag = MemoryImportScrollDrag.make(
+                listFrame: listFrame, viewport: viewport,
+                targetFrame: targetIsPresent ? frame : nil,
+                searchUp: searchUp, maximumDistance: maximumDistance
+            ) else {
+                XCTFail("skills.import has no safe bounded scroll gesture; visibility remains required.",
+                        file: file, line: line)
+                return false
+            }
+            let origin = list.coordinate(withNormalizedOffset: .zero)
+            let start = origin.withOffset(CGVector(dx: drag.start.x - listFrame.minX,
+                                                  dy: drag.start.y - listFrame.minY))
+            let end = origin.withOffset(CGVector(dx: drag.end.x - listFrame.minX,
+                                                dy: drag.end.y - listFrame.minY))
+            start.press(forDuration: 0.05, thenDragTo: end,
+                        withVelocity: .slow, thenHoldForDuration: 0.2)
+            previousTargetWasPresent = targetIsPresent
+            searchUp = drag.end.y < drag.start.y
         }
         return false
     }
@@ -415,5 +432,50 @@ final class MemoryUITests: XCTestCase {
     private func waitForAbsence(_ element: XCUIElement) {
         let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 5), .completed)
+    }
+}
+
+/// Pure geometry so the measured SE failure can be checked without a simulator.
+/// Coordinates are used only for a List-relative scroll, never to tap a control.
+private struct MemoryImportScrollDrag {
+    let start: CGPoint
+    let end: CGPoint
+
+    static func make(listFrame: CGRect, viewport: CGRect, targetFrame: CGRect?,
+                     searchUp: Bool, maximumDistance: CGFloat) -> Self? {
+        guard valid(listFrame), valid(viewport), listFrame.contains(viewport),
+              viewport.width >= 48, maximumDistance.isFinite, maximumDistance > 0 else { return nil }
+        let limit = min(maximumDistance, viewport.height * 0.3)
+        guard limit >= 16 else { return nil }
+        let up: Bool
+        let distance: CGFloat
+        if let targetFrame {
+            guard valid(targetFrame), targetFrame.height <= viewport.height,
+                  targetFrame.minX >= viewport.minX, targetFrame.maxX <= viewport.maxX else { return nil }
+            if targetFrame.maxY > viewport.maxY {
+                up = true
+                distance = min(limit, max(24, targetFrame.maxY - viewport.maxY + 12))
+            } else if targetFrame.minY < viewport.minY {
+                up = false
+                distance = min(limit, max(24, viewport.minY - targetFrame.minY + 12))
+            } else {
+                // Already in the viewport: scrolling cannot establish why a
+                // control is not hittable, so never substitute a coordinate tap.
+                return nil
+            }
+        } else {
+            up = searchUp
+            distance = limit
+        }
+        let displacement = up ? distance : -distance
+        let start = CGPoint(x: viewport.midX, y: viewport.midY + displacement / 2)
+        let end = CGPoint(x: viewport.midX, y: viewport.midY - displacement / 2)
+        guard viewport.contains(start), viewport.contains(end) else { return nil }
+        return Self(start: start, end: end)
+    }
+
+    private static func valid(_ frame: CGRect) -> Bool {
+        !frame.isNull && !frame.isInfinite && frame.width > 0 && frame.height > 0
+            && [frame.origin.x, frame.origin.y, frame.size.width, frame.size.height].allSatisfy { $0.isFinite }
     }
 }
