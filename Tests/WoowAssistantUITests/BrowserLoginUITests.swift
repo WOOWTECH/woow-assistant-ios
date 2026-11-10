@@ -297,6 +297,7 @@ import WebKit
 }
 #else
 import XCTest
+import CoreGraphics
 
 /// Synthetic credentials only. Native typing -> form HTTP POST -> Set-Cookie ->
 /// protected HTTP response. No JS login, cookie injection, external accounts,
@@ -388,12 +389,53 @@ final class BrowserLoginUITests: XCTestCase {
         let username = app.webViews.textFields["測試帳號"].firstMatch
         let password = app.webViews.secureTextFields["測試密碼"].firstMatch
         tap(username); username.typeText("fixture-user")
+        revealPasswordByNativeScrolling(password)
         tap(password); password.typeText("fixture-password-v1\n")
         // Native keyboard Go submits the real form. No evaluateJavaScript,
         // setCookie, URLRequest body injection, or pre-authenticated fixtures.
         XCTAssertTrue(text("LOGIN_PROTECTED_AUTHENTICATED").waitForExistence(timeout: 30))
         XCTAssertTrue(text("LOGIN_SERVER_LOGINS_1").exists)
         XCTAssertFalse(app.staticTexts["browser.error"].exists)
+    }
+
+    private func revealPasswordByNativeScrolling(_ password: XCUIElement) {
+        // d160a24: both iOS 18 compact and iOS 26 reach native username entry,
+        // then the existing password control is not hittable with the keyboard.
+        // Use ordinary page scrolling, never JS focus/value or cookie injection.
+        let web = app.webViews.firstMatch
+        XCTAssertTrue(web.waitForExistence(timeout: 10))
+        XCTAssertTrue(password.waitForExistence(timeout: 10))
+        for attempt in 0...3 {
+            if password.exists && password.isHittable && password.isEnabled { return }
+            let frame = web.frame
+            var visible = frame.intersection(app.frame)
+            let keyboard = app.keyboards.firstMatch
+            if keyboard.exists {
+                let overlap = visible.intersection(keyboard.frame)
+                if !overlap.isNull && !overlap.isEmpty {
+                    visible.size.height = max(0, min(visible.maxY, keyboard.frame.minY) - visible.minY)
+                }
+            }
+            let fieldY = password.exists ? Int(password.frame.minY - frame.minY) : -1
+            // Only fixed synthetic field geometry; no values, labels, URLs,
+            // accessibility tree or keyboard contents are attached.
+            print("LOGIN_FORM_GEOMETRY attempt=\(attempt) webHeight=\(Int(frame.height)) visibleHeight=\(Int(visible.height)) passwordY=\(fieldY) keyboard=\(keyboard.exists)")
+            guard !visible.isNull, visible.width >= 64, visible.height >= 64 else {
+                XCTFail("Browser WebView has insufficient visible space above the keyboard for native form scrolling.")
+                return
+            }
+            guard attempt < 3 else {
+                XCTFail("Synthetic password field stayed inaccessible after three native page scrolls.")
+                return
+            }
+            let origin = web.coordinate(withNormalizedOffset: .zero)
+            let x = visible.minX - frame.minX + visible.width * 0.88
+            let start = origin.withOffset(CGVector(dx: x, dy: visible.minY - frame.minY + visible.height * 0.8))
+            let end = origin.withOffset(CGVector(dx: x, dy: visible.minY - frame.minY + visible.height * 0.2))
+            start.press(forDuration: 0.1, thenDragTo: end)
+            let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: password)
+            if XCTWaiter.wait(for: [ready], timeout: 3) == .completed { return }
+        }
     }
 
     private func currentProtectedURL() -> URL {

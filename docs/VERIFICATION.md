@@ -2,6 +2,30 @@
 
 ## Browser workspace / files / PDF increment - validation in progress
 
+Integrated source `d160a24` is under test in [files 42748349250](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748349250)
+and [workspace 42748354209](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748354209).
+The current-runtime partial logs confirm 97 portable cases and the files run's
+12 original-script worker cases passed, including the real Swift HTTP client.
+App builds and built native-document plist checks passed. Files results on all
+three variants retain five PDF-selection failures; native upload and cancellation
+passed on all three. The PDF exists and is enabled in the actual native Files
+evidence; the test tapped its text instead of its file cell/thumbnail. The test
+now targets that exact synthetic cell without broadening the PDF type filter.
+Workspace SE/current hosted cases all passed, including actual download,
+published titles, per-site cookie clearing and deferred-navigation restrictions.
+Their UI result is 2/5: password entry is obscured after opening the keyboard,
+and native Select All triggers XCTest's default alert interruption handler.
+Tests are being repaired with native page scrolling and end-of-field deletion,
+retaining real HTTP authentication, exact title, persistence and logout assertions.
+Queued parity `42748359276` and live-model
+`42748365051` were cancelled before starting to prioritize iOS 17 installers
+in the runner queue; these cancellations are not test failures.
+
+The same source passed [unsigned Release 42748369961](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42748369961):
+nine device binaries, App minimum OS 17.0, SDK 26.2, actual document-sharing
+flags true, Release ATS key absent. It is explicitly unsigned/not installable;
+neither physical-device execution nor signed distribution is inferred.
+
 Source checkpoints: `9ddc30d` (workspace), `a74df45` (file transfers and PDF),
 `bd2f8d0` (iOS file protection fix, hosted workspace and release workflow),
 `7b11555` (build verifier and bookmark test repair). Later source refinements are

@@ -1,4 +1,5 @@
 import XCTest
+import CoreGraphics
 
 final class BrowserWorkspaceUITests: XCTestCase {
     private var app = XCUIApplication()
@@ -45,16 +46,14 @@ final class BrowserWorkspaceUITests: XCTestCase {
         let rename = app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "browser.bookmark.rename.")).firstMatch
         XCTAssertTrue(rename.waitForExistence(timeout: 5)); rename.tap()
         let input = app.alerts.textFields.firstMatch
-        XCTAssertTrue(input.waitForExistence(timeout: 5)); input.tap()
-        input.press(forDuration: 1.2)
-        let labels = ["全選", "Select All"]
-        let selectAll = app.buttons.matching(NSPredicate(format: "label IN %@", labels)).firstMatch
-        let menuSelectAll = app.menuItems.matching(NSPredicate(format: "label IN %@", labels)).firstMatch
-        if selectAll.waitForExistence(timeout: 3) { selectAll.tap() }
-        else {
-            XCTAssertTrue(menuSelectAll.waitForExistence(timeout: 3), "Use native Select All; tapping a long title can place the cursor in its middle.")
-            menuSelectAll.tap()
-        }
+        XCTAssertTrue(input.waitForExistence(timeout: 5))
+        let originalTitle = "Workspace first"
+        XCTAssertEqual(input.value as? String, originalTitle)
+        // This short fixture title fits the SE alert. Place the caret after
+        // it, then use real keyboard deletion. Selecting the floating edit
+        // menu makes XCTest's default interruption handler cancel this alert.
+        input.coordinate(withNormalizedOffset: CGVector(dx: 0.95, dy: 0.5)).tap()
+        input.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: originalTitle.count))
         input.typeText("My saved page")
         XCTAssertEqual(input.value as? String, "My saved page")
         app.alerts.buttons["儲存"].tap()

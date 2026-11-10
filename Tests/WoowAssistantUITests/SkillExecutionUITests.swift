@@ -354,7 +354,11 @@ final class SkillExecutionUITests: XCTestCase {
     private func chooseSyntheticPDF() {
         openNativePicker()
         guard let file = navigateNativeFiles(exporting: false) else { return }
-        file.tap()
+        // d160a24 SE evidence: the exact filename StaticText is enabled but
+        // tapping it leaves Files open. Select the thumbnail inside the verified
+        // file cell, not the filename label (which can expand its truncated text).
+        if let thumbnail = firstHittable(file.images) { thumbnail.tap() }
+        else { file.tap() }
         let selected = app.staticTexts["skillExecution.filename"]
         if !selected.waitForExistence(timeout: 3), let open = knownButton(["開啟", "Open", "完成", "Done"]) { open.tap() }
         let received = selected.waitForExistence(timeout: 15)
@@ -365,12 +369,26 @@ final class SkillExecutionUITests: XCTestCase {
     }
 
     private let applicationLabels = ["渥屋助理", "WoowAssistant"]
-    private let localLabels = ["我的 iPhone", "在我的 iPhone 上", "On My iPhone", "我的 iPad", "On My iPad"]
+    private let localLabels = ["我的 iPhone", "我的iPhone", "在我的 iPhone 上", "On My iPhone", "我的 iPad", "On My iPad"]
     private let browseLabels = ["瀏覽", "Browse"]
     private let locationsLabels = ["位置", "Locations"]
     private var selectedFileNames: NSPredicate { NSPredicate(format: "label IN %@", [filename, stem]) }
     private var localAppFolderTitle: XCUIElement {
-        app.navigationBars.staticTexts.matching(NSPredicate(format: "label IN %@", applicationLabels)).firstMatch
+        let title = app.navigationBars.staticTexts.matching(NSPredicate(format: "label IN %@", applicationLabels)).firstMatch
+        if title.exists { return title }
+        // Actual iOS 18 screenshot/AX: the folder title is an actions-menu button,
+        // not a StaticText. This proves the destination without opening that menu.
+        return app.navigationBars.buttons.matching(NSPredicate(format: "label == %@", "渥屋助理, 「動作」選單")).firstMatch
+    }
+
+    private func syntheticPDFCell() -> XCUIElement? {
+        // Actual Files identifier includes the type suffix; the visible label also
+        // includes timestamp/size. Keep the complete namespace basename exact.
+        if let cell = firstHittable(app.cells.matching(NSPredicate(format: "identifier == %@", stem + ", pdf"))) { return cell }
+        for exactName in [filename, stem] {
+            if let cell = firstHittable(app.cells.containing(.staticText, identifier: exactName)) { return cell }
+        }
+        return nil // Never fall back to a detached filename StaticText.
     }
 
     /// Port of Raman's bounded known-location route. Import terminates only at
@@ -416,7 +434,7 @@ final class SkillExecutionUITests: XCTestCase {
 
     private func pickerElement(for step: SkillPickerStep, exporting: Bool) -> XCUIElement? {
         switch step {
-        case .file: return exporting ? nil : nativeItem(predicate: selectedFileNames)
+        case .file: return exporting ? nil : syntheticPDFCell()
         case .application: return nativeItem(predicate: NSPredicate(format: "label IN %@", applicationLabels))
         case .local: return nativeItem(predicate: NSPredicate(format: "label IN %@", localLabels))
         case .locations: return knownButton(locationsLabels)
@@ -434,8 +452,10 @@ final class SkillExecutionUITests: XCTestCase {
         // screenshots, element values, identifiers or accessibility/debug tree.
         let groups: [(String, NSPredicate)] = [
             ("synthetic", selectedFileNames),
+            ("synthetic-cell-id", NSPredicate(format: "identifier == %@", stem + ", pdf")),
             ("exported", NSPredicate(format: "label IN %@", [exportStem, exportStem + ".txt"])),
             ("application", NSPredicate(format: "label IN %@", applicationLabels)),
+            ("application-title", NSPredicate(format: "label == %@", "渥屋助理, 「動作」選單")),
             ("local", NSPredicate(format: "label IN %@", localLabels)),
             ("local-no-space", NSPredicate(format: "label IN %@", localLabels.map { $0.replacingOccurrences(of: " ", with: "") })),
             ("local-nbsp", NSPredicate(format: "label IN %@", localLabels.flatMap { name in
