@@ -1,6 +1,6 @@
 # iOS 簽章與最低版本驗證
 
-查核日期：2026-11-10。整合提交 `d160a24` 已通過 Release 裝置編譯；17.0.1／17.5 模擬器均已啟動並實際執行 App 與 XCTest，但驗收尚未全數通過。`1153d5a` 修正已重現的原始網址連接埠檢查，待 iOS 重測。目前尚無真機驗收、distribution 簽章成功或可安裝發行包。
+查核日期：2026-11-10。整合提交 `d160a24` 已通過 Release 裝置編譯；17.0.1／17.5 模擬器均已啟動並實際執行 App 與 XCTest，但驗收尚未全數通過。`1153d5a` 修正已重現的原始網址連接埠檢查，其原生與 hosted 回歸案例已在三種 iOS 18.5／26.2 模擬器通過；iOS 17 重測仍在進行。目前尚無真機驗收、distribution 簽章成功或可安裝發行包。
 
 ## 已確認的環境與缺口
 
@@ -174,3 +174,7 @@ Both runs exposed the same invalid-port normalization and browser/PDF UI failure
 The iOS AppIcon is rendered from the unchanged WOOW Android vector recorded in Configuration/Brand/SOURCE.json, with its original geometry and colors, into an opaque 1024-pixel asset. `swift scripts/render_app_icon.swift` reproduces it; no new logo is designed.
 
 啟動失敗診斷增量：`release_ios17.py` 分開保存 boot 程序退出碼與終止狀態；即使程序退出 0，明確的 `Data Migration Failed` 也不會啟動 XCTest。只有乾淨 GitHub-hosted macOS、且實際 help 支援指定裝置旗標時，才在刪除本次 simulator 前蒐集其診斷，help 與蒐集共用 90 秒上限。沒有重試 boot、替換 OS 或清除其他裝置。模擬診斷失敗／逾時／cleanup 失敗的測試通過；真實診斷蒐集仍待 hosted 執行。
+
+實際上傳工具驗證：[transporter-check 42764461574](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42764461574)（`024aba9`）在 GitHub-hosted Intel macOS 成功驗證官方套件、安裝至 `/usr/local/itms`，並啟動回報 `iTMSTransporter, version 4.3.0`。未提供帳號、API Key 或 IPA，沒有執行上傳。
+
+最新 App `c8ff84a` 的 [unsigned Release 42765470430](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42765470430) 通過：實際產物 build 14、九個二進位檔、最低 iOS 17.0、Release ATS 與隱私 manifest 檢查均符合。包含手動技能寫作的新 App 程式；仍為 unsigned、不可安裝、未上傳，不代替真機或 UI 驗證。
