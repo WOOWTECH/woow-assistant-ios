@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "source_commit": "4f261180a3d20334a4d6940bb2eacd9d720aacac",
+  "run_id": 42875111573,
+  "job_id": 130036228530,
+  "target_runtime": "iOS 18.5",
+  "method": "LiveDocumentQueryUITests.testRealModelAnswersFromApprovedPDFAndExportCancellationPreservesResult",
+  "counts": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0
+  },
+  "duration_seconds": 300.321,
+  "case_allowance_seconds": 300,
+  "driver_cleanup_reserve_boundary_seconds": 285,
+  "phases_seconds": {
+    "selected": 66,
+    "extracted": 93,
+    "model_started": 213,
+    "verified": 258
+  },
+  "actual_audit": {
+    "modelCalls": 4,
+    "searches": 1,
+    "reads": 2,
+    "results": 1,
+    "citations": 2,
+    "corrections": 0
+  },
+  "ui_timing_seconds": {
+    "question_type_start": 116.92,
+    "keyboard_done_tap": 174.91,
+    "export_tap": 272.68,
+    "first_exporter_back_tap": 284.4,
+    "tear_down_start": 288.77,
+    "question_synthesis_start": 123.95,
+    "question_synthesis_following_idle": 132.33,
+    "post_input_editor_query_1": 132.38,
+    "post_input_editor_query_2": 163.44,
+    "first_keyboard_done_lookup": 171.47
+  },
+  "failure": {
+    "file": "Tests/WoowAssistantUITests/LiveDocumentQueryUITests.swift",
+    "line": 178,
+    "fixed_message": "The native exporter did not leave its previous folder.",
+    "stage": "first_exporter_back_transition_wait_near_internal_budget_boundary"
+  },
+  "not_reached": [
+    "real_native_export_cancellation_callback",
+    "post_cancel_exact_answer_citation_audit_retention",
+    "close_query_and_exact_original_extraction_retention"
+  ],
+  "limitations": [
+    "Not a complete E2E pass; no provider-stall or model-failure inference.",
+    "No raw endpoint, key, model/source output, AX, screenshot, xcresult or xctestrun was downloaded or included.",
+    "The report records the first failed run; no retry was dispatched."
+  ],
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42875111573",
+  "runtime_observed_in_job": "iOS-18-5",
+  "verified_path": [
+    "actual_native_import_copy_selection",
+    "separate_read_and_extract_approvals",
+    "actual_two_page_PDFKit_extraction",
+    "configured_actual_model_search_and_two_reads",
+    "exact_question_and_source_markers_in_answer",
+    "two_exact_source_quotes_in_original_page_order_with_page_numbers"
+  ],
+  "timing_interpretation": [
+    "The type command at 116.92s and Done tap at 174.91s span 57.99s. Synthesis began at 123.95s and the following idle wait began at 132.33s; the entire 57.99s must not be attributed to typing.",
+    "Post-synthesis editor queries were logged at 132.38s and 163.44s, followed by a Done lookup at 171.47s. The old log does not distinguish typeText internal AX work from the subsequent exact-value assertion.",
+    "The native export route wait failed near the internal 285s cleanup boundary. This does not establish a provider stall. Actual export cancellation and subsequent retention checks were not reached."
+  ],
+  "candidate_driver_change": {
+    "file": "Tests/WoowAssistantUITests/LiveDocumentQueryUITests.swift",
+    "change": "Dismiss the actual keyboard before the unchanged exact question readback, still before destination approval and model start. Add fixed phase timings to separate typeText return, keyboard dismissal and value verification.",
+    "status": "local_parse_only_pending_iOS_execution",
+    "unchanged": [
+      "full_question",
+      "300_second_case_allowance",
+      "285_second_cleanup_boundary",
+      "real_native_export_cancel_callback",
+      "exact_answer_citation_and_audit_retention",
+      "original_extraction_retention"
+    ],
+    "limitation": "No measured speed improvement or completed E2E pass is claimed for the unexecuted candidate."
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "source_commit": "017976b6dd0c0296a937b154499ebc669c21d5db",
+  "run_id": 42868747738,
+  "job_id": 130014014930,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42868747738",
+  "conclusion": "success",
+  "physical_devices_used": false,
+  "method": "LiveModelUITests.testRealModelRecallsManualProfileAfterRelaunchAndMasterSwitchDisablesIt",
+  "duration_seconds": 98.688,
+  "summary": {
+    "code": "PASSED",
+    "expectedFailures": 0,
+    "expectedTests": 1,
+    "failedTests": 0,
+    "passedTests": 1,
+    "skippedTests": 0,
+    "totalTestCount": 1
+  },
+  "verified_native_sequence": [
+    "Type and save exact synthetic profile text through the native editor.",
+    "Terminate and relaunch the same isolated App vault; no earlier chat reply exists.",
+    "Real model returns the exact randomized saved value.",
+    "Disable the actual persisted useMemory switch; no storage error.",
+    "Terminate and relaunch again to remove earlier answers as a possible recall source.",
+    "The same real-model question returns exactly UNKNOWN.",
+    "Saved profile remains present with exact text and the disabled indication."
+  ],
+  "limitations": [
+    "One actual-model UI case on iOS 18.5, not physical-device or iOS17 acceptance.",
+    "Randomized synthetic profile value and raw model reply/log/AX/credentials are not retained here.",
+    "This pinned revision predates newer memory and source-discovery changes; it is not their acceptance."
+  ],
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/LiveModelUITests.swift": "40b476cf6f660252551394d9f095282250cf4886c87fe731f33555ac9128877a",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+    ".github/workflows/live-model.yml": "560a1daa86c8d82561600bff1186cb895eab4a8196f4fd48b7d4e864a6ec7442",
+    "scripts/verify_live_ui.py": "bbd00f0dbd386a9de8514a29dc2da4ddd9126a325e92cf0cb3a939a83eae3d96",
+    "Sources/App/ChatSession.swift": "c6947419729bcc6f3b07ea24c0b4be3a8d522df2cb6d65471579dd82c295fb34",
+    "Sources/App/LearningStore.swift": "3446c43afdb2cbf2992f1eb29f63a33cdb13fa2550e7761a034d2b0c3cc783c5"
+  },
+  "runtime": {
+    "buildversion": "22F77",
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-5",
+    "version": "18.5"
+  },
+  "host_architecture": "arm64"
+}

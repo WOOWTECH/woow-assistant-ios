@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "source_commit": "395ee5ae1b78100efd1b6572a7c68b0e8f319991",
+  "run_id": 42879196152,
+  "job_id": 130050604582,
+  "runtime_observed_in_job": "iOS-18-5",
+  "method": "LiveMCPConversationUITests.testRealModelUsesRemoteToolThenReviewedLocalMemoryAndUndo",
+  "counts": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0
+  },
+  "duration_seconds": 222.451,
+  "case_allowance_seconds": 300,
+  "actual_completion_counters": {
+    "modelCalls": 3,
+    "formatCorrections": 0,
+    "remoteAttempts": 1,
+    "remoteResults": 1,
+    "remoteToolErrors": 0
+  },
+  "verified_path": [
+    "actual_remote_tool_and_exact_arguments_review",
+    "explicit_remote_approval_and_actual_result",
+    "actual_memory_save_review_with_exact_synthetic_quote_content_keywords",
+    "explicit_local_commit_approval",
+    "exact_model_finish",
+    "exact_fixed_receipt_and_memory_note",
+    "actual_saved_memory_list_item",
+    "actual_undo",
+    "relaunch_unfiltered_memory_absence_and_empty_pending"
+  ],
+  "fixed_relaunch_evidence": {
+    "activeEmpty": true,
+    "pendingEmpty": true
+  },
+  "previous_failed_baseline": {
+    "source_commit": "f737665558bd2c4160e68860646c89f77f075f52",
+    "run_id": 42868021734,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "duration_seconds": 162.874,
+    "failure_stage": "fixed_chat_receipt_incorrectly_revealed_against_message_scrollview"
+  },
+  "limitations": [
+    "This is one real mixed HA/local-memory iOS UI case, not full original catalog parity or iOS17 acceptance.",
+    "Only closed counters and fixed states were extracted. No endpoint, credentials, model/tool reply, AX, screenshots or private artifact bundle is included.",
+    "The previous failed run is retained; no assertion or case deadline was weakened."
+  ],
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42879196152",
+  "fixed_stages": [
+    "Live MCP memory phase=remote_proposal;modelCalls=1;corrections=0;attempts=0;results=0;toolErrors=0;remoteReview=true;memoryReview=false;profileReview=false;error=false;answer=false",
+    "Live MCP memory phase=memory_review;modelCalls=2;corrections=0;attempts=1;results=1;toolErrors=0;remoteReview=false;memoryReview=true;profileReview=false;error=false;answer=false",
+    "Live MCP memory phase=completed;modelCalls=3;corrections=0;attempts=1;results=1;toolErrors=0;remoteReview=false;memoryReview=false;profileReview=false;error=false;answer=true",
+    "Live MCP memory phase=relaunch;activeEmpty=true;pendingEmpty=true"
+  ]
+}

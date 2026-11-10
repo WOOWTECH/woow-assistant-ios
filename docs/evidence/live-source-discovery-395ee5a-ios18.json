@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "source_commit": "395ee5ae1b78100efd1b6572a7c68b0e8f319991",
+  "run_id": 42879189446,
+  "job_id": 130050582063,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42879189446",
+  "runtime_observed_in_job": "iOS-18-5",
+  "counts": {
+    "total": 2,
+    "passed": 2,
+    "failed": 0,
+    "skipped": 0
+  },
+  "duration_seconds": 428.216,
+  "case_allowance_seconds": 300,
+  "methods": [
+    {
+      "method": "LiveSourceDiscoveryUITests.testPublicSearchAppliesTwoDistinctOriginsWithoutStartingResearch",
+      "result": "passed",
+      "duration_seconds": 227.573,
+      "fixed_stages": [
+        "SOURCE_DISCOVERY terminal=completed candidates=10",
+        "SOURCE_DISCOVERY applied=2 distinctOrigins=2 researchStarted=0",
+        "SOURCE_DISCOVERY reopenedFresh=1 closePreservedRoots=1"
+      ],
+      "verified_path": [
+        "actual_public_search",
+        "two_actual_candidates_from_distinct_origins_selected",
+        "exact_selected_URLs_applied_to_root1_and_root2_in_order_root3_empty",
+        "original_goal_retained",
+        "research_status_idle_diagnostic_pages_zero_no_result_or_receipt",
+        "reopened_sheet_has_fresh_session",
+        "closing_sheet_preserves_applied_roots"
+      ]
+    },
+    {
+      "method": "LiveSourceDiscoveryUITests.testPublicSearchCancellationOrCompletionPreservesQueryUntilSheetCloses",
+      "result": "passed",
+      "duration_seconds": 200.643,
+      "fixed_stages": [
+        "SOURCE_DISCOVERY terminal=completed cancellationObserved=0 candidates=10",
+        "SOURCE_DISCOVERY queryRetainedInSheet=1 reopenedFromGoal=1 rootsUnchanged=1"
+      ],
+      "verified_path": [
+        "actual_public_search_completed_before_cancel_action",
+        "query_retained_in_open_sheet",
+        "candidates_not_selected_apply_disabled",
+        "reopening_uses_original_parent_goal",
+        "roots_unchanged"
+      ],
+      "cancellation_observed": false
+    }
+  ],
+  "limitations": [
+    "The second method exercised fast completion, not cancellation; cancellation is not proven by this run.",
+    "Research did not start: the test checks idle App state, pages=0 and absence of results/receipts. It does not measure global HTTP calls; the workflow also runs native model probes.",
+    "This source predates bbbb514 completed-candidate revocation on leaving/backgrounding. That behavior is not claimed here.",
+    "Only fixed diagnostics, method outcomes and timings were extracted from the private job log. No candidate URL, search content, endpoint, credentials, model output, AX, screenshots or private artifacts are included.",
+    "This is iOS18.5 UI evidence, not iOS17 acceptance or full original skill parity."
+  ]
+}

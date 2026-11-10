@@ -12,10 +12,12 @@
 
 搜尋期限為 45 秒，包含最多 2 秒的本機 WebKit 掛載等待；沒有自動網路重試。搜尋詞最多 256 UTF-8 位元組，接受的 HTML 最多 1 MiB、候選 DOM 快照最多 64 KiB、最多檢查 30 個結果連結。HTML 上限不代表 WebKit 的壓縮／串流傳輸總量也有硬上限。服務驗證頁、無可用直接連結或載入失敗會如實回報；不能因此推論網路上沒有資料。
 
-本機已通過 127 項檢查（85 核心、28 真實 WebKit／生命週期、14 真實公開搜尋），一輪實際搜尋的十個候選逐一對應 DOM；App 狀態在 Debug／Release 各通過 81 項斷言。原生 iOS 操作仍待驗收，尚未加入模型自主變更搜尋問題的能力。[核心與實際搜尋證據](evidence/research-source-discovery-local.json)、[App 狀態證據](evidence/research-source-discovery-app-local.json)分開記錄，不能當成完整原生流程已通過。
+本機核心／WebKit／公開搜尋共通過 127 項檢查。後續真實 App Session 搜尋找出「已完成的候選在離頁後仍可套用」問題；修正會撤銷已完成結果與選取，舊來源上的同一回歸案例確實失敗。修正後 Debug／Release 各通過 100 項斷言，另外兩次真實公開搜尋通過 54 項檢查，每次十個候選皆對應實際 DOM。這是 macOS WebKit 與 App 邏輯，原生 iOS 結果依版本另記；尚未加入模型自主變更搜尋問題的能力。[核心證據](evidence/research-source-discovery-local.json)、[修正前後及真實 App 搜尋證據](evidence/research-source-discovery-app-live-local.json)。
+
+`395ee5a` 的真實搜尋 iOS 18.5 介面通過 2/2、零略過：實際選取兩個不同網站、精確套用、維持研究尚未啟動，重開與取消視窗不改原欄位。第二案走搜尋先完成分支，未實證取消；這輪也早於 `bbbb514` 的離頁撤銷修正。[原生證據](evidence/live-source-discovery-395ee5a-ios18.json)。
 
 全部來源共用 12 次模型要求／180 秒。最多保存 15 個實際頁面觀察，每頁至多 8,000 字元。只有 JSON 語法無法解析時提供一次固定格式修正，仍計入共同上限；越界、過期編號與偽造引文直接停止。引用以 UTF-8 位元組核對當輪實際觀察，URL、標題與讀取時間來自 WebKit；讀取時間不是發布日期，也不代表不同網站的內容互相獨立。
 
 未能讀取來源、取消或達上限時，保留已有讀取紀錄並標示不足。結果不自動寫入單站網站知識、路線或技能。URL 檢查不是 DNS、重新綁定或所有子資源的網路防火牆。
 
-本機測試通過 74 項核心斷言（含實際 loopback HTTP 模型往返），以及 18 項實際 macOS WebKit 斷言。固定文件採合成 HTTPS 身分，不能當成已擷取公開網站。新增五個核心、三個 iOS hosted、兩個 UI 案例；另有真實 IANA／RFC Editor 網頁加已設定模型的 private-runner 案例，結果待 CI。來源 hash 與界線見 [本機證據](evidence/multi-source-local-02295ec.json)。
+本機測試通過 74 項核心斷言（含實際 loopback HTTP 模型往返），以及 18 項實際 macOS WebKit 斷言。固定文件採合成 HTTPS 身分，不能當成已擷取公開網站。新增五個核心、三個 iOS hosted、兩個 UI 案例；真實 IANA／RFC Editor 網頁加已設定模型的 iOS 18.5 案例在 `61f5377` 完成 1/1、零略過（146.692 秒），兩個來源的引文均核對通過。來源 hash 與界線見[本機證據](evidence/multi-source-local-02295ec.json)、[實際模型證據](evidence/live-multi-source-61f5377.json)。

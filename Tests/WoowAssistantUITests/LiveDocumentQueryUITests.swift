@@ -100,10 +100,18 @@ final class LiveDocumentQueryUITests: XCTestCase {
         let editor = app.textViews["documentQuery.question"].firstMatch
         try show(editor); try ready(editor); editor.tap()
         try wait("The query editor did not acquire the native keyboard.", timeout: 5) { self.app.keyboards.firstMatch.exists }
+        phase("question_input_started")
         editor.typeText(question)
-        XCTAssertTrue(editor.value as? String == question, "The exact question must reach the native editor.")
+        phase("question_input_delivered")
+        // In 4f26118, synthesis ended at 132.33s but post-input editor AX
+        // queries delayed Done until 174.91s. Dismiss the native keyboard
+        // before reading the long editor value; transmission remains blocked
+        // until the same exact-value assertion and destination review pass.
         try tap("documentQuery.keyboardDone")
         try wait("The native keyboard must dismiss before form navigation.", timeout: 5) { !self.app.keyboards.firstMatch.exists }
+        phase("question_keyboard_dismissed")
+        XCTAssertTrue(editor.value as? String == question, "The exact question must reach the native editor.")
+        phase("question_verified")
         try assertZeroQuery()
         let start = app.buttons["documentQuery.start"].firstMatch
         try show(start)

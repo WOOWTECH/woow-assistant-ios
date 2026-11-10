@@ -36,3 +36,5 @@ python3 scripts/check_profile_chat_app.py
 ```
 
 真實模型另由 `scripts/run_live_learning_app.py` 執行；先以 App 檢查程式建立當前來源快照，再提供 `--snapshot`、`--output` 及 `WOOW_MODEL_TEST_BASE_URL`、`WOOW_MODEL_TEST_MODEL`、`WOOW_MODEL_TEST_API_KEY` 環境變數。腳本拒絕來源不符的快照，證據只保存來源 hash、動作種類、次數、時間與斷言結果，不保存憑證或原始模型回覆。
+
+`395ee5a` 的實際 HA／模型混合 iOS 18.5 介面通過 1/1、零略過（222.451 秒）：三次模型決策、一次 HA 呼叫，遠端與記憶各自審閱、保存後核對原文、撤銷及重啟後空清單均完成。這是特定唯讀 HA 與本機記憶案例，不代表所有 MCP 工具已通過。[實測紀錄](evidence/live-mcp-memory-395ee5a-ios18.json)。
