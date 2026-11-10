@@ -76,6 +76,12 @@ struct ContentView: View {
     private var sectionNavigation: some View {
         VStack(spacing: 0) {
             #if DEBUG
+            if (try? UITestChatStreamingConfiguration.resolve(arguments: ProcessInfo.processInfo.arguments)) != nil {
+                Text("串流通知送出測試觀測")
+                    .font(.caption2)
+                    .accessibilityIdentifier("stream.fixture.notifications")
+                    .accessibilityValue(String(notifications.streamingFixtureCompletedAddAttempts))
+            }
             if MCPApprovalView.exposesFixtureIdentity(arguments: ProcessInfo.processInfo.arguments) {
                 // Observe the existing route identity only. No test can mutate
                 // it or invoke the notification-open callback through this Text.
@@ -246,11 +252,24 @@ private struct ChatView: View {
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .id(entry.id)
                         }
+                        if let preview = session.replyPreview {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(preview.status).font(.caption.bold()).foregroundStyle(.secondary)
+                                    .accessibilityIdentifier("chat.partialStatus")
+                                Text(preview.text).textSelection(.enabled)
+                                    .accessibilityIdentifier("chat.partialReply")
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .id(preview.id)
+                        }
                     }
                     .padding(.vertical, 4)
                 }
                 .onChange(of: session.entries.count) { _, _ in
                     if let id = session.entries.last?.id { proxy.scrollTo(id, anchor: .bottom) }
+                }
+                .onChange(of: session.replyPreview?.text) { _, _ in
+                    if let id = session.replyPreview?.id { proxy.scrollTo(id, anchor: .bottom) }
                 }
             }
 

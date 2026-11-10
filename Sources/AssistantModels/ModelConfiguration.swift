@@ -26,6 +26,13 @@ public protocol ChatModelClient: Sendable {
     func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String
 }
 
+/// Optional text-delta capability. Finishing normally certifies a complete reply;
+/// truncation, cancellation and provider errors must finish by throwing.
+/// Structured tool flows continue using complete and their existing validators.
+public protocol StreamingChatModelClient: ChatModelClient {
+    func stream(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) -> AsyncThrowingStream<String, Error>
+}
+
 /// Deliberately excludes response bodies, credentials and endpoint URLs.
 public enum HTTPChatModelError: Error, LocalizedError, Sendable, Equatable {
     case invalidConfiguration

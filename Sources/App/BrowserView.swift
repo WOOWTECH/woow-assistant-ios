@@ -12,7 +12,14 @@ struct BrowserView: View {
     @State private var showLibrary = false
     @State private var showTranscript = false
     @State private var showMultiResearch = false
+    @Environment(\.scenePhase) private var scenePhase
     @FocusState private var addressFocused: Bool
+    private var pageCovered: Bool {
+        showResearch || showInteractions || showLibrary || showTranscript || showMultiResearch || browser.pageDialog != nil
+    }
+    private var pageFindHostVisible: Bool {
+        scenePhase == .active && !pageCovered && !workspace.isClearingWebsiteData
+    }
     var body: some View {
         VStack(spacing: 8) {
             HStack {
@@ -70,10 +77,11 @@ struct BrowserView: View {
                     Button("停止") { browser.cancel() }.accessibilityIdentifier("browser.cancel")
                 }
             }
-            BrowserWebView(webView: browser.webView, coveredByResearch: showResearch || showInteractions || showLibrary || showTranscript || showMultiResearch || browser.pageDialog != nil)
+            BrowserWebView(webView: browser.webView, coveredByResearch: pageCovered,
+                           onDetach: { [browser] in browser.setPageFindHostVisible(false) })
                 .id(ObjectIdentifier(browser))
                 .allowsHitTesting(!browser.isRunning && !browser.isInteracting && !workspace.isClearingWebsiteData)
-                .accessibilityHidden(showResearch || showInteractions || showLibrary || showTranscript || showMultiResearch || browser.pageDialog != nil)
+                .accessibilityHidden(pageCovered)
             Text("可手動登入網站及選取上傳檔案；網站資料保留於此 App。模型研究與每次核准的操作各自受限。")
                 .font(.caption2).foregroundStyle(.secondary).padding(.horizontal)
                 .accessibilityIdentifier("browser.explanation")
@@ -88,6 +96,13 @@ struct BrowserView: View {
         .sheet(isPresented: $showTranscript) { TranscriptBrowserView(browser: browser, chat: chat) }
         .sheet(isPresented: $showMultiResearch) { MultiSourceResearchView(chat: chat) }
         .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button { addressFocused = false; browser.webView.endEditing(true); browser.presentPageFind() } label: {
+                    Image(systemName: "doc.text.magnifyingglass")
+                }
+                .accessibilityLabel("頁內尋找").accessibilityIdentifier("browser.find")
+                .disabled(!browser.canFindInPage || !pageFindHostVisible)
+            }
             ToolbarItem(placement: .primaryAction) {
                 Menu {
                     Text(workspace.library.userSiteModes.mode(for: browser.loadedURL?.host) == .desktop
@@ -124,8 +139,10 @@ struct BrowserView: View {
         .sheet(item: $browser.pageDialog, onDismiss: { browser.resolveDialog(nil) }) { dialog in
             BrowserDialogView(dialog: dialog, browser: browser)
         }
-        .onAppear { workspace.activateSelected() }
-        .onChange(of: ObjectIdentifier(browser)) { _, _ in showResearch = false; showInteractions = false; showTranscript = false; showMultiResearch = false }
+        .onAppear { workspace.activateSelected(); browser.setPageFindHostVisible(pageFindHostVisible) }
+        .onDisappear { browser.setPageFindHostVisible(false) }
+        .onChange(of: pageFindHostVisible) { _, visible in browser.setPageFindHostVisible(visible) }
+        .onChange(of: ObjectIdentifier(browser)) { _, _ in showResearch = false; showInteractions = false; showTranscript = false; showMultiResearch = false; browser.setPageFindHostVisible(pageFindHostVisible) }
         .onChange(of: browser.interactionProposal?.id) { _, value in
             if value != nil && !showResearch { addressFocused = false; showInteractions = true }
         }
@@ -337,8 +354,9 @@ private struct BrowserResearchView: View {
 private struct BrowserWebView: UIViewRepresentable {
     let webView: WKWebView
     let coveredByResearch: Bool
+    let onDetach: () -> Void
     func makeUIView(context: Context) -> BrowserWebContainer {
-        let container = BrowserWebContainer(webView: webView)
+        let container = BrowserWebContainer(webView: webView, onDetach: onDetach)
         container.setCoveredByResearch(coveredByResearch)
         return container
     }
@@ -353,9 +371,11 @@ private struct BrowserWebView: UIViewRepresentable {
 @MainActor
 private final class BrowserWebContainer: UIView {
     private let webView: WKWebView
+    private let onDetach: () -> Void
 
-    init(webView: WKWebView) {
+    init(webView: WKWebView, onDetach: @escaping () -> Void) {
         self.webView = webView
+        self.onDetach = onDetach
         super.init(frame: .zero)
         isAccessibilityElement = false
         webView.translatesAutoresizingMaskIntoConstraints = false
@@ -389,6 +409,7 @@ private final class BrowserWebContainer: UIView {
         accessibilityElements = nil
         automationElements = nil
         webView.accessibilityElementsHidden = false
+        onDetach()
         webView.removeFromSuperview()
     }
 }

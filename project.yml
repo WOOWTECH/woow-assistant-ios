@@ -218,6 +218,8 @@ targets:
       - scripts/CheckTaskNotificationApp.swift
       - scripts/CheckReplayReferencesApp.swift
       - scripts/CheckConversationArchiveApp.swift
+      - scripts/CheckChatStreamingApp.swift
+      - Tests/AssistantModelsTests/ModelProtocolFixture.swift
       - Tests/AssistantDomainTests/TaskNotificationChecks.swift
     dependencies:
       - target: WoowAssistant

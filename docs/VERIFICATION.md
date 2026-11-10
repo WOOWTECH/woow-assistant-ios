@@ -1,5 +1,22 @@
 # Verification — 2026-11-11
 
+## Plain chat streaming, page find and UI driver corrections — 2026-11-11
+
+The integrated candidate adds plain ChatSession text streaming with a display-only partial reply. Completion alone can create an archive turn, learning input or completion notification. Cancellation retains the draft and explicitly unfinished preview; request identity prevents late output from an older request. Profile/memory and MCP structured flows retain their reviewed complete-response path. Debug-only UI fixtures require the isolated namespace and explicit fixture mode, and are excluded from Release.
+
+The separate actual-service App probe at its recorded `7b2fb3e` plus v2 source hashes made **two HTTP stream attempts, no retry**: one completed after 175 text deltas and reopened from an encrypted archive; the second cancelled after two observed deltas while its HTTP transport was still active. Partial output never entered the archive, no completion notification was added for cancellation, and learning bytes were unchanged. These are parser text events, not network packets. The probe uses a synthetic OS notification client and does not establish a native banner, sound or UI result. Its completion counters and join observe the App/probe wrapper, not socket closure; transport cancellation is separately covered by intercepted URLProtocol stopLoading assertions. [Exact-source live evidence](evidence/live-chat-streaming-app-local.json).
+
+Browser page find uses the native WebKit find panel and clears its session across navigation, tab changes, hidden views and automation ownership. Local macOS checks cover the real WebKit engine and existing HTTP/site-mode behavior; UIKit controls and actual iOS rendering require the new three hosted and two UI methods. [Behavior and boundaries](BROWSER_PAGE_FIND.md).
+
+The original `8c4195f` exact17 documents-output partition remains **8 passed / 1 failed / 0 skipped**. Unlike the current/SE no-callback FileProvider failures, the failed exact17 pair case accepted source A and then stalled in an accessibility query after Files dismissed. [Original evidence](evidence/ios17-documents-output-8c4195f.json). Its driver now queries exact source ID/full filename via firstMatch during transition, then verifies uniqueness; distinct files, approvals, digests, page order, cancellation and 15/300-second bounds remain. Python and the actual workflow shell gate both allow the existing focused pair scope to prebuild under unchanged hosted-fixture conditions. [Local correction evidence](evidence/pdf-pair-ax-transition-local.json).
+
+The two failed exact17 multi-source research cases use the inner TextView tap and native keyboard check already exercised by passing BrowserLearning cases. Prompts, exact input readback, results, citations, deduplication and isolation assertions remain. [Preserved failure and candidate driver correction](evidence/multisource-exact17-focus-driver-d9cb6a4.json). These changes are candidates until their native reruns complete.
+
+Parent integration on the current common-preference source passed stream checks **101 Debug / 75 Release**, existing chat **573 / 492**, archive **90 / 76**, intercepted transport **310**, and context **48** assertions. Actual WebKit find passed **50 each**, HTTP navigation **26**, existing site modes **118 each** and HTTP Cookie/POST behavior **12**. All **277 Python tests**, actionlint and XcodeGen passed; source hashes remained unchanged. [Integration evidence](evidence/stream-find-driver-integration-local.json). These executions are not additive native test counts.
+
+The UI inventory now assigns all **95 non-Live methods to 12 disjoint partitions**, including startup 15 and workspace 8. New UI methods have no skip path; source-bound integration checks are recorded separately from native acceptance.
+
+
 ## Compatible saved preferences clarified — 2026-11-11
 
 The common reference message now explicitly asks for saved language/format/style preferences when compatible with the current request. Current explicit instructions and fixed policy still win. References remain user-role JSON data and cannot supply source evidence, authorize actions or add tools; complete-entry 6000-character/24-KiB bounds are unchanged.

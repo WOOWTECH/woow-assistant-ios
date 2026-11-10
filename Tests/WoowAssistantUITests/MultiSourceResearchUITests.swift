@@ -81,7 +81,16 @@ final class MultiSourceResearchUITests: XCTestCase {
     }
     private func enterResearchField(_ text: String, into field: XCUIElement) {
         revealLearningElement(field, in: app)
-        field.tap(); field.typeText(text)
+        if field.elementType == .textView {
+            // The exact iOS 17 failure left this visible editor unfocused.
+            // Use the same inner-field tap as the passing BrowserLearning cases.
+            XCTAssertTrue(field.isHittable)
+            XCTAssertFalse(field.frame.isEmpty)
+            XCTAssertTrue(app.frame.contains(field.frame))
+            field.coordinate(withNormalizedOffset: CGVector(dx: 0.25, dy: 0.5)).tap()
+            XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        } else { field.tap() }
+        field.typeText(text)
         XCTAssertEqual(field.value as? String, text, "The exact research field must contain the entered value")
         // The multiline goal's Return key inserts a newline and leaves the
         // keyboard visible. Close it using the public toolbar before asking the

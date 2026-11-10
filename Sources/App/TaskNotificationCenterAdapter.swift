@@ -9,6 +9,10 @@ import AssistantDomain
     var onOpen: ((TaskNotificationDestination) -> Void)?
     var onDismiss: ((String) -> Void)?
     var mayPresent: ((String) -> Bool)?
+    #if DEBUG
+    private(set) var completedAddAttempts = 0
+    var onCompletedAddAttempt: (() -> Void)?
+    #endif
 
     init(center: UNUserNotificationCenter, scope: String = "production") {
         precondition(scope == "production" || UUID(uuidString: scope)?.uuidString == scope)
@@ -46,6 +50,12 @@ import AssistantDomain
     }
 
     func add(_ payload: TaskNotificationPayload, sound: Bool) async throws {
+        #if DEBUG
+        if payload.kind == .completed {
+            completedAddAttempts += 1
+            onCompletedAddAttempt?()
+        }
+        #endif
         try await center.add(Self.request(payload, sound: sound, scope: scope))
     }
 

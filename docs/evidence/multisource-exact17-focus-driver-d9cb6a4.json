@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "base_commit": "d9cb6a42174155aa81c8ecc92114f61200c889fa",
+  "status": "frozen_local_syntax_and_scope_verified_native_pending",
+  "source_file": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift",
+  "source_before_sha256": "e1eb35d7e3156c38cb035a6315221ba19003169e2776e0814455129bdf6493c7",
+  "source_after_sha256": "8bc95845ed800b61e87d0ab281e875e4411fa571f72d0186558351bf1fa81a7c",
+  "patch_sha256": "09af35bc9928efc29b3f499c4d7819d2de7b9e2d5e5f7fae84c2078da56d80dd",
+  "change": "Reuse the same-run passing BrowserLearning TextView inner-field coordinate tap and five-second keyboard check in enterResearchField; ordinary TextField tap remains the same.",
+  "scope_verification": {
+    "exact_single_helper_replacement_verified": true,
+    "entire_file_outside_replacement_byte_identical": true,
+    "original_exact_input_assertion_retained": true,
+    "all_original_questions_results_citations_duplicate_origin_isolation_assertions_retained": true,
+    "case_limit_seconds": 300,
+    "research_wait_seconds": 180,
+    "existing_toolbar_and_keyboard_dismissal_wait_seconds": 5,
+    "all_existing_timeouts_unchanged": true,
+    "new_keyboard_appearance_wait_seconds": 5,
+    "product_source_changed": false
+  },
+  "original_native_failure": {
+    "run_id": 42911462510,
+    "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911462510",
+    "head_sha": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+    "validation_job_id": 130162902480,
+    "artifacts": [
+      {
+        "id": 13810074731,
+        "name": "ios17-17.0.1-42911462510",
+        "size_in_bytes": 44706402,
+        "digest": "sha256:2adff640ea5f35639f159bc79bcccce01a345d56f6f363858bd5af6cb66e76c7",
+        "expired": false,
+        "url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13810074731"
+      }
+    ],
+    "actual_runtime": {
+      "xcresult_devices": [
+        {
+          "architecture": "arm64",
+          "deviceId": "1FE009DD-7E55-48F6-AD77-2C6BD42EC6C6",
+          "deviceName": "Woow-iOS17-e95a374ac5144267b0e668a567993318",
+          "modelName": "iPhone 15",
+          "osBuildNumber": "21A342",
+          "osVersion": "17.0.1",
+          "platform": "iOS Simulator"
+        }
+      ],
+      "selected_runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      }
+    },
+    "actual_methods": [
+      {
+        "identifier": "WoowAssistantUITests/BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 19
+          },
+          {
+            "event": "passed",
+            "tests_log_line": 511,
+            "duration_seconds": 95.277
+          }
+        ]
+      },
+      {
+        "identifier": "WoowAssistantUITests/BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 512
+          },
+          {
+            "event": "passed",
+            "tests_log_line": 1050,
+            "duration_seconds": 93.228
+          }
+        ]
+      },
+      {
+        "identifier": "WoowAssistantUITests/BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch",
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 1051
+          },
+          {
+            "event": "passed",
+            "tests_log_line": 1888,
+            "duration_seconds": 142.154
+          }
+        ]
+      },
+      {
+        "identifier": "WoowAssistantUITests/MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+        "starts": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 1892
+          },
+          {
+            "event": "failed",
+            "tests_log_line": 2288,
+            "duration_seconds": 31.465
+          }
+        ]
+      },
+      {
+        "identifier": "WoowAssistantUITests/MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads",
+        "starts": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "events": [
+          {
+            "event": "started",
+            "tests_log_line": 2289
+          },
+          {
+            "event": "failed",
+            "tests_log_line": 2573,
+            "duration_seconds": 18.841
+          }
+        ]
+      }
+    ],
+    "xcresult": {
+      "summary_source": "test-summary.json exported by CI xcresulttool",
+      "bundle_member_count": 88,
+      "local_xcresulttool_decode": false,
+      "result": "Failed",
+      "counts": {
+        "totalTestCount": 5,
+        "passedTests": 3,
+        "failedTests": 2,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "start_time_epoch": 1794351125.535,
+      "finish_time_epoch": 1794351676.654,
+      "failures": [
+        {
+          "method": "WoowAssistantUITests/MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+          "failure_text_first_line": "Failed to synthesize event: Neither element nor any descendant has keyboard focus. Event dispatch snapshot: TextView, {{40.0, 174.3}, {313.0, 23.0}}, identifier: 'multiResearch.goal', placeholderValue: '想核對的問題、地區與時間範圍', value: 想核對的問題、地區與時間範圍",
+          "source_file": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift",
+          "source_line": 84,
+          "full_failure_preserved_in": "test-summary.json"
+        },
+        {
+          "method": "WoowAssistantUITests/MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads",
+          "failure_text_first_line": "Failed to synthesize event: Neither element nor any descendant has keyboard focus. Event dispatch snapshot: TextView, {{40.0, 174.3}, {313.0, 23.0}}, identifier: 'multiResearch.goal', placeholderValue: '想核對的問題、地區與時間範圍', value: 想核對的問題、地區與時間範圍",
+          "source_file": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift",
+          "source_line": 84,
+          "full_failure_preserved_in": "test-summary.json"
+        }
+      ]
+    },
+    "artifact_verification": {
+      "zip_sha256": "2adff640ea5f35639f159bc79bcccce01a345d56f6f363858bd5af6cb66e76c7",
+      "verified_full_zip_digest": true,
+      "members": [
+        {
+          "file": "report.json",
+          "bytes": 8286,
+          "sha256": "0c4816bc6e3e749013e16f832a2a945cf96b207956848750961dc2b3d82fafbf"
+        },
+        {
+          "file": "test-summary.json",
+          "bytes": 7891,
+          "sha256": "40a775e4d7a1474b6368bdf48d524453edc8e63edb15a1cab9b97bc9335e13ad"
+        },
+        {
+          "file": "tests.log",
+          "bytes": 187024,
+          "sha256": "e6e95a4cbaaa16abb3f72aec3cbcd337e17c3b6ee9c3cd3d0f1c18466bf7db12"
+        }
+      ]
+    },
+    "failure_classification": {
+      "boundary": "actual_native_test_failure_during_first_goal_entry_before_research_start",
+      "prebuild_exit_code": 0,
+      "boot_succeeded": true,
+      "boot_data_migration_failed": false,
+      "xcodebuild_test_exit_code": 65,
+      "all_five_methods_started_and_completed_once": true,
+      "not_preflight_or_bootstrap_failure": true,
+      "error": "Failed to synthesize event: Neither element nor any descendant has keyboard focus.",
+      "field": "multiResearch.goal",
+      "element_type": "TextView",
+      "frame_points": {
+        "x": 40.0,
+        "y": 174.3,
+        "width": 313.0,
+        "height": 23.0
+      },
+      "driver_source": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift:84",
+      "failed_driver": "field.tap(); field.typeText(text)",
+      "first_method_log_lines": {
+        "tap": 2046,
+        "final_error": 2245,
+        "failed": 2288
+      },
+      "second_method_log_lines": {
+        "tap": 2331,
+        "final_error": 2530,
+        "failed": 2573
+      },
+      "same_run_passing_comparator": {
+        "source": "Tests/WoowAssistantUITests/BrowserLearningUITests.swift:410",
+        "actual_goal_coordinate_tap_tests_log_lines": [
+          229,
+          605,
+          1263
+        ],
+        "normalized_point": [
+          0.25,
+          0.5
+        ],
+        "require_keyboard_before_typing": true,
+        "passed_methods": 3
+      },
+      "screenshots": [
+        {
+          "artifact_member": "screenshots/10D9A5CB-B0B4-4007-9EA3-9B74D9E12CAF.png",
+          "sha256": "03c0536ffd69d82be05fb275ba29cf794d3a6be21a9c370352652ba145685166",
+          "observation": "Goal input is visible and empty; keyboard is absent; research has not started."
+        },
+        {
+          "artifact_member": "screenshots/B1DFD217-B2F7-46B6-82C2-50ABEA65170A.png",
+          "sha256": "7136eef73dc2b1400b5d1f7cd02b4c2e4a5cd6b25ed9d4f40b529ea8f3362050",
+          "observation": "Teardown capture is black except status bar; not used to establish field visibility. The failure AX snapshot retains the TextView frame."
+        }
+      ],
+      "candidate_only": {
+        "file": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift",
+        "function": "enterResearchField(_:into:)",
+        "change": "For TextView only, validate the actual visible field frame, tap its inner normalized point (0.25,0.5), then require the native keyboard within five seconds before existing typeText.",
+        "preserve": [
+          "exact input value assertion",
+          "public keyboard Done and disappearance checks",
+          "300 second case cap",
+          "real WebKit reads and quoted sources",
+          "three exact source URLs",
+          "duplicate-origin rejection with no result/receipt",
+          "shared browser address isolation"
+        ],
+        "product_changes": false,
+        "implemented": true,
+        "native_validation_after_fix": false,
+        "implementation_base_commit": "d9cb6a42174155aa81c8ecc92114f61200c889fa"
+      },
+      "root_cause_limit": "Confirms failure to focus through the current driver before typing, with a same-run passing driver comparator; it does not establish a production SwiftUI defect or prove the proposed driver change passes native execution."
+    }
+  },
+  "local_checks": [
+    {
+      "name": "debug_syntax",
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "name": "release_syntax",
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    },
+    {
+      "name": "diff_whitespace",
+      "exit_code": 0,
+      "stdout_bytes": 0,
+      "stderr_bytes": 0
+    }
+  ],
+  "acceptance_limits": [
+    "Syntax parsing is not iOS type checking or native XCTest execution.",
+    "Original 8c failure remains 3 passed, 2 failed, zero skipped.",
+    "Corrected-source exact17 validation is pending parent integration and dispatch.",
+    "No native rerun, CI dispatch, model request, approval bypass, or product modification was performed."
+  ]
+}

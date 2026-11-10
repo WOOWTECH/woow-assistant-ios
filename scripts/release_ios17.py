@@ -37,7 +37,7 @@ class RuntimeInventoryError(ReleaseError):
 # This partition, unlike the legacy focused scopes below, owns every non-Live
 # UI class exactly once. Keep class selectors so new methods cannot be omitted.
 UI_SHARDS = {
-    "ui-startup": ["WoowAssistantUITests", "SelfConfigurationUITests"],
+    "ui-startup": ["WoowAssistantUITests", "SelfConfigurationUITests", "ChatStreamingUITests"],
     "ui-notifications": ["NotificationUITests", "NotificationApprovalUITests"],
     "ui-archive": ["ConversationArchiveUITests"],
     "ui-workspace": ["BrowserWorkspaceUITests", "BrowserLoginUITests", "BrowserSiteModesUITests"],
@@ -508,7 +508,7 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
         raise ReleaseError("未知的 iOS 17 測試範圍。")
     if expected_host_arch not in (None, "arm64", "x86_64"):
         raise ReleaseError("未知的主機架構。")
-    if build_before_boot and (test_scope not in ({"startup-smoke", "pdf-assembly", "pdf-assembly-copy", "documents-read", "documents-output"} | UI_SHARDS.keys())
+    if build_before_boot and (test_scope not in ({"startup-smoke", "pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "documents-read", "documents-output"} | UI_SHARDS.keys())
                               or not sample_bootstrap or not prelaunch_daemon):
         raise ReleaseError("預編譯啟動比較只允許明確預啟動及取樣的 hosted 非 Live UI 分片或既有 smoke／PDF 文件分組；未執行測試。")
     if bounded_test_diagnostics and not sample_bootstrap:

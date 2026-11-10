@@ -103,12 +103,96 @@ final class BrowserWorkspaceUITests: XCTestCase {
         XCTAssertTrue(dom("CONFIRMED").waitForExistence(timeout: 5))
         XCTAssertFalse(app.staticTexts["browser.error"].exists)
     }
+    // Real UIKit find controls. No query injection, JavaScript search, model,
+    // selection retry, or skip when the native panel cannot be exercised.
+    func testNativePageFindQueryNextPreviousAndClose() {
+        launch(reset: true, nativeFindEnglish: true); open("page-find")
+        let field = openNativeFind()
+        field.tap(); field.typeText("WOOW_FIND_ORCHID")
+        XCTAssertEqual(field.value as? String, "WOOW_FIND_ORCHID")
+        let next = nativeFindButton(["Next", "Next Match", "Next Result", "Find Next"])
+        let previous = nativeFindButton(["Previous", "Previous Match", "Previous Result", "Find Previous"])
+        waitForEnabled(next, true); waitForEnabled(previous, true)
+        next.tap(); next.tap()
+        let last = dom("WOOW_FIND_ORCHID third 茶香")
+        let web = app.webViews["browser.webView"]
+        let movedToLast = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            last.exists && web.exists && web.frame.intersects(last.frame) && last.isHittable
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [movedToLast], timeout: 10), .completed,
+                       "Two native Next actions must reveal the third real match below the 900pt spacer.")
+        previous.tap()
+        let movedBack = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            last.exists && web.exists && !web.frame.intersects(last.frame)
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [movedBack], timeout: 10), .completed,
+                       "Previous must return to the second real match above the spacer.")
+        closeNativeFind()
+        let fresh = openNativeFind()
+        XCTAssertNotEqual(fresh.value as? String, "WOOW_FIND_ORCHID")
+        fresh.tap(); fresh.typeText("NOT_PRESENT_LITERAL")
+        XCTAssertEqual(fresh.value as? String, "NOT_PRESENT_LITERAL")
+        waitForEnabled(next, false); waitForEnabled(previous, false)
+        closeNativeFind()
+        XCTAssertFalse(app.staticTexts["browser.error"].exists)
+        XCTAssertEqual(app.textFields["browser.address"].value as? String, "https://research.example.invalid/page-find")
+    }
+
+    func testNativePageFindClearsOnReloadAndTabSwitch() {
+        launch(reset: true, nativeFindEnglish: true); open("page-find")
+        let field = openNativeFind(); field.tap(); field.typeText("WOOW_FIND_ORCHID")
+        XCTAssertEqual(field.value as? String, "WOOW_FIND_ORCHID")
+        library()
+        XCTAssertFalse(app.searchFields.firstMatch.exists)
+        let firstID = tabs.firstMatch.identifier
+        app.buttons["browser.tabs.new"].tap()
+        XCTAssertFalse(app.buttons["browser.find"].isEnabled)
+        open("workspace-two")
+        library(); app.buttons[firstID].tap()
+        XCTAssertTrue(dom("Find fixture").waitForExistence(timeout: 10))
+        let returned = openNativeFind()
+        XCTAssertNotEqual(returned.value as? String, "WOOW_FIND_ORCHID")
+        returned.tap(); returned.typeText("WOOW_FIND_ORCHID")
+        XCTAssertEqual(returned.value as? String, "WOOW_FIND_ORCHID")
+        app.buttons["browser.reload"].tap()
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: app.searchFields.firstMatch)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed)
+        XCTAssertTrue(dom("Find fixture").waitForExistence(timeout: 75))
+        let reloaded = openNativeFind()
+        XCTAssertNotEqual(reloaded.value as? String, "WOOW_FIND_ORCHID")
+        closeNativeFind()
+    }
+
+    private func openNativeFind() -> XCUIElement {
+        let button = app.buttons["browser.find"]
+        waitForEnabled(button, true); button.tap()
+        let field = app.searchFields.firstMatch
+        XCTAssertTrue(field.waitForExistence(timeout: 10), "The actual UIKit find field must appear.")
+        return field
+    }
+    private func nativeFindButton(_ labels: [String]) -> XCUIElement {
+        // Closed semantic-label set for system-localized UIKit versions, scoped
+        // to actual buttons. No coordinates or hidden production test endpoint.
+        app.buttons.matching(NSPredicate(format: "label IN %@", labels)).firstMatch
+    }
+    private func waitForEnabled(_ element: XCUIElement, _ enabled: Bool) {
+        let expectation = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND enabled == %@", NSNumber(value: enabled)), object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed)
+    }
+    private func closeNativeFind() {
+        let done = app.buttons.matching(identifier: "Done").firstMatch
+        XCTAssertTrue(done.waitForExistence(timeout: 5)); done.tap()
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: app.searchFields.firstMatch)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed)
+    }
     private var tabs: XCUIElementQuery { app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "browser.tabs.select.")) }
     private var history: XCUIElementQuery { app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "browser.history.open.")) }
-    private func launch(reset: Bool) {
+    private func launch(reset: Bool, nativeFindEnglish: Bool = false) {
         app.terminate()
         app.launchArguments = ["-UITestMode", "-UITestNamespace", namespace]
         if reset { app.launchArguments.append("-UITestResetStorage") }
+        if nativeFindEnglish { app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"] }
         app.launch()
         XCTAssertTrue(app.buttons["navigation.browser"].waitForExistence(timeout: 10)); app.buttons["navigation.browser"].tap()
     }
@@ -118,7 +202,8 @@ final class BrowserWorkspaceUITests: XCTestCase {
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
         if let value = field.value as? String, value.hasPrefix("https://") { field.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: value.count)) }
         field.typeText("https://research.example.invalid/" + path + "\n")
-        XCTAssertTrue(dom(path.hasPrefix("workspace-two") ? "Workspace second" : "Workspace first").waitForExistence(timeout: 75))
+        let title = path.hasPrefix("page-find") ? "Find fixture" : (path.hasPrefix("workspace-two") ? "Workspace second" : "Workspace first")
+        XCTAssertTrue(dom(title).waitForExistence(timeout: 75))
     }
     private func library() {
         app.buttons["browser.library"].tap()

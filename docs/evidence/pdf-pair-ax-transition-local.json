@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "status": "frozen_local_checks_pass_native_AX_validation_pending",
+  "base_revision": "d9cb6a42174155aa81c8ecc92114f61200c889fa",
+  "isolated_worktree": "/tmp/woow-pdf-pair-ax-d9cb6a4",
+  "patch": {
+    "path": "/tmp/woow-pdf-pair-ax-d9cb6a4.patch",
+    "sha256": "c33ff97f9123e381c5fee36d3055ad4d48a53633cb6314d720ace417124bf992"
+  },
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift": "172b2e517663efcfced87bd13fbb923e385f04480ea53ea49e474137d5e8d9df",
+    "scripts/release_ios17.py": "fbef0fee87fd7e87c410305ffde7412eebda6458b554bb611fca25040ff3cfa7",
+    "scripts/test_release_ios17_prebuild.py": "e139f93d4fe8b7897074be78e7f29dc3548f3653a8ed0e3705f2f5269f5c8fcd",
+    "scripts/test_release_ios17_document_scopes.py": "8a3d8264b60623ddd9e7814071e8bf9feb31c5bbea8a97b27e215503656fb717"
+  },
+  "checks": {
+    "python_tests": 268,
+    "python_result": "PASS",
+    "python_log_sha256": "07d42c1d0d80e04cb3d04309f9a2a292dd550aef2e0da0bac29db6a8a48f867e",
+    "native_PDFKit_pair_debug": 48,
+    "native_PDFKit_pair_release": 24,
+    "actual_App_logic_typecheck_debug_release": true,
+    "ios17_UI_syntax_parse_debug_release": true,
+    "iOS_UI_SDK_typecheck": false,
+    "iOS_native_picker_executed": false,
+    "source_hashes_match_checks": true,
+    "non_live_inventory": 91,
+    "documents_read_count": 6,
+    "documents_output_count": 9,
+    "reverse_patch_check": true,
+    "diff_check": true
+  },
+  "unchanged": {
+    "UI_case_main_body": true,
+    "other_UI_helpers": true,
+    "product_sources": true,
+    "callback_transition_seconds": 15,
+    "case_seconds": 300,
+    "existing_pdf_multi_overall_mode_seconds": 4800,
+    "prebuild_deducted_from_same_budget": true,
+    "existing_3a84b69_run_sources": true,
+    "two_distinct_sources_and_callbacks": true,
+    "separate_read_grants_and_digests": true,
+    "exact_A2_B1_A1_and_native_output_bytes": true,
+    "export_cancellation_preserves_result": true
+  },
+  "changes": [
+    "Transition source lookup matches exact source ID and complete expected synthetic filename using firstMatch, recreated after picker mutations.",
+    "Stable source lookup retains full filename assertion and explicitly asserts exactly one matching source ID.",
+    "Existing prebuild allowlist adds only pdf-assembly-multi; no new test scope or workflow changes.",
+    "Tests cover exact focused selector, unchanged budgets with and without prebuild, one invocation, cleanup, required flags, rejected unrelated PDF scope and wrong-method completion."
+  ],
+  "prior_failure_evidence": "docs/evidence/ios17-documents-output-8c4195f.json",
+  "primary_API_reference": "https://developer.apple.com/documentation/xcuiautomation/xcuielementtypequeryprovider/firstmatch",
+  "limitations": [
+    "firstMatch is a candidate for the observed dismissed-Files AX false-negative; successful native execution has not yet been demonstrated.",
+    "The 8c exact17 output result remains 8 passed / 1 failed / 0 skipped.",
+    "This does not claim to repair the separately observed current/SE FileProvider -1005 failures.",
+    "Host has macOS PDFKit and CLT Swift but no iOS XCTest SDK; syntax checks are not native iOS typechecking."
+  ],
+  "commits_pushes_dispatches_cancellations": 0
+}

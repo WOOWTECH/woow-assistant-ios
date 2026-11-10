@@ -9,6 +9,9 @@ import AssistantDomain
     private static var stores: [String: TaskNotificationStore] = [:]
     let service: TaskNotificationService
     private let adapter: TaskNotificationCenterAdapter
+    #if DEBUG
+    var streamingFixtureCompletedAddAttempts: Int { adapter.completedAddAttempts }
+    #endif
     @Published private(set) var route: Route?
     struct Route: Identifiable { let id = UUID(); let destination: TaskNotificationDestination }
 
@@ -34,6 +37,9 @@ import AssistantDomain
         adapter.mayPresent = { [weak service] in service?.mayPresent(identifier: $0) ?? false }
         adapter.onDismiss = { [weak service] in service?.dismiss(identifier: $0) }
         adapter.onOpen = { [weak self] in self?.route = Route(destination: $0) }
+        #if DEBUG
+        adapter.onCompletedAddAttempt = { [weak self] in self?.objectWillChange.send() }
+        #endif
     }
 
     func installDelegate() { adapter.installDelegate() }

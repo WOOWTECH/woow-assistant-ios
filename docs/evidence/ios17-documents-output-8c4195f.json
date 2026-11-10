@@ -1,0 +1,345 @@
+{
+  "schema_version": 1,
+  "classification": "actual_UI_assertion_failure_after_successful_first_native_pick_not_bootstrap",
+  "run_id": 42911195759,
+  "job_id": 130162001519,
+  "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+  "scope": "documents-output",
+  "conclusion": "failure",
+  "artifact": {
+    "id": 13810867272,
+    "archive_bytes": 63958992,
+    "archive_sha256": "2ae4da9cd036c5bacd309676daf7e7f2edb5abda014c4b37909d9b8ae0546059",
+    "whole_archive_downloaded": false
+  },
+  "runtime": {
+    "requested": "17.0.1",
+    "actual": "17.0.1",
+    "build": "21A342",
+    "architecture": "arm64",
+    "device": "iPhone 15",
+    "xcode": "Xcode 16.4\nBuild version 16F6",
+    "macos": "15.8.2",
+    "physical_device": false
+  },
+  "counts": {
+    "expected": 9,
+    "starts": 9,
+    "completions": 9,
+    "passed": 8,
+    "failed": 1,
+    "skipped": 0,
+    "expected_failures": 0
+  },
+  "methods": [
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry",
+      "result": "passed",
+      "seconds": 152.379,
+      "start_log_line": 19,
+      "completion_log_line": 809
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder",
+      "result": "passed",
+      "seconds": 164.907,
+      "start_log_line": 810,
+      "completion_log_line": 1600
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "result": "passed",
+      "seconds": 201.125,
+      "start_log_line": 1601,
+      "completion_log_line": 2296
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testRefusingFirstStepDoesNotReadOrExtract",
+      "result": "passed",
+      "seconds": 56.382,
+      "start_log_line": 2297,
+      "completion_log_line": 2578
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testRefusingSecondStepKeepsExtractionUnauthorized",
+      "result": "passed",
+      "seconds": 68.394,
+      "start_log_line": 2579,
+      "completion_log_line": 2916
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "result": "passed",
+      "seconds": 202.438,
+      "start_log_line": 2917,
+      "completion_log_line": 3606
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "result": "passed",
+      "seconds": 205.008,
+      "start_log_line": 3607,
+      "completion_log_line": 4294
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
+      "result": "failed",
+      "seconds": 70.964,
+      "start_log_line": 4298,
+      "completion_log_line": 4515
+    },
+    {
+      "selector": "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
+      "result": "passed",
+      "seconds": 57.178,
+      "start_log_line": 4519,
+      "completion_log_line": 4847
+    }
+  ],
+  "prebuild": {
+    "enabled": true,
+    "exit_code": 0,
+    "elapsed_seconds": 203.306,
+    "combined_build_test_budget_seconds": 1800,
+    "remaining_test_seconds": 1596.693954791,
+    "case_cap_seconds": 300,
+    "generic_simulator_build": true,
+    "explicit_architecture": "arm64",
+    "simulator_created_after_prebuild": true,
+    "exact_generated_manifest": {
+      "path": "DerivedData/Build/Products/WoowAssistant_iphonesimulator18.5-arm64.xctestrun",
+      "sha256": "9978e367f9653f556eb13135435df6a6257e0d78a60f4fcc7482c857ec8b63e2"
+    },
+    "manifest_hash_source": "report.json; manifest itself not exported in this artifact",
+    "actual_test_without_building_command_in_tests_log": true,
+    "attempts": 1
+  },
+  "cleanup": {
+    "boot_succeeded": true,
+    "test_exit_code": 65,
+    "simulator_deleted": true,
+    "sampling_status": "stopped",
+    "prelaunch_handshake_verified": false,
+    "all_expected_methods_completed_once": true
+  },
+  "failure": {
+    "method": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
+    "source_line": 332,
+    "seconds": 70.964,
+    "stage": "first_A_callback_and_visible_source_accepted_but_AX_progress_predicate_timed_out",
+    "test_start_UTC": "2026-11-10T22:53:45.448Z",
+    "tap_elapsed_seconds": 51.03,
+    "tap_target": "exact synthetic A cell sole thumbnail",
+    "tap_frame_points": {
+      "x": 46.7,
+      "y": 192,
+      "width": 65,
+      "height": 84
+    },
+    "progress_query_elapsed_seconds": 54.9,
+    "remote_AX_errors_elapsed_seconds": [
+      57.11,
+      66.61
+    ],
+    "remote_AX_error": "kAXErrorInvalidUIElement for remote Files process 60070",
+    "native_events": [
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "event": "bindingChanged",
+        "ordinal": "1",
+        "presented": "true",
+        "callbacks": "0",
+        "epoch_seconds_truncated_microseconds": "1794351261.008151"
+      },
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "source": "user-copy",
+        "event": "bindingChanged",
+        "presented": "true",
+        "callbacks": "0",
+        "epoch_seconds_truncated_microseconds": "1794351261.008284"
+      },
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "source": "user-copy",
+        "mode": "unobserved",
+        "epoch_seconds_truncated_microseconds": "1794351261.009248"
+      },
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "event": "nativeCreated",
+        "mode": "import",
+        "allowsMultipleSelection": "false",
+        "delegatePresent": "true",
+        "inWindow": "false",
+        "dismissing": "false",
+        "identitySame": "true",
+        "callbacks": "0",
+        "epoch_seconds_truncated_microseconds": "1794351261.032651"
+      },
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "source": "user-copy",
+        "mode": "import",
+        "allowsMultipleSelection": "false",
+        "epoch_seconds_truncated_microseconds": "1794351261.238517"
+      },
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "source": "user-copy",
+        "event": "observed",
+        "mode": "import",
+        "allowsMultipleSelection": "false",
+        "delegatePresent": "true",
+        "inWindow": "true",
+        "dismissing": "false",
+        "epoch_seconds_truncated_microseconds": "1794351261.238636"
+      },
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "event": "nativePicked",
+        "mode": "import",
+        "allowsMultipleSelection": "false",
+        "delegatePresent": "true",
+        "inWindow": "false",
+        "dismissing": "false",
+        "identitySame": "true",
+        "callbacks": "1",
+        "epoch_seconds_truncated_microseconds": "1794351280.589659"
+      },
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "event": "completion",
+        "source": "uikit",
+        "callbacks": "1",
+        "outcome": "one",
+        "epoch_seconds_truncated_microseconds": "1794351280.678437"
+      },
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "source": "user-copy",
+        "event": "completion",
+        "outcome": "one",
+        "callbacks": "1",
+        "epoch_seconds_truncated_microseconds": "1794351280.678833"
+      },
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "event": "nativeDismantled",
+        "mode": "import",
+        "allowsMultipleSelection": "false",
+        "delegatePresent": "true",
+        "inWindow": "false",
+        "dismissing": "false",
+        "identitySame": "true",
+        "callbacks": "1",
+        "epoch_seconds_truncated_microseconds": "1794351280.696401"
+      },
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "event": "bindingChanged",
+        "ordinal": "1",
+        "presented": "false",
+        "callbacks": "1",
+        "epoch_seconds_truncated_microseconds": "1794351280.714652"
+      },
+      {
+        "namespace": "C6B2505B-BC76-45A9-9252-D8B7189E3160",
+        "source": "user-copy",
+        "event": "bindingChanged",
+        "presented": "false",
+        "callbacks": "1",
+        "epoch_seconds_truncated_microseconds": "1794351280.714854"
+      }
+    ],
+    "first_source_visible_in_video_at_seconds": 60,
+    "second_picker_started": false,
+    "approved_reads_reached": false,
+    "assembly_export_assertions_reached": false
+  },
+  "system_errors": {
+    "observed": [
+      {
+        "time_UTC": "2026-11-10T22:54:39.609029Z",
+        "category": "picked-file to Inbox-copy thumbnail association warning",
+        "domain": "QLThumbnailErrorDomain",
+        "code": 102,
+        "underlying_domain": "GSLibraryErrorDomain",
+        "underlying_code": 3,
+        "underlying_fixed_reason": "Generation not found",
+        "subsequent_native_callback": true
+      }
+    ],
+    "FileProvider_minus_1005_confirmed_for_this_run": false,
+    "same_cause_as_current_SE_8c_proven": false,
+    "inference": "Thumbnail warning did not prevent first URL delivery or App source display. The assertion false-negative coincides with remote Files AX failures during dismissal."
+  },
+  "visual_evidence": {
+    "path": "docs/evidence/pdf-assembly-add-8c4195f-ios17-accepted-a.png",
+    "sha256": "59ec7130543d44fbf651c432735de5e672b694b8dd176d801e16e4e9d9abe149",
+    "source_video_member": "screenshots/C3ECF5FD-08A4-48B8-A497-E54B4D513B99.mp4",
+    "source_video_sha256": "3fc106a8883d0fecbb04bcf3b70beec4c0a12d7f728985c670cf919ebe936b21",
+    "frame_seconds": 60,
+    "observed": "Correct exact synthetic A displayed as source 1; read-approval and Add PDF copy controls visible; native picker gone."
+  },
+  "bounded_sources": [
+    {
+      "member": "report.json",
+      "sha256": "0849b99e2d5787bef8650b48c7b159b9ac96b201574909be925e02ddff711d07",
+      "bytes": 9630
+    },
+    {
+      "member": "test-summary.json",
+      "sha256": "12326f30e212401ab799855663fd2540f359b8bd932700b4c768a25ec27f4d2a",
+      "bytes": 1632
+    },
+    {
+      "member": "tests.log",
+      "sha256": "96b2063054e2b4da3a0c5d04f2fe855ef8594d16588c552e1f3e153852de4a74",
+      "bytes": 357941
+    },
+    {
+      "member": "bootstrap-samples/report.json",
+      "sha256": "2c81ce8ff0e5de9ceef94650e80bac0c87b7438c35550232d0b981f5e8e1532a",
+      "bytes": 567
+    },
+    {
+      "member": "build-for-testing.log",
+      "sha256": "93daa8e97c5f45acdccbae65e005acb5cd354e0b4f132a10db02b871d1de1837",
+      "bytes": 1126604
+    },
+    {
+      "member": "ui-test-inventory.json",
+      "sha256": "67875f86a60fd81551a718e8d2978fd7bac038897b628a70405d6d9af0c84342",
+      "bytes": 15970
+    },
+    {
+      "member": "screenshots/manifest.json",
+      "sha256": "a4942ce3a3cbd48c9a9acf3b63d8312fe46050925ed92459029d77c8d7da1a72",
+      "bytes": 16338
+    },
+    {
+      "member": "runner-diagnostics/0_Test_Woow-iOS17-78b5d84a26d848ad88637f9eb59e4872_Diagnostics/WoowAssistantUITests-F1762E09-21BE-4D5C-8DEF-89F4F3EDD0D7-Configuration-Test Scheme Action-Iteration-1/WoowAssistantUITests-3232AC24-C45F-42DC-A8D4-1F7C4E4FB683/StandardOutputAndStandardError-io.woowtech.assistant.txt",
+      "sha256": "79eb5ac8ae509efb9701690bacb50643721d798d323acbc2dc573791f31224f9",
+      "uncompressed_bytes": 280499692,
+      "compressed_bytes": 21710787,
+      "read_method": "one selected compressed ZIP entry in <=1MiB ranges, CRC/SHA checked; only fixed event and bounded pair-window categories retained",
+      "transfer_cap_bytes": 25165824,
+      "transferred_bytes": 21728520
+    }
+  ],
+  "next_candidate": {
+    "status": "read_only_not_implemented",
+    "file": "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift",
+    "proposal": "For the transition progress check, use a firstMatch query restricted to the exact source identifier and full expected synthetic filename; retain exact uniqueness/label checks once transition resolves. This may avoid full hierarchy traversal through the disappearing remote Files service. Keep 15s/300s and all two-source/read/order/output assertions unchanged.",
+    "primary_api_source": "https://developer.apple.com/documentation/xcuiautomation/xcuielementtypequeryprovider/firstmatch",
+    "native_effect_unverified": true
+  },
+  "limitations": [
+    "This failed pair method does not prove two-source merge, second callback, read grants, page order or export cancellation.",
+    "The other eight completed methods passed; their results do not turn the nine-method scope green.",
+    "Source report runtime_tested=false is its acceptance flag; nine actual runtime methods did execute.",
+    "No retries, timeout increases, source changes, commits, pushes, cancellations or dispatches were performed for this evidence collection.",
+    "New 3a84b69 current/SE diagnostic runs are separate and pending; no results inferred from this old source."
+  ]
+}

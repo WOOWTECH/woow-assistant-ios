@@ -117,6 +117,21 @@ class DocumentFocusedScopesTests(unittest.TestCase):
             self.assertIn("&& 20 || 55", timeout)
         self.assertEqual(len(set(selected)), 4)
 
+    def test_pair_focus_requires_its_actual_source_method_not_another_passing_assembly(self):
+        catalog = ios17.ui_inventory(ROOT)
+        expected = ["WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages"]
+        self.assertEqual(ios17.selected_ui_tests(catalog, "pdf-assembly-multi"), expected)
+        self.assertIn(expected[0], catalog["document_focused_scopes"]["documents-output"])
+        summary = {"result": "Passed", "totalTestCount": 1, "passedTests": 1,
+                   "failedTests": 0, "skippedTests": 0, "expectedFailures": 0}
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "tests.log"
+            other = ios17.selected_ui_tests(catalog, "pdf-assembly-copy")
+            for methods, accepted in ((expected, True), (other, False)):
+                path.write_text("".join("Test Case '-[WoowAssistantUITests.%s %s]' passed (1.0 seconds).\n" %
+                                        tuple(method.split("/")[1:]) for method in methods))
+                self.assertEqual(ios17.test_completion(summary, path, expected, True)["verified"], accepted)
+
 
 if __name__ == "__main__":
     unittest.main()

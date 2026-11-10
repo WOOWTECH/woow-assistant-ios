@@ -324,15 +324,32 @@ import CoreGraphics
         XCTAssertTrue(!frame.isEmpty && !frame.isInfinite && cell.frame.contains(frame)
                       && viewport.contains(frame) && !filesNavigation.frame.intersects(frame))
         thumbnail.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-        let received = form.staticTexts["pdfAssembly.source.\(index)"]
-        let open = filesNavigation.buttons.matching(NSPredicate(format: "label IN %@", ["打開", "開啟", "Open"])).firstMatch
+        let sourceID = "pdfAssembly.source.\(index)"
+        let expectedLabel = "來源 \(index)：" + filename(role)
+        // In 8c's iOS 17 run, A was accepted while a full hierarchy query
+        // waited on the dismissed Files service. Restrict this transition
+        // lookup to the exact source and filename; check uniqueness below.
+        func receivedSource() -> XCUIElement {
+            app.staticTexts.matching(NSPredicate(format: "identifier == %@ AND label == %@",
+                                                 sourceID, expectedLabel)).firstMatch
+        }
+        func openButton() -> XCUIElement {
+            filesNavigation.buttons.matching(NSPredicate(format: "label IN %@", ["打開", "開啟", "Open"])).firstMatch
+        }
         let progress = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            received.exists || (open.exists && open.isEnabled && open.isHittable)
+            if receivedSource().exists { return true }
+            let open = openButton()
+            return open.exists && open.isEnabled && open.isHittable
         }, object: nil)
         XCTAssertEqual(XCTWaiter.wait(for: [progress], timeout: 15), .completed)
-        if !received.exists && open.exists && open.isEnabled && open.isHittable { open.tap() }
-        XCTAssertTrue(received.waitForExistence(timeout: 15))
-        XCTAssertEqual(received.label, "來源 \(index)：" + filename(role))
+        if !receivedSource().exists {
+            let open = openButton()
+            if open.exists && open.isEnabled && open.isHittable { open.tap() }
+        }
+        XCTAssertTrue(receivedSource().waitForExistence(timeout: 15))
+        let received = form.staticTexts.matching(identifier: sourceID)
+        XCTAssertEqual(received.count, 1)
+        XCTAssertEqual(received.element.label, expectedLabel)
         XCTAssertFalse(cancel.exists)
     }
 

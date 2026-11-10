@@ -45,6 +45,61 @@ enum UITestModelFixture {
     }
 }
 
+/// Opt-in only. Resolve before constructing any ChatSession storage; neither
+/// a prompt nor an endpoint can enable this fixture. Release has no such API.
+struct UITestChatStreamingConfiguration {
+    static let flag = "-UITestChatStreaming"
+    let namespace: UUID
+    private init(namespace: UUID) { self.namespace = namespace }
+    enum Invalid: Error { case arguments }
+    static func resolve(arguments: [String]) throws -> Self? {
+        guard arguments.contains(where: { $0.hasPrefix(flag) }) else { return nil }
+        let allowed = [flag, "-UITestMode", "-UITestNamespace", "-UITestResetStorage"]
+        guard arguments.filter({ $0 == flag }).count == 1,
+              arguments.filter({ $0 == "-UITestMode" }).count == 1,
+              arguments.filter({ $0 == "-UITestNamespace" }).count == 1,
+              arguments.filter({ $0 == "-UITestResetStorage" }).count <= 1,
+              !arguments.contains(where: { $0.hasPrefix("-Live") }),
+              !arguments.contains(where: { $0.hasPrefix("-UITest") && !allowed.contains($0) }),
+              let index = arguments.firstIndex(of: "-UITestNamespace"), arguments.indices.contains(index + 1),
+              let namespace = UUID(uuidString: arguments[index + 1]),
+              namespace.uuidString.lowercased() == arguments[index + 1].lowercased() else { throw Invalid.arguments }
+        return Self(namespace: namespace)
+    }
+}
+
+struct UITestStreamingChatModelClient: StreamingChatModelClient {
+    private let completeClient = UITestChatModelClient()
+    init(configuration: UITestChatStreamingConfiguration) {}
+    func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
+        // Keep the existing structured dispatcher/review path intact.
+        try await completeClient.complete(messages: messages, configuration: configuration, apiKey: apiKey)
+    }
+    func stream(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) -> AsyncThrowingStream<String, Error> {
+        AsyncThrowingStream { continuation in
+            let worker = Task {
+                do {
+                    try Task.checkCancellation()
+                    let prompt = messages.last?.content ?? ""
+                    guard messages.allSatisfy({ $0.role == "user" || $0.role == "assistant" }),
+                          ["[fixture:stream-complete]", "[fixture:stream-cancel]"].contains(prompt) else {
+                        throw HTTPChatModelError.invalidConfiguration
+                    }
+                    continuation.yield("串流測試：第一段")
+                    // Fixed transport timing only; no host deadline, approval,
+                    // storage, preferences, URL or model authority is changed.
+                    try await Task.sleep(nanoseconds: prompt == "[fixture:stream-complete]"
+                        ? 30_000_000_000 : 60_000_000_000)
+                    try Task.checkCancellation()
+                    continuation.yield("；完整回覆。")
+                    continuation.finish()
+                } catch { continuation.finish(throwing: error) }
+            }
+            continuation.onTermination = { @Sendable _ in worker.cancel() }
+        }
+    }
+}
+
 actor UITestChatModelClient: ChatModelClient {
     private var failedOnce = false
 

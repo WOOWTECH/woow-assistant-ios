@@ -1,6 +1,6 @@
 import Foundation
 
-public struct HTTPChatModelClient: ChatModelClient {
+public struct HTTPChatModelClient: StreamingChatModelClient {
     private let session: URLSession
     private let timeoutNanoseconds: UInt64
     private static let maximumTimeout: UInt64 = 90_000_000_000

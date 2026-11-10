@@ -20,6 +20,23 @@ struct ChatEntry: Identifiable {
     }
 }
 
+/// Display-only text from one unfinished plain request. It never becomes a
+/// ChatEntry, archive turn, learning utterance or notification completion.
+struct ChatReplyPreview: Identifiable, Equatable {
+    enum Phase { case receiving, cancelled, failed }
+    static let maximumUTF8Bytes = 4 * 1024 * 1024
+    let id: UUID
+    let text: String
+    var phase: Phase
+    var status: String {
+        switch phase {
+        case .receiving: return "回覆產生中・尚未完成，未保存"
+        case .cancelled: return "已取消・部分回覆未保存"
+        case .failed: return "回覆未完成・部分回覆未保存"
+        }
+    }
+}
+
 struct MCPApprovalRequest: Identifiable {
     let id = UUID()
     let name: String
@@ -45,6 +62,7 @@ final class ChatSession: ObservableObject {
     @Published var modelDraft = ""
     @Published var keyDraft = ""
     @Published private(set) var entries: [ChatEntry] = []
+    @Published private(set) var replyPreview: ChatReplyPreview?
     @Published private(set) var savedSettings: SavedModelSettings?
     @Published private(set) var hasStoredKey = false
     @Published private(set) var isSubmitting = false
@@ -78,17 +96,20 @@ final class ChatSession: ObservableObject {
     private var request: Task<Void, Never>?
     private var deadline: Task<Void, Never>?
     private var requestID: UUID?
-    #if DEBUG || CONVERSATION_ARCHIVE_APP_STANDALONE
     /// Read-only completion handle for joining an already captured task after cancellation.
     var capturedArchiveRequest: Task<Void, Never>? { request }
-    #endif
 
     init() {
+        #if DEBUG
+        let arguments = ProcessInfo.processInfo.arguments
+        let streamFixture: UITestChatStreamingConfiguration?
+        do { streamFixture = try UITestChatStreamingConfiguration.resolve(arguments: arguments) }
+        catch { preconditionFailure("Streaming UI fixture requires one isolated UI test mode and UUID namespace; no Live mode") }
+        #endif
         learning = LearningStore()
         archive = ConversationArchiveStore()
         var bootstrapFailure: String?
         #if DEBUG
-        let arguments = ProcessInfo.processInfo.arguments
         precondition(!(arguments.contains("-UITestMode") && arguments.contains("-LiveModelUITest")), "Choose one UI test mode")
         if arguments.contains("-LiveModelUITest") {
             repository = LiveModelUITestSupport.repository(arguments: arguments)
@@ -104,7 +125,8 @@ final class ChatSession: ObservableObject {
             catch { bootstrapFailure = Self.settingsMessage(error) }
         } else if arguments.contains("-UITestMode") {
             repository = UITestModelFixture.repository(arguments: arguments)
-            client = UITestChatModelClient()
+            if let streamFixture { client = UITestStreamingChatModelClient(configuration: streamFixture) }
+            else { client = UITestChatModelClient() }
             isUITestMode = true
         } else {
             repository = Self.liveRepository()
@@ -229,6 +251,7 @@ final class ChatSession: ObservableObject {
             keyDraft = ""
             if changed {
                 entries = []
+                replyPreview = nil
                 conversationDestination = nil; archiveNotice = nil; pendingArchiveSave = nil
                 profileReceipt = nil
                 profileReceiptRequestID = nil
@@ -261,6 +284,7 @@ final class ChatSession: ObservableObject {
             modelDraft = ""
             keyDraft = ""
             entries = []
+            replyPreview = nil
             conversationDestination = nil; archiveNotice = nil; pendingArchiveSave = nil
             profileReceipt = nil
             profileReceiptRequestID = nil
@@ -318,6 +342,7 @@ final class ChatSession: ObservableObject {
         let configuration = savedSettings.configuration
         let id = UUID()
         requestID = id
+        replyPreview = nil
         isSubmitting = true
         isMCPRun = mcpConnection != nil
         mcpActivity = nil
@@ -341,7 +366,8 @@ final class ChatSession: ObservableObject {
                         state: profileState, memoryState: memoryState, generation: learningGeneration, configuration: configuration,
                         key: key, client: client, requestID: id) ?? ""
                 } else {
-                    reply = try await client.complete(messages: messages, configuration: configuration, apiKey: key)
+                    reply = try await self?.completePlain(messages: messages, configuration: configuration,
+                        key: key, client: client, requestID: id) ?? ""
                 }
                 try Task.checkCancellation()
                 guard let self, self.requestID == id else { return }
@@ -372,6 +398,7 @@ final class ChatSession: ObservableObject {
                     }
                 }
                 self.conversationDestination = destination
+                self.replyPreview = nil
                 self.entries.append(userEntry)
                 self.entries.append(assistantEntry)
                 if self.draft == prompt { self.draft = "" }
@@ -423,6 +450,34 @@ final class ChatSession: ObservableObject {
         }
     }
 
+    private func completePlain(messages: [ModelMessage], configuration: ModelConfiguration,
+                               key: String, client: any ChatModelClient, requestID id: UUID) async throws -> String {
+        try Task.checkCancellation()
+        guard requestID == id else { throw CancellationError() }
+        guard let streaming = client as? any StreamingChatModelClient else {
+            return try await client.complete(messages: messages, configuration: configuration, apiKey: key)
+        }
+        var text = "", bytes = 0
+        for try await delta in streaming.stream(messages: messages, configuration: configuration, apiKey: key) {
+            try Task.checkCancellation()
+            guard requestID == id else { throw CancellationError() }
+            guard delta.utf8.count <= ChatReplyPreview.maximumUTF8Bytes - bytes else {
+                throw HTTPChatModelError.responseTooLarge
+            }
+            guard !delta.isEmpty else { continue }
+            bytes += delta.utf8.count; text += delta
+            replyPreview = ChatReplyPreview(id: id, text: text, phase: .receiving)
+        }
+        try Task.checkCancellation()
+        guard requestID == id else { throw CancellationError() }
+        return text
+    }
+
+    private func stopPreview(id: UUID, phase: ChatReplyPreview.Phase) {
+        guard var preview = replyPreview, preview.id == id, preview.phase == .receiving else { return }
+        preview.phase = phase; replyPreview = preview
+    }
+
     private static func modelFailureMessage(_ error: MCPConversationError?) -> String? {
         let reason: String
         switch error {
@@ -453,6 +508,7 @@ final class ChatSession: ObservableObject {
         learning.cancelLearning()
         guard let id = requestID else { return }
         if isMCPRun { updateMCPDiagnostics(failure: "cancelled") }
+        stopPreview(id: id, phase: .cancelled)
         request?.cancel()
         finish(id: id)
         chatNotice = "已取消等待，草稿已保留。伺服器可能已收到請求。"
@@ -724,6 +780,7 @@ final class ChatSession: ObservableObject {
         guard !isSubmitting else { return }
         learning.resetConversationPresentation()
         entries = []; conversationID = UUID().uuidString
+        replyPreview = nil
         conversationDestination = nil; archiveNotice = nil; pendingArchiveSave = nil
         mcpActivity = nil; mcpSteps = []; mcpSentCount = 0
         mcpDiagnostics = nil
@@ -736,6 +793,7 @@ final class ChatSession: ObservableObject {
 
     private func finish(id: UUID, error: String? = nil) {
         guard requestID == id else { return }
+        if error != nil { stopPreview(id: id, phase: .failed) }
         if let pending = pendingMCPApproval { resolveMCPApproval(id: pending.id, approved: false) }
         if let pending = pendingProfileReview { resolveProfileReview(id: pending.id, approved: false) }
         if let pending = pendingMemoryReview { resolveMemoryReview(id: pending.id, approved: false) }

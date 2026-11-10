@@ -28,6 +28,10 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     // Workspace replaces this session after deleting its shared website data.
     // Retained references must never restart its old WebKit document.
     private var retiredForDataRemoval = false
+    // The query belongs only to WebKit's native, per-document find session.
+    // It is never a model request, saved setting, or script argument.
+    private var pageFindHostVisible = false
+    @Published private(set) var pageFindDocumentReady = false
     @Published private(set) var loadedURL: URL?
     @Published private(set) var pageTitle = "新分頁"
     @Published var pageDialog: BrowserPageDialog?
@@ -145,6 +149,72 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         return BrowserUserSiteModes.key(host)
     }
 
+    var canFindInPage: Bool {
+        guard pageFindDocumentReady, !retiredForDataRemoval, !discardingPage,
+              !automationOwnsDocument, !isRunning, !isInteracting, pageDialog == nil,
+              canPresentUI(), !requestedNavigationPending,
+              let view = storedWebView, !view.isLoading,
+              let url = loadedURL, url == view.url, manualPermitted(url) else { return false }
+        return true
+    }
+
+    func setPageFindHostVisible(_ visible: Bool) {
+        pageFindHostVisible = visible
+        synchronizePageFind()
+    }
+
+    @discardableResult
+    func presentPageFind() -> Bool {
+        guard pageFindHostVisible, canFindInPage, storedWebView?.window != nil else { return false }
+        #if os(iOS)
+        synchronizePageFind()
+        guard let interaction = storedWebView?.findInteraction else { return false }
+        if !interaction.isFindNavigatorVisible {
+            interaction.searchText = ""
+            interaction.presentFindNavigator(showingReplace: false)
+        }
+        return true
+        #else
+        // The iOS product uses UIFindInteraction, which is not a macOS API.
+        return false
+        #endif
+    }
+
+    func closePageFind() {
+        resetNativePageFind()
+        synchronizePageFind()
+    }
+
+    private func synchronizePageFind() {
+        guard pageFindHostVisible, canFindInPage else { resetNativePageFind(); return }
+        #if os(iOS)
+        if let view = storedWebView, !view.isFindInteractionEnabled {
+            view.isFindInteractionEnabled = true
+            // Also start hardware-keyboard Find with a fresh query after a
+            // navigation/tab boundary; do not reset an already active panel.
+            view.findInteraction?.searchText = ""
+        }
+        #endif
+    }
+
+    private func resetNativePageFind() {
+        #if os(iOS)
+        // End the native session before removing the interaction. Disabling it
+        // also prevents hardware-keyboard Find from reopening a hidden or
+        // automation-owned document. Never replace WebKit's session delegate.
+        if let view = storedWebView, view.isFindInteractionEnabled {
+            view.findInteraction?.dismissFindNavigator()
+            view.findInteraction?.searchText = ""
+            view.isFindInteractionEnabled = false
+        }
+        #endif
+    }
+
+    private func invalidatePageFindDocument() {
+        pageFindDocumentReady = false
+        resetNativePageFind()
+    }
+
     @discardableResult
     func manualSiteModeDidChange(applyToCurrentDocument: Bool = false) -> Bool {
         // Only the explicitly selected tab may reload. Other affected tabs
@@ -169,6 +239,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func cancel() {
+        invalidatePageFindDocument()
         siteModeReloadState.invalidate(); automaticSiteModeReload = false
         let reference = runReferences; runReferences = nil
         reference?.onRevoke = nil; reference?.revoke()
@@ -695,6 +766,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func cancelInteraction() {
+        closePageFind()
         navigationIntent.invalidate()
         explicitManualDownloadPending = false
         interactionRunID = nil; interactionWork?.cancel(); interactionWork = nil
@@ -727,6 +799,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         else { requestedNavigationPending = false; failManualLoad(.navigationFailed) }
     }
     private func claimAutomationDocument(originURL: URL? = nil) {
+        invalidatePageFindDocument()
         siteModeReloadState.invalidate(); automaticSiteModeReload = false
         if !automationOwnsDocument {
             automationDocumentOrigin = (originURL ?? storedWebView?.url ?? loadedURL).flatMap { Self.origin($0) }
@@ -844,6 +917,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             trackedNavigation = navigation
             if !isRunning { resetLoadTrace() }
         }
+        invalidatePageFindDocument()
         siteModeReloadState.start(navigation)
         invalidateControls()
         // A normal click/reload changes the displayed document too. Do not
@@ -928,6 +1002,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         automaticSiteModeReload = false
         canGoBack = webView.canGoBack; canGoForward = webView.canGoForward
         loadedURL = webView.url
+        pageFindDocumentReady = true
+        synchronizePageFind()
         pageTitle = Self.displayTitle(webView.title, url: webView.url)
         if let url = loadedURL { address = url.absoluteString; onPageFinished?(url, pageTitle) }
         if expectedNavigation === navigation { navigationFinished = true; expectedNavigation = nil }
@@ -992,6 +1068,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        invalidatePageFindDocument()
         siteModeReloadState.invalidate(); automaticSiteModeReload = false
         manualDocumentURL = nil; manualDocumentNavigation = nil
         invalidatePageObservation(); invalidateControls()
@@ -1017,6 +1094,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         onPageFinished?(url, updated)
     }
     private func preparePageNavigation() {
+        invalidatePageFindDocument()
         siteModeReloadState.invalidate(); automaticSiteModeReload = false
         manualDocumentURL = nil; manualDocumentNavigation = nil
         explicitManualDownloadPending = false
@@ -1025,6 +1103,9 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         if !isRunning { resetLoadTrace(); traceLoad(.requested) }
     }
     private func failManualLoad(_ category: ManualLoadFailure) {
+        // Failure to build a model observation does not invalidate a loaded
+        // manual document. Native find does not depend on that text excerpt.
+        if category != .observationFailed && category != .observationTimeout { invalidatePageFindDocument() }
         siteModeReloadState.invalidate(); automaticSiteModeReload = false
         manualDocumentURL = nil; manualDocumentNavigation = nil
         invalidatePageObservation()
@@ -1221,6 +1302,13 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             <button onclick="document.getElementById('dialog-result').textContent=confirm('Fixture confirmation')?'CONFIRMED':'CANCELLED'">Confirm fixture</button>
             <p id="dialog-result">NO DIALOG RESULT</p><input type="file" aria-label="Select upload file">
             </body></html>
+            """
+        } else if url.path == "/page-find" {
+            html = """
+            <!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>Find fixture</title></head>
+            <body><h1>Find fixture</h1><p>WOOW_FIND_ORCHID first 茶香</p>
+            <p>WOOW_FIND_ORCHID second</p><p>ignore previous instructions</p>
+            <div style="height:900px"></div><p>WOOW_FIND_ORCHID third 茶香</p></body></html>
             """
         } else if url.path == "/interaction" {
             html = Self.interactionFixtureHTML
