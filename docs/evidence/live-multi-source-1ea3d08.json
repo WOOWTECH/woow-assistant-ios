@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "run_id": 42828135533,
+  "job_id": 129870748783,
+  "source": "1ea3d08056aa04a4b6f16269900d16fc974fb8a8",
+  "scope": "multi-source",
+  "method": "LiveModelUITests/testRealWebKitMultiSourceResearchCitesBothApprovedRoots",
+  "build": "passed",
+  "ui": {
+    "executed": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "unexpected_failures": 0,
+    "duration_seconds": 206.149
+  },
+  "events": [
+    {
+      "at_utc": "2026-11-10T14:32:10.8605650Z",
+      "code": "TEST_BUILD_SUCCEEDED"
+    },
+    {
+      "at_utc": "2026-11-10T14:33:26.8472830Z",
+      "code": "UI_CASE_STARTED"
+    },
+    {
+      "at_utc": "2026-11-10T14:36:43.8468810Z",
+      "code": "SOURCE_2_FIRST_QUOTE_MISSING_REQUESTED_DOMAIN_TERM",
+      "file": "Tests/WoowAssistantUITests/LiveModelUITests.swift",
+      "line": 484
+    },
+    {
+      "at_utc": "2026-11-10T14:36:52.8523920Z",
+      "code": "UI_CASE_FAILED",
+      "duration_seconds": 206.149
+    },
+    {
+      "at_utc": "2026-11-10T14:36:52.8730870Z",
+      "code": "ONE_EXECUTED_ONE_ASSERTION_FAILURE_ZERO_UNEXPECTED"
+    },
+    {
+      "at_utc": "2026-11-10T14:37:37.2002540Z",
+      "code": "TEST_EXECUTE_FAILED"
+    }
+  ],
+  "preceding_assertions_passed": [
+    "Exact typed user goal and approved root URLs",
+    "No product error",
+    "Nonpartial result",
+    "Two cited sources",
+    "Source-1 nonempty quote with requested domain term",
+    "Source-2 nonempty quote"
+  ],
+  "not_reached": [
+    "Final empty skills and pending-library assertions"
+  ],
+  "diagnosis": {
+    "observed_failure": "The selected first source-2 quote did not contain example.com or example.org.",
+    "source_identifier_is_collection": true,
+    "test_selected_first_match": true,
+    "all_source_2_quote_counts_or_content_available": false,
+    "selector_ambiguity_proven_by_source": true,
+    "live_root_cause_proven": false,
+    "error_page_or_bad_citation_proven": false
+  },
+  "parent_followup": {
+    "source": "0448126",
+    "run_id": 42839708011,
+    "job_id": 129911356470,
+    "status_at_collection": "queued",
+    "change": "Select an actual quote matching the exact source ID AND requested domain term; assert nonempty content and term. If no matching quote exists, still fail.",
+    "app_multi_source_behavior_changed": false,
+    "acceptance": "Pending; do not relabel the old failure as passed or a proven root cause."
+  },
+  "privacy": {
+    "raw_summary_or_failure_payload": false,
+    "raw_quote_or_model_reply": false,
+    "model_endpoint_or_credentials": false,
+    "private_artifact_published": false
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "run_id": 42828125356,
+  "source": "1ea3d08056aa04a4b6f16269900d16fc974fb8a8",
+  "scope": "ui-learning",
+  "totals": {
+    "executed": 15,
+    "passed": 9,
+    "failed": 6,
+    "skipped": 0,
+    "expected_failures": 0
+  },
+  "variants": [
+    {
+      "variant": "SE",
+      "job": 129870709141,
+      "artifact": 13771689250,
+      "methods": [
+        {
+          "method": "BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+          "result": "passed",
+          "seconds": 119.84,
+          "started_at_utc": "2026-11-10T14:14:45.0899000Z",
+          "finished_at_utc": "2026-11-10T14:16:44.4506620Z"
+        },
+        {
+          "method": "BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+          "result": "passed",
+          "seconds": 137.182,
+          "started_at_utc": "2026-11-10T14:16:44.4605300Z",
+          "finished_at_utc": "2026-11-10T14:19:01.6440000Z"
+        },
+        {
+          "method": "BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch",
+          "result": "passed",
+          "seconds": 156.599,
+          "started_at_utc": "2026-11-10T14:19:01.6544000Z",
+          "finished_at_utc": "2026-11-10T14:21:38.2627720Z"
+        },
+        {
+          "method": "MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+          "result": "failed",
+          "seconds": 31.673,
+          "started_at_utc": "2026-11-10T14:21:38.3184690Z",
+          "finished_at_utc": "2026-11-10T14:22:09.9781020Z",
+          "assertion_file": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift",
+          "assertion_line": 85,
+          "failure_code": "ROOT_TEXT_1_NOT_REVEALABLE_WITH_KEYBOARD_CANDIDATE_COLLECTION"
+        },
+        {
+          "method": "MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads",
+          "result": "failed",
+          "seconds": 15.288,
+          "started_at_utc": "2026-11-10T14:22:09.9889960Z",
+          "finished_at_utc": "2026-11-10T14:22:25.2240880Z",
+          "assertion_file": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift",
+          "assertion_line": 85,
+          "failure_code": "ROOT_TEXT_1_NOT_REVEALABLE_WITH_KEYBOARD_CANDIDATE_COLLECTION"
+        }
+      ],
+      "total": 5,
+      "passed": 3,
+      "failed": 2,
+      "skipped": 0,
+      "expected_failures": 0,
+      "summary_sha256": "d85bfabb6629c00bc3e0ba086e0c16a204f6b26b778a7c786d94bf18b3fc9f56",
+      "device": "iPhone SE (3rd generation)",
+      "os": "18.5",
+      "os_build": "22F77",
+      "keyboard_candidate_collection_size": [
+        331,
+        44
+      ]
+    },
+    {
+      "variant": "Large",
+      "job": 129870709766,
+      "artifact": 13776180211,
+      "methods": [
+        {
+          "method": "BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+          "result": "passed",
+          "seconds": 113.448,
+          "started_at_utc": "2026-11-10T14:51:27.2343260Z",
+          "finished_at_utc": "2026-11-10T14:53:20.6577120Z"
+        },
+        {
+          "method": "BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+          "result": "passed",
+          "seconds": 96.016,
+          "started_at_utc": "2026-11-10T14:53:20.7650480Z",
+          "finished_at_utc": "2026-11-10T14:54:56.6537530Z"
+        },
+        {
+          "method": "BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch",
+          "result": "passed",
+          "seconds": 151.075,
+          "started_at_utc": "2026-11-10T14:54:56.6646690Z",
+          "finished_at_utc": "2026-11-10T14:57:27.7513750Z"
+        },
+        {
+          "method": "MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+          "result": "failed",
+          "seconds": 31.08,
+          "started_at_utc": "2026-11-10T14:57:27.7722270Z",
+          "finished_at_utc": "2026-11-10T14:57:58.8205910Z",
+          "assertion_file": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift",
+          "assertion_line": 85,
+          "failure_code": "ROOT_TEXT_1_NOT_REVEALABLE_WITH_KEYBOARD_CANDIDATE_COLLECTION"
+        },
+        {
+          "method": "MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads",
+          "result": "failed",
+          "seconds": 16.673,
+          "started_at_utc": "2026-11-10T14:57:58.9156230Z",
+          "finished_at_utc": "2026-11-10T14:58:15.4876570Z",
+          "assertion_file": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift",
+          "assertion_line": 85,
+          "failure_code": "ROOT_TEXT_1_NOT_REVEALABLE_WITH_KEYBOARD_CANDIDATE_COLLECTION"
+        }
+      ],
+      "total": 5,
+      "passed": 3,
+      "failed": 2,
+      "skipped": 0,
+      "expected_failures": 0,
+      "summary_sha256": "b5c519eed9faa52604bb0ee1629b42a92d1665c5a73859a0c1acc73c51856d78",
+      "device": "iPhone 16 Pro Max",
+      "os": "18.5",
+      "os_build": "22F77",
+      "keyboard_candidate_collection_size": [
+        395,
+        45
+      ]
+    },
+    {
+      "variant": "26",
+      "job": 129870709689,
+      "artifact": 13776830262,
+      "methods": [
+        {
+          "method": "BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+          "result": "passed",
+          "seconds": 155.106,
+          "started_at_utc": "2026-11-10T14:51:49.6289280Z",
+          "finished_at_utc": "2026-11-10T14:54:25.2743740Z"
+        },
+        {
+          "method": "BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+          "result": "passed",
+          "seconds": 136.046,
+          "started_at_utc": "2026-11-10T14:54:25.2869370Z",
+          "finished_at_utc": "2026-11-10T14:56:40.7205240Z"
+        },
+        {
+          "method": "BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch",
+          "result": "passed",
+          "seconds": 181.296,
+          "started_at_utc": "2026-11-10T14:56:40.7206700Z",
+          "finished_at_utc": "2026-11-10T14:59:41.9997780Z"
+        },
+        {
+          "method": "MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+          "result": "failed",
+          "seconds": 39.191,
+          "started_at_utc": "2026-11-10T14:59:42.0048410Z",
+          "finished_at_utc": "2026-11-10T15:00:21.3439400Z",
+          "assertion_file": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift",
+          "assertion_line": 85,
+          "failure_code": "ROOT_TEXT_1_NOT_REVEALABLE_WITH_KEYBOARD_CANDIDATE_COLLECTION"
+        },
+        {
+          "method": "MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads",
+          "result": "failed",
+          "seconds": 19.497,
+          "started_at_utc": "2026-11-10T15:00:21.3562340Z",
+          "finished_at_utc": "2026-11-10T15:00:40.7126620Z",
+          "assertion_file": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift",
+          "assertion_line": 85,
+          "failure_code": "ROOT_TEXT_1_NOT_REVEALABLE_WITH_KEYBOARD_CANDIDATE_COLLECTION"
+        }
+      ],
+      "total": 5,
+      "passed": 3,
+      "failed": 2,
+      "skipped": 0,
+      "expected_failures": 0,
+      "summary_sha256": "f1b406313f57db42124b73daa93ffc0afd6cd5b4b724df244562ee7ce9300ffb",
+      "device": "iPhone 17",
+      "os": "26.2",
+      "os_build": "23C54",
+      "keyboard_candidate_collection_size": [
+        357,
+        55
+      ]
+    }
+  ],
+  "classification": {
+    "existing_browser_learning": "All three methods pass on all three variants (9/9).",
+    "new_multi_source_fixture_ui": "Both methods fail before entering the first source URL or starting research on all three variants (0/6). No successful multisource UI acceptance is claimed.",
+    "evidence": "SE synthetic screenshot and all three action logs show the multiline goal entered with a trailing newline, keyboard still present, then the Form helper selects a keyboard-candidate-sized CollectionView.",
+    "repair": "Per-field exact input assertion followed by the actual keyboard Done toolbar button and bounded keyboard dismissal. No product change, injected input, retry, or increased wait.",
+    "repair_native_acceptance": "Pending a new-head native UI run."
+  },
+  "collection": {
+    "bounded_summary_and_selected_synthetic_attachments_only": true,
+    "whole_artifact_zips_downloaded": false,
+    "raw_user_AX_or_model_configuration_recorded": false
+  }
+}

@@ -1,0 +1,220 @@
+{
+  "revision": "dabe9bfb0537e0825f931144b38cf648673eb219",
+  "run": 42833543641,
+  "job": 129889610849,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42833543641/job/129889610849",
+  "conclusion": "success",
+  "runtime": {
+    "requestedVersion": "17.0.1",
+    "selectedVersion": "17.0.1",
+    "selectedBuild": "21A342",
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "metadataLogLine": 209,
+    "bootSucceeded": true,
+    "testInvocationDestinationMatchesPreparedSimulator": true,
+    "destinationLogLine": 4577,
+    "versionBasis": "Selected runtime version/build metadata, with the executed UI destination matched to the prepared simulator. The generic iOS-17-0 identifier alone is not a patch-version assertion.",
+    "physicalDevice": false
+  },
+  "prelaunch": {
+    "enabled": true,
+    "logLine": 4546,
+    "status": "process_started_handshake_unverified",
+    "attempts": 1,
+    "budget_seconds": 120,
+    "elapsed_seconds": 3.479,
+    "process_alive": true,
+    "handshake_verified": false,
+    "sharedHelper": "release_ios17.prelaunch_test_daemon",
+    "commandShape": "launchctl kickstart -p without -k, scoped to the owned simulator",
+    "attemptFencePersistedBeforeLaunch": true,
+    "interpretation": "One bounded prelaunch observed process liveness only. The prelaunch record intentionally leaves handshake_verified false; subsequent actual UI methods provide separate execution evidence."
+  },
+  "stages": {
+    "nativeReadOnlyHAProbe": "passed",
+    "appBuildForTesting": "passed",
+    "experimentalPrelaunch": "passed",
+    "appUITestInvocation": "passed",
+    "clearPrivateRunnerConfiguration": "passed",
+    "deleteOwnedSimulator": "passed"
+  },
+  "uiEvidence": {
+    "testInvocations": 1,
+    "expectedByClass": {
+      "LiveMCPUITests": 1,
+      "LiveMCPConversationUITests": 2
+    },
+    "actualCaseStartsObserved": 3,
+    "actualCaseCompletionsObserved": 3,
+    "verifier": {
+      "logLine": 5513,
+      "expectedTests": 3,
+      "totalTestCount": 3,
+      "passedTests": 3,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "cases": [
+      {
+        "class": "LiveMCPConversationUITests",
+        "method": "testRealModelChoosesTwoReadOnlyToolsAndUsesTheirResults",
+        "result": "passed",
+        "seconds": 103.218,
+        "startLogLine": 4589,
+        "completionLogLine": 4957
+      },
+      {
+        "class": "LiveMCPConversationUITests",
+        "method": "testRealModelToolRefusalKeepsDraft",
+        "result": "passed",
+        "seconds": 66.048,
+        "startLogLine": 4958,
+        "completionLogLine": 5275
+      },
+      {
+        "class": "LiveMCPUITests",
+        "method": "testRealDiscoveryDisconnectAndReconnect",
+        "result": "passed",
+        "seconds": 69.722,
+        "startLogLine": 5279,
+        "completionLogLine": 5496
+      }
+    ],
+    "lifecycleHelperExercised": true,
+    "lifecycleFailureMarkers": 0,
+    "testRetryFlagsProvided": false,
+    "launchRetryImplemented": false,
+    "diagnostics": [
+      {
+        "line": 4889,
+        "kind": "transition",
+        "modelCalls": 1,
+        "formatCorrections": 0,
+        "attempts": 0,
+        "results": 0,
+        "toolErrors": 0,
+        "phase": "awaitingApproval",
+        "failure": "none",
+        "proposal": true,
+        "error": false,
+        "answer": false
+      },
+      {
+        "line": 4909,
+        "kind": "transition",
+        "modelCalls": 2,
+        "formatCorrections": 0,
+        "attempts": 1,
+        "results": 1,
+        "toolErrors": 0,
+        "phase": "awaitingApproval",
+        "failure": "none",
+        "proposal": true,
+        "error": false,
+        "answer": false
+      },
+      {
+        "line": 4927,
+        "kind": "completion",
+        "modelCalls": 3,
+        "formatCorrections": 0,
+        "attempts": 2,
+        "results": 2,
+        "toolErrors": 0,
+        "phase": "finished",
+        "failure": "none"
+      },
+      {
+        "line": 5231,
+        "kind": "refusal proposal",
+        "modelCalls": 1,
+        "formatCorrections": 0,
+        "attempts": 0,
+        "results": 0,
+        "toolErrors": 0,
+        "phase": "awaitingApproval",
+        "failure": "none",
+        "proposal": true,
+        "error": false
+      }
+    ]
+  },
+  "outcomes": {
+    "twoToolConversation": {
+      "result": "passed",
+      "approvedTools": [
+        "ha_eval_template",
+        "ha_list_floors_areas"
+      ],
+      "modelCalls": 3,
+      "formatCorrections": 0,
+      "attempts": 2,
+      "results": 2,
+      "toolErrors": 0,
+      "failure": "none",
+      "scope": "App-owned counters for this two-tool conversation only; not total workflow HTTP/MCP requests.",
+      "assertions": "Each distinct tool proposal was checked against the fixed read-only argument allowlist before approval. The final reply exactly matched the fixture's arithmetic-result sentinel."
+    },
+    "refusal": {
+      "result": "passed",
+      "proposalModelCalls": 1,
+      "attemptsAtProposal": 0,
+      "resultsAtProposal": 0,
+      "assertions": "The expected proposal was declined; the refusal error appeared, the complete original draft remained, and no assistant answer appeared.",
+      "counterTiming": "The logged zero attempts/results values describe the proposal before decline."
+    },
+    "discovery": {
+      "result": "passed",
+      "assertions": "Actual discovery produced a nonempty tool catalog and resource count; disconnect cleared the catalog; reconnect repeated successful discovery."
+    }
+  },
+  "limits": [
+    "All three actual native UI methods started and passed in this invocation; this is not a synthetic runner-only success.",
+    "The successful prelaunch experiment does not prove that prelaunch caused the improvement or establish the earlier bootstrap failure's root cause.",
+    "Observed App termination and foreground Home do not prove installer readiness. No install/uninstall launch-denial or bootstrap-failure marker was observed in this run.",
+    "This report does not generalize one exact-runtime simulator run to every device or runtime."
+  ],
+  "privacy": {
+    "rawLogsIncluded": false,
+    "fullAXTreesIncluded": false,
+    "liveScreenshotsIncluded": false,
+    "environmentsIncluded": false,
+    "configurationIncluded": false,
+    "modelOrToolResponseContentIncluded": false,
+    "artifactCountObserved": 0,
+    "artifactUploadsPerformedByThisAgent": false
+  },
+  "sources": [
+    {
+      "path": ".github/workflows/live-mcp.yml",
+      "gitBlob": "4d4a2790ae05a3ee0cd90d86e67fb6c8ce1b5157",
+      "sha256": "ef5280efae85c41253db1a3ffd58cbfadb786f900d0665bb2025ef5794951eb3"
+    },
+    {
+      "path": "scripts/prelaunch_live_test_daemon.py",
+      "gitBlob": "b160e92169be1d77e70d6a4dfa3fdc5c4b0adf9c",
+      "sha256": "b53cc79a288e329c0820db15627581906754f54828e9e8aede2977084049765a"
+    },
+    {
+      "path": "scripts/release_ios17.py",
+      "gitBlob": "c60af73ed17c0d2f0494c75bb07a6b560d84912b",
+      "sha256": "33452a618919aebaa49774265fde6993d9bd93f8a4c9e6ced4725148cebe750d"
+    },
+    {
+      "path": "Tests/WoowAssistantUITests/LiveMCPNativeLifecycle.swift",
+      "gitBlob": "a428985e4b6e38b72cdd8cdeb1b9f60b2714a9b2",
+      "sha256": "0dcc22e052fb685f2cf47ac8a43595055308a4c94782691c9026ffb42ff0876e"
+    },
+    {
+      "path": "Tests/WoowAssistantUITests/LiveMCPUITests.swift",
+      "gitBlob": "9c03f89dccc7c528955231ac90d1ac5ad9bf8830",
+      "sha256": "135ef5a458ba2fb0fc49306292d9382621a7eec8d2880dc32ed010db86b5d6a4"
+    },
+    {
+      "path": "Tests/WoowAssistantUITests/LiveMCPConversationUITests.swift",
+      "gitBlob": "4d3307f504fad5ccbac34a3e758e972bd3e88068",
+      "sha256": "fd1a144d6b24fec2ccfe0dfe1db1e88c7a02b34fc8f6d24c1d4e79961ccfc56f"
+    }
+  ]
+}

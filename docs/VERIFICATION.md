@@ -1,5 +1,19 @@
 # Verification — 2026-11-10
 
+## Exact iOS 17 actual HA MCP flow passed
+
+At `dabe9bf`, [42833543641](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42833543641) passed **3/3 actual App UI methods, zero skips**, on exact **17.0.1 / 21A342**. Discovery/disconnect/reconnect, two approved read-only model-selected tools and refusal/draft preservation all executed in one XCTest invocation. The two-tool conversation used three model calls, two actual attempts/results, and zero corrections/tool errors. Native HA probing and App build passed separately. [Fixed runtime, counts and lifecycle evidence](evidence/live-ha-dabe9bf-ios17.json).
+
+The one-shot daemon prelaunch observed process liveness in 3.479 seconds; its handshake flag remains false. Actual method starts/completions establish execution independently. This success does not prove prelaunch caused improvement, explain the earlier bootstrap failure, or cover a physical device.
+
+## Native copy/open comparison and research UI failures retained
+
+The same `e09db96` source completed the UIKit import-copy case **1/1** and failed open-in-place **0/1**, both with zero skips on iPhone 17 / iOS 26.2. Copy delivered one actual callback and completed both approvals plus exact two-page output; open delivered no callback and never reached read approval. Provider/resolver codes were observed only in the failed arm. These were separate jobs and fixture namespaces, not a controlled identical-state comparison. [Full bounded comparison](evidence/file-provider-open-copy-e09db96.json). Default picker reliability and the newer explicit user-copy entry still require their own acceptance.
+
+The `1ea3d08` three-device learning shard [42828125356](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828125356) completed **9 passed / 6 failed / zero skipped**. All nine existing browser-learning instances passed. All six new multi-source instances failed before entering the first root URL: the keyboard remained visible and the helper selected its suggestion collection as the Form scroll container. The `80a1121` test now checks each exact typed value and dismisses the keyboard through its actual Done button before advancing. [Original method evidence](evidence/ui-learning-1ea3d08.json). Retest: [42842709484](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42842709484).
+
+The separate actual-model `1ea3d08` multi-source case [42828135533](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828135533) failed **0/1, zero skips**, after obtaining two cited sources: the first selected source-2 quote lacked the requested domain term. A source may have multiple quotes; `0448126` searches that source's actual citation set for the required term, retaining the exact source/nonempty/domain assertions. The failed log does not prove a qualifying alternative quote existed. [Original failure and selector rationale](evidence/live-multi-source-1ea3d08.json). Retest: [42839708011](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42839708011).
+
 ## Native PDF page assembly and explicit import-copy entry
 
 The documents catalog now exposes real 1–3-file static PDF extraction/reordering/interleaved merging and native PDF export. Each file requires its own read approval; the exact page order is reviewed before a separate one-use assembly grant. Changing or clearing selection fences late App results. The new user-facing import-copy entry keeps the original picker entry and discloses the OS-created copy before selection; the system copy precedes the separate App read approval.
