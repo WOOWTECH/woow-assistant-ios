@@ -1,0 +1,45 @@
+{
+  "files": [
+    "Sources/AssistantBrowser/MultiSourceResearchTypes.swift",
+    "Sources/AssistantBrowser/MultiSourceResearchRunner.swift",
+    "Sources/App/MultiSourceResearchSession.swift",
+    "Sources/App/MultiSourceResearchView.swift",
+    "Sources/App/BrowserSession.swift",
+    "Tests/AssistantDomainTests/MultiSourceResearchTests.swift",
+    "Tests/AssistantBrowserIntegrationTests/MultiSourceResearchIntegrationTests.swift",
+    "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift"
+  ],
+  "sha256": {
+    "Sources/AssistantBrowser/MultiSourceResearchTypes.swift": "af1ac51d3b6d243217678b033f1b82be8c22fb3ed890370fe6e8b4f0ed9f82d2",
+    "Sources/AssistantBrowser/MultiSourceResearchRunner.swift": "42b18e228c30c5c45a0eb7cd30acfa1132c0d06a0b202a33f2b6b0493c3fc419",
+    "Sources/App/MultiSourceResearchSession.swift": "5337a199fe6b1724533c70aaf2fd43affff700f571741f535570d5c21bf29dce",
+    "Sources/App/MultiSourceResearchView.swift": "7051a214fccf08c5bc1e649bf988059528a184174eb98d95dddae08face0b39c",
+    "Sources/App/BrowserSession.swift": "ecb5fd2b9afa5fec833c33ccd355d377250fe57d79ec7bc31739292eb5705c27",
+    "Tests/AssistantDomainTests/MultiSourceResearchTests.swift": "b13438a1976d6d28553dd0614915154f4690af1e9df09e98bf3899833711a532",
+    "Tests/AssistantBrowserIntegrationTests/MultiSourceResearchIntegrationTests.swift": "d5ac3be89be88635231dfc0fcc5140fcf2a3c365d4c12df532c8c403c545db05",
+    "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift": "1b63e37ab8cfc6afbb5991d990623493238e9fef8702cc0a491ae243ec2dec1f"
+  },
+  "local": {
+    "core_assertions": 74,
+    "actual_loopback_model_HTTP": true,
+    "app_logic_typecheck_debug": "passed",
+    "app_logic_typecheck_release": "passed",
+    "ios17_syntax_debug": "passed",
+    "ios17_syntax_release": "passed",
+    "actual_macOS_WebKit_assertions": 18
+  },
+  "native_pending": [
+    "iOS hosted tests",
+    "iOS UI fixture tests",
+    "two public HTTPS sources with actual configured model"
+  ],
+  "limitations": [
+    "Local source documents use fixed synthetic HTTPS identities; no public source HTTP fetch is claimed.",
+    "macOS App logic typecheck excludes iOS SwiftUI; actual iOS compile and execution remain CI work.",
+    "Exact quote bytes establish attribution, not semantic truth or publisher independence.",
+    "URL policy is not a DNS/rebinding/subresource network firewall."
+  ],
+  "commit_push_dispatch": false,
+  "base_source_revision": "02295ec",
+  "interpretation": "Local checks only; actual iOS hosted/UI/public-network model acceptance pending."
+}

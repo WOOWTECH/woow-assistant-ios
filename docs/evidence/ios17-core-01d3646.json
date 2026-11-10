@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "bounded_artifact_report_and_actual_xctest_log",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42815317834",
+  "job_id": 129826812100,
+  "artifact_id": 13767821949,
+  "artifact_archive_bytes": 677902,
+  "source_revision": "01d364669abdffc79aefd101125f9453f9ebacaf",
+  "scope": "core",
+  "host_architecture": "arm64",
+  "host_macos": "15.8.2",
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "runtime": {
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "version": "17.0.1",
+    "buildversion": "21A342"
+  },
+  "boot_succeeded": true,
+  "simulator_state_unavailable": true,
+  "experimental_prelaunch_test_daemon": false,
+  "method_counts_from_tests_log": {
+    "started": 149,
+    "completed": 149,
+    "passed": 149,
+    "failed": 0,
+    "skipped": 0
+  },
+  "passed_method_counts_by_target": {
+    "AssistantBrowserIntegrationTests": 17,
+    "AssistantDomainTests": 48,
+    "AssistantMCPTests": 15,
+    "AssistantMemoryTests": 5,
+    "AssistantModelsTests": 6,
+    "AssistantPersistenceTests": 4,
+    "AssistantSkillsTests": 54
+  },
+  "verified_completion": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 149,
+      "passedTests": 149,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 0,
+    "completed_ui_count": 0,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "test_exit_code": 0,
+  "selected_tests_succeeded": true,
+  "runtime_tested_full_scheme": false,
+  "full_acceptance_succeeded": false,
+  "cookie_regression": {
+    "method": {
+      "class": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests",
+      "method": "testPersistentCookiesAreSharedAndRemovingOneRecordPreservesOtherSites",
+      "outcome": "passed",
+      "seconds": 5.092,
+      "log_line": 4709
+    },
+    "enumeration_failure_diagnostic_triggered": false,
+    "assertions_retained": [
+      "actual cookie shared by persistent website-data-store profile",
+      "single website-record refresh callback observed and expected cookie record validated",
+      "selected-site cookie removed and unrelated-site cookie preserved",
+      "discarded WebKit documents blank before replacement",
+      "replacement mounted after actual deletion callback",
+      "old interaction proposal revoked; replacement document cannot read deleted cookie"
+    ],
+    "limit": "The case passed without extending the original 15-second enumeration bound. Failure-only metadata did not fire, so this run does not establish whether the historical failure was missing callback, name normalization, or record contents."
+  },
+  "transcript_transport_regression": [
+    {
+      "class": "AssistantSkillsTests.TranscriptRuntimeTests",
+      "method": "testHTTPTransportCancellationAndTimeout",
+      "outcome": "passed",
+      "seconds": 0.198,
+      "log_line": 4545
+    }
+  ],
+  "hashes": {
+    "report.json": "64c5de11938eb4cd343a24e3474769520fd51f4431c119b247e30c928ac91c9d",
+    "tests.log": "1e97fdecc0fcbdcebbc6d8e2df39c6b5d3dacb246b4603356f5d5bd8a8d33ac5",
+    "simulator-boot.log": "f6db42349feccd6c751e76f1e5e0e61843e83598979c3c23e86d62ef23f398bc"
+  },
+  "interpretation": [
+    "All 149 selected native/hosted methods completed with zero skips and expected failures on exact iOS 17.0.1.",
+    "This core run used no experimental daemon prelaunch. It is not a matched UI startup causal control.",
+    "No UI or private live-service acceptance is implied by this core scope.",
+    "No additional cookie product patch is justified by the passing run alone."
+  ]
+}

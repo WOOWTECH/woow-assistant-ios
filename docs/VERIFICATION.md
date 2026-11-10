@@ -1,5 +1,20 @@
 # Verification — 2026-11-10
 
+## Personal profile and multi-source research integration ready for native acceptance
+
+Manual profiles preserve the pinned active/superseded semantics and use the real encrypted learning vault. Local **173 state assertions / 58 actual persistence assertions** passed; native hosted, three UI and actual-model recall/master-switch tests are added, with results pending. [Scope](USER_PROFILE.md).
+
+Multi-source research adds 2–3 confirmed origins, isolated WebKit sessions, exact source receipts/citations, shared deadlines and one bounded JSON syntax correction. Local **74 core assertions / 18 real macOS WebKit assertions** passed. Five native core, three hosted, two UI and one real public-web/model case are added. [Source hashes and test boundaries](evidence/multi-source-local-02295ec.json). The source inventory now owns **63 non-Live UI methods** and separately identifies **16 Live UI methods**; those are test inventory counts, not executed passes.
+
+## Exact iOS 17 full native/hosted core passed at 01d3646
+
+[42815317834](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42815317834) completed **149/149 native/hosted methods, zero skips** on iOS 17.0.1 ARM64 without the experimental daemon prelaunch. Actual shared-cookie enumeration/deletion passed in 5.092 seconds, retaining the original 15-second enumeration bound; transcript transport cancellation/timeout also passed. No failure-only cookie diagnostic fired, so the earlier intermittent enumeration cause remains unproved. [Exact evidence](evidence/ios17-core-01d3646.json). This source predates the new profile/multi-source features.
+
+## Transcript matrix preserved actual native provider failures
+
+The `9a53e61` three-device transcript scope completed **81/84, zero skips**: all **75/75 native/hosted methods** passed, while UI was **6/9**. SE and Large failed the refusal case before reaching refusal because the selected TXT could not be resolved by FileProvider. Current failed the approved-selection case while its refusal case passed. [Native events, source identities and bounded evidence](evidence/transcript-native-9a53e61.json). Correct-source clicks and successful other cases do not turn these failures into passes; approval/runtime checks remain unchanged.
+
+
 ## Actual-model transcript timestamp and wording quality regression
 
 The revised prompt preserves source time markers, keeps chapter titles separate, and avoids turning permission into a maximum/minimum/obligation. The evidence validator is unchanged. Two fixed sources (847 bytes with timecodes; 817 without) completed **10/10 actual HTTP model results, 24 calls** on local macOS. Full-prose review confirmed quantities, permission, principal topics/order and absence of invented times; quotations and transcript sections reproduce the complete respective original source in order. Earlier missing timestamps and unsupported maximum wording remain recorded in [the bounded before/after evidence](evidence/transcript-quality-wording-v2.json). This is a ten-result semantic review over fixed sources, not a universal quality guarantee or a substitute for native Files UI acceptance.

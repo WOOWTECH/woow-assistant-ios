@@ -79,6 +79,10 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     private var work: Task<Void, Never>?
     private var runID: UUID?
     private var origin: String?
+    private var approvedResearchRoot: MultiSourceResearchSource?
+    #if DEBUG
+    private var multiSourceFixture = false
+    #endif
     private var expectedNavigation: WKNavigation?
     private var navigationFinished: Bool?
     private var lastLinks: [WebResearchLink] = []
@@ -326,6 +330,37 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         return try await navigate(to: target.url)
     }
 
+    /// Only a new, isolated session may acquire a confirmed research root.
+    /// Binding precedes the first load, so redirects never gain manual rights.
+    func loadResearchRoot(approvedSource source: MultiSourceResearchSource) async throws -> WebObservation {
+        try Task.checkCancellation()
+        guard !websiteDataStore.isPersistent, approvedResearchRoot == nil, storedWebView?.url == nil,
+              !isRunning, !isInteracting, source.allows(source.rootURL) else { throw WebResearchError.unsafeNavigation }
+        #if DEBUG
+        if fixtureMode {
+            guard MultiSourceResearchFixture.enabled, MultiSourceResearchFixture.allows(source.rootURL) else {
+                throw WebResearchError.unsafeNavigation
+            }
+            multiSourceFixture = true
+        }
+        #endif
+        approvedResearchRoot = source
+        origin = Self.origin(source.rootURL); isRunning = true
+        do { return try await navigate(to: source.rootURL) }
+        catch { cancel(); throw error }
+    }
+
+    #if DEBUG
+    /// Hosted tests use actual local WebKit documents with fixed synthetic
+    /// HTTPS identities. This does not claim that those origins were fetched.
+    func loadResearchFixtureRoot(approvedSource source: MultiSourceResearchSource) async throws -> WebObservation {
+        guard MultiSourceResearchFixture.allows(source.rootURL), !websiteDataStore.isPersistent,
+              approvedResearchRoot == nil, storedWebView?.url == nil, !isRunning else { throw WebResearchError.unsafeNavigation }
+        multiSourceFixture = true
+        return try await loadResearchRoot(approvedSource: source)
+    }
+    #endif
+
     private func navigate(to url: URL) async throws -> WebObservation {
         navigationIntent.invalidate()
         guard permitted(url), origin == nil || Self.origin(url) == origin else { throw WebResearchError.unsafeNavigation }
@@ -336,8 +371,18 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         let navigationTimeout: TimeInterval = current == nil ? 75 : 25
         navigationFinished = nil
         preparePageNavigation()
-        if fixtureMode { loadFixture(url: url) }
+        #if DEBUG
+        if multiSourceFixture {
+            guard MultiSourceResearchFixture.allows(url), approvedResearchRoot?.allows(url) == true else {
+                throw WebResearchError.unsafeNavigation
+            }
+            expectedNavigation = webView.loadHTMLString(MultiSourceResearchFixture.html(for: url), baseURL: url)
+            trackedNavigation = expectedNavigation
+        } else if fixtureMode { loadFixture(url: url) }
         else { expectedNavigation = webView.load(URLRequest(url: url)); trackedNavigation = expectedNavigation }
+        #else
+        expectedNavigation = webView.load(URLRequest(url: url)); trackedNavigation = expectedNavigation
+        #endif
         let end = Date().addingTimeInterval(navigationTimeout)
         while navigationFinished == nil && Date() < end {
             try await Task.sleep(nanoseconds: 100_000_000)
@@ -896,6 +941,10 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
 
     private func permitted(_ url: URL) -> Bool {
         guard url.scheme?.lowercased() == "https", (try? WebsiteOrigin(url: url)) != nil else { return false }
+        if let approvedResearchRoot, !approvedResearchRoot.allows(url) { return false }
+        #if DEBUG
+        if multiSourceFixture { return approvedResearchRoot?.allows(url) == true && MultiSourceResearchFixture.allows(url) }
+        #endif
         return !fixtureMode || url.host == "research.example.invalid"
     }
     private func manualPermitted(_ url: URL) -> Bool {

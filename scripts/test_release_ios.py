@@ -403,8 +403,10 @@ class UIShardTests(unittest.TestCase):
 
     def test_zero_exit_is_insufficient_with_skips_missing_repeated_or_wrong_cases(self):
         log, summary = synthetic_xctest_completion("ui-learning")
-        expected = ["WoowAssistantUITests/BrowserLearningUITests/" + m for m in re.findall(
-            r'BrowserLearningUITests (test\w+)\]', log.decode())]
+        # This shard now owns more than one class. Derive the expected complete
+        # selection from source, never just one class found in the test log.
+        catalog = ios17.ui_inventory(Path(__file__).resolve().parents[1])
+        expected = ios17.selected_ui_tests(catalog, "ui-learning")
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "tests.log"
             path.write_bytes(log)
@@ -414,7 +416,7 @@ class UIShardTests(unittest.TestCase):
                 self.assertFalse(ios17.test_completion(wrong, path, expected, True)["verified"])
             for wrong in [{}, dict(summary, passedTests=0), dict(summary, totalTestCount=0),
                           dict(summary, result="Failed"), dict(summary, passedTests=True),
-                          dict(summary, totalTestCount=4, passedTests=4)]:
+                          dict(summary, totalTestCount=len(expected) + 1, passedTests=len(expected) + 1)]:
                 self.assertFalse(ios17.test_completion(wrong, path, expected, True)["verified"])
             lines = log.splitlines(keepends=True)
             for wrong_log in [b"", b"".join(lines[1:]), log + lines[0],

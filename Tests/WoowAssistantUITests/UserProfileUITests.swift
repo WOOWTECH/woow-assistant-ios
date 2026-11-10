@@ -1,0 +1,217 @@
+import XCTest
+
+/// Native manual entry + production encrypted store. No seed writes, model
+/// transport or network. Relaunch retains the same isolated UUID namespace.
+final class UserProfileUITests: XCTestCase {
+    private let app = XCUIApplication()
+    private let namespace = UUID().uuidString
+
+    override func setUpWithError() throws {
+        continueAfterFailure = false
+        executionTimeAllowance = 240
+    }
+
+    override func tearDownWithError() throws {
+        if let testRun, testRun.failureCount > 0 {
+            let tree = XCTAttachment(string: app.debugDescription)
+            tree.name = "profile-fixture-AX"; tree.lifetime = .keepAlways; add(tree)
+            let screen = XCTAttachment(screenshot: app.screenshot())
+            screen.name = "profile-fixture-screen"; screen.lifetime = .keepAlways; add(screen)
+        }
+        app.terminate()
+    }
+
+    func testCreateReplaceDeleteAndHistorySurviveRelaunch() {
+        launch(); openProfile()
+        add("Prefer quiet hotels")
+        let original = item("Prefer quiet hotels")
+        XCTAssertTrue(original.waitForExistence(timeout: 5))
+        let originalID = original.identifier.replacingOccurrences(of: "profile.item.", with: "")
+        tap("profile.edit." + originalID, scroll: true)
+        write("Prefer central hotels", clearing: true)
+        save()
+        XCTAssertTrue(item("Prefer central hotels").waitForExistence(timeout: 5))
+        XCTAssertFalse(item("Prefer quiet hotels").exists)
+        showHistory("Prefer quiet hotels")
+
+        launch(reset: false); openProfile()
+        let replacement = item("Prefer central hotels")
+        XCTAssertTrue(replacement.waitForExistence(timeout: 5))
+        let nextID = replacement.identifier.replacingOccurrences(of: "profile.item.", with: "")
+        XCTAssertNotEqual(nextID, originalID, "Replacement must create a new row")
+        tap("profile.delete." + nextID, scroll: true)
+        XCTAssertTrue(app.staticTexts["profile.empty"].firstMatch.waitForExistence(timeout: 5))
+        launch(reset: false); openProfile()
+        XCTAssertTrue(app.staticTexts["profile.empty"].firstMatch.waitForExistence(timeout: 5))
+        showHistory("Prefer central hotels")
+        let oldHistory = history("Prefer quiet hotels")
+        revealLearningElement(oldHistory, in: app, visibility: .readableText)
+        XCTAssertTrue(oldHistory.exists, "Both superseded rows survive relaunch")
+    }
+
+    func testInvalidSensitiveAndDuplicateTextNeverPublish() {
+        launch(); openProfile()
+        add("Prefer tea")
+        for invalid in ["password: dummy1234", "Two. Sentences.", "Prefer tea"] {
+            tap("profile.add", scroll: true)
+            write(invalid)
+            tap("profile.editor.save")
+            let error = app.staticTexts["profile.editor.error"].firstMatch
+            revealLearningElement(error, in: app, visibility: .readableText)
+            XCTAssertTrue(error.exists)
+            XCTAssertTrue(app.buttons["profile.editor.save"].firstMatch.exists, "Rejected edit must remain open")
+            tap("profile.editor.cancel")
+            absent(app.buttons["profile.editor.save"].firstMatch)
+        }
+        tap("profile.add", scroll: true)
+        write("Cancelled profile")
+        tap("profile.editor.cancel")
+        launch(reset: false); openProfile()
+        XCTAssertTrue(item("Prefer tea").waitForExistence(timeout: 5))
+        XCTAssertEqual(app.staticTexts["profile.count"].firstMatch.label, "現用 1／20 條")
+        XCTAssertFalse(item("Cancelled profile").exists)
+        XCTAssertFalse(item("password: dummy1234").exists)
+        XCTAssertFalse(app.buttons["profile.history"].firstMatch.exists)
+    }
+
+    func testMasterSwitchAndTwiceConfirmedClearPersist() {
+        launch(); openProfile()
+        add("Keep this profile")
+        tap("profile.close")
+        let toggle = app.switches["memory.toggle.useMemory"].firstMatch
+        revealLearningElement(toggle, in: app)
+        let native = toggle.switches.firstMatch
+        let control = native.exists ? native : toggle
+        ready(control); control.tap()
+        let off = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "0"), object: toggle)
+        XCTAssertEqual(XCTWaiter.wait(for: [off], timeout: 5), .completed)
+        XCTAssertFalse(app.staticTexts["memory.error"].firstMatch.exists)
+        launch(reset: false); openProfile()
+        XCTAssertTrue(app.staticTexts["profile.disabled"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertTrue(item("Keep this profile").exists, "Turning memory off preserves saved profile")
+        tap("profile.close")
+        tap("memory.clear", scroll: true)
+        tap("memory.clear.continue")
+        tap("memory.clear.cancel")
+        absent(app.buttons["memory.clear.confirm"].firstMatch)
+        tap("memory.profile.open", scroll: true)
+        XCTAssertTrue(item("Keep this profile").waitForExistence(timeout: 5), "Cancel at second confirmation preserves profile")
+        tap("profile.close")
+        tap("memory.clear", scroll: true)
+        tap("memory.clear.continue")
+        tap("memory.clear.confirm")
+        absent(app.buttons["memory.clear.confirm"].firstMatch)
+        launch(reset: false); openProfile()
+        XCTAssertTrue(app.staticTexts["profile.empty"].firstMatch.waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["profile.disabled"].firstMatch.exists, "Clear preserves master switch")
+        XCTAssertFalse(history("Keep this profile").exists, "Clear erases history as well")
+    }
+
+    private func launch(reset: Bool = true) {
+        app.terminate()
+        app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW",
+                               "-UITestMode", "-UITestNamespace", namespace]
+        if reset { app.launchArguments.append("-UITestResetStorage") }
+        app.launchEnvironment = [:]
+        app.launch()
+        XCTAssertTrue(app.staticTexts["chat.status"].firstMatch.waitForExistence(timeout: 10))
+    }
+
+    private func openProfile() {
+        tap("navigation.memory")
+        tap("memory.profile.open", scroll: true)
+        XCTAssertTrue(app.staticTexts["profile.scope"].firstMatch.waitForExistence(timeout: 5))
+    }
+
+    private func add(_ text: String) {
+        tap("profile.add", scroll: true); write(text); save()
+    }
+
+    private func write(_ text: String, clearing: Bool = false) {
+        let editor = app.textViews["profile.editor.text"].firstMatch
+        ready(editor); editor.tap()
+        dismissKeyboardIntroductionIfPresented()
+        guard selectLatinKeyboard() else { return }
+        if clearing { tap("profile.editor.clear") }
+        XCTAssertEqual(editor.value as? String, "")
+        var entered = ""
+        for character in text {
+            editor.typeText(String(character)); entered.append(character)
+            let received = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", entered), object: editor)
+            let result = XCTWaiter.wait(for: [received], timeout: 5)
+            XCTAssertEqual(result, .completed, "Every native character must arrive exactly before saving")
+            guard result == .completed else { return }
+        }
+        XCTAssertEqual(editor.value as? String, text)
+        tap("profile.editor.done")
+    }
+
+    private func save() {
+        tap("profile.editor.save")
+        absent(app.buttons["profile.editor.save"].firstMatch)
+        XCTAssertFalse(app.staticTexts["profile.error"].firstMatch.exists)
+    }
+
+    private func item(_ text: String) -> XCUIElement {
+        app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND label == %@", "profile.item.", text)).firstMatch
+    }
+
+    private func history(_ text: String) -> XCUIElement {
+        app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND label == %@", "profile.history.item.", text)).firstMatch
+    }
+
+    private func showHistory(_ text: String) {
+        tap("profile.history", scroll: true)
+        let row = history(text)
+        revealLearningElement(row, in: app, visibility: .readableText)
+        XCTAssertTrue(row.exists)
+    }
+
+    private func tap(_ identifier: String, scroll: Bool = false) {
+        let element = app.buttons[identifier].firstMatch
+        if scroll { revealLearningElement(element, in: app) }
+        ready(element); element.tap()
+    }
+
+    private func ready(_ element: XCUIElement) {
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed)
+    }
+
+    private func absent(_ element: XCUIElement) {
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: element)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 5), .completed)
+    }
+
+    // Same native English selection and exact QuickPath introduction gate as
+    // BrowserLoginUITests. No simulator preference writes or input repair.
+    private func selectLatinKeyboard() -> Bool {
+        let keyboard = app.keyboards.firstMatch
+        func latin() -> Bool {
+            keyboard.keys.matching(NSPredicate(format: "label IN %@", ["q", "Q"])).firstMatch.exists
+                && keyboard.keys.matching(NSPredicate(format: "label IN %@", ["a", "A"])).firstMatch.exists
+        }
+        if latin() { return true }
+        let globe = app.buttons["Next keyboard"].firstMatch
+        ready(globe); globe.press(forDuration: 1)
+        let english = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "English (US)")).firstMatch
+        ready(english); english.tap()
+        dismissKeyboardIntroductionIfPresented()
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in latin() }, object: nil)
+        let result = XCTWaiter.wait(for: [expectation], timeout: 10)
+        XCTAssertEqual(result, .completed, "Native English keyboard must be selected before ASCII fixture entry")
+        return result == .completed
+    }
+
+    private func dismissKeyboardIntroductionIfPresented() {
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 10))
+        let button = app.buttons["Continue"].firstMatch
+        guard button.waitForExistence(timeout: 3) else { return }
+        let explanation = app.staticTexts["Speed up your typing by sliding your finger across the letters to compose a word."].firstMatch
+        let expectation = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            explanation.exists && button.exists && button.isEnabled && button.isHittable
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed)
+        button.tap(); absent(button)
+    }
+}

@@ -1,0 +1,428 @@
+{
+  "schemaVersion": 1,
+  "run": 42814225302,
+  "runURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42814225302",
+  "sourceRevision": "9a53e6107e32c936e62c8143d58e898f64137147",
+  "scope": "transcript: native runtime/recovery, hosted browser navigation, and three native Files UI cases",
+  "result": {
+    "total": 84,
+    "passed": 81,
+    "failed": 3,
+    "skipped": 0,
+    "nativePassed": 75,
+    "nativeFailed": 0,
+    "uiPassed": 6,
+    "uiFailed": 3
+  },
+  "variants": [
+    {
+      "variant": "compact",
+      "job": 129823083412,
+      "artifact": 13767005623,
+      "device": {
+        "deviceName": "iPhone SE (3rd generation)",
+        "osVersion": "18.5",
+        "osBuildNumber": "22F77",
+        "architecture": "arm64"
+      },
+      "counts": {
+        "total": 28,
+        "passed": 27,
+        "failed": 1,
+        "skipped": 0,
+        "nativePassed": 25,
+        "uiPassed": 2
+      },
+      "uiCases": [
+        {
+          "class": "WoowAssistantUITests.TranscriptUITests",
+          "method": "testApprovedNativeTextWithoutModelCannotSendAndKeepsChatDraft",
+          "result": "passed",
+          "seconds": 127.68
+        },
+        {
+          "class": "WoowAssistantUITests.TranscriptUITests",
+          "method": "testNativePickerCancellationDoesNotSelectOrRead",
+          "result": "passed",
+          "seconds": 35.28
+        },
+        {
+          "class": "WoowAssistantUITests.TranscriptUITests",
+          "method": "testNativeSelectedTextReadRefusalDoesNotReadOrSend",
+          "result": "failed",
+          "seconds": 66.474
+        }
+      ],
+      "failure": {
+        "file": "TranscriptUITests.swift",
+        "line": 207,
+        "stage": "native Files dismissal before App review",
+        "waitBudgetSeconds": 30,
+        "tapCount": 1,
+        "tapAtSeconds": 29.45,
+        "firstDismissalPollSeconds": 31.6,
+        "lastDismissalPollSeconds": 63.87,
+        "approvalOrRefusalReached": false
+      },
+      "appObservations": {
+        "selections": 0,
+        "reads": 0,
+        "modelAttempts": 0,
+        "results": 0,
+        "reviewVisible": false,
+        "selectionErrorVisible": false,
+        "callbackTraceInstrumented": false
+      },
+      "evidence": [
+        {
+          "file": "test-summary.json",
+          "bytes": 1722,
+          "sha256": "3cdd9eee689d35c218a943c101e72d4585df7818cbd19aa71a3d66c8707aec83"
+        },
+        {
+          "file": "ios-tests.log",
+          "bytes": 926073,
+          "sha256": "4e8c2ff3c48f799c191c6c36d0b1136ec47709f08dba34ac0b0b4f9648de53a3"
+        },
+        {
+          "file": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+          "bytes": 47423578,
+          "sha256": "ae25f4910e1f050bf18c1eaf2b9153f85139cc49af48a213e07341530003e1f4"
+        },
+        {
+          "file": "provider-selection.log",
+          "bytes": 196132,
+          "sha256": "613cd4c927a4a1e425cd94c7c5bad192e6dfca80840e3edb43ada858f3980fda"
+        },
+        {
+          "file": "synthesized-tap-decoded.json",
+          "bytes": 2715,
+          "sha256": "058a5ebda9081c784ff1cce5470e556520390b5375a4a3f6d3b4edf9fddb9fd8"
+        },
+        {
+          "file": "269843C0-071A-47AE-B6E5-C71596873410",
+          "bytes": 1891,
+          "sha256": "2218c24e18ee2192a509a9d8a7bb90a6e1dad0ef59f5f4394426facb04bad34c"
+        },
+        {
+          "file": "52665EA4-D8D7-48C4-8E9C-A67DEAE69C06.mp4",
+          "bytes": 3670640,
+          "sha256": "400204bb77917d1826ad5bb622ff6fa98f7c35ab4d965cce973346c2d28f4dbb"
+        },
+        {
+          "file": "exact-31.png",
+          "bytes": 185397,
+          "sha256": "b10be786b0d5d32c220e9eabafa4bee1e97c16a5f1f88ef2209d7572ef2ac28f"
+        }
+      ],
+      "providerEvidence": {
+        "correctNativeItemValidated": true,
+        "nativeActionCount": 1,
+        "indexPath": [
+          0,
+          2
+        ],
+        "itemID": "localstorage/did=5",
+        "selectionUTC": "2026-11-10 12:56:27.153Z",
+        "selectionLine": 816,
+        "exactFilenameValidationLine": 821,
+        "errorDomain": "NSFileProviderErrorDomain",
+        "errorCode": -1005,
+        "errorUTC": "2026-11-10 12:56:27.619Z",
+        "errorLine": 846,
+        "nilURLLine": 847,
+        "indexingHardExpiry": [
+          {
+            "line": 1151,
+            "utc": "2026-11-10 12:56:52.829Z"
+          }
+        ],
+        "interpretation": "Native service received the intended single tap and could not resolve its selected item to a URL. The App read/refusal operation was never reached."
+      },
+      "tapEvent": {
+        "x": 308.5,
+        "y": 204.0,
+        "releaseAfterSeconds": 0.05,
+        "samePressReleasePoint": true
+      },
+      "visualEvidence": {
+        "recording": "52665EA4-D8D7-48C4-8E9C-A67DEAE69C06.mp4",
+        "observed": "Correct third TXT remains displayed in Files; no App review or required Open button appears. Native receipt is independently proven by provider logs.",
+        "frameRequestedSeconds": 31,
+        "frameActualSeconds": 30.586666666666666,
+        "laterUnchangedFrameRequestedSeconds": 63,
+        "laterFrameIsRepeatedLastVisualState": true
+      }
+    },
+    {
+      "variant": "large",
+      "job": 129823082975,
+      "artifact": 13766845923,
+      "device": {
+        "deviceName": "iPhone 16 Pro Max",
+        "osVersion": "18.5",
+        "osBuildNumber": "22F77",
+        "architecture": "arm64"
+      },
+      "counts": {
+        "total": 28,
+        "passed": 27,
+        "failed": 1,
+        "skipped": 0,
+        "nativePassed": 25,
+        "uiPassed": 2
+      },
+      "uiCases": [
+        {
+          "class": "WoowAssistantUITests.TranscriptUITests",
+          "method": "testApprovedNativeTextWithoutModelCannotSendAndKeepsChatDraft",
+          "result": "passed",
+          "seconds": 150.785
+        },
+        {
+          "class": "WoowAssistantUITests.TranscriptUITests",
+          "method": "testNativePickerCancellationDoesNotSelectOrRead",
+          "result": "passed",
+          "seconds": 43.774
+        },
+        {
+          "class": "WoowAssistantUITests.TranscriptUITests",
+          "method": "testNativeSelectedTextReadRefusalDoesNotReadOrSend",
+          "result": "failed",
+          "seconds": 96.394
+        }
+      ],
+      "failure": {
+        "file": "TranscriptUITests.swift",
+        "line": 207,
+        "stage": "native Files dismissal before App review",
+        "waitBudgetSeconds": 30,
+        "tapCount": 1,
+        "tapAtSeconds": 58.56,
+        "firstDismissalPollSeconds": 61.46,
+        "lastDismissalPollSeconds": 92.8,
+        "approvalOrRefusalReached": false
+      },
+      "appObservations": {
+        "selections": 0,
+        "reads": 0,
+        "modelAttempts": 0,
+        "results": 0,
+        "reviewVisible": false,
+        "selectionErrorVisible": false,
+        "callbackTraceInstrumented": false
+      },
+      "evidence": [
+        {
+          "file": "test-summary.json",
+          "bytes": 1704,
+          "sha256": "76fef9584ef1213c8402d292e782a9bd3b55beb6044cfa46d06ae2f90d47087e"
+        },
+        {
+          "file": "ios-tests.log",
+          "bytes": 920280,
+          "sha256": "b751086456977b7567dc00e924841ccf35c89dcfa9d9075609354b8c9fcc3e7c"
+        },
+        {
+          "file": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+          "bytes": 46907868,
+          "sha256": "8bab27e34149c26e4a81808ecdbb1da13741e1a3657486d863db54c07a831956"
+        },
+        {
+          "file": "provider-selection.log",
+          "bytes": 306677,
+          "sha256": "e66786498ffc8457032c43336e1f149a4bbe8dab2dc493e18f672d3d3f4b4931"
+        },
+        {
+          "file": "synthesized-tap-decoded.json",
+          "bytes": 2739,
+          "sha256": "698ba37c4083bb83dd629d6c82e8f0c145072a3b3c020429e491680c2cb26a7a"
+        },
+        {
+          "file": "2A8DCAA7-BC26-4473-927A-AFB37B5A2D9B",
+          "bytes": 1891,
+          "sha256": "444541253b31c3c9c730fc24d03d253960ed7ec2541fefaa6f028ed346a0ee85"
+        },
+        {
+          "file": "716F45F6-9C61-44F1-A8A4-5FD6EB6DF205.mp4",
+          "bytes": 6660598,
+          "sha256": "ea67f10a8221a2901eada372f20b6771b8eeeccecdbd0675a15bb14b91e98c09"
+        },
+        {
+          "file": "exact-61.png",
+          "bytes": 365527,
+          "sha256": "e5013c3605f3b25c9ffde88b1e15ec2537c8db3e2d587e8425c8b303ab3b66a6"
+        }
+      ],
+      "providerEvidence": {
+        "correctNativeItemValidated": true,
+        "nativeActionCount": 1,
+        "indexPath": [
+          0,
+          2
+        ],
+        "itemID": "localstorage/did=5",
+        "selectionUTC": "2026-11-10 12:57:05.161Z",
+        "selectionLine": 218,
+        "exactFilenameValidationLine": 224,
+        "errorDomain": "NSFileProviderErrorDomain",
+        "errorCode": -1005,
+        "errorUTC": "2026-11-10 12:57:05.583Z",
+        "errorLine": 246,
+        "nilURLLine": 247,
+        "indexingHardExpiry": [
+          {
+            "line": 333,
+            "utc": "2026-11-10 12:57:07.445Z"
+          }
+        ],
+        "interpretation": "Native service received the intended single tap and could not resolve its selected item to a URL. The App read/refusal operation was never reached."
+      },
+      "tapEvent": {
+        "x": 362.8333333333333,
+        "y": 236.0,
+        "releaseAfterSeconds": 0.05,
+        "samePressReleasePoint": true
+      },
+      "visualEvidence": {
+        "recording": "716F45F6-9C61-44F1-A8A4-5FD6EB6DF205.mp4",
+        "observed": "Correct third TXT remains displayed in Files; no App review or required Open button appears. Native receipt is independently proven by provider logs.",
+        "frameRequestedSeconds": 61,
+        "frameActualSeconds": 60.406666666666666,
+        "laterUnchangedFrameRequestedSeconds": 92,
+        "laterFrameIsRepeatedLastVisualState": true
+      }
+    },
+    {
+      "variant": "current",
+      "job": 129823083481,
+      "artifact": 13766302218,
+      "device": {
+        "deviceName": "iPhone 17",
+        "osVersion": "26.2",
+        "osBuildNumber": "23C54",
+        "architecture": "arm64"
+      },
+      "counts": {
+        "total": 28,
+        "passed": 27,
+        "failed": 1,
+        "skipped": 0,
+        "nativePassed": 25,
+        "uiPassed": 2
+      },
+      "uiCases": [
+        {
+          "class": "WoowAssistantUITests.TranscriptUITests",
+          "method": "testApprovedNativeTextWithoutModelCannotSendAndKeepsChatDraft",
+          "result": "failed",
+          "seconds": 160.95
+        },
+        {
+          "class": "WoowAssistantUITests.TranscriptUITests",
+          "method": "testNativePickerCancellationDoesNotSelectOrRead",
+          "result": "passed",
+          "seconds": 58.435
+        },
+        {
+          "class": "WoowAssistantUITests.TranscriptUITests",
+          "method": "testNativeSelectedTextReadRefusalDoesNotReadOrSend",
+          "result": "passed",
+          "seconds": 52.25
+        }
+      ],
+      "failure": {
+        "file": "TranscriptUITests.swift",
+        "line": 207,
+        "stage": "native Files dismissal before App review",
+        "waitBudgetSeconds": 30,
+        "tapCount": 1,
+        "tapAtSeconds": 107.7,
+        "firstDismissalPollSeconds": 110.27,
+        "lastDismissalPollSeconds": 143.61,
+        "approvalOrRefusalReached": false
+      },
+      "appObservations": {
+        "selections": 0,
+        "reads": 0,
+        "modelAttempts": 0,
+        "results": 0,
+        "reviewVisible": false,
+        "selectionErrorVisible": false,
+        "callbackTraceInstrumented": false
+      },
+      "evidence": [
+        {
+          "file": "test-summary.json",
+          "bytes": 1721,
+          "sha256": "cfde2dc8aaaac75455d4544f520946acf32bb232905ad0bae8461827b94a1a9a"
+        },
+        {
+          "file": "ios-tests.log",
+          "bytes": 944456,
+          "sha256": "91807bc0eda4c56737a267161a2f4240ee0c5570f0f38f9d6b334217075ae5a2"
+        },
+        {
+          "file": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+          "bytes": 35525729,
+          "sha256": "450f0d238d901897ae7202a96426c1b709657a87706185946e1136c9e0d744d4"
+        }
+      ],
+      "providerEvidence": {
+        "errorDomain": "NSFileProviderErrorDomain",
+        "errorCode": -1005,
+        "underlyingDomain": "NSFileProviderResolverErrorDomain",
+        "underlyingCode": -1012,
+        "itemID": "did=3",
+        "errorUTC": "2026-11-10 13:00:39.331546Z",
+        "appDiagnosticLine": 122569,
+        "internalEmptyItemsLine": 122570,
+        "internalEmptyItemsIsAppCallback": false,
+        "interpretation": "DocumentManager failed to turn its bookmark into a URL. This confirms native preparation failure, not an App read-approval failure."
+      }
+    }
+  ],
+  "conclusions": [
+    "Both iOS 18.5 refusal failures are confirmed correct-item native selection followed by FileProvider URL-resolution failure, not an incorrect test tap.",
+    "The iOS 26.2 approval failure has the same error category during bookmark URL resolution. Its refusal and cancel cases passed.",
+    "The runtime/recovery tests passed 14/14 and hosted browser tests passed 11/11 on each variant; previous cancellation acknowledgment failures did not recur.",
+    "The file picker cannot deliver a selected URL when its provider returns nil. The App snapshot reader and user approval/refusal logic have not run at this failure stage.",
+    "The exact lower-level cause of missing provider item identity remains unknown. A visible thumbnail does not prove current file availability, and -1005 alone does not prove the App deleted the file.",
+    "No evidence supports additional taps, injected URLs, relaxing assertions, longer deadlines, replacing the presenter, or granting read approval before native callback."
+  ],
+  "proposedRepairValidation": {
+    "kind": "Provider-state isolation experiment using the already-added parent-owned fresh simulator path; not a verified fix",
+    "workflow": ".github/workflows/ios.yml",
+    "inputs": {
+      "test_scope": "transcript",
+      "fresh_simulator": true,
+      "current_only": false,
+      "compact_only": false,
+      "large_only": false
+    },
+    "preserve": [
+      "All three native picker UI cases and exact audit, source, draft, approval/refusal assertions",
+      "240-second per-case allowance and existing 30-second dismissal wait",
+      "Single exact native document tap; no URL injection or re-tap",
+      "Prior 9a failures and exact source/runtime identifiers"
+    ],
+    "successCriteria": [
+      "Three UI cases pass on each selected runtime/device; 25 native tests remain passed.",
+      "Record fresh simulator ownership/runtime provenance; capture provider diagnostic and App audit evidence."
+    ],
+    "interpretation": "A pass would demonstrate this isolated configuration. It would not prove existing-provider state repaired or establish universal device reliability.",
+    "ifFailurePersists": "Keep the failure. Correlate exact provider item identity with bounded creation/post-test fixture inventory before considering a lifecycle change; do not add automated retries or a fallback read.",
+    "newDispatchByThisAgent": false,
+    "productOrTestPatchApplied": false,
+    "patchDecision": "No Swift patch: the requested tap/approval path is correct and the selected URL never reaches it. The existing fresh-simulator implementation supplies the bounded candidate change; no speculative product fix is justified."
+  },
+  "verification": {
+    "sourceArtifactHead": "9a53e6107e32c936e62c8143d58e898f64137147",
+    "boundedEvidenceConsistencyChecks": 54,
+    "systemLogsDecodedLocally": true,
+    "rawSystemLogArchivesPublished": false,
+    "localIOSRerun": false,
+    "limitation": "Local host has CLT Swift 5.8 and no Xcode; no native UI rerun was performed."
+  },
+  "privacy": "Synthetic isolated CI evidence only; no account databases, credentials, endpoints, live model text or user documents are included."
+}

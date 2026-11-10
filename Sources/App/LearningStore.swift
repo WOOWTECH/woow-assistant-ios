@@ -12,10 +12,12 @@ private struct LearningSnapshot: Codable {
     let skills: SkillsState
     let websites: WebsiteKnowledgeState?
     let routes: WebRouteState?
+    let profile: UserProfileState?
     init(memory: MemoryState = .init(), skills: SkillsState = .init(),
-         websites: WebsiteKnowledgeState = .init(), routes: WebRouteState = .init()) {
+         websites: WebsiteKnowledgeState = .init(), routes: WebRouteState = .init(),
+         profile: UserProfileState = .init()) {
         version = 2; self.memory = memory; self.skills = skills
-        self.websites = websites; self.routes = routes
+        self.websites = websites; self.routes = routes; self.profile = profile
     }
 }
 
@@ -25,6 +27,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
     @Published private(set) var skills = SkillsState()
     @Published private(set) var websites = WebsiteKnowledgeState()
     @Published private(set) var routes = WebRouteState()
+    @Published private(set) var profile = UserProfileState()
     @Published private(set) var notes: [MemoryNote] = []
     @Published private(set) var error: String?
     @Published private(set) var notice: String?
@@ -51,6 +54,13 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
         }
     }
 
+    /// Allows isolated tests to exercise the real encrypted store without the
+    /// personal Keychain service or production Application Support location.
+    init(vault: EncryptedLearningFile) {
+        self.vault = vault
+        reload()
+    }
+
     func reload() {
         onUserChange?()
         cancelLearning()
@@ -60,6 +70,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
             guard snapshot.version == 1 || snapshot.version == 2 else { throw LearningFileError.invalidData }
             memory = snapshot.memory; skills = snapshot.skills
             websites = snapshot.websites ?? .init(); routes = snapshot.routes ?? .init()
+            profile = snapshot.profile ?? .init()
             available = true; error = nil; notes = []
         } catch {
             available = false
@@ -87,6 +98,22 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
             memory = next
             notes = notes.filter { note in memory.memories.contains { $0.id == note.memoryID } }
             error = nil; notice = nil
+            return true
+        } catch { self.error = Self.message(error); return false }
+    }
+
+    /// Manual profile edits become reference data for the next run. Existing
+    /// contexts are values; do not cancel/rewrite the currently running task.
+    @discardableResult
+    func mutateProfile(_ change: (inout UserProfileState) throws -> Void) -> Bool {
+        notice = nil
+        do {
+            guard available else { throw LearningFileError.notLoaded }
+            var next = profile
+            try change(&next)
+            try persist(memory: memory, skills: skills, profile: next)
+            profile = next; error = nil
+            notice = "個人檔案已儲存，下一次對話任務開始時生效。"
             return true
         } catch { self.error = Self.message(error); return false }
     }
@@ -139,11 +166,12 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
             guard let vault else { throw LearningFileError.unavailable }
             let nextMemory = MemoryState(preferences: memory.preferences)
             let nextSkills = SkillsState()
-            let retiredKeysRemoved = try vault.save(LearningSnapshot(memory: nextMemory, skills: nextSkills), rotateKey: true)
+            let nextProfile = UserProfileState()
+            let retiredKeysRemoved = try vault.save(LearningSnapshot(memory: nextMemory, skills: nextSkills, profile: nextProfile), rotateKey: true)
             memory = nextMemory; skills = nextSkills; notes = []; available = true; error = nil
-            websites = .init(); routes = .init()
+            websites = .init(); routes = .init(); profile = nextProfile
             notice = retiredKeysRemoved
-                ? "已清除記憶、技能、網站知識與路線，並更新加密金鑰；模型和 MCP 設定保留。"
+                ? "已清除個人檔案、記憶、技能、網站知識與路線，並更新加密金鑰；模型和 MCP 設定保留。"
                 : "資料已清除並更新加密金鑰，但舊金鑰清理未完成；請解鎖後再次執行清除。"
             return true
         } catch { self.error = Self.message(error); return false }
@@ -174,7 +202,10 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
     func contextMessages(for prompt: String) -> [ModelMessage] {
         guard available else { return [] }
         let context = memory.context(goal: prompt)
-        var messages = context.message.map { [$0] } ?? []
+        // Capture at run start, before the current user request. Profile writes
+        // during a run cannot alter the already captured message array.
+        let profileMessage = memory.preferences.useMemory ? profile.snapshot().message : nil
+        var messages = [profileMessage, context.message].compactMap { $0 }
         // Only text guidance is available in this release. MCP catalog discovery
         // does not grant model-controlled tool execution to imported skills.
         // Mika TaskRun builds the personal-skill catalog independently of useMemory;
@@ -247,7 +278,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
             guard available, let vault else { throw LearningFileError.notLoaded }
             var nextWebsites = websites, nextRoutes = routes
             try change(&nextWebsites, &nextRoutes)
-            try vault.save(LearningSnapshot(memory: memory, skills: skills, websites: nextWebsites, routes: nextRoutes))
+            try vault.save(LearningSnapshot(memory: memory, skills: skills, websites: nextWebsites, routes: nextRoutes, profile: profile))
             websites = nextWebsites; routes = nextRoutes; error = nil
             return true
         } catch { self.error = "網站資料未儲存；請檢查內容、來源與版本，既有資料保留。"; return false }
@@ -290,7 +321,7 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
                     _ = try nextRoutes.record(intent: goal, steps: steps, task: task)
                 }
             }
-            try vault.save(LearningSnapshot(memory: memory, skills: nextSkills, websites: nextWebsites, routes: nextRoutes))
+            try vault.save(LearningSnapshot(memory: memory, skills: nextSkills, websites: nextWebsites, routes: nextRoutes, profile: profile))
             skills = nextSkills; websites = nextWebsites; routes = nextRoutes; error = nil
             return true
         } catch { self.error = "學習資料未儲存；原有技能、網站知識與路線保留。"; return false }
@@ -307,9 +338,9 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
         } catch { self.error = "任務已停止；技能結果紀錄未能儲存，既有資料保留。" }
     }
 
-    private func persist(memory: MemoryState, skills: SkillsState) throws {
+    private func persist(memory: MemoryState, skills: SkillsState, profile: UserProfileState? = nil) throws {
         guard available, let vault else { throw LearningFileError.notLoaded }
-        try vault.save(LearningSnapshot(memory: memory, skills: skills, websites: websites, routes: routes))
+        try vault.save(LearningSnapshot(memory: memory, skills: skills, websites: websites, routes: routes, profile: profile ?? self.profile))
     }
 
     @discardableResult
@@ -318,6 +349,15 @@ final class LearningStore: ObservableObject, SkillAuthoringStoring {
     }
 
     static func message(_ error: Error) -> String {
+        if let profile = error as? UserProfileError {
+            switch profile {
+            case .invalidSentence: return "請輸入單句、1–160 字元的個人檔案；不可包含換行、密碼、驗證碼或金鑰等敏感資料。"
+            case .duplicate: return "這條個人檔案已經存在。"
+            case .profileFull: return "個人檔案已達 20 條上限，請先整理。"
+            case .matchNotUnique: return "指定片段必須只出現在一條現用檔案中，而且只出現一次；請重新選擇。"
+            case .invalidState: return "個人檔案狀態無效；原資料保留，變更未套用。"
+            }
+        }
         if let authoring = error as? SkillAuthoringError { return authoring.errorDescription ?? "技能未儲存。" }
         if let catalog = error as? SkillCatalogError { return catalog.errorDescription ?? "內建技能未匯入。" }
         if let memory = error as? MemoryError {

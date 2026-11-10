@@ -445,6 +445,102 @@ final class LiveModelUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["memory.pending.empty"].exists)
     }
 
+    func testRealWebKitMultiSourceResearchCitesBothApprovedRoots() throws {
+        executionTimeAllowance = 300
+        let app = try launchLiveApp()
+        navigate(to: "browser", in: app)
+        tapLearningButton("browser.multiResearch", in: app)
+        let inputs = [
+            ("multiResearch.goal", "Compare the documentation purpose of example.com and example.org using both supplied sources. Quote an exact passage from each source that includes example.com or example.org. Do not claim these publishers are independent."),
+            ("multiResearch.rootText1", "https://www.iana.org/domains/reserved"),
+            ("multiResearch.rootText2", "https://www.rfc-editor.org/rfc/rfc2606.txt")
+        ]
+        for (identifier, text) in inputs {
+            let field = app.textFields.matching(identifier: identifier).firstMatch
+            let input = field.exists ? field : app.textViews.matching(identifier: identifier).firstMatch
+            revealLearningElement(input, in: app)
+            input.tap(); input.typeText(text)
+            // Check the actual UI input before authorizing these specific roots.
+            XCTAssertTrue(input.value as? String == text, "Research input must match the typed source or question.")
+            tapLearningButton("multiResearch.keyboardDone", in: app)
+        }
+        tapLearningButton("multiResearch.start", in: app)
+        XCTAssertTrue(app.buttons["multiResearch.cancel"].waitForExistence(timeout: 10))
+        let start = app.buttons["multiResearch.start"]
+        let finished = XCTNSPredicateExpectation(predicate: NSPredicate(format: "enabled == true"), object: start)
+        XCTAssertEqual(XCTWaiter.wait(for: [finished], timeout: 185), .completed)
+        XCTAssertFalse(app.staticTexts["multiResearch.error"].exists, "Actual multi-source research must complete without a product error.")
+        let result = app.staticTexts["multiResearch.result"]
+        revealLearningElement(result, in: app, visibility: .readableText)
+        XCTAssertTrue(result.label == "已整理來源引用", "A partial result cannot pass the two-source live acceptance.")
+        let count = app.staticTexts["multiResearch.citedSourceCount"]
+        revealLearningElement(count, in: app, visibility: .readableText)
+        XCTAssertTrue(count.label.contains("2"), "Both approved origins must have verified citations.")
+        for source in ["source-1", "source-2"] {
+            let quote = app.staticTexts.matching(identifier: "multiResearch.quote." + source).firstMatch
+            revealLearningElement(quote, in: app, visibility: .readableText)
+            XCTAssertTrue(!quote.label.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty,
+                          "Each actually fetched source must contribute a nonempty byte-verified quote.")
+            XCTAssertTrue(quote.label.lowercased().contains("example.com") || quote.label.lowercased().contains("example.org"),
+                          "Each source must supply the requested example-domain evidence, not an error page.")
+        }
+        XCTAssertFalse(app.staticTexts["uitest.banner"].exists)
+        // No source text, generated prose, endpoint or credentials are logged.
+        tapLearningButton("multiResearch.close", in: app)
+        navigate(to: "memory", in: app)
+        selectLearningSegment("skills", in: app)
+        XCTAssertTrue(app.staticTexts["skills.empty"].exists)
+        selectLearningSegment("pending", in: app)
+        XCTAssertTrue(app.staticTexts["memory.pending.empty"].exists)
+    }
+
+    func testRealModelRecallsManualProfileAfterRelaunchAndMasterSwitchDisablesIt() throws {
+        executionTimeAllowance = 300
+        var app = try launchLiveApp()
+        let value = "amber-" + UUID().uuidString.replacingOccurrences(of: "-", with: "").prefix(12).lowercased()
+        navigate(to: "memory", in: app)
+        tapLearningButton("memory.profile.open", in: app)
+        tapLearningButton("profile.add", in: app)
+        let text = app.textViews["profile.editor.text"]
+        waitUntilHittable(text)
+        let sentence = "My preferred profile color is " + value + "."
+        text.tap(); text.typeText(sentence)
+        XCTAssertTrue(text.value as? String == sentence, "The profile must contain the actual typed sentence.")
+        tapLearningButton("profile.editor.done", in: app)
+        tapLearningButton("profile.editor.save", in: app)
+        let item = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND label == %@", "profile.item.", sentence)).firstMatch
+        XCTAssertTrue(item.waitForExistence(timeout: 10))
+        XCTAssertFalse(app.staticTexts["profile.error"].exists)
+        app.terminate()
+        app = try launchLiveApp()
+        XCTAssertFalse(app.staticTexts["chat.message.1.assistant"].exists)
+        let question = "What is my preferred profile color? Reply with the exact saved value only. If no profile preference is provided, reply exactly UNKNOWN."
+        enterDraft(question, in: app)
+        app.buttons["chat.send"].tap()
+        assertReply(value, messageIndex: 1, in: app)
+        navigate(to: "memory", in: app)
+        let toggle = app.switches["memory.toggle.useMemory"]
+        revealLearningElement(toggle, in: app)
+        XCTAssertTrue(toggle.value as? String == "1")
+        let native = toggle.switches.firstMatch
+        let target = native.exists ? native : toggle
+        waitUntilHittable(target); target.tap()
+        let disabled = XCTNSPredicateExpectation(predicate: NSPredicate(format: "value == %@", "0"), object: toggle)
+        XCTAssertEqual(XCTWaiter.wait(for: [disabled], timeout: 5), .completed)
+        XCTAssertFalse(app.staticTexts["memory.error"].exists)
+        // A fresh App conversation removes earlier answer text as a recall source.
+        app.terminate()
+        app = try launchLiveApp()
+        enterDraft(question, in: app)
+        app.buttons["chat.send"].tap()
+        assertReply("UNKNOWN", messageIndex: 1, in: app)
+        navigate(to: "memory", in: app)
+        tapLearningButton("memory.profile.open", in: app)
+        XCTAssertTrue(app.staticTexts["profile.disabled"].waitForExistence(timeout: 10))
+        let retained = app.staticTexts.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND label == %@", "profile.item.", sentence)).firstMatch
+        XCTAssertTrue(retained.exists, "Disabling recall must preserve the actual saved profile.")
+    }
+
     private func openPublicIANA(in app: XCUIApplication) {
         navigate(to: "browser", in: app)
         let address = app.textFields["browser.address"]

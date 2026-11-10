@@ -47,6 +47,8 @@ complete locations rather than treating shortened table paths as filesystem path
 
 ## Deliberate capability boundaries / outstanding integration
 
+Manual personal profiles now have a pinned-behavior state core, encrypted LearningStore integration, active/superseded history, master-switch gating and a frozen ordinary/MCP chat context. Local core and actual vault tests passed; native UI and real-model acceptance remain separate. The original model `profile_edit` tool and profile injection into every independent skill/browser runner are still absent. See [personal profile scope](USER_PROFILE.md).
+
 - Browser website logins now use persistent WebKit website-data records with
   per-site deletion; they are not stored in memory. The new integration and
   synthetic HTTP login/relaunch tests have revision-specific acceptance in VERIFICATION.

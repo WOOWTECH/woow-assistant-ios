@@ -80,6 +80,15 @@ struct MemoryDataView: View {
                         Button("關閉提示") { store.dismissNotice() }
                     }
                 }
+                if segment == .memories {
+                    Section {
+                        NavigationLink {
+                            UserProfileView(store: store)
+                        } label: { Text("個人檔案") }
+                            .disabled(!store.available)
+                            .accessibilityIdentifier("memory.profile.open")
+                    }
+                }
                 if segment == .skills {
                     Section {
                         Button("Mika 內建技能目錄（6）") { sheet = .catalog }
@@ -123,7 +132,7 @@ struct MemoryDataView: View {
                         sheet = .clear
                     }
                     .accessibilityIdentifier("memory.clear")
-                    Text("需要兩次確認。模型設定、模型金鑰與 MCP 端點不會被清除。")
+                    Text("需要兩次確認，並包含個人檔案。模型設定、模型金鑰與 MCP 端點不會被清除。")
                         .font(.footnote).foregroundStyle(.secondary)
                 }
             }
