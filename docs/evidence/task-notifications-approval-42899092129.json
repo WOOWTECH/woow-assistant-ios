@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "run_id": 42899092129,
+  "job_id": 130119955922,
+  "artifact_id": 13803346224,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42899092129",
+  "commit": "50d25f1da9a61d58911a545dc4aa64bbe7ca19dc",
+  "conclusion": "failure",
+  "artifact_sha256": "4531d89b0a65d3737cb775fa240896dbfd2363b50a896840fce6e9055f6daf2f",
+  "approval_test_source_sha256": "1d8f62cd73351667bb2f1a22c5c3539cc5510340632019bf0921c165bc4c1341",
+  "test_summary": {
+    "devicesAndConfigurations": [
+      {
+        "device": {
+          "architecture": "arm64",
+          "deviceId": "D786274A-8E53-4226-BFC9-CF390A776A95",
+          "deviceName": "Woow-CI-98107b84fd8a44e69f257ccb8489295f",
+          "modelName": "iPhone 16 Pro Max",
+          "osBuildNumber": "22F77",
+          "osVersion": "18.5",
+          "platform": "iOS Simulator"
+        },
+        "expectedFailures": 0,
+        "failedTests": 1,
+        "passedTests": 1,
+        "skippedTests": 0,
+        "testPlanConfiguration": {
+          "configurationId": "1",
+          "configurationName": "Test Scheme Action"
+        }
+      }
+    ],
+    "environmentDescription": "WoowAssistant · Built with macOS 15.8.2",
+    "expectedFailures": 0,
+    "failedTests": 1,
+    "finishTime": 1794344588.534,
+    "passedTests": 1,
+    "result": "Failed",
+    "skippedTests": 0,
+    "startTime": 1794344315.414,
+    "statistics": [],
+    "testFailures": [
+      {
+        "failureText": "failed - Learning element must meet its visibility requirement above navigation/keyboard: chat.useMCP",
+        "targetName": "WoowAssistantUITests",
+        "testIdentifier": 1,
+        "testIdentifierString": "NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval()",
+        "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval",
+        "testName": "testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval()"
+      }
+    ],
+    "title": "Test - WoowAssistant",
+    "topInsights": [],
+    "totalTestCount": 2
+  },
+  "completion_gate": {
+    "verified": false,
+    "counts": {
+      "totalTestCount": 2,
+      "passedTests": 1,
+      "failedTests": 1,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Failed",
+    "expected_ui_count": 2,
+    "completed_ui_count": 2,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": [
+      "WoowAssistantUITests/NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval"
+    ]
+  },
+  "bounded_log_markers": [
+    "Test Case '-[WoowAssistantUITests.NotificationApprovalUITests testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval]' started.",
+    "NOTIFICATION_APPROVAL authorizationBefore=notDetermined authorizationAfter=authorized",
+    "Test Case '-[WoowAssistantUITests.NotificationApprovalUITests testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval]' failed (55.938 seconds).",
+    "Test Case '-[WoowAssistantUITests.NotificationUITests testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable]' started.",
+    "NOTIFICATION_SETTINGS enabled=1 systemPromptObserved=0",
+    "NOTIFICATION_SETTINGS actualSystemBanner=1 audibleSoundVerified=0",
+    "NOTIFICATION_SETTINGS actualBannerTap=1 rootChatVisible=1",
+    "NOTIFICATION_SETTINGS relaunchEnabled=1 disablePersisted=1 systemPermissionRetained=1",
+    "Test Case '-[WoowAssistantUITests.NotificationUITests testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable]' passed (40.505 seconds)."
+  ],
+  "approval_observations": {
+    "Observed notification navigation generations_0_A368F27C-FB8B-4793-A83D-EBA88E68693C.txt": "before=none\nafter=none",
+    "Failure stage and synthetic review IDs_0_D9D1ACCF-A763-4EF5-9973-F62D0CE27F39.txt": "stage=fixtureConnection;before=none;after=none"
+  },
+  "failure_stage": "fixtureConnection/chat.useMCP",
+  "failure_screenshot": {
+    "artifact_attachment": "B7A52DB3-9794-4810-9808-B1331C6EE8FF.png",
+    "file": "task-notifications-approval-42899092129-failure.png",
+    "sha256": "94d0e0b5d87b17f730d0f0430ee57eaeb7b47d79b9f671c5b69b0a2151ea718e"
+  },
+  "stages": {
+    "native_app_build": "success",
+    "native_test_target_compilation": "success",
+    "public_notification_authorization": "authorized",
+    "original_settings_case": "passed",
+    "new_approval_case": "failed",
+    "prompt_sent": false,
+    "pending_proposal_uuid_observed": false,
+    "approval_banner_observed": false,
+    "default_open_callback_observed": false,
+    "explicit_approval": false,
+    "single_call_result_observed": false,
+    "audible_sound_verified": false
+  },
+  "diagnosis": "The fixture connection completed. The test sent chat.useMCP, a visible fixed header switch, to a helper that chose the message ScrollView at {{16.0, 244.3}, {408.0, 486.0}}. Eight scrolls could not bring an external header inside that viewport; it failed before any prompt.",
+  "proposed_fix": "Use the existing MCP UI case direct native switch tap pattern for the fixed Chat header; retain Form/List reveal for catalog rows.",
+  "fix_scope": "NotificationApprovalUITests.swift only; product sources and shared helpers remain frozen",
+  "native_retry_validation": "not_yet_performed"
+}

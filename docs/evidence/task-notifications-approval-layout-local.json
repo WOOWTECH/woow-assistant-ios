@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "LOCAL_SYNTAX_AND_UNCHANGED_ACCEPTANCE_AUDIT_PASS_NATIVE_RETRY_PENDING",
+  "source_file": "Tests/WoowAssistantUITests/NotificationApprovalUITests.swift",
+  "source_sha256": "332f852be000110427e2293bbaf55c1029711f5fe50db6a39dacc64582a5ee96",
+  "baseline_commit": "50d25f1da9a61d58911a545dc4aa64bbe7ca19dc",
+  "baseline_source_sha256": "1d8f62cd73351667bb2f1a22c5c3539cc5510340632019bf0921c165bc4c1341",
+  "original_failures_preserved": [
+    42899087289,
+    42899092129
+  ],
+  "changes": [
+    "Always call the existing revealLearningElement helper for scrollable Form/List controls, regardless of isHittable.",
+    "Use direct native control taps for fixed navigation, Chat header/draft/send and modal approval controls.",
+    "Reuse existing MCPConversationUITests fixture switch setup: reveal catalog row once, tap actual nested switch, use direct fixed header toggle."
+  ],
+  "validation": {
+    "ios_debug_syntax_parse": "PASS",
+    "ios_release_syntax_parse": "PASS",
+    "git_diff_check": "PASS",
+    "local_ios_typecheck": false,
+    "corrected_native_execution": false,
+    "actual_banner_route_uuid_and_single_call_acceptance_unchanged": true,
+    "public_permission_branch_unchanged": true,
+    "snapshot_matchers_unchanged": true,
+    "one_explicit_approval_tap_retained": true,
+    "execution_time_allowance_seconds": 300,
+    "product_source_hashes_unchanged": {
+      "Sources/App/ContentView.swift": "382d8f4f12814cf00a71535d5f086df22b67b61f8fe2bffbb43b8807048cf6d9",
+      "Sources/App/MCPApprovalView.swift": "cf0344eed31977b9117160fb07417871aa4189bcd3a7df2a68b8d1ea670e0939"
+    }
+  },
+  "limits": "Local syntax and exact source comparison only; no local permission request, no product change, no fake event, no native retry result."
+}

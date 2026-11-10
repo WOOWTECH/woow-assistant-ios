@@ -41,20 +41,21 @@ final class NotificationApprovalUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["chat.status"].waitForExistence(timeout: 15))
         stage = "permission"
         try enableNotifications()
-        try tap(app.navigationBars["任務通知"].buttons.firstMatch)
+        try tap(app.navigationBars["任務通知"].buttons.firstMatch, scroll: false)
 
         stage = "fixtureConnection"
-        try tap(app.buttons["navigation.tools"])
+        try tap(app.buttons["navigation.tools"], scroll: false)
         try tap(app.buttons["mcp.connect"])
         try wait("The actual fixture connection must finish discovery.", seconds: 15) {
             self.app.staticTexts["mcp.status"].label == "已連線，目錄擷取完成"
         }
         try enable(app.switches["mcp.enable.fixture_echo"])
-        try tap(app.buttons["navigation.chat"])
-        try enable(app.switches["chat.useMCP"])
+        try tap(app.buttons["navigation.chat"], scroll: false)
+        // This switch is a fixed Chat header, outside the message ScrollView.
+        try enable(app.switches["chat.useMCP"], scroll: false)
         XCTAssertNil(banner())
         let draft = app.textFields["chat.draft"]
-        try tap(draft)
+        try tap(draft, scroll: false)
         draft.typeText("[fixture:mcp] hello\n")
         guard let initialNavigation = navigation() else {
             XCTFail("The fixture must expose the actual root notification navigation generation.")
@@ -64,7 +65,7 @@ final class NotificationApprovalUITests: XCTestCase {
         XCTAssertEqual(initialNavigation.destination, "chat")
 
         stage = "newApprovalAndSystemBanner"
-        try tap(app.buttons["chat.send"])
+        try tap(app.buttons["chat.send"], scroll: false)
         var original: Review?
         var shown: Banner?
         // Read both snapshots promptly. Do not spend the short banner lifetime
@@ -116,7 +117,7 @@ final class NotificationApprovalUITests: XCTestCase {
         attach("Synthetic proposal after banner tap", represented.id.uuidString)
 
         stage = "oneExplicitNativeApproval"
-        try tap(app.buttons["mcp.approval.approve"])
+        try tap(app.buttons["mcp.approval.approve"], scroll: false)
         let answer = app.staticTexts["chat.message.1.assistant"]
         XCTAssertTrue(answer.waitForExistence(timeout: 15))
         // The same in-process server connection counts every actual tool call.
@@ -181,7 +182,7 @@ final class NotificationApprovalUITests: XCTestCase {
     }
 
     private func openSettings() throws {
-        try tap(app.buttons["navigation.settings"])
+        try tap(app.buttons["navigation.settings"], scroll: false)
         try tap(app.buttons["settings.notifications"])
         XCTAssertTrue(app.staticTexts["notifications.enabled"].waitForExistence(timeout: 10))
     }
@@ -257,16 +258,21 @@ final class NotificationApprovalUITests: XCTestCase {
         [snapshot.label] + snapshot.children.flatMap { labels(in: $0) }
     }
 
-    private func enable(_ toggle: XCUIElement) throws {
-        revealLearningElement(toggle, in: app)
+    private func enable(_ toggle: XCUIElement, scroll: Bool = true) throws {
+        if scroll { revealLearningElement(toggle, in: app) }
+        else { XCTAssertTrue(toggle.waitForExistence(timeout: 5)) }
         if toggle.value as? String != "1" {
-            try tap(toggle.switches.firstMatch.exists ? toggle.switches.firstMatch : toggle)
+            // Match the existing MCP UI fixture setup: reveal a catalog row
+            // once, then tap its real switch; fixed Chat headers need no scroll.
+            try tap(toggle.switches.firstMatch.exists ? toggle.switches.firstMatch : toggle, scroll: false)
         }
         try wait("Enable the exact selected fixture capability.", seconds: 5) { toggle.value as? String == "1" }
     }
 
     private func tap(_ element: XCUIElement, scroll: Bool = true) throws {
-        if scroll && !element.isHittable { revealLearningElement(element, in: app) }
+        // A Form row can report hittable while below the visible content area.
+        // Always enforce the existing viewport check for scrollable controls.
+        if scroll { revealLearningElement(element, in: app) }
         try wait("The native control must be hittable and enabled.", seconds: 5) { element.isHittable && element.isEnabled }
         element.tap()
     }
