@@ -17,7 +17,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, interaction, parity, memory-ui, learning, browser, core, startup]
+        options: [all, interaction, parity, memory-ui, memory-rollback, learning, browser, core, startup]
         default: all
 
 permissions:
@@ -92,6 +92,9 @@ jobs:
             --runtime "$WOOW_SIM_RUNTIME" --products build/DerivedData/Build/Products/Debug-iphonesimulator
           test_filters=()
           case '${{ inputs.test_scope }}' in
+            memory-rollback)
+              test_filters=(-only-testing:WoowAssistantUITests/MemoryUITests/testSkillUpdateRejectionAndRollback)
+              ;;
             memory-ui)
               test_filters=(-only-testing:WoowAssistantUITests/MemoryUITests)
               ;;

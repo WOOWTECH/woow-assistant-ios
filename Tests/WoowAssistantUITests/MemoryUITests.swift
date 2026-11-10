@@ -336,15 +336,16 @@ final class MemoryUITests: XCTestCase {
 
     private func tap(_ id: String, scroll: Bool = false) {
         let button = app.buttons[id]
-        if scroll && id == "skills.import" {
-            guard revealSkillImport(button) else { return }
+        if scroll && (id == "skills.import" || id.hasPrefix("skills.rollback.")) {
+            guard revealSkillButton(button, identifier: id) else { return }
         } else if scroll { reveal(button) } else { waitUntilHittable(button) }
         button.tap()
     }
 
-    private func revealSkillImport(_ button: XCUIElement,
+    private func revealSkillButton(_ button: XCUIElement, identifier: String,
                                    file: StaticString = #filePath, line: UInt = #line) -> Bool {
         // bd1 SE alternated eight full-list slow swipes past the import row.
+        // 267 passed import, but the shared full swipe skipped rollback too.
         // Speed does not bound distance: measure the gap, drag only inside the
         // uncovered List viewport, and hold before releasing to avoid inertia.
         let list = app.collectionViews.firstMatch
@@ -370,7 +371,7 @@ final class MemoryUITests: XCTestCase {
                 return true
             }
             guard attempt < 8 else {
-                XCTFail("skills.import must be fully visible above navigation/keyboard before tapping.",
+                XCTFail("\(identifier) must be fully visible above navigation/keyboard before tapping.",
                         file: file, line: line)
                 return false
             }
@@ -386,7 +387,7 @@ final class MemoryUITests: XCTestCase {
                 targetFrame: targetIsPresent ? frame : nil,
                 searchUp: searchUp, maximumDistance: maximumDistance
             ) else {
-                XCTFail("skills.import has no safe bounded scroll gesture; visibility remains required.",
+                XCTFail("\(identifier) has no safe bounded scroll gesture; visibility remains required.",
                         file: file, line: line)
                 return false
             }
