@@ -110,8 +110,20 @@ final class SkillAuthoringUITests: XCTestCase {
     }
 
     private func openSkills() {
-        tap("navigation.memory")
-        XCTAssertTrue(app.staticTexts["memory.status"].waitForExistence(timeout: 10))
+        let navigation = app.buttons["navigation.memory"]
+        let ready = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND enabled == true AND hittable == true"), object: navigation)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed)
+        XCTAssertFalse(navigation.frame.isEmpty)
+        XCTAssertTrue(app.frame.contains(navigation.frame))
+        // 5d current's recording and AX stayed on Chat after element.tap().
+        // Target the actual button's visible center once, then require selection.
+        navigation.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let deadline = Date().addingTimeInterval(10)
+        let selected = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "value == %@", "已選取"), object: navigation)
+        XCTAssertEqual(XCTWaiter.wait(for: [selected], timeout: 10), .completed)
+        XCTAssertTrue(app.staticTexts["memory.status"].waitForExistence(timeout: max(0, deadline.timeIntervalSinceNow)))
         XCTAssertFalse(app.staticTexts["memory.unavailable"].exists)
         tap("memory.segment.skills")
     }
@@ -151,7 +163,19 @@ final class SkillAuthoringUITests: XCTestCase {
         editor.tap()
         tap("authoring.keyboard.clear")
         XCTAssertEqual(editor.value as? String, "")
-        editor.typeText(text)
+        // 5d SE kept keyboard focus after Clear, but the full-document key burst
+        // lost "na" and moved "m" to the end. Observe each native input chunk;
+        // never retry/repair text or proceed to review with a different document.
+        var remaining = text[...]
+        var entered = ""
+        while !remaining.isEmpty {
+            let chunk = String(remaining.prefix(entered.isEmpty ? 1 : 16))
+            editor.typeText(chunk)
+            entered += chunk
+            remaining = remaining.dropFirst(chunk.count)
+            XCTAssertEqual(editor.value as? String, entered,
+                           "Every native input chunk must preserve the exact accumulated document.")
+        }
         XCTAssertEqual(editor.value as? String, text, "The exact full document must arrive before review.")
         tap("authoring.keyboard.done")
     }

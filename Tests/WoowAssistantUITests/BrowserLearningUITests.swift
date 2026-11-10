@@ -120,6 +120,15 @@ final class BrowserLearningUITests: XCTestCase {
 
         // This app was relaunched above: replay must mount the real WKWebView
         // from Memory, not depend on a browser left visible by the first run.
+        let replay = app.buttons["website.replay.\(routeID)"]
+        let websites = app.collectionViews["website.manager"]
+        XCTAssertTrue(replay.waitForExistence(timeout: 5))
+        // SE's recording showed the button below the screen while eight short
+        // drags starting in website.search left the list at its initial offset.
+        // Use one normal list swipe, then keep the full-visibility tap check.
+        if !websites.frame.intersection(app.frame).insetBy(dx: 4, dy: 4).contains(replay.frame) {
+            websites.swipeUp(velocity: .slow)
+        }
         tap("website.replay.\(routeID)", scroll: true)
         let confirmations = app.alerts.buttons.matching(NSPredicate(format: "label == %@", "開啟並逐步核對"))
         XCTAssertTrue(confirmations.firstMatch.waitForExistence(timeout: 5))
