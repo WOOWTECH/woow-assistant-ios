@@ -459,7 +459,9 @@ final class LiveModelUITests: XCTestCase {
             let field = app.textFields.matching(identifier: identifier).firstMatch
             let input = field.exists ? field : app.textViews.matching(identifier: identifier).firstMatch
             revealLearningElement(input, in: app)
-            input.tap(); input.typeText(text)
+            input.tap()
+            dismissNativeKeyboardIntroductionIfPresented(in: app)
+            input.typeText(text)
             // Check the actual UI input before authorizing these specific roots.
             XCTAssertTrue(input.value as? String == text, "Research input must match the typed source or question.")
             tapToolbarButton("multiResearch.keyboardDone", in: app)
@@ -504,7 +506,9 @@ final class LiveModelUITests: XCTestCase {
         let text = app.textViews["profile.editor.text"]
         waitUntilHittable(text)
         let sentence = "My preferred profile color is " + value + "."
-        text.tap(); text.typeText(sentence)
+        text.tap()
+        dismissNativeKeyboardIntroductionIfPresented(in: app)
+        text.typeText(sentence)
         XCTAssertTrue(text.value as? String == sentence, "The profile must contain the actual typed sentence.")
         tapToolbarButton("profile.editor.done", in: app)
         tapToolbarButton("profile.editor.save", in: app)
@@ -584,6 +588,22 @@ final class LiveModelUITests: XCTestCase {
         }
     }
 
+    /// Handle only the exact native typing introduction also covered by the
+    /// fixture keyboard flows. An unrelated Continue button cannot authorize it.
+    private func dismissNativeKeyboardIntroductionIfPresented(in app: XCUIApplication) {
+        let button = app.buttons["Continue"].firstMatch
+        guard button.waitForExistence(timeout: 3) else { return }
+        let explanation = app.staticTexts["Speed up your typing by sliding your finger across the letters to compose a word."].firstMatch
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            explanation.exists && button.exists && button.isEnabled && button.isHittable
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 10), .completed,
+                       "Only the exact keyboard introduction may be dismissed.")
+        button.tap()
+        let gone = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: button)
+        XCTAssertEqual(XCTWaiter.wait(for: [gone], timeout: 5), .completed)
+    }
+
     /// Navigation/keyboard toolbars are outside the Form's scrolling viewport.
     /// Require the actual native control to be visible and tappable; scrolling
     /// the Form cannot reveal a toolbar and must not be used as a fallback.
@@ -591,7 +611,16 @@ final class LiveModelUITests: XCTestCase {
         let button = app.buttons.matching(identifier: identifier).firstMatch
         let ready = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: button)
-        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
+        let outcome = XCTWaiter.wait(for: [ready], timeout: 5)
+        if outcome != .completed {
+            let exists = button.exists
+            let frame = exists ? button.frame : .zero
+            let keyboard = app.keyboards.firstMatch
+            // Fixed native identifiers, booleans and geometry only. No trees,
+            // screenshots, input values, provider responses or environments.
+            print("Live toolbar readiness \(identifier): exists=\(exists); enabled=\(exists && button.isEnabled); hittable=\(exists && button.isHittable); frame=\(frame); keyboard=\(keyboard.exists); appFrame=\(app.frame)")
+        }
+        XCTAssertEqual(outcome, .completed)
         let frame = button.frame
         XCTAssertFalse(frame.isEmpty)
         XCTAssertTrue(app.frame.contains(frame), "Native toolbar control must be inside the App window.")

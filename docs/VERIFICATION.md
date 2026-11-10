@@ -1,5 +1,11 @@
 # Verification — 2026-11-10
 
+## Private live runner and keyboard follow-up
+
+The single-invocation iOS 17 MCP experiment at `87dca8a`, [42827099096](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42827099096), passed the native HA probe and App build, then the UI runner was killed before starting any of its three methods. The verifier rejected a one-item bootstrap failure against three expected methods. No native lifecycle helper or model-tool UI acceptance is inferred. An opt-in prelaunch now reuses the existing release helper on the owned exact 17.0.1 simulator: one attempt, a shared 120-second budget, no kill/retry and no handshake claim. Seven wrapper tests passed; live retest is required.
+
+At `1ea3d08`, actual-model profile [42828130700](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828130700) still failed **0/1, zero skips**, before a model request: the actual sentence was typed correctly, but the keyboard toolbar readiness predicate exceeded five seconds. The test now handles only the exact native QuickPath introduction used by existing fixture keyboard flows, and records fixed native geometry/boolean diagnostics on a toolbar failure. This is a diagnostic hypothesis, not an established onboarding cause; the wait and all recall/master-switch assertions remain unchanged.
+
 ## Complete native matrix at 1ea3d08: SE/current passed; Large site deletion exceeded its bound
 
 [42828114273](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828114273) executed all seven native/hosted targets: **SE 163/163; current 163/163; Large 162/163; zero skips throughout**. The 14 new profile/multi-source methods passed on each device (**42/42**), including the CR/LF regression and actual encrypted App store. [Counts, unique method checks, runtime metadata and original removal timelines](evidence/native-matrix-1ea3d08.json).

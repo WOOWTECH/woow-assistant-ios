@@ -8,6 +8,10 @@ on:
         type: choice
         options: ['18.5', '17.0.1']
         default: '18.5'
+      ios17_prelaunch:
+        description: Experimental 17.0.1 XCTest daemon prelaunch (one attempt; no readiness claim)
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -17,7 +21,7 @@ defaults:
     shell: bash
 
 concurrency:
-  group: live-ha-mcp-${{ inputs.ios_version || '18.5' }}
+  group: live-ha-mcp-${{ inputs.ios_version || '18.5' }}-${{ inputs.ios17_prelaunch && 'prelaunch' || 'standard' }}
   cancel-in-progress: false
 
 jobs:
@@ -34,6 +38,8 @@ jobs:
       - name: Verify exact-runtime preparation and cleanup
         run: |
           python3 -m unittest discover -s scripts -p 'test_prepare_live_simulator.py' -v
+          python3 -m unittest discover -s scripts -p 'test_release_ios17_readiness.py' -v
+          python3 -m unittest discover -s scripts -p 'test_prelaunch_live_test_daemon.py' -v
           python3 -m unittest discover -s scripts -p 'test_verify_live_ui.py' -v
       - name: Prepare dedicated exact-runtime simulator
         env:
@@ -84,6 +90,10 @@ jobs:
             xcrun simctl list runtimes -j | python3 scripts/prepare_simulator_webkit.py \
               --runtime "$WOOW_LIVE_RUNTIME" --products build/LiveDerivedData/Build/Products/Debug-iphonesimulator
           fi
+      - name: Prelaunch exact iOS 17 XCTest daemon (experimental)
+        if: ${{ inputs.ios17_prelaunch }}
+        timeout-minutes: 3
+        run: python3 scripts/prelaunch_live_test_daemon.py --output build/live-simulator
       # Keep discovery and conversation in one XCTest invocation. An earlier
       # exact-iOS-17 run hit an install/uninstall launch denial between runs.
       # This removes that handoff; it does not assert installer readiness.
