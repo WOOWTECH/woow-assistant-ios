@@ -1,0 +1,207 @@
+{
+  "schema_version": 1,
+  "source_commit": "ad461cfb3ccf92749c3df618a652273e6a045e44",
+  "run_id": 42874431242,
+  "job_id": 130033872057,
+  "artifact_id": 13794190579,
+  "conclusion": "failure",
+  "classification": "runner_bootstrap_infrastructure",
+  "scope": "documents-read",
+  "expected_methods": [
+    "WoowAssistantUITests/SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText",
+    "WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText",
+    "WoowAssistantUITests/SkillExecutionUITests/testNativePickerCancellationDoesNotReadOrExtract",
+    "WoowAssistantUITests/SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+    "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+    "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText"
+  ],
+  "runtime": {
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "version": "17.0.1",
+    "buildversion": "21A342"
+  },
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "host_architecture": "arm64",
+  "boot_succeeded": true,
+  "test_exit_code": 65,
+  "actual_methods": {
+    "status": "observed",
+    "acceptance_evidence": false,
+    "expected_methods": 6,
+    "counts": {
+      "starts": 0,
+      "passed": 0,
+      "failed": 0,
+      "skipped": 0
+    },
+    "unexpected_events": 0,
+    "all_expected_completed_once": false,
+    "methods": {
+      "WoowAssistantUITests/SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText": {
+        "starts": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText": {
+        "starts": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testNativePickerCancellationDoesNotReadOrExtract": {
+        "starts": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText": {
+        "starts": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText": {
+        "starts": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText": {
+        "starts": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "xcresult_summary": {
+    "result": "Failed",
+    "totalTestCount": 1,
+    "passedTests": 0,
+    "failedTests": 1,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "summary_failure_is_synthetic_runner_error": true,
+  "timeline_utc": [
+    {
+      "at": "2026-11-10T18:49:09.883299Z",
+      "event": "testing_phase_checkpoint"
+    },
+    {
+      "at": "2026-11-10T18:52:08.527Z",
+      "event": "testmanagerd_socket_connected",
+      "session_log_lines": "42-45"
+    },
+    {
+      "at": "2026-11-10T18:54:19.675Z",
+      "event": "control_session_initialization_timeout_120_seconds",
+      "session_log_line": 64
+    },
+    {
+      "at": "2026-11-10T18:54:37.468Z",
+      "event": "runner_launched",
+      "session_log_line": 111
+    },
+    {
+      "at": "2026-11-10T18:54:52.133061Z",
+      "event": "running_tests_banner_without_method_start",
+      "session_log_line": 118
+    },
+    {
+      "at": "2026-11-10T18:56:10.346Z",
+      "event": "runner_SIGKILL_before_test_execution",
+      "session_log_line": 131
+    }
+  ],
+  "prelaunch": {
+    "budget_seconds": 120,
+    "attempts": 1,
+    "status": "process_started_handshake_unverified",
+    "handshake_verified": false,
+    "process_alive": true,
+    "elapsed_seconds": 26.183
+  },
+  "sampling": {
+    "status": "stopped",
+    "handshake_verified": false,
+    "max_samples": 3,
+    "sample_seconds": 3,
+    "sample_command_seconds": 15,
+    "sample_byte_limit": 2097152,
+    "attempts": [
+      {
+        "role": "daemon_early",
+        "elapsed_seconds": 15.103,
+        "image": "xpcproxy_sim",
+        "status": "captured",
+        "frames": 1,
+        "bytes": 42
+      },
+      {
+        "role": "daemon_later",
+        "elapsed_seconds": 75.077,
+        "image": "xpcproxy_sim",
+        "status": "captured",
+        "frames": 1,
+        "bytes": 42
+      },
+      {
+        "role": "runner_bootstrap",
+        "elapsed_seconds": 362.629,
+        "image": "WoowAssistantUITests-Runner",
+        "status": "cancelled"
+      }
+    ],
+    "actual_test_case_started": false
+  },
+  "daemon_sample_frames": [
+    "_dyld_start"
+  ],
+  "diagnostics_mode": "disabled_with_bounded_sampling",
+  "budgets": {
+    "build_and_test_seconds": 1800,
+    "case_seconds": 300,
+    "invocations": 1
+  },
+  "source_hashes": {
+    "scripts/release_ios17.py": "972cdb7f59ff6c4e773d371e0dc3eae2b0a2b71d7fd5cada6c62021923666759",
+    "Tests/WoowAssistantUITests/SkillExecutionUITests.swift": "f6051e5475d0e4465b0b7a659b8e29ba3a85ebdd6b10881c4df584ed61faebbe",
+    "Tests/WoowAssistantUITests/SkillWorkerSettingsUITests.swift": "2da6b8f0f5d5d65d6b3077ea66f07409e607ba914acb6ddf2caa2a984097e43a"
+  },
+  "local_evidence": {
+    "report.json": {
+      "bytes": 7614,
+      "sha256": "68e78b008f91185716708b327f2d88061bd493007292b91a5646a4c525fe891f"
+    },
+    "tests.log": {
+      "bytes": 1094636,
+      "sha256": "311e70e2f945fe321605983f2bb1ca6a5485365378ef341d2c5254cccf284330"
+    },
+    "test-summary.json": {
+      "bytes": 1460,
+      "sha256": "c29ddfb031184114ca5b13e908159e00d7d279fd27891a85df3126152cf090a9"
+    },
+    "Session-runner.log": {
+      "bytes": 13127,
+      "sha256": "81e805f9806e33d5fbc37e0cfd91e65c7aa7c575e9f2beddc5bdfabe88370d4e"
+    },
+    "bootstrap-samples/report.json": {
+      "bytes": 720,
+      "sha256": "3601d0efa5c0c101d3910672bbcc1da29151a5d01330eca1d2db0b334e30d002"
+    }
+  },
+  "bounded_retrieval": {
+    "whole_archive_downloaded": false,
+    "primary_selected_bytes": 1104514,
+    "primary_transferred_bytes": 54147,
+    "additional_session_bytes": 13127
+  },
+  "limitations": [
+    "None of the six selected UI methods started. The synthetic xcresult error is not one failed document method.",
+    "The one-frame daemon samples do not establish the internal cause of control-handshake failure.",
+    "Prelaunch process liveness is not XCTest readiness; this run provides no acceptance or broad-fix evidence.",
+    "Original ad461cf coverage remains six read plus six output methods; later source inventory changes do not alter this run."
+  ]
+}

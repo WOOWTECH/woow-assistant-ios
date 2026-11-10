@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "source_commit": "ad461cfb3ccf92749c3df618a652273e6a045e44",
+  "method": "SkillExecutionUITests.testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+  "runtime": "iOS 18.5 (22F77)",
+  "case_time_allowance_seconds": 240,
+  "code_changed_for_this_report": false,
+  "runs": [
+    {
+      "device": "iPhone SE (3rd generation)",
+      "run_id": 42874441733,
+      "job_id": 130033911475,
+      "artifact_id": 13792008232,
+      "counts": { "total": 1, "passed": 0, "failed": 1, "skipped": 0 },
+      "duration_seconds": 101.063,
+      "selected_source_observed_seconds": 65.74,
+      "read_approval_tap_seconds": 68.72,
+      "receipt_read_seconds": 71.59,
+      "order_tap_seconds": 78.46,
+      "backspace_seconds": 81.03,
+      "empty_wait_started_seconds": 83.68,
+      "evidence_directory": "/tmp/woow-ad461-assembly-se",
+      "AX_log": "Session-WoowAssistantUITests-2026-11-10_184128-RHlWrJ.log",
+      "AX_lines": [50101, 55208]
+    },
+    {
+      "device": "iPhone 16 Pro Max",
+      "run_id": 42874447450,
+      "job_id": 130034143033,
+      "artifact_id": 13793227987,
+      "counts": { "total": 1, "passed": 0, "failed": 1, "skipped": 0 },
+      "duration_seconds": 129.274,
+      "receipt_read_seconds": 90.04,
+      "order_tap_seconds": 95.93,
+      "backspace_seconds": 98.76,
+      "empty_wait_started_seconds": 101.24,
+      "evidence_directory": "/tmp/woow-ad461-assembly-large",
+      "AX_log": "Session-WoowAssistantUITests-2026-11-10_185812-c0tU9E.log",
+      "AX_lines": [55793, 60472]
+    }
+  ],
+  "failure": {
+    "file": "Tests/WoowAssistantUITests/SkillExecutionUITests.swift",
+    "line": 992,
+    "stage": "wait_for_empty_order_after_backspaces",
+    "initial_order_verified": "1:1-2",
+    "backspace_count": 5,
+    "actual_AX_value_after_backspaces": "1-2",
+    "keyboard_focused": true,
+    "placeholder_misinterpretation": false,
+    "interpretation": "The test assumes tapping the populated field places the insertion point at its end. Actual deletion removed only the prefix; the suffix remained. Use a real native select-all or clear operation, then verify the exact replacement order; do not retry typing or relax the final plan/result assertions."
+  },
+  "reached": [
+    "actual_native_multiselect_callback",
+    "separate_file_read_approval",
+    "two_page_receipt_with_positive_bounded_byte_count",
+    "initial_order_exact_value",
+    "native_order_keyboard_focus"
+  ],
+  "not_reached": [
+    "reverse_order_input_1:2,1:1",
+    "two_exact_plan_rows",
+    "assembly_approval",
+    "actual_two_page_output",
+    "native_export_cancellation_and_output_retention"
+  ],
+  "limitations": [
+    "These are two failed iOS UI invocations. The SE job's separate 187/187 portable core result ran on macOS and is not included in the iOS counts.",
+    "The previous grouped-integer receipt failure was passed here; neither case proves complete PDF assembly/export acceptance.",
+    "Both cases received the native selection. They do not resolve the separately recorded Current26.2 open-multiselect callback failure.",
+    "Only bounded summary, test/build logs and targeted AX diagnostic members were fetched; no full video/artifact bundle was downloaded."
+  ]
+}

@@ -1,6 +1,9 @@
 import AssistantSkills
 import SwiftUI
 import UniformTypeIdentifiers
+#if DEBUG && os(iOS)
+import Darwin
+#endif
 
 /// A bounded immutable PDF snapshot. The native exporter owns the destination
 /// dialog and any explicit user confirmation to replace an existing file.
@@ -35,6 +38,19 @@ struct SkillPDFAssemblyView: View {
     @State private var exportPlanID: UUID?
     @State private var exportStatus: String?
     @FocusState private var orderFocused: Bool
+    #if DEBUG
+    @State private var pickerObservation = "unobserved"
+    @State private var importerCallbacks = 0
+    #endif
+
+    private var pickerExperiment: PDFNativePickerExperiment.Configuration? {
+        #if DEBUG
+        return PDFNativePickerExperiment.assemblyConfiguration(arguments: ProcessInfo.processInfo.arguments,
+                                                               fixtureNamespace: model.uiTestFixture?.namespace)
+        #else
+        return nil
+        #endif
+    }
 
     var body: some View {
         Form {
@@ -50,6 +66,7 @@ struct SkillPDFAssemblyView: View {
                 if let fixture = model.uiTestFixture {
                     Text("測試文件已建立：\(fixture.filename)")
                         .font(.caption).accessibilityIdentifier("pdfAssembly.uitest.fixture")
+                        .accessibilityValue(pickerObservation + " callbacks=\(importerCallbacks)")
                 }
                 #endif
             }
@@ -131,11 +148,18 @@ struct SkillPDFAssemblyView: View {
                 Button("收起鍵盤") { orderFocused = false }.accessibilityIdentifier("pdfAssembly.keyboardDone")
             }
         }
-        .fileImporter(isPresented: $choosingFile, allowedContentTypes: [.pdf], allowsMultipleSelection: true) { outcome in
-            switch outcome {
-            case .success(let urls): model.select(urls)
-            case .failure: model.selectionFailed()
-            }
+        .modifier(PDFImportPresentation(isPresented: $choosingFile, choice: .original, experiment: pickerExperiment,
+                                       allowsMultipleSelection: true, onCompletion: receiveSelection,
+                                       onObservation: { value in
+            #if DEBUG
+            pickerObservation = value
+            #endif
+        }))
+        .onChange(of: choosingFile) { _, presented in
+            #if DEBUG
+            if presented { importerCallbacks = 0; pickerObservation = "unobserved" }
+            recordPickerEvent("bindingChanged presented=\(presented)")
+            #endif
         }
         .fileExporter(isPresented: $exporting, document: exportDocument, contentTypes: [.pdf],
                       defaultFilename: model.result?.suggestedFilename ?? "組裝文件.pdf", onCompletion: { outcome in
@@ -145,9 +169,36 @@ struct SkillPDFAssemblyView: View {
             }
         }, onCancellation: { finishExport("已取消儲存，新 PDF 仍保留。") })
         .onDisappear {
+            #if DEBUG
+            recordPickerEvent("viewDisappeared choosingFile=\(choosingFile) exporting=\(exporting)")
+            #endif
             if !choosingFile && !exporting { resetExport(); model.clear() }
         }
     }
+
+    private func receiveSelection(_ outcome: Result<[URL], Error>) {
+        #if DEBUG
+        importerCallbacks = min(importerCallbacks + 1, 16)
+        let category: String
+        switch outcome {
+        case .success(let urls): category = urls.isEmpty ? "empty" : urls.count == 1 ? "one" : "multiple"
+        case .failure: category = "failure"
+        }
+        recordPickerEvent("completion outcome=\(category)")
+        #endif
+        switch outcome {
+        case .success(let urls): model.select(urls)
+        case .failure: model.selectionFailed()
+        }
+    }
+
+    #if DEBUG
+    private func recordPickerEvent(_ event: String) {
+        guard let configuration = pickerExperiment, importerCallbacks < 16 else { return }
+        print("SKILL_PDF_ASSEMBLY_PICKER namespace=\(configuration.namespace.uuidString) source=\(configuration.source) event=\(event) callbacks=\(importerCallbacks) sampledAt=\(Date().timeIntervalSince1970)")
+        fflush(stdout)
+    }
+    #endif
 
     private func beginExport(_ result: SkillPDFAssemblyResult) {
         do {

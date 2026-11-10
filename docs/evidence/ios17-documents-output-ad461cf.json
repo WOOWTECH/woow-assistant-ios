@@ -1,0 +1,239 @@
+{
+  "schema_version": 1,
+  "source_commit": "ad461cfb3ccf92749c3df618a652273e6a045e44",
+  "run_id": 42874436650,
+  "job_id": 130033888579,
+  "artifact_id": 13794212498,
+  "conclusion": "failure",
+  "classification": "native_UI_assertion",
+  "scope": "documents-output",
+  "runtime": {
+    "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+    "version": "17.0.1",
+    "buildversion": "21A342"
+  },
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "host_architecture": "arm64",
+  "boot_succeeded": true,
+  "test_exit_code": 65,
+  "actual_method_events": {
+    "status": "observed",
+    "acceptance_evidence": false,
+    "expected_methods": 6,
+    "counts": {
+      "starts": 6,
+      "passed": 5,
+      "failed": 1,
+      "skipped": 0
+    },
+    "unexpected_events": 0,
+    "all_expected_completed_once": true,
+    "methods": {
+      "WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult": {
+        "starts": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testRefusingFirstStepDoesNotReadOrExtract": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillExecutionUITests/testRefusingSecondStepKeepsExtractionUnauthorized": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "method_results": [
+    {
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry",
+      "result": "passed",
+      "duration_seconds": 157.716
+    },
+    {
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder",
+      "result": "passed",
+      "duration_seconds": 175.598
+    },
+    {
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+      "result": "failed",
+      "duration_seconds": 127.865
+    },
+    {
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testRefusingFirstStepDoesNotReadOrExtract",
+      "result": "passed",
+      "duration_seconds": 60.679
+    },
+    {
+      "method": "WoowAssistantUITests/SkillExecutionUITests/testRefusingSecondStepKeepsExtractionUnauthorized",
+      "result": "passed",
+      "duration_seconds": 69.24
+    },
+    {
+      "method": "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
+      "result": "passed",
+      "duration_seconds": 57.317
+    }
+  ],
+  "summary": {
+    "result": "Failed",
+    "totalTestCount": 6,
+    "passedTests": 5,
+    "failedTests": 1,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "failure": {
+    "file": "Tests/WoowAssistantUITests/SkillExecutionUITests.swift",
+    "source_line": 393,
+    "stage": "keyboard_not_present_after_native_order_tap",
+    "case_elapsed_seconds": 127.865,
+    "actual_native_selection_and_read_receipt_passed": true,
+    "initial_order_exact": "1:1-2",
+    "text_entry_started": false,
+    "AX_role": "TextView",
+    "AX_frame": [
+      40,
+      666.6666666666666,
+      313,
+      23
+    ],
+    "synthesized_tap": [
+      45,
+      666.6666666666666
+    ],
+    "post_tap_keyboard_focus": false,
+    "post_tap_value": "1:1-2"
+  },
+  "failure_timeline_case_seconds": {
+    "order_tap": 118.63,
+    "keyboard_wait_began": 119.54,
+    "failure_snapshot": 125.5
+  },
+  "prelaunch": {
+    "budget_seconds": 120,
+    "attempts": 1,
+    "status": "process_started_handshake_unverified",
+    "handshake_verified": false,
+    "process_alive": true,
+    "elapsed_seconds": 41.359
+  },
+  "sampling": {
+    "status": "stopped",
+    "handshake_verified": false,
+    "max_samples": 3,
+    "sample_seconds": 3,
+    "sample_command_seconds": 15,
+    "sample_byte_limit": 2097152,
+    "attempts": [
+      {
+        "role": "daemon_early",
+        "elapsed_seconds": 15.044,
+        "image": "xpcproxy_sim",
+        "status": "captured",
+        "frames": 1,
+        "bytes": 42
+      },
+      {
+        "role": "daemon_later",
+        "elapsed_seconds": 75.204,
+        "image": "xpcproxy_sim",
+        "status": "captured",
+        "frames": 1,
+        "bytes": 42
+      },
+      {
+        "role": "runner_bootstrap",
+        "elapsed_seconds": 374.535,
+        "image": "WoowAssistantUITests-Runner",
+        "status": "cancelled"
+      }
+    ],
+    "actual_test_case_started": true
+  },
+  "candidate_correction": {
+    "file": "Tests/WoowAssistantUITests/SkillExecutionUITests.swift",
+    "action": "One coordinate tap inside the exact visible editable field at normalized (0.1,0.5); same interior coordinate for the subsequent native Select All long press.",
+    "native_validation": "pending",
+    "keyboard_wait_seconds_unchanged": 5,
+    "importer_callback_wait_seconds_unchanged": 15,
+    "case_seconds_unchanged": 240,
+    "no_retries": true,
+    "no_binding_injection": true
+  },
+  "source_hashes": {
+    "scripts/release_ios17.py": "972cdb7f59ff6c4e773d371e0dc3eae2b0a2b71d7fd5cada6c62021923666759",
+    "Tests/WoowAssistantUITests/SkillExecutionUITests.swift": "f6051e5475d0e4465b0b7a659b8e29ba3a85ebdd6b10881c4df584ed61faebbe",
+    "Tests/WoowAssistantUITests/SkillWorkerSettingsUITests.swift": "2da6b8f0f5d5d65d6b3077ea66f07409e607ba914acb6ddf2caa2a984097e43a"
+  },
+  "local_evidence": {
+    "/tmp/woow-ad-docs-output/report.json": {
+      "bytes": 7511,
+      "sha256": "7fb58740d79348f5c129048f83f29e24386d8bc4c45f1bcce909b9aa057649b1"
+    },
+    "/tmp/woow-ad-docs-output/tests.log": {
+      "bytes": 1311585,
+      "sha256": "c0072519dbefa115bde73c6bb9b775217b6d8306a07490732aa0fd521e76868c"
+    },
+    "/tmp/woow-ad-docs-output/test-summary.json": {
+      "bytes": 1563,
+      "sha256": "37a52ed612da501fa0e2a95c6b0c97a22649020c497f441574a51b1e7122f1e0"
+    },
+    "/tmp/woow-ad-output-focus/screenshots/1E0AE35C-9223-44DD-865E-F2E58BFE3DA6.txt": {
+      "bytes": 39616,
+      "sha256": "39d2194c129e4d30c764a2669da72536d99aff0798de79498faa4752b50a8da4"
+    },
+    "/tmp/woow-ad-output-focus/screenshots/9D7A8593-5B39-4FB9-A2C4-2452C4BD4C21": {
+      "bytes": 210268,
+      "sha256": "aaea2e25d121d62033f9b9f33d78feba8fd20768c2cf73953478be572d130466"
+    },
+    "/tmp/woow-ad-output-focus/screenshots/DF3850A9-4125-4AC1-AF0B-14CFB7D709F2": {
+      "bytes": 1891,
+      "sha256": "dfd7d5d99c027b4a24ee5697d78ca2c41c838d2e03a0bc2b3cdbc519dcfa90a4"
+    },
+    "/tmp/woow-ad-output-focus/tap-event.json": {
+      "bytes": 2740,
+      "sha256": "77dc8b7e0c7fedb7956c1ecceb7b1c125c79f64b1eac4ad3f11b4837ca8b464a"
+    }
+  },
+  "bounded_retrieval": {
+    "whole_archive_downloaded": false,
+    "primary_selected_bytes": 1321462,
+    "primary_transferred_bytes": 89667,
+    "manifest_transferred_bytes": 23127,
+    "targeted_AX_and_synthesized_event_transferred_bytes": 125314,
+    "video_downloaded": false,
+    "full_27923344_byte_session_log_downloaded": false
+  },
+  "limitations": [
+    "The native picker delivered one two-page PDF, but this method did not reach order editing, assembly, or export cancellation.",
+    "The captured UI Snapshot is an AX archive, not a rendered screenshot image. The event archive and fixed-field AX establish an edge tap and lack of focus.",
+    "This failure precedes the independent SE/Large prefix-deletion failure documented in pdf-assembly-ad461cf-order-edit.json.",
+    "Five completed methods are accepted individually; the six-method output shard is not all-pass. The paired read shard executed zero methods due to a bootstrap failure.",
+    "Process liveness and identical one-frame daemon samples cannot distinguish successful XCTest handshake from a bootstrap failure."
+  ]
+}

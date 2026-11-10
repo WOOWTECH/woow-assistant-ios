@@ -193,6 +193,28 @@ private enum ResearchSourceDiscoveryAppChecks {
         try unloaded([old, fresh])
     }
 
+    @MainActor static func completedResultCancellation() async throws {
+        for notice in [false, true] {
+            let browser = DiscoveryAppBrowser()
+            let actualFactory = DiscoveryAppFactory([browser])
+            let session = ResearchSourceDiscoverySession(query: query, makeBrowser: actualFactory.make)
+            let request = try start(session); await request.value
+            let rows = try candidates(session)
+            session.toggle(rows[0].id); session.toggle(rows[2].id)
+            let captured = session.selectedSources()
+            try check(session.canApply && captured?.map(\.id) == [rows[0].id, rows[2].id], "Cancellation regression starts with a genuinely applicable completed result")
+            session.cancel(notice: notice)
+            try check(session.result == nil && session.selectedIDs.isEmpty && !session.canApply && session.selectedSources() == nil, "Leaving or backgrounding revokes completed-result apply capability")
+            try check(session.query == query && !session.running && session.browser == nil, "Completed cancellation preserves query without active work")
+            if notice { try check(session.status == "搜尋已取消，搜尋詞仍保留。", "Background cancellation also updates completed-result status") }
+            session.toggle(rows[0].id); session.toggle(rows[2].id)
+            try check(session.selectedIDs.isEmpty && session.selectedSources() == nil, "Old candidate IDs cannot restore a cancelled completed selection")
+            try check(captured?.map(\.url) == [rows[0].url, rows[2].url], "A native apply action that captured sources before closing retains its immutable values")
+            try check(actualFactory.created.count == 1 && browser.queries == [query] && browser.cancellations == 1, "Completed cancellation does not create a browser or re-search")
+            try unloaded([browser])
+        }
+    }
+
     @MainActor static func queryChangesAndLateFailure() async throws {
         let gate = DiscoveryAppGate()
         let old = DiscoveryAppBrowser(gate: gate, failure: ResearchSourceDiscoveryError.navigationFailed)
@@ -262,6 +284,7 @@ private enum ResearchSourceDiscoveryAppChecks {
                 ("explicitSearchAndInvalidQueries", explicitSearchAndInvalidQueries),
                 ("orderedOriginSelectionAndApply", orderedOriginSelectionAndApply),
                 ("lateSuccessCannotOverwriteRestart", lateSuccessCannotOverwriteRestart),
+                ("completedResultCancellation", completedResultCancellation),
                 ("queryChangesAndLateFailure", queryChangesAndLateFailure),
                 ("failureCancellationAndExplicitRetry", failureCancellationAndExplicitRetry),
                 ("runningBlocksSelectionAndDuplicateSearch", runningBlocksSelectionAndDuplicateSearch)]
@@ -286,6 +309,7 @@ final class ResearchSourceDiscoveryAppIntegrationTests: XCTestCase {
     @MainActor func testExplicitSearchAndInvalidQueriesMakeNoImplicitRequest() async throws { try await ResearchSourceDiscoveryAppChecks.explicitSearchAndInvalidQueries() }
     @MainActor func testTwoToThreeDistinctOriginsAndApplyPreservesCandidates() async throws { try await ResearchSourceDiscoveryAppChecks.orderedOriginSelectionAndApply() }
     @MainActor func testCancelledLateSuccessCannotOverwriteRestart() async throws { try await ResearchSourceDiscoveryAppChecks.lateSuccessCannotOverwriteRestart() }
+    @MainActor func testCompletedResultCannotApplyAfterLeaveOrBackground() async throws { try await ResearchSourceDiscoveryAppChecks.completedResultCancellation() }
     @MainActor func testQueryChangesClearSelectionAndRejectLateFailure() async throws { try await ResearchSourceDiscoveryAppChecks.queryChangesAndLateFailure() }
     @MainActor func testFailureCancellationAndExplicitRetryPreserveQuery() async throws { try await ResearchSourceDiscoveryAppChecks.failureCancellationAndExplicitRetry() }
     @MainActor func testRunningBlocksDuplicateSearchSelectionAndApply() async throws { try await ResearchSourceDiscoveryAppChecks.runningBlocksSelectionAndDuplicateSearch() }

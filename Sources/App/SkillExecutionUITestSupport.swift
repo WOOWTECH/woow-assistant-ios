@@ -42,7 +42,8 @@ enum SkillExecutionUITestSupport {
         // Live tests exercise the real user copy option, never a picker or
         // writer experiment. Cleanup is excluded by the live flag allowlist.
         guard live == 0 || !arguments.contains(where: {
-            $0.hasPrefix("-UITestPDFUIKit") || $0.hasPrefix("-UITestSkillFixtureWriteMode")
+            $0.hasPrefix("-UITestPDFUIKit") || $0.hasPrefix("-UITestPDFAssembly")
+                || $0.hasPrefix("-UITestSkillFixtureWriteMode")
         }) else { throw Failure.invalidNamespace }
         let writeMode = try fixtureWriteMode(arguments)
         // Do not even resolve/create Documents until all fixture gates pass.

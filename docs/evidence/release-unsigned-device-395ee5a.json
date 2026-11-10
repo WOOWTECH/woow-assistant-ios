@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "source_commit": "395ee5ae1b78100efd1b6572a7c68b0e8f319991",
+  "run_id": 42879202168,
+  "job_id": 130050623543,
+  "artifact_id": 13794411308,
+  "conclusion": "success",
+  "actual_build_report": {
+    "xcode": "Xcode 26.2\nBuild version 17C52",
+    "iphoneos_sdk": "26.2",
+    "build_number": "50",
+    "bundle_id": "io.woowtech.assistant",
+    "minimum_os": "17.0",
+    "platform": "iphoneos",
+    "verified_binary_count": 9,
+    "signature_verified": false,
+    "ats_key_absent": true,
+    "native_documents_enabled": true,
+    "required_reason_entries_verified": true,
+    "artifact_kind": "unsigned-device-build-not-installable",
+    "runtime_tested": false,
+    "uploaded": false
+  },
+  "build_succeeded_marker": true,
+  "debug_gate_evidence": {
+    "release_configuration_in_build_command": true,
+    "swift_compiler_lines": 28,
+    "debug_compiler_flag_lines": 0,
+    "release_ATS_key_absent": true,
+    "binary_symbol_scan_performed": false
+  },
+  "source_manifest": {
+    "run_id": 42879202168,
+    "job_id": 130050623543,
+    "source_revision": "395ee5ae1b78100efd1b6572a7c68b0e8f319991",
+    "expected_configuration": "Release",
+    "expected_platform": "iphoneos",
+    "expected_minimum_os": "17.0",
+    "installable": false,
+    "signature_verification_expected": false,
+    "debug_gate_checks": [
+      "actual_release_compiler_defines",
+      "built_plist_has_no_ATS_override",
+      "pinned_debug_fixture_guards"
+    ],
+    "source_hashes": {
+      ".github/workflows/release-ios.yml": "8f5bdd65dba44f96754b94b2470cabd4d9cafab11879eed86625c4b5a02b5ae2",
+      "scripts/release_ios.py": "d0519df1a4c5823b44cecb37dfc94bb47590e22ba2df2cc3d52f40eb76398638",
+      "project.yml": "2f83c0c7bd4749ab69a888793f869ca8217769a74dda2eb93bb42a89a81a7d1e",
+      "Configuration/Info-Release.plist": "5f1d031c939ba66e6294b9f34829955a959b93bc4ce3d5dfd3b9009f76948de0",
+      "Sources/App/ResearchSourceDiscoveryView.swift": "9ec38703c9b7a70a881f893859425978d419a39dfb4cc2acda0af2da734ae48e",
+      "Sources/App/BrowserUploadFixture.swift": "a1a3b3586f5cedb8457b3c71aab445411052554ae30fb976c47d059bfbe1e59a",
+      "Sources/App/BrowserLoginFixture.swift": "3578a046f5cacd2466b06b2efeb12d76982c96d394505778acfa9648b9153f19",
+      "Sources/App/SkillExecutionUITestSupport.swift": "af7c9fabfb7eb05aac113b5bbfaa2f389614d6462df465e743ef188e722ad229"
+    },
+    "validation_status": "PENDING_CI"
+  },
+  "local_evidence": {
+    "report.json": {
+      "bytes": 464,
+      "sha256": "0be1821771c57e6d1cc23d85192c8158d9df0904dc50d50d9253c1797e0e6b88"
+    },
+    "device-build.log": {
+      "bytes": 648636,
+      "sha256": "37edda24cff39e35b907b2101a4bc9c0c1e8cff5da77a9f65cf3e1a6ac6e360b"
+    }
+  },
+  "bounded_retrieval": {
+    "whole_archive_downloaded": false,
+    "files": [
+      {
+        "file": "report.json",
+        "bytes": 464,
+        "sha256": "0be1821771c57e6d1cc23d85192c8158d9df0904dc50d50d9253c1797e0e6b88"
+      },
+      {
+        "file": "device-build.log",
+        "bytes": 648636,
+        "sha256": "37edda24cff39e35b907b2101a4bc9c0c1e8cff5da77a9f65cf3e1a6ac6e360b"
+      }
+    ],
+    "missing_fixed_entries": []
+  },
+  "limitations": [
+    "Unsigned iphoneos Release build only; not installable, not signed, not uploaded, and no runtime test.",
+    "MinimumOS 17.0 and all nine Mach-O binaries were checked by the existing release verifier.",
+    "DEBUG exclusion evidence is Release compiler flags and pinned source guards; no claim of a separate binary symbol audit."
+  ]
+}

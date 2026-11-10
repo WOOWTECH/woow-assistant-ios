@@ -1,0 +1,112 @@
+{
+  "schema_version": 1,
+  "working_tree_base": "46d25c4ec685a734bf85a2cd92c38dda5e4ee27f",
+  "implementation_state": "ready_for_native_comparison_not_yet_run",
+  "comparison_description": "允許多選模式、實際選一個含兩頁的PDF",
+  "arms": {
+    "baseline": {
+      "scope": "pdf-assembly",
+      "picker": "SwiftUI fileImporter",
+      "as_copy": false,
+      "allows_multiple_selection": true
+    },
+    "treatment": {
+      "scope": "pdf-assembly-uikit",
+      "picker": "UIDocumentPickerViewController",
+      "as_copy": false,
+      "allows_multiple_selection": true,
+      "debug_fixture_flag": "-UITestPDFAssemblyUIKitOpenMulti"
+    }
+  },
+  "identical_workload": {
+    "synthetic_source_files": 1,
+    "source_pages": 2,
+    "order_text": "1:2,1:1",
+    "native_file_selection": "one exact synthetic file and one enabled Open tap",
+    "read_approval_required": true,
+    "assembly_approval_required": true,
+    "export_cancel_preserves_output": true,
+    "native_cross_file_merge_UI_accepted": false,
+    "importer_callback_wait_seconds": 15,
+    "case_seconds": 240,
+    "focused_workflow_minutes": 20
+  },
+  "shared_harness_corrections": [
+    {
+      "evidence": "pdf-assembly-ad461cf-order-edit.json",
+      "cause": "Assuming the caret was at the end left suffix 1-2 after five backspaces.",
+      "correction": "One native Select All menu action, one deletion, exact empty-value check, one replacement and exact 1:2,1:1 check."
+    },
+    {
+      "evidence": "ios17-documents-output-ad461cf.json",
+      "cause": "Synthesized TextView tap landed at its upper frame boundary; the field remained unfocused.",
+      "correction": "Use an interior coordinate of the exact visible editable field for the initial tap and subsequent menu long press."
+    }
+  ],
+  "safety_and_observation": {
+    "release_experiment_disabled": true,
+    "live_experiment_flags_rejected_before_file_access": true,
+    "extraction_multiple_selection_default": false,
+    "original_presentation_log_schema_preserved": true,
+    "new_lifecycle_log_prefix": "SKILL_PDF_PICKER_LIFECYCLE",
+    "observed_properties": [
+      "public picker mode",
+      "allowsMultipleSelection",
+      "delegatePresent",
+      "inWindow",
+      "dismissing",
+      "nativeCreated/nativeDismantled for UIKit arm",
+      "actual delegate/importer callback counts"
+    ],
+    "URL_or_content_logging": false,
+    "private_reflection": false,
+    "SwiftUI_internal_creation_or_dismantle_claimed": false
+  },
+  "local_validation": {
+    "swift_host": "macOS13 Intel CLT Swift5.8.1",
+    "debug_gate_assertions": 55,
+    "release_gate_assertions": 49,
+    "real_PDFKit_fixture_and_Live_gate_script": "passed; 17 invalid/mixed Live configurations rejected before file access",
+    "python_suite": {
+      "tests": 217,
+      "passed": 217,
+      "log": "/tmp/woow-assembly-open-multi-python-final.log"
+    },
+    "swift_iOS17_syntax_Debug_Release": "passed",
+    "iOS_UIKit_typecheck_or_native_execution": false,
+    "YAML_parse": "passed for both workflows",
+    "diff_check": "passed",
+    "inventory": {
+      "non_live": 82,
+      "live": 22,
+      "documents_read": 6,
+      "documents_output": 7,
+      "disjoint_exact_source_method_union": true,
+      "ad461cf_prior_scope_counts_unchanged": "6 + 6"
+    }
+  },
+  "local_compiler_failure_preserved": {
+    "compiler": "Swift5.8",
+    "expression": "for args in [control + ...]",
+    "error": "the compiler is unable to type-check this expression in reasonable time",
+    "correction": "Explicit [[String]] variable before iteration",
+    "resolved_by_actual_Debug_and_Release_standalone_compilation": true,
+    "CI_failure_claimed": false
+  },
+  "source_sha256": {
+    "Sources/App/PDFNativePicker.swift": "099292a4c461be8cb34c6258b806cb78897e895e6d6fe7b3d4e7ce15f6be0f47",
+    "Sources/App/SkillExecutionUITestSupport.swift": "f136192e7e3f1e4ba269b1094608d11e382ce937f7308f4b73f8440342581f6b",
+    "Sources/App/SkillPDFAssemblyView.swift": "c03780076edc904d4392561e47556dc34544eddd4328614e9065ddaaad64bfa4",
+    "Tests/WoowAssistantUITests/SkillExecutionUITests.swift": "5703cfb3553b3aea512e9a23a4c1936f2a02ae6c5b5244922f89b5c04db65614",
+    ".github/workflows/ios.yml": "4b2609c834f5904626dc50f94dbec1e792eab9dc3f5554ffb087041be20f4689",
+    ".github/workflows/release-ios.yml": "a3448f67b43400974b9b571e294dcad9877f64dbdbf3203e9b56cb7eacc0fa87",
+    "scripts/release_ios17.py": "3bb8ce982daf009cd1c19b2f59be1d110937ccd00074c7c5227c269370d0e960",
+    "scripts/test_release_ios17_document_scopes.py": "14c0eba85322ff48f5ec0404f02d11324325b89ab625bafe118ebb3d39a1ae57",
+    "scripts/check_skill_fixture_diagnostics.py": "67d780f791694d4f813dabefd284317cefc518d69abdad9802d3066623d3c6f3"
+  },
+  "limitations": [
+    "Both arms still require native iOS CI; local gate/parser checks do not prove picker callback or text-editing behavior.",
+    "This is a multi-selection-capable picker selecting one two-page PDF, not native cross-file merge acceptance. Existing core cross-file proofs remain separate.",
+    "The new diagnostic flag does not enable import-copy, preselect a URL, bypass Files, retry, or extend callback/case limits."
+  ]
+}

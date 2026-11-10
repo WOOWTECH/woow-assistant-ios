@@ -76,6 +76,8 @@ import PDFKit
             live + ["-LiveModelUITestNamespace", UUID().uuidString],
             live + ["-LiveModelUITestCleanup"], live + ["-LiveMCPUITest"],
             live + ["-UITestPDFUIKitPicker"], live + ["-UITestPDFUIKitCopyPicker"],
+            live + ["-UITestPDFAssemblyUIKitOpenMulti"],
+            live + ["-UITestPDFAssemblyUIKitOpenMulti=1"], live + ["-UITestPDFAssemblyUnknown"],
             live + ["-UITestSkillFixtureWriteMode", "coordinated"],
             ["-LiveModelUITest", "-LiveModelUITestNamespace", "../outside", "-UITestSkillExecution"],
             ["-LiveModelUITestNamespace", id.uuidString, "-UITestSkillExecution"],
@@ -214,7 +216,7 @@ def main():
             live_result = run([live_binary, work / "LiveDocuments"])
             assert live_result.stdout == "", "Live seeding must not print file inventory or source content"
     print("PASS real PDF seed baselines including abrupt _exit; unchanged/replaced/missing files; byte limit; symbolic/hard/directory links; metadata refusal; strict log schema; DEBUG/Release gates")
-    print("PASS live PDFKit source, 14 invalid/mixed/cleanup gates before file access, idempotence, overwrite refusal, zero runtime audit, silent live output and Release no-file-access")
+    print("PASS live PDFKit source, 17 invalid/mixed/cleanup gates before file access, idempotence, overwrite refusal, zero runtime audit, silent live output and Release no-file-access")
 
 
 if __name__ == "__main__":

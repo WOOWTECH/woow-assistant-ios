@@ -162,6 +162,21 @@ enum SkillExecutionNativePickerChecks {
         for flags in [[openFlag, copyFlag], [copyFlag, openFlag], ["-UITestPDFUIKitCopyPicker=1"]] {
             try require(configuration(control + flags, fixture: id) == nil)
         }
+        let assemblyFlag = "-UITestPDFAssemblyUIKitOpenMulti"
+        func assembly(_ arguments: [String], fixture: UUID? = nil) -> PDFNativePickerExperiment.Configuration? {
+            PDFNativePickerExperiment.assemblyConfiguration(arguments: arguments, fixtureNamespace: fixture)
+        }
+        try require(assembly(control + [assemblyFlag]) == nil)
+        try require(assembly(control + [assemblyFlag], fixture: UUID()) == nil)
+        let invalidAssembly: [[String]] = [control + [assemblyFlag, assemblyFlag], control + [assemblyFlag, openFlag],
+                     control + [assemblyFlag, copyFlag], control + ["-UITestPDFAssemblyUIKitOpenMulti=1"],
+                     control + ["-UITestPDFAssemblyUnknown"], control + [assemblyFlag, "-LiveModelUITest"],
+                     control + [assemblyFlag, "-UITestNamespace", id.uuidString],
+                     ["-UITestMode", "-UITestNamespace", id.uuidString, assemblyFlag],
+                     Array(control.dropLast()) + ["../personal", assemblyFlag]]
+        for args in invalidAssembly {
+            try require(assembly(args, fixture: id) == nil)
+        }
         #if DEBUG
         let original = configuration(control, fixture: id)
         let open = configuration(control + [openFlag], fixture: id)
@@ -173,11 +188,17 @@ enum SkillExecutionNativePickerChecks {
         try require(copy?.mode == .uikitImportCopy && copy?.usesUIKit == true)
         try require(copy?.source == "uikit-copy" && copy?.mode.asCopy == true)
         try require(open?.namespace == id && copy?.namespace == id)
+        try require(assembly(control, fixture: id)?.mode == .swiftUI)
+        try require(assembly(control + [assemblyFlag], fixture: id)?.mode == .uikitOpen)
+        try require(assembly(control + [assemblyFlag], fixture: id)?.mode.asCopy == false)
+        try require(configuration(control + [assemblyFlag], fixture: id)?.mode == .swiftUI)
         print("PASS DEBUG \(checks) checks: namespace gates, mutually exclusive open/copy modes; default stays SwiftUI")
         #else
         try require(configuration(control, fixture: id) == nil)
         try require(configuration(control + [openFlag], fixture: id) == nil)
         try require(configuration(control + [copyFlag], fixture: id) == nil)
+        try require(assembly(control, fixture: id) == nil)
+        try require(assembly(control + [assemblyFlag], fixture: id) == nil)
         print("PASS Release \(checks) checks: ignores open/copy experiments and mode observation flags")
         #endif
     }
@@ -359,8 +380,16 @@ final class SkillExecutionUITests: XCTestCase {
     }
 
     func testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult() {
+        assertNativePDFAssembly(useUIKit: false)
+    }
+
+    func testUIKitOpenMultiPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult() {
+        assertNativePDFAssembly(useUIKit: true)
+    }
+
+    private func assertNativePDFAssembly(useUIKit: Bool) {
         launchPDFScreen(fromCatalog: true, catalogEntry: "catalog.documents.assemble",
-                        fixtureIdentifier: "pdfAssembly.uitest.fixture")
+                        fixtureIdentifier: "pdfAssembly.uitest.fixture", assemblyUIKitOpenMulti: useUIKit)
         let form = app.collectionViews["pdfAssembly.form"]
         XCTAssertFalse(form.staticTexts["pdfAssembly.source.1"].exists)
         XCTAssertFalse(form.staticTexts["pdfAssembly.result"].exists)
@@ -369,6 +398,9 @@ final class SkillExecutionUITests: XCTestCase {
         chooseSyntheticPDFInPresentedPicker(selected: form.staticTexts["pdfAssembly.source.1"],
                                             expectedLabel: "來源 1：" + filename,
                                             allowsMultipleSelection: true)
+        XCTAssertEqual(app.staticTexts["pdfAssembly.uitest.fixture"].value as? String,
+                       "source=\(useUIKit ? "uikit" : "swiftui") mode=open allowsMultipleSelection=true callbacks=1",
+                       "Both arms must observe actual open/multiple-selection and exactly one original importer callback.")
         XCTAssertFalse(form.staticTexts["pdfAssembly.receipt.1"].exists,
                        "Native selection must not approve reading the source.")
         XCTAssertFalse(form.buttons["pdfAssembly.assemble"].exists)
@@ -389,9 +421,32 @@ final class SkillExecutionUITests: XCTestCase {
         XCTAssertTrue(order.elementType == .textField || order.elementType == .textView)
         requireHittable(order)
         XCTAssertEqual(order.value as? String, "1:1-2")
-        order.tap()
+        // ad461cf iOS17's synthesized TextView tap landed exactly on minY
+        // (45, 666.67 in frame 40,666.67,313,23), leaving it unfocused.
+        // Target the visible field's interior, not XCTest's edge hit point.
+        order.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5)).tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
-        order.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: "1:1-2".count))
+        // ad461cf SE/Large AX showed a focused value of "1-2" after five
+        // backspaces: tapping a populated field did not put its caret at the
+        // end. Select the whole value through the native editing menu once.
+        // Both picker arms use this same operation; no binding/file injection.
+        revealLearningElement(order, in: app)
+        requireHittable(order)
+        order.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5)).press(forDuration: 1)
+        let selectAllLabel = NSPredicate(format: "label IN %@", ["Select All", "全選", "全选"])
+        func selectAll() -> XCUIElement? {
+            for query in [app.menuItems.matching(selectAllLabel), app.buttons.matching(selectAllLabel)] {
+                if let item = firstHittable(query) { return item }
+            }
+            return nil
+        }
+        let menuReady = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in selectAll() != nil }, object: nil)
+        guard XCTWaiter.wait(for: [menuReady], timeout: 5) == .completed, let selection = selectAll() else {
+            XCTFail("The native editing menu must offer Select All for the exact populated page-order field.")
+            return
+        }
+        selection.tap()
+        order.typeText(XCUIKeyboardKey.delete.rawValue)
         wait(order, "value == %@", "")
         order.typeText("1:2,1:1")
         wait(order, "value == %@", "1:2,1:1")
@@ -647,11 +702,13 @@ final class SkillExecutionUITests: XCTestCase {
 
     private func launchPDFScreen(fromCatalog: Bool, fixtureWriteMode: String? = nil, picker: PickerArm = .swiftUI,
                                  catalogEntry: String = "catalog.documents.execute",
-                                 fixtureIdentifier: String = "skillExecution.uitest.fixture") {
+                                 fixtureIdentifier: String = "skillExecution.uitest.fixture",
+                                 assemblyUIKitOpenMulti: Bool = false) {
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW",
             "-UITestMode", "-UITestNamespace", namespace, "-UITestResetStorage", "-UITestSkillExecution"]
         if let fixtureWriteMode { app.launchArguments += ["-UITestSkillFixtureWriteMode", fixtureWriteMode] }
         if let flag = picker.launchFlag { app.launchArguments.append(flag) }
+        if assemblyUIKitOpenMulti { app.launchArguments.append("-UITestPDFAssemblyUIKitOpenMulti") }
         app.launchEnvironment = [:]
         app.launch()
         tap("navigation.memory")

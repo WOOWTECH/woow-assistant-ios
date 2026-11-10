@@ -84,9 +84,13 @@ extension ResearchSourceDiscoveryWebKit: ResearchSourceDiscovering {}
 
     func cancel(notice: Bool = true) {
         let wasRunning = running
+        let hadResult = result != nil
         operationID = nil; task?.cancel(); task = nil
         browser?.cancel(); browser = nil; running = false
-        if wasRunning && notice { status = "搜尋已取消，搜尋詞仍保留。" }
+        // A completed search is still an apply capability. Leaving the sheet
+        // or backgrounding must revoke it, as well as any in-flight request.
+        result = nil; selectedIDs = []
+        if (wasRunning || hadResult) && notice { status = "搜尋已取消，搜尋詞仍保留。" }
     }
 
     private func finish(id: UUID) {

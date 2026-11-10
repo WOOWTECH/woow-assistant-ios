@@ -2,6 +2,7 @@ from copy import deepcopy
 from pathlib import Path
 import tempfile
 import unittest
+import re
 
 import release_ios17 as ios17
 from release_ios import ReleaseError
@@ -19,7 +20,7 @@ class DocumentFocusedScopesTests(unittest.TestCase):
         self.assertTrue(read.isdisjoint(output))
         self.assertEqual(read | output, expected)
         self.assertEqual(len(read), 6)
-        self.assertEqual(len(output), 6)
+        self.assertEqual(len(output), 7)
         self.assertEqual(catalog["document_focused_scopes"], groups)
         self.assertEqual(ios17.UI_SHARDS["ui-documents"],
                          ["SkillExecutionUITests", "SkillWorkerSettingsUITests"])
@@ -88,11 +89,33 @@ class DocumentFocusedScopesTests(unittest.TestCase):
                 other = groups["documents-output" if scope == "documents-read" else "documents-read"]
                 summary = {"result": "Passed", "totalTestCount": len(expected), "passedTests": len(expected),
                            "failedTests": 0, "skippedTests": 0, "expectedFailures": 0}
-                for selected, accepted in ((expected, True), (other, False)):
+                wrong_method_same_count = [other[0], *expected[1:]]
+                for selected, accepted in ((expected, True), (wrong_method_same_count, False)):
                     path.write_text("".join("Test Case '-[WoowAssistantUITests.%s %s]' passed (1.0 seconds).\n" %
                                             tuple(name.split("/")[1:]) for name in selected))
                     result = ios17.test_completion(summary, path, expected, True)
                     self.assertEqual(result["verified"], accepted)
+
+    def test_assembly_focused_scopes_select_distinct_actual_methods_and_keep_completion_gate(self):
+        catalog = ios17.ui_inventory(ROOT)
+        workflow = (ROOT / ".github/workflows/ios.yml").read_text()
+        selected = []
+        for scope in ("pdf-assembly", "pdf-assembly-uikit"):
+            expected = ios17.selected_ui_tests(catalog, scope)
+            self.assertEqual(len(expected), 1)
+            self.assertIn(expected[0], catalog["document_focused_scopes"]["documents-output"])
+            match = re.search(r"^            " + re.escape(scope) + r"\)\n\s+test_filters=\(([^\n]+)\)", workflow, re.M)
+            self.assertIsNotNone(match)
+            self.assertEqual(match.group(1).split(), ["-only-testing:" + expected[0]])
+            selected.extend(expected)
+            options = re.search(r"test_scope:\n.*?options: \[([^\]]+)\]", workflow, re.S).group(1)
+            self.assertIn(scope, [s.strip() for s in options.split(",")])
+            gate = next(line for line in workflow.splitlines() if "always()" in line and "VALIDATION_SCOPE" not in line and '"pdf-assembly"' in line)
+            self.assertIn('"' + scope + '"', gate)
+            timeout = next(line for line in workflow.splitlines() if "timeout-minutes:" in line and '"pdf-assembly"' in line)
+            self.assertIn('"' + scope + '"', timeout)
+            self.assertIn("&& 20 || 55", timeout)
+        self.assertEqual(len(set(selected)), 2)
 
 
 if __name__ == "__main__":

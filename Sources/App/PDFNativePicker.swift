@@ -62,6 +62,20 @@ enum PDFNativePickerExperiment {
         return nil
         #endif
     }
+
+    /// Separate arm: extraction's open/copy flags never change assembly.
+    static func assemblyConfiguration(arguments: [String], fixtureNamespace: UUID?) -> Configuration? {
+        #if DEBUG
+        let flag = "-UITestPDFAssemblyUIKitOpenMulti"
+        guard let base = configuration(arguments: arguments, fixtureNamespace: fixtureNamespace),
+              base.mode == .swiftUI,
+              arguments.filter({ $0 == flag }).count <= 1,
+              !arguments.contains(where: { $0.hasPrefix("-UITestPDFAssembly") && $0 != flag }) else { return nil }
+        return Configuration(namespace: base.namespace, mode: arguments.contains(flag) ? .uikitOpen : .swiftUI)
+        #else
+        return nil
+        #endif
+    }
 }
 
 #if os(iOS)
@@ -79,11 +93,16 @@ import Darwin
     @Binding var isPresented: Bool
     let choice: PDFImportChoice
     let experiment: PDFNativePickerExperiment.Configuration?
+    var allowsMultipleSelection: Bool = false
     let onCompletion: (Result<[URL], Error>) -> Void
     var onObservation: (String) -> Void = { _ in }
     // Supplied only from the validated synthetic fixture. Observation never
     // selects an experimental picker mode or changes the user's import choice.
     var observationNamespace: UUID? = nil
+    #if DEBUG
+    @State private var presentationCount = 0
+    @State private var callbackCount = 0
+    #endif
 
     @ViewBuilder func body(content: Content) -> some View {
         presentation(content)
@@ -97,28 +116,58 @@ import Darwin
                         .frame(width: 0, height: 0).allowsHitTesting(false).accessibilityHidden(true)
                 }
             }
+            .onChange(of: isPresented) { _, presented in
+                if presented { presentationCount += 1; callbackCount = 0 }
+                recordLifecycle("event=bindingChanged ordinal=\(presentationCount) presented=\(presented) callbacks=\(callbackCount)")
+            }
             #endif
     }
 
     private func swiftUIImporter(_ content: Content) -> some View {
         content.fileImporter(isPresented: $isPresented, allowedContentTypes: [.pdf],
-                             allowsMultipleSelection: false, onCompletion: onCompletion)
+                             allowsMultipleSelection: allowsMultipleSelection) { outcome in
+            deliver(outcome, source: "swiftui")
+        }
     }
 
     @ViewBuilder private func presentation(_ content: Content) -> some View {
         let mode = choice.mode(experiment: experiment)
         if mode.usesUIKit {
             content.sheet(isPresented: $isPresented) {
-                PDFNativePicker(asCopy: mode.asCopy) { outcome in
+                PDFNativePicker(asCopy: mode.asCopy, allowsMultipleSelection: allowsMultipleSelection,
+                                onLifecycle: recordLifecycle) { outcome in
                     isPresented = false
                     // Cancellation matches fileImporter: dismiss without a
                     // success/empty callback or a prepared execution plan.
-                    if let outcome { onCompletion(outcome) }
+                    if let outcome { deliver(outcome, source: "uikit") }
                 }
             }
         } else {
             swiftUIImporter(content)
         }
+    }
+
+    private func deliver(_ outcome: Result<[URL], Error>, source: String) {
+        #if DEBUG
+        if callbackCount < 16 {
+            callbackCount += 1
+            let category: String
+            switch outcome {
+            case .success(let urls): category = urls.isEmpty ? "empty" : urls.count == 1 ? "one" : "multiple"
+            case .failure: category = "failure"
+            }
+            recordLifecycle("event=completion source=\(source) callbacks=\(callbackCount) outcome=\(category)")
+        }
+        #endif
+        onCompletion(outcome)
+    }
+
+    private func recordLifecycle(_ value: String) {
+        #if DEBUG
+        guard let namespace = experiment?.namespace ?? observationNamespace else { return }
+        print("SKILL_PDF_PICKER_LIFECYCLE namespace=\(namespace.uuidString) \(value) sampledAt=\(Date().timeIntervalSince1970)")
+        fflush(stdout)
+        #endif
     }
 }
 
@@ -127,14 +176,19 @@ import Darwin
 /// bookmark recreation, URL substitution, automatic retry or picker fallback.
 @MainActor private struct PDFNativePicker: UIViewControllerRepresentable {
     let asCopy: Bool
+    let allowsMultipleSelection: Bool
+    let onLifecycle: (String) -> Void
     let onCompletion: (Result<[URL], Error>?) -> Void
 
-    func makeCoordinator() -> Coordinator { Coordinator(onCompletion: onCompletion) }
+    func makeCoordinator() -> Coordinator { Coordinator(onCompletion: onCompletion, onLifecycle: onLifecycle) }
 
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.pdf], asCopy: asCopy)
-        picker.allowsMultipleSelection = false
+        picker.allowsMultipleSelection = allowsMultipleSelection
         picker.delegate = context.coordinator
+        #if DEBUG
+        context.coordinator.record("nativeCreated", picker)
+        #endif
         return picker
     }
 
@@ -142,23 +196,53 @@ import Darwin
         context.coordinator.onCompletion = onCompletion
     }
 
+    static func dismantleUIViewController(_ picker: UIDocumentPickerViewController, coordinator: Coordinator) {
+        #if DEBUG
+        coordinator.record("nativeDismantled", picker)
+        #endif
+    }
+
     @MainActor final class Coordinator: NSObject, UIDocumentPickerDelegate {
         var onCompletion: (Result<[URL], Error>?) -> Void
+        let onLifecycle: (String) -> Void
         private var completed = false
+        #if DEBUG
+        private var callbacks = 0
+        private weak var createdPicker: UIDocumentPickerViewController?
+        #endif
 
-        init(onCompletion: @escaping (Result<[URL], Error>?) -> Void) { self.onCompletion = onCompletion }
+        init(onCompletion: @escaping (Result<[URL], Error>?) -> Void, onLifecycle: @escaping (String) -> Void) {
+            self.onCompletion = onCompletion; self.onLifecycle = onLifecycle
+        }
 
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+            #if DEBUG
+            callbacks = min(callbacks + 1, 16)
+            record("nativePicked", controller)
+            #endif
             guard !completed else { return }
             completed = true
-            onCompletion(.success(urls)) // The common handler rejects counts other than one.
+            onCompletion(.success(urls)) // Caller enforces its own selection-count bounds.
         }
 
         func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+            #if DEBUG
+            callbacks = min(callbacks + 1, 16)
+            record("nativeCancelled", controller)
+            #endif
             guard !completed else { return }
             completed = true
             onCompletion(nil)
         }
+
+        #if DEBUG
+        func record(_ event: String, _ controller: UIDocumentPickerViewController) {
+            if event == "nativeCreated" { createdPicker = controller }
+            guard callbacks < 16 else { return }
+            let snapshot = PDFPickerModeProbe.snapshot(controller)
+            onLifecycle("event=\(event) \(snapshot) identitySame=\(createdPicker === controller) callbacks=\(callbacks)")
+        }
+        #endif
     }
 }
 
@@ -177,6 +261,18 @@ import Darwin
                           isPresented: isPresented, onObservation: onObservation)
     }
     static func dismantleUIViewController(_ controller: ProbeController, coordinator: ()) { controller.stop() }
+
+    static func snapshot(_ picker: UIDocumentPickerViewController) -> String {
+        let mode: String
+        switch picker.documentPickerMode {
+        case .open: mode = "open"
+        case .import: mode = "import"
+        case .exportToService: mode = "export"
+        case .moveToService: mode = "move"
+        @unknown default: mode = "unknown"
+        }
+        return "mode=\(mode) allowsMultipleSelection=\(picker.allowsMultipleSelection) delegatePresent=\(picker.delegate != nil) inWindow=\(picker.viewIfLoaded?.window != nil) dismissing=\(picker.isBeingDismissed)"
+    }
 
     @MainActor final class ProbeController: UIViewController {
         private var observation: Task<Void, Never>?
@@ -213,6 +309,7 @@ import Darwin
                         let value = "source=\(source) mode=\(mode) allowsMultipleSelection=\(picker.allowsMultipleSelection)"
                         self.reported = true
                         Self.record(namespace: namespace, value: value)
+                        Self.record(namespace: namespace, value: "source=\(source) event=observed " + PDFPickerModeProbe.snapshot(picker), lifecycle: true)
                         onObservation(value)
                         return
                     }
@@ -250,8 +347,9 @@ import Darwin
             return nil
         }
 
-        private static func record(namespace: UUID, value: String) {
-            print("SKILL_PDF_PICKER_PRESENTATION namespace=\(namespace.uuidString) \(value) sampledAt=\(Date().timeIntervalSince1970)")
+        private static func record(namespace: UUID, value: String, lifecycle: Bool = false) {
+            let prefix = lifecycle ? "SKILL_PDF_PICKER_LIFECYCLE" : "SKILL_PDF_PICKER_PRESENTATION"
+            print("\(prefix) namespace=\(namespace.uuidString) \(value) sampledAt=\(Date().timeIntervalSince1970)")
             fflush(stdout)
         }
     }

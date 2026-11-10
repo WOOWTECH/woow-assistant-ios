@@ -53,6 +53,7 @@ DOCUMENT_SCOPES = {
         "WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry",
         "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder",
         "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+        "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenMultiPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
         "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
     ],
 }
@@ -67,6 +68,7 @@ TEST_SCOPES = {
     "startup-smoke": ["WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded"],
     "picker-user-copy": ["WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText"],
     "pdf-assembly": ["WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
+    "pdf-assembly-uikit": ["WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenMultiPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
     "profile-tool": ["WoowAssistantUITests/UserProfileToolUITests"],
     "memory-tools": ["WoowAssistantUITests/MemoryToolUITests"],
     **DOCUMENT_SCOPES,

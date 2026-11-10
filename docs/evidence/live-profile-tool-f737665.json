@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "source_commit": "f737665558bd2c4160e68860646c89f77f075f52",
+  "run_id": 42868043180,
+  "job_id": 130011556110,
+  "workflow_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42868043180",
+  "runtime": "iOS 18.5",
+  "method": "LiveModelUITests.testRealModelProfileEditRequiresReviewAndPersistsAfterRelaunch",
+  "seconds": 92.638,
+  "completion": {
+    "code": "PASSED",
+    "expectedTests": 1,
+    "totalTestCount": 1,
+    "passedTests": 1,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "actual_ui_assertions": [
+    "Started with an empty isolated profile.",
+    "Exact synthetic user request was typed and read back before send.",
+    "Actual model emitted profile_edit; native review showed the exact quote and proposed text, with no prior receipt.",
+    "Explicit native approval produced a receipt and nonempty model answer without error.",
+    "Exactly one profile entry was visible.",
+    "Relaunch loaded the identical text and stable entry identifier, with no prior chat turn/receipt or false revision history."
+  ],
+  "limitations": [
+    "This covers actual-model reviewed add and persistence; it is not every profile edit/delete/refusal path.",
+    "The separate profile recall/master-switch case remains a different run.",
+    "No model-call count inferred from a UI pass.",
+    "No physical iPhone or iOS17 acceptance inferred."
+  ],
+  "evidence_policy": "Fixed method/counters and public source hashes only; no private endpoint/key, raw model response, AX or screenshot.",
+  "source_sha256": {
+    "Sources/App/ChatSession.swift": "c6947419729bcc6f3b07ea24c0b4be3a8d522df2cb6d65471579dd82c295fb34",
+    "Sources/App/LearningStore.swift": "3446c43afdb2cbf2992f1eb29f63a33cdb13fa2550e7761a034d2b0c3cc783c5",
+    "Sources/App/UserProfileToolReviewView.swift": "cb9d6db603c2b7e35960d8f2c8a89ebbfb4cc2cbb2a579fbe86812555e89bc81",
+    "Sources/App/UserProfileView.swift": "69ebbc881e5ec6bee50f5eefa79be14dc1bd2a7752b7621692c357d2dd18c783",
+    "Sources/AssistantMemory/UserProfileChatFlow.swift": "17b2651600ebfea58738ca2e9db0986229e81893512470d7c620cf849d2ed7f4",
+    "Sources/AssistantMemory/UserProfileTool.swift": "b6107acf0dfd1ec0e39fa5031d265ce7153bd4ead2dbb37fad86214e8e3a157c",
+    "Tests/WoowAssistantUITests/LiveModelUITests.swift": "64b82c53ee5fb7a9247442183a7616562b5b3dd2eb3de9cdd6adbb19445cda0b"
+  }
+}
