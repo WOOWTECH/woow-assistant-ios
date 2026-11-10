@@ -1,0 +1,216 @@
+{
+  "schema_version": 1,
+  "run_id": 42902405880,
+  "job_id": 130131540625,
+  "artifact_id": 13803879216,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902405880",
+  "commit": "f49c8f77ff7963f1993daf652069affc0e79c983",
+  "conclusion": "success",
+  "artifact_sha256": "9aaa7535f3199226071c6c909758a4b2ba12e8f5287f45c2fa284bd59628eb62",
+  "approval_test_source_sha256": "332f852be000110427e2293bbaf55c1029711f5fe50db6a39dacc64582a5ee96",
+  "test_summary": {
+    "devicesAndConfigurations": [
+      {
+        "device": {
+          "architecture": "arm64",
+          "deviceId": "E5A6B1B8-1A79-4C5B-AE52-5195D2DC75C1",
+          "deviceName": "Woow-CI-d31ae32e6c03460c80e863dc3d676ad0",
+          "modelName": "iPhone SE (3rd generation)",
+          "osBuildNumber": "22F77",
+          "osVersion": "18.5",
+          "platform": "iOS Simulator"
+        },
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "passedTests": 2,
+        "skippedTests": 0,
+        "testPlanConfiguration": {
+          "configurationId": "1",
+          "configurationName": "Test Scheme Action"
+        }
+      }
+    ],
+    "environmentDescription": "WoowAssistant · Built with macOS 15.8.2",
+    "expectedFailures": 0,
+    "failedTests": 0,
+    "finishTime": 1794346429.404,
+    "passedTests": 2,
+    "result": "Passed",
+    "skippedTests": 0,
+    "startTime": 1794346185.037,
+    "statistics": [],
+    "testFailures": [],
+    "title": "Test - WoowAssistant",
+    "topInsights": [],
+    "totalTestCount": 2
+  },
+  "completion_gate": {
+    "verified": true,
+    "counts": {
+      "totalTestCount": 2,
+      "passedTests": 2,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "result": "Passed",
+    "expected_ui_count": 2,
+    "completed_ui_count": 2,
+    "missing_ui_tests": [],
+    "unexpected_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": []
+  },
+  "exact_cases": [
+    "NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval()",
+    "NotificationUITests/testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable()"
+  ],
+  "attachments": [
+    {
+      "case": "NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval()",
+      "name": "Final fixed execution counters",
+      "artifact_file": "3D2F748F-5A15-48BE-ACA7-926371469F55.txt",
+      "timestamp": 1794346357.497,
+      "sha256": "c19282f170d302cf7abb88cc2529a7c18a42e42bbf774e419f59eb2263ea11a4",
+      "text": "phase=finished;modelCalls=2;formatCorrections=0;attempts=1;results=1;toolErrors=0;failure=none"
+    },
+    {
+      "case": "NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval()",
+      "name": "Observed notification navigation generations",
+      "artifact_file": "89BF6801-3176-4D40-930F-B85BCFD67394.txt",
+      "timestamp": 1794346357.445,
+      "sha256": "c1509d29df460c3716382ad29b0cac8cef6083af88bb4b477f4f059b4e4e408f",
+      "text": "before=generation=40F9CDB2-4E22-4DBE-B99C-7786957661E2;destination=chat\nafter=generation=63C7609C-2101-46B7-A4AD-36DED2FB6CE2;destination=chat"
+    },
+    {
+      "case": "NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval()",
+      "name": "Synthetic proposal after banner tap",
+      "artifact_file": "B806CF5B-3C66-4A8D-8BD9-D66224E09D93.txt",
+      "timestamp": 1794346355.087,
+      "sha256": "3d7e9f7eafc8cc3255566ccb36b9b64ea18fc0ad3674b0b22e8bf4dd1db18bad",
+      "text": "7809C8B9-D21D-43DF-AB45-A04182662191"
+    },
+    {
+      "case": "NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval()",
+      "name": "Same pending approval after actual banner tap",
+      "artifact_file": "9E3FA94D-071E-47F4-B0B3-DC75D7F9FA4D.png",
+      "timestamp": 1794346355.086,
+      "sha256": "50ba02f4ca3dcf193794c2e8f05527b9a3cc2d2578b0e301f066d9d79a2084d5",
+      "evidence_file": "task-notifications-approval-42902405880-pending-review.png"
+    },
+    {
+      "case": "NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval()",
+      "name": "Synthetic proposal before banner tap",
+      "artifact_file": "9444EB83-BB26-4AA2-9820-42E8A71A66ED.txt",
+      "timestamp": 1794346353.574,
+      "sha256": "3d7e9f7eafc8cc3255566ccb36b9b64ea18fc0ad3674b0b22e8bf4dd1db18bad",
+      "text": "7809C8B9-D21D-43DF-AB45-A04182662191"
+    },
+    {
+      "case": "NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval()",
+      "name": "Actual bounded approval banner subtree captured before tap",
+      "artifact_file": "9D1869B3-E914-4870-B213-CB0EF2DE1A51.txt",
+      "timestamp": 1794346353.573,
+      "sha256": "66e01babe22620b2645c1cd12b085cec9825cf9a3897b95cece89588c64de675",
+      "text": "frame=(8.0, 8.0, 359.0, 79.0)\n有操作需要你核准\n請開啟渥屋助理查看並決定；通知不會核准操作。"
+    },
+    {
+      "case": "NotificationUITests/testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable()",
+      "name": "Matching system banner subtree",
+      "artifact_file": "43B60AF6-0610-432D-9169-C88C7C77C5D0.txt",
+      "timestamp": 1794346382.111,
+      "sha256": "35ee1ec9b2aa86f9ea775174480711e946f3a0f0704803c48df71fa0151991df",
+      "text": "通知測試\n這是渥屋助理的測試通知。"
+    },
+    {
+      "case": "NotificationUITests/testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable()",
+      "name": "Actual notification banner before opening",
+      "artifact_file": "27F12EB4-429C-4B25-8344-FD3B3C062916.png",
+      "timestamp": 1794346382.11,
+      "sha256": "a3372c5deffc7425cf366423929ce381237ba7f6a57e7a86daf0f0fb2db93304",
+      "evidence_file": "task-notifications-approval-42902405880-settings-banner.png"
+    }
+  ],
+  "bounded_native_sequence": [
+    "    t =    38.73s     Synthesize event",
+    "    t =    39.03s     Wait for io.woowtech.assistant to idle",
+    "    t =    39.05s Find the Target Application 'io.woowtech.assistant'",
+    "    t =    39.47s Find the Application 'com.apple.springboard'",
+    "    t =    40.64s Find the Application 'com.apple.springboard'",
+    "    t =    40.74s Tap Application 'com.apple.springboard'[0.00, 0.00] -> (187.5, 47.5)",
+    "    t =    40.74s     Wait for com.apple.springboard to idle",
+    "    t =    40.74s     Find the Application 'com.apple.springboard'",
+    "    t =    40.76s     Check for interrupting elements affecting \" \" Application",
+    "    t =    40.77s         Wait for io.woowtech.assistant to idle",
+    "    t =    40.85s     Synthesize event",
+    "    t =    40.86s         Find the Application 'com.apple.springboard'",
+    "    t =    40.87s         Find the Application 'com.apple.springboard'",
+    "    t =    40.90s         Find the Application 'com.apple.springboard'",
+    "    t =    41.28s     Wait for com.apple.springboard to idle",
+    "    t =    41.72s Added attachment named 'Actual bounded approval banner subtree captured before tap'",
+    "    t =    41.72s Added attachment named 'Synthetic proposal before banner tap'",
+    "    t =    41.72s Find the Target Application 'io.woowtech.assistant'",
+    "    t =    42.81s Find the Target Application 'io.woowtech.assistant'",
+    "    t =    42.97s Find the \"mcp.approval.decline\" Button",
+    "    t =    43.04s Find the \"mcp.approval.approve\" Button",
+    "    t =    43.09s Find the Target Application 'io.woowtech.assistant'",
+    "    t =    43.23s Added attachment named 'Same pending approval after actual banner tap'",
+    "    t =    43.23s Added attachment named 'Synthetic proposal after banner tap'",
+    "    t =    43.23s Find the \"mcp.approval.approve\" Button",
+    "    t =    43.30s Find the \"mcp.approval.approve\" Button",
+    "    t =    43.35s Tap \"mcp.approval.approve\" Button",
+    "    t =    43.35s     Wait for io.woowtech.assistant to idle",
+    "    t =    43.35s     Find the \"mcp.approval.approve\" Button",
+    "    t =    43.44s     Check for interrupting elements affecting \"mcp.approval.approve\" Button",
+    "    t =    43.50s     Synthesize event",
+    "    t =    43.88s     Wait for io.woowtech.assistant to idle",
+    "    t =    44.28s Waiting 15.0s for \"chat.message.1.assistant\" StaticText to exist",
+    "    t =    45.30s     Checking `Expect predicate `existsNoRetry == 1` for object \"chat.message.1.assistant\" StaticText`",
+    "    t =    45.31s         Checking existence of `\"chat.message.1.assistant\" StaticText`",
+    "    t =    45.34s Find the \"chat.message.1.assistant\" StaticText",
+    "    t =    45.41s Checking existence of `\"mcp.approval.approve\" Button`",
+    "    t =    45.43s Checking existence of `\"chat.error\" StaticText`",
+    "    t =    45.45s Find the \"chat.mcpActivity\" StaticText",
+    "    t =    45.51s Find the \"navigation.chat\" Button",
+    "    t =    45.54s Checking existence of `\"notifications.routeObservation\" StaticText`",
+    "    t =    45.57s Find the \"notifications.routeObservation\" StaticText",
+    "    t =    45.59s Added attachment named 'Observed notification navigation generations'",
+    "    t =    45.59s Find the Application 'com.apple.springboard'",
+    "    t =    45.64s Added attachment named 'Final fixed execution counters'",
+    "NOTIFICATION_APPROVAL actualSystemBanner=1 defaultOpenObserved=1 destination=chat sameProposalUUID=1 explicitApprovals=1 calls=1 audibleSoundVerified=0"
+  ],
+  "bounded_log_markers": [
+    "Test Case '-[WoowAssistantUITests.NotificationApprovalUITests testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval]' started.",
+    "NOTIFICATION_APPROVAL authorizationBefore=notDetermined authorizationAfter=authorized",
+    "NOTIFICATION_APPROVAL actualSystemBanner=1 defaultOpenObserved=1 destination=chat sameProposalUUID=1 explicitApprovals=1 calls=1 audibleSoundVerified=0",
+    "Test Case '-[WoowAssistantUITests.NotificationApprovalUITests testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval]' passed (57.553 seconds).",
+    "Test Case '-[WoowAssistantUITests.NotificationUITests testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable]' started.",
+    "NOTIFICATION_SETTINGS enabled=1 systemPromptObserved=0",
+    "NOTIFICATION_SETTINGS actualSystemBanner=1 audibleSoundVerified=0",
+    "NOTIFICATION_SETTINGS actualBannerTap=1 rootChatVisible=1",
+    "NOTIFICATION_SETTINGS relaunchEnabled=1 disablePersisted=1 systemPermissionRetained=1",
+    "Test Case '-[WoowAssistantUITests.NotificationUITests testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable]' passed (59.070 seconds)."
+  ],
+  "verified_approval_observations": {
+    "proposal_uuid_before": "7809C8B9-D21D-43DF-AB45-A04182662191",
+    "proposal_uuid_after": "7809C8B9-D21D-43DF-AB45-A04182662191",
+    "route_generation_before": "40F9CDB2-4E22-4DBE-B99C-7786957661E2",
+    "route_generation_after": "63C7609C-2101-46B7-A4AD-36DED2FB6CE2",
+    "destination": "chat",
+    "changed_generation_observed_inside_pending_sheet_before_explicit_approval": true,
+    "generation_proof_basis": "The passing native test requires changed generation and exact original proposal UUID in the same pending-sheet snapshot before the sole approval tap. After approval it requires the root marker equal that same observed changed generation. Retained generation attachment and native event order are included.",
+    "actual_os_banner_exact_frame_and_labels": "frame=(8.0, 8.0, 359.0, 79.0)\n有操作需要你核准\n請開啟渥屋助理查看並決定；通知不會核准操作。",
+    "banner_tapped_before_attachment_work": true,
+    "explicit_native_approval_tap_count": 1,
+    "asserted_result": "FIXTURE_CALL_1: hello",
+    "fixed_execution_counters": "phase=finished;modelCalls=2;formatCorrections=0;attempts=1;results=1;toolErrors=0;failure=none",
+    "automatic_approval_observed": false,
+    "audible_sound_verified": false
+  },
+  "scope": "Synthetic model/MCP transport with actual notification permission/system banner/default-open route/native approval. Only Chat fixture flow and original settings case. No browser notifications or background cancellation-policy changes.",
+  "privacy": "Only fixed notification strings, synthetic fixture values and opaque fixture UUIDs are retained. No personal credentials or model/MCP private content.",
+  "original_failure_evidence_preserved": [
+    42899087289,
+    42899092129,
+    42900059446
+  ]
+}

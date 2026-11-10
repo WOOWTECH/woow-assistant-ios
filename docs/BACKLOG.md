@@ -13,7 +13,7 @@
 
 ## M1 — Conversation core and browser shell
 
-- [ ] SwiftData storage for conversations, messages, run events and outbox records.
+- [ ] Encrypted conversation archive, list and explicit reopening; unfinished operations must never replay on restore. Durable run events/outbox remain a separate increment.
 - [x] Native JSON/SSE model transport with bounded requests and fixture coverage.
 - [x] Configurable actual model conversation, cancellation and retained drafts.
 - [ ] Stream partial model output into the chat UI.
@@ -45,5 +45,5 @@
 
 - [x] Page reader, grounded research and fixed DOM action bridge with single-action approval (full browser parity remains open).
 - [ ] Optional remote browser gateway contract for CDP-only capabilities.
-- [ ] Notifications for completed jobs and approval requests.
+- [x] Default-off notification preferences and completed-job/approval-request scheduling with real OS permission and notification-tap integration. The new pending-approval preservation case is still under native acceptance; audible sound and physical-device behavior remain separate.
 - [ ] Real-device iOS 17 validation matrix, TestFlight metadata and App Review demo mode.

@@ -1,6 +1,26 @@
 # Verification — 2026-11-11
 
 
+## SE notification approval and learning UI completed
+
+At `f49c8f7`, [42902405880](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902405880)
+passed **2/2 notification UI methods, zero skips**, on iPhone SE / iOS 18.5. The
+actual OS approval banner was tapped; the callback changed the route generation
+inside the still-pending sheet while retaining the original proposal UUID. One
+subsequent explicit native approval produced exactly one fixture tool call/result.
+The separate settings case passed notification permission, actual banner/default
+open, relaunch persistence and disable. Transport/model content was synthetic;
+audible sound and physical-device behavior were not verified. Large/current
+continuations remain separate. [Exact event order and attachments](evidence/task-notifications-approval-42902405880.json).
+
+At `1abc6d7`, [42902024042](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902024042)
+passed **5/5 learning UI methods, zero skips**, on iPhone SE / iOS 18.5 / 22F77.
+The three browser-learning and two multi-source methods each started/completed
+once, including model-setting removal cancellation, website-knowledge relaunch,
+pending-skill manual approval/relaunch, source quotes and duplicate-origin refusal.
+These are native fixture flows, separate from real public-site/model acceptance
+and the subsequent replay-reference changes. [Method and source proof](evidence/ui-learning-1abc6d7-se.json).
+
 ## Combined native regression and device compilation completed
 
 At `1abc6d7`, [42902018558](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902018558)
