@@ -6,6 +6,7 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import re
 import subprocess
 import sys
 import tempfile
@@ -20,6 +21,19 @@ TEAM = "ABCD123456"
 CERT = b"synthetic-public-certificate"
 DIGEST = hashlib.sha1(CERT).hexdigest().upper()
 PROFILE_ID = "12345678-1234-1234-1234-123456789ABC"
+
+
+def synthetic_xctest_completion(scope):
+    """Command fixtures, not a claim that any native XCTest ran locally."""
+    catalog = ios17.ui_inventory(Path(__file__).resolve().parents[1])
+    selected = ios17.selected_ui_tests(catalog, scope)
+    log = "".join("Test Case '-[%s.%s %s]' passed (0.001 seconds).\n" % tuple(t.split("/"))
+                  for t in selected).encode()
+    ui_only = bool(ios17.TEST_SCOPES[scope]) and all(
+        s.startswith("WoowAssistantUITests/") for s in ios17.TEST_SCOPES[scope])
+    count = len(selected) + (0 if ui_only else 1)
+    return log, {"result": "Passed", "totalTestCount": count, "passedTests": count,
+                 "failedTests": 0, "skippedTests": 0, "expectedFailures": 0}
 
 
 def profile():
@@ -311,6 +325,98 @@ class BuildTests(unittest.TestCase):
             with self.assertRaises(release.ReleaseError): release.verify_macho(output)
 
 
+class UIShardTests(unittest.TestCase):
+    def test_repository_partition_and_workflow_choices_match(self):
+        root = Path(__file__).resolve().parents[1]
+        catalog = ios17.ui_inventory(root)
+        tests = [t for s in catalog["shards"].values() for t in s["tests"]]
+        self.assertEqual(len(tests), len(set(tests)))
+        self.assertEqual(len(tests), catalog["non_live_test_count"])
+        self.assertTrue(set(tests).isdisjoint(catalog["live_tests_excluded"]))
+        for scope, shard in catalog["shards"].items():
+            self.assertEqual(ios17.selected_ui_tests(catalog, scope), shard["tests"])
+            self.assertEqual(ios17.TEST_SCOPES[scope], ["WoowAssistantUITests/" + c for c in shard["classes"]])
+        self.assertEqual(ios17.selected_ui_tests(catalog, "core"), [])
+        self.assertEqual(ios17.selected_ui_tests(catalog, "startup-smoke"), ios17.TEST_SCOPES["startup-smoke"])
+        workflow = (root / ".github/workflows/release-ios.yml").read_text()
+        options = re.search(r'ios17_test_scope:\s*\n.*?options: \[([^\]]+)\]', workflow, re.S).group(1)
+        self.assertEqual([s.strip() for s in options.split(",")], list(ios17.TEST_SCOPES))
+        self.assertIn("scripts/release_ios17.py --check-ui-inventory", workflow)
+        self.assertIn('--expected-host-arch "$IOS17_HOST_ARCH"', workflow)
+        self.assertIn("inputs.ios17_host_arch == 'x86_64'", workflow)
+
+    def test_inventory_rejects_new_unowned_duplicate_live_and_stale_classes(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            target = root / "Tests/WoowAssistantUITests"
+            target.mkdir(parents=True)
+            for name in ["ExampleUITests", *sorted(ios17.LIVE_UI_CLASSES)]:
+                (target / (name + ".swift")).write_text(
+                    "final class " + name + ": XCTestCase {\nfunc testActual() {}\n}\n")
+            mapping = {"ui-example": ["ExampleUITests"]}
+            self.assertEqual(ios17.ui_inventory(root, mapping)["non_live_test_count"], 1)
+            for invalid in [{}, {"ui-example": ["ExampleUITests", "ExampleUITests"]},
+                            {**mapping, "ui-other": ["ExampleUITests"]},
+                            {**mapping, "ui-other": ["MissingUITests"]},
+                            {**mapping, "ui-other": ["LiveModelUITests"]}]:
+                with self.subTest(mapping=invalid), self.assertRaises(release.ReleaseError):
+                    ios17.ui_inventory(root, invalid)
+            extra = target / "Nested/NewUITests.swift"
+            extra.parent.mkdir()
+            extra.write_text("final class NewUITests: XCTestCase { func testNew() {} }")
+            with self.assertRaisesRegex(release.ReleaseError, "未涵蓋.*NewUITests"):
+                ios17.ui_inventory(root, mapping)
+
+    def test_new_method_is_included_and_non_test_strings_are_ignored(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            target = root / "Tests/WoowAssistantUITests"
+            target.mkdir(parents=True)
+            for name in ["ExampleUITests", *sorted(ios17.LIVE_UI_CLASSES)]:
+                (target / (name + ".swift")).write_text(
+                    'final class ' + name + ': XCTestCase {\nfunc testActual() {}\n}\n')
+            source = target / "ExampleUITests.swift"
+            original = source.read_text()
+            source.write_text(original.replace("func testActual() {}", '''
+                // func testComment() {}
+                /* class FalseUITests: XCTestCase { func testComment() {} } */
+                let html = #"""func testString() {}"""#
+                func testActual() {}
+                func testAdded() async throws {}
+            '''))
+            catalog = ios17.ui_inventory(root, {"ui-example": ["ExampleUITests"]})
+            self.assertEqual(catalog["shards"]["ui-example"]["tests"], [
+                "WoowAssistantUITests/ExampleUITests/testActual", "WoowAssistantUITests/ExampleUITests/testAdded"])
+            for invalid in [original + 'extension ExampleUITests { func testExtra() {} }',
+                            original.replace("func testActual() {}", "func testActual() {} func testActual() {}"),
+                            original.replace("testActual()", "testActual(input: Int)")]:
+                source.write_text(invalid)
+                with self.assertRaises(release.ReleaseError):
+                    ios17.ui_inventory(root, {"ui-example": ["ExampleUITests"]})
+
+    def test_zero_exit_is_insufficient_with_skips_missing_repeated_or_wrong_cases(self):
+        log, summary = synthetic_xctest_completion("ui-learning")
+        expected = ["WoowAssistantUITests/BrowserLearningUITests/" + m for m in re.findall(
+            r'BrowserLearningUITests (test\w+)\]', log.decode())]
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "tests.log"
+            path.write_bytes(log)
+            self.assertTrue(ios17.test_completion(summary, path, expected, True)["verified"])
+            for key in ("failedTests", "skippedTests", "expectedFailures"):
+                wrong = dict(summary, **{key: 1})
+                self.assertFalse(ios17.test_completion(wrong, path, expected, True)["verified"])
+            for wrong in [{}, dict(summary, passedTests=0), dict(summary, totalTestCount=0),
+                          dict(summary, result="Failed"), dict(summary, passedTests=True),
+                          dict(summary, totalTestCount=4, passedTests=4)]:
+                self.assertFalse(ios17.test_completion(wrong, path, expected, True)["verified"])
+            lines = log.splitlines(keepends=True)
+            for wrong_log in [b"", b"".join(lines[1:]), log + lines[0],
+                              log.replace(b"passed", b"skipped", 1),
+                              log.replace(b"BrowserLearningUITests", b"OtherUITests", 1)]:
+                path.write_bytes(wrong_log)
+                self.assertFalse(ios17.test_completion(summary, path, expected, True)["verified"])
+
+
 class RuntimeTests(unittest.TestCase):
     DIAGNOSE_HELP = b"Usage: simctl diagnose [-l] [-q] [--udid=<udid>] [--output=<path>]\n"
     HOSTED_ENV = {"GITHUB_ACTIONS": "true", "RUNNER_ENVIRONMENT": "github-hosted", "RUNNER_OS": "macOS"}
@@ -346,21 +452,34 @@ class RuntimeTests(unittest.TestCase):
         simulator = "12345678-1234-1234-1234-123456789ABC"
         def command(args, *unused, **kwargs):
             if "-version" in args: return b"Xcode 16.4"
+            if "xcresulttool" in args: return json.dumps(summary).encode()
             if "-showBuildSettings" in args: return b"[]"
             if "create" in args: return simulator.encode()
             if "devices" in args:
                 return json.dumps({"devices": {"test": [{"udid": simulator, "state": "Booted", "isAvailable": True}]}}).encode()
             return b""
-        for scope, exit_code, timed_out in [("all", 65, False), ("all", None, True), ("core", 0, False), ("all", 0, False), ("startup-smoke", 0, False)]:
-            with self.subTest(scope=scope, exit_code=exit_code, timed_out=timed_out), tempfile.TemporaryDirectory() as folder:
+        cases = [("all", 65, False, False), ("all", None, True, False), ("core", 0, False, False),
+                 ("all", 0, False, False), ("startup-smoke", 0, False, False), ("all", 0, False, True),
+                 ("ui-documents", 0, True, False), ("ui-memory", 0, False, True)]
+        cases += [(scope, 0, False, False) for scope in ios17.UI_SHARDS]
+        for scope, exit_code, timed_out, skipped in cases:
+            with self.subTest(scope=scope, exit_code=exit_code, timed_out=timed_out, skipped=skipped), tempfile.TemporaryDirectory() as folder:
                 output = Path(folder) / "result"
+                log, summary = synthetic_xctest_completion(scope)
+                if skipped:
+                    summary.update(skippedTests=1, passedTests=summary["passedTests"] - 1)
                 def child(args, **kwargs):
                     if args[0] == "xcodebuild":
-                        self.assertEqual(args[args.index("-maximum-test-execution-time-allowance") + 1], "420" if scope == "all" else "300")
+                        self.assertEqual(args[args.index("-maximum-test-execution-time-allowance") + 1], "420" if scope in ("all", "ui-workspace") else "300")
+                        self.assertEqual(kwargs["timeout"], 1800 if scope in ios17.UI_SHARDS else 4800)
                         if scope == "core": self.assertIn("-only-testing:AssistantDomainTests", args)
                         elif scope == "startup-smoke":
                             self.assertIn("-only-testing:WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded", args)
+                        elif scope in ios17.UI_SHARDS:
+                            self.assertEqual([arg for arg in args if arg.startswith("-only-testing:")],
+                                             ["-only-testing:" + t for t in ios17.TEST_SCOPES[scope]])
                         else: self.assertFalse(any(arg.startswith("-only-testing:") for arg in args))
+                        kwargs["stdout"].write(log)
                         if timed_out: raise subprocess.TimeoutExpired(args, kwargs["timeout"])
                         return subprocess.CompletedProcess(args, exit_code)
                     return subprocess.CompletedProcess(args, 0)
@@ -372,20 +491,23 @@ class RuntimeTests(unittest.TestCase):
                      patch.object(ios17, "verify_settings"), \
                      patch.object(ios17.subprocess, "run", side_effect=child), \
                      patch("builtins.print"):
-                    if timed_out or exit_code:
+                    if timed_out or exit_code or skipped:
                         with self.assertRaises(release.ReleaseError): ios17.execute(output, "17.0.1", False, scope)
                     else:
                         ios17.execute(output, "17.0.1", False, scope)
                     diagnostic.assert_not_called()
                 report = json.loads((output / "report.json").read_text())
-                succeeded = not timed_out and exit_code == 0
+                succeeded = not timed_out and exit_code == 0 and not skipped
                 self.assertEqual(report["test_scope"], scope)
-                self.assertEqual(report["maximum_case_seconds"], 420 if scope == "all" else 300)
+                self.assertEqual(report["maximum_case_seconds"], 420 if scope in ("all", "ui-workspace") else 300)
                 self.assertEqual(report["selected_tests_succeeded"], succeeded)
                 self.assertEqual(report["runtime_tested"], succeeded and scope == "all")
-                self.assertEqual(report["phase"], "passed" if succeeded else "testing")
+                self.assertEqual(report["full_acceptance_succeeded"], succeeded and scope == "all")
+                self.assertEqual(report["phase"], "passed" if succeeded else "verifying_test_completion" if skipped else "testing")
                 self.assertEqual(report["phase_history"][-1]["phase"], report["phase"])
                 self.assertEqual(report["test_timed_out"] if timed_out else report["test_exit_code"], True if timed_out else exit_code)
+                self.assertTrue((output / "ui-test-inventory.json").is_file())
+                self.assertEqual(report["live_ui_selected"], scope == "all")
                 self.assertTrue(any(call.args[0] == ["xcrun", "simctl", "delete", simulator] for call in runner.call_args_list))
                 self.assertFalse((output / "report.json.tmp").exists())
 
@@ -416,6 +538,7 @@ class RuntimeTests(unittest.TestCase):
                 tested = []
                 def command(args, *unused, **kwargs):
                     if "-version" in args: return b"Xcode 16.4"
+                    if "xcresulttool" in args: return json.dumps(synthetic_xctest_completion("core")[1]).encode()
                     if "-showBuildSettings" in args: return b"[]"
                     if "create" in args: return simulator.encode()
                     if "bootstatus" in args and boot_failed:

@@ -6,6 +6,7 @@ A disposable simulator is created and deleted; physical devices are untouched.
 """
 import argparse
 from datetime import datetime, timezone
+import hashlib
 import json
 import os
 import platform
@@ -18,6 +19,20 @@ import uuid
 
 from release_ios import ReleaseError, generate_project, run, version, verify_settings
 
+# This partition, unlike the legacy focused scopes below, owns every non-Live
+# UI class exactly once. Keep class selectors so new methods cannot be omitted.
+UI_SHARDS = {
+    "ui-startup": ["WoowAssistantUITests"],
+    "ui-workspace": ["BrowserWorkspaceUITests", "BrowserLoginUITests"],
+    "ui-browser": ["BrowserInteractionUITests", "BrowserUploadUITests"],
+    "ui-learning": ["BrowserLearningUITests"],
+    "ui-memory": ["MemoryUITests", "MemoryRaceUITests"],
+    "ui-skills": ["SkillCatalogUITests", "SkillAuthoringUITests"],
+    "ui-documents": ["SkillExecutionUITests"],
+    "ui-mcp": ["MCPConversationUITests"],
+}
+LIVE_UI_CLASSES = {"LiveMCPUITests", "LiveMCPConversationUITests", "LiveModelUITests"}
+
 TEST_SCOPES = {
     "all": [],
     "core": ["AssistantDomainTests", "AssistantModelsTests", "AssistantMCPTests", "AssistantMemoryTests", "AssistantSkillsTests", "AssistantPersistenceTests", "AssistantBrowserIntegrationTests"],
@@ -26,7 +41,99 @@ TEST_SCOPES = {
     "parity": ["AssistantMCPTests", "AssistantSkillsTests", "AssistantDomainTests", "AssistantBrowserIntegrationTests", "WoowAssistantUITests/MCPConversationUITests", "WoowAssistantUITests/BrowserInteractionUITests", "WoowAssistantUITests/BrowserLearningUITests", "WoowAssistantUITests/SkillCatalogUITests", "WoowAssistantUITests/MemoryUITests", "WoowAssistantUITests/MemoryRaceUITests"],
     "startup": ["WoowAssistantUITests/WoowAssistantUITests"],
     "startup-smoke": ["WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded"],
+    **{scope: ["WoowAssistantUITests/" + name for name in classes]
+       for scope, classes in UI_SHARDS.items()},
 }
+
+
+def ui_inventory(root, shards=None):
+    """Fail closed on unassigned/duplicate classes and unsupported test layout.
+
+    The UI target uses one XCTestCase class per same-named Swift file, with
+    zero-argument test methods. Extensions/inherited test classes require an
+    explicit inventory update instead of silently disappearing from coverage.
+    """
+    shards = UI_SHARDS if shards is None else shards
+    classes = {}
+    # Mask literals/comments before scanning declarations (including embedded
+    # HTML/JS and Swift raw/multiline strings in the local HTTP fixtures).
+    ignored = re.compile(r'//[^\n]*|/\*.*?\*/|(?P<raw>\#*)""".*?"""(?P=raw)|'
+                         r'(?P<quote>\#*)"(?:\\.|[^"\\])*"(?P=quote)', re.S)
+    for path in sorted((root / "Tests/WoowAssistantUITests").rglob("*.swift")):
+        source = ignored.sub(" ", path.read_text())
+        names = re.findall(r'\bclass\s+(\w+)\s*:\s*XCTestCase\b', source)
+        methods = re.findall(r'\bfunc\s+(test\w+)\s*\(', source)
+        zero_argument = re.findall(r'\bfunc\s+(test\w+)\s*\(\s*\)', source)
+        if not names and not methods:
+            continue
+        if (names != [path.stem] or not methods or methods != zero_argument
+                or len(set(methods)) != len(methods) or path.stem in classes
+                or re.search(r'\bextension\s+' + re.escape(path.stem) + r'\b', source)):
+            raise ReleaseError("UI inventory 不支援此測試宣告，請明確更新清單：" + path.name)
+        classes[path.stem] = ["WoowAssistantUITests/" + path.stem + "/" + m for m in sorted(methods)]
+    if not classes or not LIVE_UI_CLASSES.issubset(classes):
+        raise ReleaseError("UI inventory 缺少測試來源或已知 Live 類別。")
+    owners = {}
+    for scope, names in shards.items():
+        if not scope.startswith("ui-") or not names:
+            raise ReleaseError("UI 分片必須有名稱與測試類別。")
+        for name in names:
+            if name in owners or name in LIVE_UI_CLASSES or name not in classes:
+                raise ReleaseError("UI 分片有重複、Live 或不存在的類別：" + name)
+            owners[name] = scope
+    missing = set(classes) - LIVE_UI_CLASSES - owners.keys()
+    if missing:
+        raise ReleaseError("UI 分片未涵蓋類別：" + ", ".join(sorted(missing)))
+    result = {"schema_version": 1,
+              "shards": {scope: {"classes": names,
+                                  "tests": sorted(t for name in names for t in classes[name])}
+                         for scope, names in shards.items()},
+              "live_tests_excluded": sorted(t for name in LIVE_UI_CLASSES for t in classes[name])}
+    result["non_live_test_count"] = sum(len(s["tests"]) for s in result["shards"].values())
+    result["inventory_sha256"] = hashlib.sha256(json.dumps(result, sort_keys=True).encode()).hexdigest()
+    return result
+
+
+def selected_ui_tests(catalog, scope):
+    tests = sorted(t for shard in catalog["shards"].values() for t in shard["tests"])
+    tests += catalog["live_tests_excluded"]
+    if scope == "all":
+        return sorted(tests)
+    return sorted(t for t in tests if any(t == selector or t.startswith(selector + "/")
+                                         for selector in TEST_SCOPES[scope]))
+
+
+def test_completion(summary, log_path, expected_ui, ui_only):
+    """Require summary success AND each selected UI method's actual completion.
+
+    Started-only, duplicate attempts, skipped cases, expected failures and an
+    empty result cannot become acceptance evidence merely because exit == 0.
+    Unknown log/summary formats fail closed, retaining the original artifacts.
+    """
+    keys = ("totalTestCount", "passedTests", "failedTests", "skippedTests", "expectedFailures")
+    counts = {key: summary.get(key) for key in keys}
+    counts_valid = all(type(v) is int and v >= 0 for v in counts.values())
+    complete = (counts_valid and summary.get("result") == "Passed"
+                and counts["passedTests"] > 0
+                and counts["totalTestCount"] == counts["passedTests"]
+                and all(counts[k] == 0 for k in ("failedTests", "skippedTests", "expectedFailures")))
+    completions = {}
+    pattern = re.compile(r"Test Case '-\[WoowAssistantUITests\.(\w+) (test\w+)\]' (passed|failed|skipped) \(")
+    with log_path.open(errors="replace") as log:
+        for line in log:
+            match = pattern.search(line)
+            if match:
+                name, method, outcome = match.groups()
+                completions.setdefault("WoowAssistantUITests/" + name + "/" + method, []).append(outcome)
+    missing = sorted(set(expected_ui) - completions.keys())
+    unexpected = sorted(completions.keys() - set(expected_ui))
+    incomplete = sorted(t for t in expected_ui if t in completions and completions[t] != ["passed"])
+    complete = bool(complete and not missing and not unexpected and not incomplete
+                    and (not ui_only or counts["totalTestCount"] == len(expected_ui)))
+    return {"verified": complete, "counts": counts, "result": summary.get("result"),
+            "expected_ui_count": len(expected_ui), "completed_ui_count": len(completions),
+            "missing_ui_tests": missing, "unexpected_ui_tests": unexpected,
+            "nonpassing_or_repeated_ui_tests": incomplete}
 
 
 def select_runtime(payload, requested):
@@ -172,7 +279,13 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
               "host_architecture": platform.machine(), "host_macos": platform.mac_ver()[0],
               "expected_host_architecture": expected_host_arch,
               "phase_history": [], "test_scope": test_scope,
-              "selected_tests_succeeded": False}
+              "selected_tests_succeeded": False,
+              "full_acceptance_succeeded": False,
+              "coverage_kind": ("ui-shard" if test_scope in UI_SHARDS else
+                                "full-scheme" if test_scope == "all" else
+                                "native-core" if test_scope == "core" else "focused"),
+              "source_revision": (os.environ.get("GITHUB_SHA") if re.fullmatch(
+                  r"[0-9a-f]{40}", os.environ.get("GITHUB_SHA", "")) else None)}
     started = time.monotonic()
 
     def save_report():
@@ -196,11 +309,17 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
         checkpoint("preflight")
         if expected_host_arch and report["host_architecture"] != expected_host_arch:
             raise ReleaseError("實際主機架構與指定比較條件不同；未執行測試。")
+        root = Path(__file__).resolve().parents[1]
+        catalog = ui_inventory(root)
+        (output / "ui-test-inventory.json").write_text(json.dumps(catalog, indent=2) + "\n")
+        report["ui_inventory_sha256"] = catalog["inventory_sha256"]
+        report["expected_ui_tests"] = selected_ui_tests(catalog, test_scope)
+        report["live_ui_selected"] = test_scope == "all"
+        report["live_ui_not_selected"] = [] if test_scope == "all" else catalog["live_tests_excluded"]
         report["xcode"] = run(["xcodebuild", "-version"], "需要完整 Xcode").decode().strip()
         checkpoint("checking_runtime")
         runtime = ensure_runtime(output, requested, download, checkpoint)
         report["selected_runtime"] = runtime
-        root = Path(__file__).resolve().parents[1]
         checkpoint("generating_project")
         project = generate_project(root, output)
         common = ["xcodebuild", "-project", str(project), "-scheme", "WoowAssistant",
@@ -245,7 +364,10 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
                 report["simulator_state"] = [{key: item.get(key) for key in ("state", "isAvailable", "availabilityError")} for item in own]
             except (ReleaseError, ValueError, TypeError, AttributeError):
                 report["simulator_state_unavailable"] = True
-        report["maximum_case_seconds"] = 420 if test_scope in ("all", "workspace") else 300
+        report["maximum_case_seconds"] = 420 if test_scope in ("all", "workspace", "ui-workspace") else 300
+        # New class shards aim for 10–20 minutes of testing, with a bounded
+        # 30-minute build+test budget. Existing repair scopes keep their bounds.
+        report["build_test_timeout_seconds"] = 1800 if test_scope in UI_SHARDS else 4800
         checkpoint("testing")
         with (output / "tests.log").open("wb") as log:
             try:
@@ -255,17 +377,32 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
                     "-maximum-test-execution-time-allowance", str(report["maximum_case_seconds"])] +
                     ["-only-testing:" + target for target in TEST_SCOPES[test_scope]] +
                     ["test", "CODE_SIGN_IDENTITY=-",
-                    "CODE_SIGNING_ALLOWED=YES"], stdout=log, stderr=subprocess.STDOUT, timeout=4800)
+                    "CODE_SIGNING_ALLOWED=YES"], stdout=log, stderr=subprocess.STDOUT,
+                    timeout=report["build_test_timeout_seconds"])
             except subprocess.TimeoutExpired:
                 report["test_timed_out"] = True
-                raise ReleaseError("iOS 17 編譯／完整測試超過 80 分鐘；保留已執行結果，不視為通過。") from None
+                raise ReleaseError("iOS 17 編譯／所選測試超過 %d 分鐘；保留已執行結果，不視為通過。" %
+                                   (report["build_test_timeout_seconds"] // 60)) from None
         report["test_exit_code"] = result.returncode
         if result.returncode:
             raise ReleaseError("iOS 17 建置／XCTest 失敗；請查看 tests.log 與 Tests.xcresult。")
+        checkpoint("verifying_test_completion")
+        summary_bytes = run(["xcrun", "xcresulttool", "get", "test-results", "summary", "--path",
+                             str(output / "Tests.xcresult")], "讀取實際 XCTest 摘要", timeout=120)
+        (output / "test-summary.json").write_bytes(summary_bytes)
+        summary = json.loads(summary_bytes)
+        if not isinstance(summary, dict):
+            raise ReleaseError("XCTest 摘要格式不符，不能宣稱測試完成。")
+        report["test_completion"] = test_completion(summary, output / "tests.log",
+            report["expected_ui_tests"], bool(TEST_SCOPES[test_scope]) and
+            all(t.startswith("WoowAssistantUITests/") for t in TEST_SCOPES[test_scope]))
+        if not report["test_completion"]["verified"]:
+            raise ReleaseError("XCTest 摘要或 UI 完成清單不符：有略過、遺漏、重複或未通過案例；不視為驗收通過。")
         report["selected_tests_succeeded"] = True
-        # Retain the original full-scheme meaning. A focused repair run can
-        # pass its selected cases without certifying the complete acceptance set.
+        # A full scheme must include Live cases with zero skips to set these.
+        # Passing a shard never certifies other shards, core, or Live services.
         report["runtime_tested"] = test_scope == "all"
+        report["full_acceptance_succeeded"] = test_scope == "all"
         checkpoint("passed")
     finally:
         save_report()
@@ -296,9 +433,14 @@ def main():
     parser.add_argument("--download", action="store_true")
     parser.add_argument("--test-scope", choices=TEST_SCOPES, default="all")
     parser.add_argument("--expected-host-arch", choices=("arm64", "x86_64"))
+    parser.add_argument("--check-ui-inventory", action="store_true",
+                        help="Validate and print the UI class partition without invoking Xcode")
     parser.add_argument("--output", type=Path, default=Path("build/ios17"))
     args = parser.parse_args()
     try:
+        if args.check_ui_inventory:
+            print(json.dumps(ui_inventory(Path(__file__).resolve().parents[1]), indent=2))
+            return 0
         execute(args.output.resolve(), args.os, args.download, args.test_scope, args.expected_host_arch)
     except (ReleaseError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
         print(str(error) if isinstance(error, ReleaseError) else "iOS 17 驗證未完成；請檢查輸出證據。", file=sys.stderr)

@@ -1,5 +1,23 @@
 # Verification — 2026-11-10
 
+## iOS 17 ARM environment comparison
+
+At `b5083b7`, both GitHub ARM runs passed the real App UI case
+`testEverySectionIsReachableAndPhoneControlIsExcluded`, with zero failures/skips:
+[17.0.1 / 42793955136](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42793955136)
+in 64.648 seconds and
+[17.5 / 42793983325](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42793983325)
+in 47.721 seconds. Both used Xcode 16.4 on ARM macOS 15.8.2; actual runtime builds
+were 21A342 and 21F79. Boot reached its successful terminal state and the UI runner
+executed the selected case. The reports deliberately retain `runtime_tested:false`
+because startup-smoke is not full acceptance. Physical devices were not used.
+
+The [retained comparison](evidence/ios17-arm-startup-b5083b7.json) includes original
+reports and log hashes. This establishes a working test environment for subsequent
+functional shards. It does not prove architecture alone caused the earlier Intel
+boot/AX failures, since the host macOS image also changed, and does not replace
+the failed runs below.
+
 ## Browser workspace / files / PDF increment - partial acceptance
 
 Latest completed simulator evidence (passed test cases / selected cases, not assertion counts):

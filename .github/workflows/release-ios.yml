@@ -21,9 +21,9 @@ on:
         options: ['17.0.1', '17.0', '17.5']
         default: '17.0.1'
       ios17_test_scope:
-        description: iOS 17 驗證範圍；局部通過不代表完整驗收
+        description: iOS 17 範圍；core 加全部 ui-* 涵蓋非 Live，局部或略過不代表完整驗收
         type: choice
-        options: [all, core, workspace, files, parity, startup, startup-smoke]
+        options: [all, core, workspace, files, parity, startup, startup-smoke, ui-startup, ui-workspace, ui-browser, ui-learning, ui-memory, ui-skills, ui-documents, ui-mcp]
         default: all
       ios17_host_arch:
         description: Hosted iOS 17 主機架構；明確比較，不自動替換 runtime
@@ -143,6 +143,10 @@ jobs:
       - name: Hosted runner 固定 Xcode 16.4
         if: inputs.mode == 'ios17-hosted'
         run: echo 'DEVELOPER_DIR=/Applications/Xcode_16.4.app/Contents/Developer' >> "$GITHUB_ENV"
+      - name: 檢查 UI 分片無遺漏並測試驗證程式
+        run: |
+          python3 scripts/release_ios17.py --check-ui-inventory
+          python3 -m unittest discover -s scripts -p 'test_release_*.py' -v
       - name: 安裝固定版本 XcodeGen
         run: bash scripts/release_install_xcodegen.sh
       - name: 執行指定 iOS 17 runtime 與測試範圍

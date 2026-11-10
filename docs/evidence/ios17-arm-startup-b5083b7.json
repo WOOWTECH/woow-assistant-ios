@@ -1,0 +1,214 @@
+{
+  "schema_version": 1,
+  "scope": "startup-smoke only; not full UI, live-service or physical-device acceptance",
+  "records": [
+    {
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42793955136",
+      "artifact_id": 13753519948,
+      "source_revision": "b5083b79ffb6347b62631947562cbe26f984b0bf",
+      "requested_os": "17.0.1",
+      "report": {
+        "requested_runtime": "17.0.1",
+        "runtime_tested": false,
+        "deployment_target": "17.0",
+        "physical_devices_used": false,
+        "host_architecture": "arm64",
+        "host_macos": "15.8.2",
+        "expected_host_architecture": "arm64",
+        "phase_history": [
+          {
+            "phase": "preflight",
+            "requested_runtime": "17.0.1",
+            "at": "2026-11-10T09:49:52.157338+00:00",
+            "elapsed_seconds": 0.0
+          },
+          {
+            "phase": "checking_runtime",
+            "requested_runtime": "17.0.1",
+            "at": "2026-11-10T09:49:52.256583+00:00",
+            "elapsed_seconds": 0.1
+          },
+          {
+            "phase": "downloading_runtime",
+            "requested_runtime": "17.0.1",
+            "at": "2026-11-10T09:50:49.488391+00:00",
+            "elapsed_seconds": 57.3
+          },
+          {
+            "phase": "checking_installed_runtime",
+            "requested_runtime": "17.0.1",
+            "at": "2026-11-10T09:52:39.743413+00:00",
+            "elapsed_seconds": 167.6
+          },
+          {
+            "phase": "generating_project",
+            "requested_runtime": "17.0.1",
+            "at": "2026-11-10T09:52:41.555432+00:00",
+            "elapsed_seconds": 169.4
+          },
+          {
+            "phase": "checking_build_settings",
+            "requested_runtime": "17.0.1",
+            "at": "2026-11-10T09:52:41.712907+00:00",
+            "elapsed_seconds": 169.6
+          },
+          {
+            "phase": "creating_simulator",
+            "requested_runtime": "17.0.1",
+            "at": "2026-11-10T09:52:47.293620+00:00",
+            "elapsed_seconds": 175.1
+          },
+          {
+            "phase": "booting",
+            "requested_runtime": "17.0.1",
+            "at": "2026-11-10T09:52:48.108560+00:00",
+            "elapsed_seconds": 176.0
+          },
+          {
+            "phase": "testing",
+            "requested_runtime": "17.0.1",
+            "at": "2026-11-10T09:57:01.667031+00:00",
+            "elapsed_seconds": 429.5
+          },
+          {
+            "phase": "passed",
+            "requested_runtime": "17.0.1",
+            "at": "2026-11-10T10:04:40.672022+00:00",
+            "elapsed_seconds": 888.5
+          }
+        ],
+        "test_scope": "startup-smoke",
+        "selected_tests_succeeded": true,
+        "phase": "passed",
+        "xcode": "Xcode 16.4\nBuild version 16F6",
+        "selected_runtime": {
+          "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+          "version": "17.0.1",
+          "buildversion": "21A342"
+        },
+        "boot_exit_code": 0,
+        "boot_terminal_status": 4294967295,
+        "boot_data_migration_failed": false,
+        "boot_succeeded": true,
+        "simulator_state_unavailable": true,
+        "maximum_case_seconds": 300,
+        "test_exit_code": 0,
+        "simulator_deleted": true
+      },
+      "passed_case": "WoowAssistantUITests.WoowAssistantUITests testEverySectionIsReachableAndPhoneControlIsExcluded",
+      "case_seconds": 64.648,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "evidence_sha256": {
+        "report.json": "17d4da6d17ee666bdb6afcc7e6f38b8ee96bda35c44ade0d39e4bc42276183a1",
+        "tests.log": "52af4657be64eeef4820d5513fb01654294f622f807344700de3cca91bbb4c48",
+        "simulator-boot.log": "b40251e97c5d23b0f3dec511fb1463d7d2807af41b303621bca8b162dfb1a596"
+      }
+    },
+    {
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42793983325",
+      "artifact_id": 13753004244,
+      "source_revision": "b5083b79ffb6347b62631947562cbe26f984b0bf",
+      "requested_os": "17.5",
+      "report": {
+        "requested_runtime": "17.5",
+        "runtime_tested": false,
+        "deployment_target": "17.0",
+        "physical_devices_used": false,
+        "host_architecture": "arm64",
+        "host_macos": "15.8.2",
+        "expected_host_architecture": "arm64",
+        "phase_history": [
+          {
+            "phase": "preflight",
+            "requested_runtime": "17.5",
+            "at": "2026-11-10T09:50:02.807032+00:00",
+            "elapsed_seconds": 0.0
+          },
+          {
+            "phase": "checking_runtime",
+            "requested_runtime": "17.5",
+            "at": "2026-11-10T09:50:03.178071+00:00",
+            "elapsed_seconds": 0.4
+          },
+          {
+            "phase": "downloading_runtime",
+            "requested_runtime": "17.5",
+            "at": "2026-11-10T09:51:02.839233+00:00",
+            "elapsed_seconds": 60.0
+          },
+          {
+            "phase": "checking_installed_runtime",
+            "requested_runtime": "17.5",
+            "at": "2026-11-10T09:52:45.491891+00:00",
+            "elapsed_seconds": 162.6
+          },
+          {
+            "phase": "generating_project",
+            "requested_runtime": "17.5",
+            "at": "2026-11-10T09:52:47.089307+00:00",
+            "elapsed_seconds": 164.2
+          },
+          {
+            "phase": "checking_build_settings",
+            "requested_runtime": "17.5",
+            "at": "2026-11-10T09:52:47.245753+00:00",
+            "elapsed_seconds": 164.4
+          },
+          {
+            "phase": "creating_simulator",
+            "requested_runtime": "17.5",
+            "at": "2026-11-10T09:52:51.135805+00:00",
+            "elapsed_seconds": 168.2
+          },
+          {
+            "phase": "booting",
+            "requested_runtime": "17.5",
+            "at": "2026-11-10T09:52:51.962738+00:00",
+            "elapsed_seconds": 169.1
+          },
+          {
+            "phase": "testing",
+            "requested_runtime": "17.5",
+            "at": "2026-11-10T09:57:07.600762+00:00",
+            "elapsed_seconds": 425.6
+          },
+          {
+            "phase": "passed",
+            "requested_runtime": "17.5",
+            "at": "2026-11-10T10:01:52.836809+00:00",
+            "elapsed_seconds": 709.7
+          }
+        ],
+        "test_scope": "startup-smoke",
+        "selected_tests_succeeded": true,
+        "phase": "passed",
+        "xcode": "Xcode 16.4\nBuild version 16F6",
+        "selected_runtime": {
+          "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-5",
+          "version": "17.5",
+          "buildversion": "21F79"
+        },
+        "boot_exit_code": 0,
+        "boot_terminal_status": 4294967295,
+        "boot_data_migration_failed": false,
+        "boot_succeeded": true,
+        "simulator_state_unavailable": true,
+        "maximum_case_seconds": 300,
+        "test_exit_code": 0,
+        "simulator_deleted": true
+      },
+      "passed_case": "WoowAssistantUITests.WoowAssistantUITests testEverySectionIsReachableAndPhoneControlIsExcluded",
+      "case_seconds": 47.721,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "evidence_sha256": {
+        "report.json": "a5c0bebba646407bedd224f62462b8ab2c0b3f75baebd82d075da93a6e5b5fff",
+        "tests.log": "950d52078fa1e869247eb1d2718c87c41b84bd59968378710e57f460c3dcdc11",
+        "simulator-boot.log": "22e339db37dfb023d93514a2f555d3375b56e4cd95f98455767133554eda0856"
+      }
+    }
+  ]
+}
