@@ -132,10 +132,22 @@ def execute(output, requested, download, test_scope="all"):
         try:
             run(["xcrun", "simctl", "bootstatus", simulator, "-b"], "啟動指定 iOS 17 Simulator",
                 timeout=900, diagnostic_log=output / "simulator-boot.log")
+            report["boot_succeeded"] = True
+        except ReleaseError as error:
+            report["boot_succeeded"] = False
+            report["boot_error"] = str(error)
+            raise
         finally:
-            devices = json.loads(run(["xcrun", "simctl", "list", "devices", "--json"], "取得測試裝置狀態"))
-            own = [item for group in devices.get("devices", {}).values() for item in group if item.get("udid") == simulator]
-            report["simulator_state"] = [{key: item.get(key) for key in ("state", "isAvailable", "availabilityError")} for item in own]
+            # Inventory is diagnostic only. In run 42758809838 bootstatus
+            # finished successfully, then this extra query timed out. In
+            # 42758764668 the same query masked the real data-migration failure.
+            save_report()
+            try:
+                devices = json.loads(run(["xcrun", "simctl", "list", "devices", "--json"], "取得測試裝置狀態", timeout=30))
+                own = [item for group in devices.get("devices", {}).values() for item in group if item.get("udid") == simulator]
+                report["simulator_state"] = [{key: item.get(key) for key in ("state", "isAvailable", "availabilityError")} for item in own]
+            except (ReleaseError, ValueError, TypeError, AttributeError):
+                report["simulator_state_unavailable"] = True
         checkpoint("testing")
         with (output / "tests.log").open("wb") as log:
             try:
@@ -161,8 +173,22 @@ def execute(output, requested, download, test_scope="all"):
         save_report()
         if simulator:
             # Only the simulator created by this invocation is removed.
-            subprocess.run(["xcrun", "simctl", "shutdown", simulator], capture_output=True, timeout=60)
-            run(["xcrun", "simctl", "delete", simulator], "刪除此驗證專用 Simulator")
+            # Still attempt delete after a shutdown error, and never replace
+            # the original boot/test failure with a secondary cleanup failure.
+            failed = sys.exc_info()[0] is not None
+            try:
+                subprocess.run(["xcrun", "simctl", "shutdown", simulator], capture_output=True, timeout=60)
+            except (OSError, subprocess.TimeoutExpired):
+                report["simulator_shutdown_incomplete"] = True
+            try:
+                run(["xcrun", "simctl", "delete", simulator], "刪除此驗證專用 Simulator")
+                report["simulator_deleted"] = True
+            except ReleaseError:
+                report["simulator_deleted"] = False
+                if not failed:
+                    raise
+            finally:
+                save_report()
     print(json.dumps(report, ensure_ascii=False, indent=2))
 
 

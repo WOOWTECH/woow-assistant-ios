@@ -377,6 +377,57 @@ class RuntimeTests(unittest.TestCase):
                 self.assertTrue(any(call.args[0] == ["xcrun", "simctl", "delete", simulator] for call in runner.call_args_list))
                 self.assertFalse((output / "report.json.tmp").exists())
 
+    def test_inventory_and_cleanup_cannot_mask_boot_outcome(self):
+        simulator = "12345678-1234-1234-1234-123456789ABC"
+        cases = [(False, False, False, 0), (True, False, False, 0),
+                 (True, True, False, 0), (False, True, False, 0),
+                 (False, False, True, 0), (False, True, False, 65)]
+        for boot_failed, cleanup_failed, invalid_inventory, test_exit in cases:
+            with self.subTest(case=(boot_failed, cleanup_failed, invalid_inventory, test_exit)), tempfile.TemporaryDirectory() as folder:
+                output = Path(folder) / "result"
+                tested = []
+                def command(args, *unused, **kwargs):
+                    if "-version" in args: return b"Xcode 16.4"
+                    if "-showBuildSettings" in args: return b"[]"
+                    if "create" in args: return simulator.encode()
+                    if "bootstatus" in args and boot_failed:
+                        raise release.ReleaseError("primary boot migration failure")
+                    if "devices" in args:
+                        # The 17.5 runner completed boot but its inventory hung.
+                        if invalid_inventory: return b"not JSON"
+                        raise release.ReleaseError("secondary inventory timeout")
+                    if "delete" in args and cleanup_failed:
+                        raise release.ReleaseError("secondary delete failure")
+                    return b""
+                def child(args, **kwargs):
+                    if args[0] == "xcodebuild":
+                        tested.append(args)
+                        return subprocess.CompletedProcess(args, test_exit)
+                    if "shutdown" in args and cleanup_failed:
+                        raise subprocess.TimeoutExpired(args, kwargs["timeout"])
+                    return subprocess.CompletedProcess(args, 0)
+                with patch.object(ios17, "run", side_effect=command) as runner, \
+                     patch.object(ios17, "ensure_runtime", return_value=self.payload()["runtimes"][0]), \
+                     patch.object(ios17, "generate_project", return_value=output / "Project.xcodeproj"), \
+                     patch.object(ios17, "verify_settings"), \
+                     patch.object(ios17.subprocess, "run", side_effect=child), patch("builtins.print"):
+                    if boot_failed or cleanup_failed or test_exit:
+                        expected = ("primary boot migration failure" if boot_failed else
+                                    "XCTest 失敗" if test_exit else "secondary delete failure")
+                        with self.assertRaisesRegex(release.ReleaseError, expected):
+                            ios17.execute(output, "17.5", False, "core")
+                    else:
+                        ios17.execute(output, "17.5", False, "core")
+                report = json.loads((output / "report.json").read_text())
+                self.assertEqual(report["boot_succeeded"], not boot_failed)
+                self.assertEqual(report["simulator_deleted"], not cleanup_failed)
+                self.assertTrue(report["simulator_state_unavailable"])
+                self.assertEqual(len(tested), 0 if boot_failed else 1)
+                self.assertEqual(report["selected_tests_succeeded"], not boot_failed and test_exit == 0)
+                if test_exit: self.assertEqual(report["test_exit_code"], test_exit)
+                self.assertFalse(report["runtime_tested"])
+                self.assertTrue(any(call.args[0] == ["xcrun", "simctl", "delete", simulator] for call in runner.call_args_list))
+
 
 if __name__ == "__main__":
     unittest.main()

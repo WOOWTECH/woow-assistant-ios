@@ -58,12 +58,28 @@ cases. Both actually executed App code, and neither is a full pass.
 original address before normalization; 1,034 local direct Swift checks passed.
 The new native and hosted regression cases await the new simulator runs.
 
-Full reruns on `0092fc8` are in progress:
+Full reruns on `0092fc8` stopped before App tests:
 [17.0.1 42758764668](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758764668)
 and [17.5 42758809838](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758809838).
-They include the input-focus, keyboard/scrolling, Files presentation and exact
-thumbnail corrections, plus the 80-minute build/test deadline. Later test-only
-repairs are separate revisions and must be retested before being called passed.
+17.0.1 boot diagnostics ended with `Data Migration Failed`; 17.5 reached
+`Finished`. In both runs the subsequent optional device inventory timed out and
+masked the boot outcome. Neither run compiled or tested the App. The runner now
+records boot success/failure before inventory, treats inventory failure only as
+missing diagnostics, and preserves the primary failure through cleanup. It does
+not retry boot or substitute another runtime.
+
+Test-only repairs on `776f5f9` are under new
+[files 42762605111](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762605111)
+and [parity 42762628864](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762628864).
+They recognize the native export confirmation/ancestor route, preserve all result
+and cancellation assertions, observe a single scroll dispatch across rendering
+turns, and use bounded native scrolling for virtualized learning controls.
+Cancellation spindumps located the stall after gate release in an unnecessary
+PDFKit call inside the simulated remote adapter. The adapter now returns a valid
+fixed response; positive-control and early-release cases ensure cancellation is
+not merely hiding an invalid response. Actual PDFKit extraction and the original
+Python worker remain covered separately. Large-device page-load delay remains
+unexplained; deadline diagnostics were improved without changing the assertion.
 
 ### Earlier increment evidence
 

@@ -110,7 +110,7 @@ minimum-ios17:
 
 ## 測試與待補輸入
 
-本機已通過 25 個 Python tests，包含真實子程序的 secrets 環境隔離、錯誤輸出隔離、缺少 secrets 的 CLI 失敗，以及 profile／身分匹配、簽章清理、framework 設定隔離、最低版本、隱私 manifest 與 runtime 選擇；另驗證 ad-hoc seal 與不同 leaf certificate 不能通過 distribution 驗證。ATS 測試以真實 XML／binary plist 驗證拒絕 Debug loopback 設定、全域例外、空字典與錯誤型別，並驗證 unsigned／signed 無 ATS 的通過回報。簽章匯入清理、Mach-O 及產物憑證測試使用合成資料與替代命令；不代表真實 iOS 編譯或簽章已成功。實際本機 CLI 的缺少 Xcode 失敗路徑另確認退出 1、即時 preflight 訊息與 `runtime_tested: false` 的完整報告，沒有遺留半寫入的暫存報告。shell 語法、YAML 解析及 actionlint 1.7.12 已通過。
+本機已通過 26 個 Python tests，包含真實子程序的 secrets 環境隔離、錯誤輸出隔離、缺少 secrets 的 CLI 失敗，以及 profile／身分匹配、簽章清理、framework 設定隔離、最低版本、隱私 manifest 與 runtime 選擇；另驗證 ad-hoc seal 與不同 leaf certificate 不能通過 distribution 驗證。ATS 測試以真實 XML／binary plist 驗證拒絕 Debug loopback 設定、全域例外、空字典與錯誤型別，並驗證 unsigned／signed 無 ATS 的通過回報。簽章匯入清理、Mach-O 及產物憑證測試使用合成資料與替代命令；不代表真實 iOS 編譯或簽章已成功。實際本機 CLI 的缺少 Xcode 失敗路徑另確認退出 1、即時 preflight 訊息與 `runtime_tested: false` 的完整報告，沒有遺留半寫入的暫存報告。shell 語法、YAML 解析及 actionlint 1.7.12 已通過。
 
 已實際下載並核對固定 XcodeGen 2.44.1 的 SHA-256，在本機暫存目錄產生真實專案，套用合成簽章設定後以 `plutil -lint` 驗證，確認 App 有 profile、其他 target 沒有 App profile。首次產生因 session 缺少 `USER` 失敗；只在驗證子程序補入 OS 帳號名稱後成功，未修改系統設定。此為專案產生／設定驗證，不是 Xcode 編譯。
 
@@ -127,7 +127,7 @@ minimum-ios17:
 
 ## Additional recorded results
 
-`0092fc8` [unsigned-device 42758873943](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758873943) passed the same nine-binary and packaged-resource checks after the raw-address fix. It still reports `signature_verified: false`, `runtime_tested: false`, `uploaded: false`. Full reruns [17.0.1 42758764668](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758764668) and [17.5 42758809838](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758809838) on that revision are pending.
+`0092fc8` [unsigned-device 42758873943](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758873943) passed the same nine-binary and packaged-resource checks after the raw-address fix. It still reports `signature_verified: false`, `runtime_tested: false`, `uploaded: false`. Full reruns [17.0.1 42758764668](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758764668) and [17.5 42758809838](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758809838) on that revision stopped before XCTest: 17.0.1 recorded terminal data-migration failure; 17.5 recorded successful boot. Both then failed on the optional device-state inventory, masking the primary boot outcome. The runner now records boot results before that query, records missing diagnostics without blocking a successful boot, and preserves the primary failure even if shutdown/deletion also fails. Synthetic regression cases cover these combinations; this is not a claim that the 17.0.1 migration failure is repaired.
 
 `39a13b0` [unsigned-device 42753499130](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42753499130) passed the actual Release build and packaged privacy-manifest audit: nine binaries, minimum OS 17.0, Xcode/SDK 26.2, `native_documents_enabled`, `ats_key_absent`, and `required_reason_entries_verified` all true. It remains unsigned, not installable, not runtime-tested and not uploaded for distribution.
 
