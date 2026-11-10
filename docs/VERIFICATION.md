@@ -1,5 +1,15 @@
 # Verification — 2026-11-11
 
+## Current MCP UI and remaining profile / picker failures
+
+At `61f5377`, [42866536800](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866536800) passed **8/8 MCP UI methods, zero failures/skips**, on iPhone 17 / iOS 26.2. This includes all three mixed local-learning cases: remote result then reviewed memory and undo/relaunch, saved profile preserved after remote refusal, and declined local memory with no remote attempt or persisted item. These use synthetic model/MCP fixtures; the separate real HA/model UI remains pending. [Exact methods and xcresult metadata](evidence/ui-mcp-61f5377.json).
+
+The same revision's [profile UI run](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866528420) passed **8/9, one failure, zero skips**. All four former composer failures passed. The remaining case still showed clear-all stage 1 after a native Continue tap inside its actual visible frame. The cause is unproven. A diagnostic correction scopes the controls to that sheet and requires stage 2 on both cancellation and destructive branches; it does not add a second tap, increase the ten-second wait, or claim a product fix. [Original tap/AX and candidate hashes](evidence/ui-profile-61f5377.json).
+
+PDF assembly failed separately on [SE](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866580966) because its byte receipt contained a valid thousands separator, and on [current iOS](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866563988) because Files remained presented after Open with the exact source selected. The latter never reached read approval and is not covered by the receipt parser correction. [SE evidence](evidence/pdf-assembly-61f5377-se.json), [current evidence](evidence/pdf-assembly-61f5377-current.json).
+
+The first document-query native dispatch at `ad461cf` had a source-reviewed observation wiring defect: the passive picker probe required the local experiment gate, which deliberately rejects live-model launches. The correction supplies only the validated synthetic fixture namespace to a passive probe, independently of experiment mode. User selection, picker implementation, delegate handling and approvals are unchanged. Debug/Release fixture guards and syntax checks pass; this is not native selection acceptance. The original actual-model App logic report retains its captured pre-correction source hashes. A corrected native live run is required.
+
 ## PDF text tools and query integration
 
 The PDF result now exposes a separately consented model query over its immutable extracted pages, using bounded search/read operations and actual-read IDs for verified original-page quotations. The App preserves the question and source on cancellation, invalidates destination consent on configuration changes, and exports only a completed answer through the native destination picker. [Exact capability and provenance boundaries](SKILL_RUNTIME.md).

@@ -1,0 +1,189 @@
+{
+  "app_source_review": {
+    "path": "Sources/App/MemoryDataView.swift",
+    "phase_action": "LearningClearView Continue directly sets @State stage = 2 synchronously.",
+    "scope": "Read only; no App change or confirmed product root cause.",
+    "sheet_identity": "LearningSheet.clear returns stable clear"
+  },
+  "artifact": {
+    "digest": "sha256:17224d111975666714fa67fad7a828a7fb981d9b6ef4459f0ac8c014c3658c24",
+    "id": 13790667545,
+    "size_bytes": 447203686,
+    "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866528420/artifacts/13790667545"
+  },
+  "candidate": {
+    "changes": [
+      "Scope Continue and Confirm queries to the presented clear sheet ScrollView containing memory.clear.stage.",
+      "Require stage 1, no Confirm, enabled/hittable Continue and its full frame within viewport/window below navigation, with no keyboard.",
+      "Use one native Continue tap; preserve existing 10-second Confirm readiness bound.",
+      "Require actual stage 2 and absent Continue before cancelling or confirming. Previously cancellation branch did not prove it reached stage 2.",
+      "Preserve actual confirmation, relaunch-empty/history-erased and master-off persistence assertions."
+    ],
+    "native_validation": false,
+    "no_new_retries": true,
+    "no_wait_timeout_increase": true,
+    "path": "Tests/WoowAssistantUITests/UserProfileUITests.swift",
+    "sha256": "7712db1f3cb47c48f33a4ecde9163f6cc1e0f9e3556c0a3e7a2d03a75174c6cf",
+    "status": "Frozen diagnostic coverage correction; root-cause fix unproven and native retest required.",
+    "validation": {
+      "git_diff_check": "passed",
+      "release_ios17_readiness": "10/10 passed",
+      "swift_frontend_parse": "passed"
+    }
+  },
+  "completion": {
+    "completed_ui_count": 9,
+    "counts": {
+      "expectedFailures": 0,
+      "failedTests": 1,
+      "passedTests": 8,
+      "skippedTests": 0,
+      "totalTestCount": 9
+    },
+    "expected_ui_count": 9,
+    "missing_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": [
+      "WoowAssistantUITests/UserProfileUITests/testMasterSwitchAndTwiceConfirmedClearPersist"
+    ],
+    "result": "Failed",
+    "unexpected_ui_tests": [],
+    "verified": false
+  },
+  "failure": {
+    "class": "UserProfileUITests",
+    "duration_seconds": 155.007,
+    "message": "XCTAssertEqual failed: XCTWaiterResult(rawValue: 2) differs from XCTWaiterResult(rawValue: 1).",
+    "method": "testMasterSwitchAndTwiceConfirmedClearPersist",
+    "phase": "After the second opening of the clear sheet and native Continue tap; before destructive confirmation.",
+    "source_line": 206,
+    "source_path": "Tests/WoowAssistantUITests/UserProfileUITests.swift",
+    "wait_target": "memory.clear.confirm",
+    "wait_timeout_seconds": 10
+  },
+  "fixture_evidence": {
+    "ax_file": "BBDD9F59-2B98-4A13-8AA0-5F63CCC5615E.txt",
+    "confirm_present": false,
+    "continue_frame": {
+      "height": 34.3,
+      "width": 58,
+      "x": 16,
+      "y": 280.7
+    },
+    "keyboard_present": false,
+    "retrieval": "Bounded archive ranges: small summary/runtime/completion JSON, fixture AX/screenshot and four small synthesized-event/snapshot archives. No full artifact downloaded.",
+    "screenshot_file": "B559C5D4-25C7-4C27-8D29-82E9AC925499.png",
+    "stage_label": "第一步：確認清除範圍",
+    "synthesized_event_file": "7AC08B8A-16D1-4779-866E-F609778D7488",
+    "tap": {
+      "event_offsets_seconds": [
+        0,
+        0.05
+      ],
+      "inside_continue_frame": true,
+      "name": "tap",
+      "x": 45,
+      "y": 297.8333333333333
+    },
+    "window": {
+      "height": 874,
+      "width": 402
+    }
+  },
+  "head_sha": "61f5377254d15c99736223efbc7dae3d57a577ca",
+  "job_id": 130006235024,
+  "limitations": [
+    "Tap synthesis and later AX prove the point lay inside the button frame and the sheet remained at stage 1; they do not prove why the action did not advance.",
+    "Candidate only strengthens sheet/phase coverage; no claim that it repairs a demonstrated hit-area or product defect.",
+    "No ClearAll mutation was attempted in the failing branch. Clear-all behavior remains unaccepted in this run.",
+    "All completion counts retain this failure; source parse and inventory checks are not native UI success."
+  ],
+  "observed_at": "2026-11-10T18:23:27.199800+00:00",
+  "original_composer_regressions": {
+    "expected": 4,
+    "failed": 0,
+    "passed": 4,
+    "statement": "All four original 856 chat.draft failures completed successfully under the 61f composer visibility correction on this device."
+  },
+  "pinned_source_sha256": {
+    "Sources/App/ChatSession.swift": "c6947419729bcc6f3b07ea24c0b4be3a8d522df2cb6d65471579dd82c295fb34",
+    "Sources/App/LearningStore.swift": "3446c43afdb2cbf2992f1eb29f63a33cdb13fa2550e7761a034d2b0c3cc783c5",
+    "Sources/App/MemoryDataView.swift": "e4f8474bae029f8443c15350a739aad007f65d7f04a8b0f5ce633f97f9dea091",
+    "Sources/App/UserProfileView.swift": "69ebbc881e5ec6bee50f5eefa79be14dc1bd2a7752b7621692c357d2dd18c783",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+    "Tests/WoowAssistantUITests/UserProfileToolUITests.swift": "ed0f454214d63bcad9970c4a449b360ae0c56654a5432dc76e7af33ec3a6f9af",
+    "Tests/WoowAssistantUITests/UserProfileUITests.swift": "d41343a51a90bd7c718359257b1ecdea2df4b79f757a762278e25f4a815304fa"
+  },
+  "records": [
+    {
+      "class": "UserProfileToolUITests",
+      "method": "testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+      "outcome": "passed",
+      "seconds": 192.673
+    },
+    {
+      "class": "UserProfileToolUITests",
+      "method": "testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+      "outcome": "passed",
+      "seconds": 157.369
+    },
+    {
+      "class": "UserProfileToolUITests",
+      "method": "testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "outcome": "passed",
+      "seconds": 196.16
+    },
+    {
+      "class": "UserProfileToolUITests",
+      "method": "testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+      "outcome": "passed",
+      "seconds": 204.528
+    },
+    {
+      "class": "UserProfileUITests",
+      "method": "testCreateReplaceDeleteAndHistorySurviveRelaunch",
+      "outcome": "passed",
+      "seconds": 149.785
+    },
+    {
+      "class": "UserProfileUITests",
+      "method": "testDuplicateAndCancelledTextNeverPublish",
+      "outcome": "passed",
+      "seconds": 140.259
+    },
+    {
+      "class": "UserProfileUITests",
+      "method": "testMasterSwitchAndTwiceConfirmedClearPersist",
+      "outcome": "failed",
+      "seconds": 155.007
+    },
+    {
+      "class": "UserProfileUITests",
+      "method": "testMultipleSentencesNeverPublish",
+      "outcome": "passed",
+      "seconds": 128.26
+    },
+    {
+      "class": "UserProfileUITests",
+      "method": "testSensitiveTextNeverPublishes",
+      "outcome": "passed",
+      "seconds": 126.262
+    }
+  ],
+  "run_id": 42866528420,
+  "runtime": {
+    "device_name": "iPhone 17",
+    "runtime_build": "23C54",
+    "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+    "runtime_version": "26.2"
+  },
+  "schema_version": 1,
+  "scope": "Native current ui-profile: eight passing methods and one actual clear-phase failure; full scope not accepted.",
+  "source_listed_methods_exactly_completed_once": true,
+  "xcresult_summary_counts": {
+    "expectedFailures": 0,
+    "failedTests": 1,
+    "passedTests": 8,
+    "skippedTests": 0,
+    "totalTestCount": 9
+  }
+}

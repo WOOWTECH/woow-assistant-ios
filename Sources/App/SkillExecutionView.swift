@@ -76,6 +76,14 @@ private struct DocumentQueryPresentation: Identifiable {
         #endif
     }
 
+    private var pickerObservationNamespace: UUID? {
+        #if DEBUG
+        model.uiTestFixture?.namespace
+        #else
+        nil
+        #endif
+    }
+
     init(modelAccess: @escaping () throws -> ModelAccess, modelChanges: AnyPublisher<Void, Never>,
          worker: (any SkillExecutionPDFWorker)? = nil) {
         self.modelAccess = modelAccess; self.modelChanges = modelChanges; self.suppliedWorker = worker
@@ -189,7 +197,7 @@ private struct DocumentQueryPresentation: Identifiable {
             #if DEBUG
             pickerObservation = value
             #endif
-        }))
+        }, observationNamespace: pickerObservationNamespace))
         .fileExporter(isPresented: $exportingText, document: exportDocument,
                       contentTypes: [.utf8PlainText], defaultFilename: exportFilename,
                       onCompletion: { outcome in

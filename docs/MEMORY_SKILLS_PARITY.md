@@ -64,7 +64,7 @@ Manual personal profiles now have a pinned-behavior state core, encrypted Learni
   constrained DOM interaction are separate increments; catalog evidence below
   does not establish their acceptance or full browser parity.
   Drafting/promotion must be accepted with separate core, App UI and live evidence.
-- Model-controlled memory mutation remains unimplemented; ordinary-chat `profile_edit` is implemented with the additional review boundary above and still requires acceptance. Pinned Mika performs post-run memory extraction, not automatic profile consolidation; profile changes belong to the explicit `profile_edit` tool and take effect on the next run.
+- Model-proposed ordinary/MCP memory changes are now implemented through the reviewed host callbacks described above; acceptance remains revision- and flow-specific. Ordinary-chat `profile_edit` also retains the additional review boundary. Pinned Mika performs post-run memory extraction, not automatic profile consolidation; profile changes belong to the explicit `profile_edit` tool and take effect on the next run.
   Skill search/read and reviewed-save now have actual-model App acceptance at
   `6d480d8`; this does not grant automatic approval or general mutation authority. The complete pinned bundled-source archive and separately labeled
   iOS text adaptations are implemented below; this is not original-skill execution

@@ -1,0 +1,65 @@
+{
+  "source_commit": "61f5377254d15c99736223efbc7dae3d57a577ca",
+  "method": "SkillExecutionUITests.testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+  "counts": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0
+  },
+  "case_time_allowance_seconds": 240,
+  "code_changed": false,
+  "run_id": 42866563988,
+  "job_id": 130006376006,
+  "artifact_id": 13788394794,
+  "runtime": "26.2 (23C54)",
+  "duration_seconds": 146.845,
+  "failure_line": 730,
+  "failure_stage": "native_selection_not_delivered",
+  "known_grouped_integer_failure": false,
+  "observed": {
+    "exact_native_cell_tap_seconds": 116.78,
+    "native_open_tap_seconds": 120.24,
+    "selected_source_wait_started_seconds": 120.98,
+    "selection_wait_seconds": 15,
+    "failure_AX_native_files_present": true,
+    "failure_AX_exact_cell_selected": true,
+    "failure_AX_source_label_present": false,
+    "failure_AX_receipt_present": false
+  },
+  "system_errors": [
+    {
+      "domain": "NSFileProviderErrorDomain",
+      "code": -1005
+    },
+    {
+      "domain": "NSFileProviderResolverErrorDomain",
+      "code": -1012
+    }
+  ],
+  "system_error_utc": "2026-11-10 18:06:08.811665",
+  "actual_importer_callback_count": null,
+  "not_reached": [
+    "source_accepted_UI",
+    "read_approval",
+    "read_receipt",
+    "page_order_edit",
+    "plan_review",
+    "assembly_approval",
+    "assembly_result",
+    "native_export"
+  ],
+  "evidence": {
+    "summary": "test-summary.json",
+    "test_log": "ios-tests.log:3233",
+    "failure_AX": "044937B3-28E8-4DC0-941E-4A299F8C64D0.txt",
+    "system_error": "StandardOutputAndStandardError-io.woowtech.assistant.txt:143454"
+  },
+  "limitations": [
+    "Assembly has no callback counter in this revision; absence of the extraction-screen callback marker is not interpreted as a measured zero callback count.",
+    "The system error and still-present selected Files UI establish a distinct native selection delivery failure, not the lower-level provider root cause.",
+    "No evidence establishes that a longer wait, retap, new namespace or receipt parser change would fix this failure.",
+    "Only bounded ZIP members were downloaded; the complete artifact/video bundle was not downloaded."
+  ],
+  "schema_version": 1
+}

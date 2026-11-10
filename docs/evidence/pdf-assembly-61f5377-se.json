@@ -1,0 +1,45 @@
+{
+  "source_commit": "61f5377254d15c99736223efbc7dae3d57a577ca",
+  "method": "SkillExecutionUITests.testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+  "counts": {
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0
+  },
+  "case_time_allowance_seconds": 240,
+  "code_changed": false,
+  "run_id": 42866580966,
+  "job_id": 130006424409,
+  "artifact_id": 13789847786,
+  "runtime": "18.5 (22F77)",
+  "duration_seconds": 106.051,
+  "failure_line": 332,
+  "failure_stage": "read_receipt_regex",
+  "actual_receipt": "已讀取 2 頁，8,460 位元組",
+  "known_grouped_integer_failure": true,
+  "observed": {
+    "exact_file_selected": true,
+    "native_open_tap_seconds": 92.81,
+    "selected_source_observed_seconds": 95.86,
+    "read_approval_tap_seconds": 99.72,
+    "receipt_read_seconds": 103.84
+  },
+  "not_reached": [
+    "page_order_edit",
+    "plan_review",
+    "assembly_approval",
+    "assembly_result",
+    "native_export"
+  ],
+  "evidence": {
+    "summary": "test-summary.json",
+    "test_log": "ios-tests.log",
+    "receipt_AX": "Session-WoowAssistantUITests-2026-11-10_180850-B2UdRW.log:28707"
+  },
+  "schema_version": 1,
+  "limitations": [
+    "Receipt was delivered and the native read succeeded, but the old assertion stopped this case before page-order review, assembly or export. The grouped-integer parser change has not been rerun here.",
+    "Only bounded ZIP members were downloaded; the complete artifact/video bundle was not downloaded."
+  ]
+}

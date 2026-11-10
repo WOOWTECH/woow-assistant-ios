@@ -1,0 +1,157 @@
+{
+  "artifact": {
+    "digest": "sha256:d5b73fcea26f49bf7d82365890be67df37a1bfc4f5cb4d0dcd89f18f42bbe61c",
+    "id": 13790512716,
+    "size_bytes": 285487711,
+    "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42866536800/artifacts/13790512716"
+  },
+  "completion": {
+    "completed_ui_count": 8,
+    "counts": {
+      "expectedFailures": 0,
+      "failedTests": 0,
+      "passedTests": 8,
+      "skippedTests": 0,
+      "totalTestCount": 8
+    },
+    "expected_ui_count": 8,
+    "missing_ui_tests": [],
+    "nonpassing_or_repeated_ui_tests": [],
+    "result": "Passed",
+    "unexpected_ui_tests": [],
+    "verified": true
+  },
+  "fixture_deadline_seconds": 240,
+  "head_sha": "61f5377254d15c99736223efbc7dae3d57a577ca",
+  "job_id": 130006265913,
+  "limits": [
+    "In-process synthetic model/MCP fixtures; no real server, model HTTP or HA integration is claimed.",
+    "Counters are asserted from actual native accessibility values by the pinned passing methods. They are not a complete HTTP traffic count.",
+    "This is the current iPhone 17 device only, not the three-device memory-tools matrix.",
+    "App assertions/fixture replies are not substitutes for user-selected production MCP server behavior."
+  ],
+  "mixed_case_assertions": [
+    {
+      "method": "testRemoteThenMemoryApprovalFinishesAndUndoRemainsAbsentAfterRelaunch",
+      "native_approvals": [
+        "remote fixture_echo exact arguments",
+        "memory save exact full-prompt quote, text and keywords"
+      ],
+      "observed_via_passing_native_assertions": {
+        "attempts": 1,
+        "failure": "none",
+        "formatCorrections": 0,
+        "modelCalls": 3,
+        "results": 1
+      },
+      "result": "Exact remote result FIXTURE_CALL_1: hello, final answer and memory note/receipt; saved memory visible; native Undo removes it and relaunch keeps active/pending lists empty."
+    },
+    {
+      "method": "testProfileApprovalSurvivesRemoteDeclineAndRelaunch",
+      "native_approvals": [
+        "profile add exact full-prompt quote"
+      ],
+      "native_decline": "remote fixture_echo",
+      "observed_via_passing_native_assertions": {
+        "attempts": 0,
+        "failure": "approvalDenied",
+        "formatCorrections": 0,
+        "modelCalls": 2,
+        "results": 0
+      },
+      "result": "Saved profile receipt and partial-completion warning survive remote refusal; draft retained and no chat turn published; relaunch retains exact saved profile identity."
+    },
+    {
+      "method": "testDeclinedLocalMemoryPreservesDraftWithoutDataOrRemoteAttempt",
+      "native_decline": "local memory save",
+      "observed_via_passing_native_assertions": {
+        "attempts": 0,
+        "failure": "approvalDenied",
+        "formatCorrections": 0,
+        "modelCalls": 1,
+        "results": 0
+      },
+      "result": "No receipt/note/turn or remote result; original draft retained; relaunch shows no active/pending memory or profile."
+    }
+  ],
+  "observed_at": "2026-11-10T18:23:27.042680+00:00",
+  "pinned_source_sha256": {
+    "Sources/App/ChatSession.swift": "c6947419729bcc6f3b07ea24c0b4be3a8d522df2cb6d65471579dd82c295fb34",
+    "Sources/App/LearningStore.swift": "3446c43afdb2cbf2992f1eb29f63a33cdb13fa2550e7761a034d2b0c3cc783c5",
+    "Sources/App/MemoryDataView.swift": "e4f8474bae029f8443c15350a739aad007f65d7f04a8b0f5ce633f97f9dea091",
+    "Sources/App/UITestMCPFixture.swift": "1a12765725ffd7a79878ac09eceadde8310e81a9bcb63d690f59013c1671c591",
+    "Sources/App/UITestModelFixture.swift": "9801e1c6e3193eeed5927d4930ed7dde3cb0b42d12832f27b855bed8a5c98db6",
+    "Sources/App/UserProfileView.swift": "69ebbc881e5ec6bee50f5eefa79be14dc1bd2a7752b7621692c357d2dd18c783",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+    "Tests/WoowAssistantUITests/MCPConversationUITests.swift": "45a879b28bb5b7dd0b328edc5c03de0b02d53a8afda082863feab92040e5cb00",
+    "Tests/WoowAssistantUITests/MCPLearningUITests.swift": "bb2a8dc6a9808c5d3c1d203bc7090be80c74130116a92240dae43b19e0ed02ce"
+  },
+  "records": [
+    {
+      "class": "MCPConversationUITests",
+      "method": "testBackgroundRevokesPendingApprovalAndRetainsDraft",
+      "outcome": "passed",
+      "seconds": 63.263
+    },
+    {
+      "class": "MCPConversationUITests",
+      "method": "testModelSelectedToolRequiresExactApprovalAndReturnsResult",
+      "outcome": "passed",
+      "seconds": 82.078
+    },
+    {
+      "class": "MCPConversationUITests",
+      "method": "testRefusalPreservesDraftAndMakesNoServerCall",
+      "outcome": "passed",
+      "seconds": 49.407
+    },
+    {
+      "class": "MCPConversationUITests",
+      "method": "testSelectedResourceRequiresApprovalAndResultIsReviewable",
+      "outcome": "passed",
+      "seconds": 52.222
+    },
+    {
+      "class": "MCPConversationUITests",
+      "method": "testToolErrorPreservesDraftAndActualErrorResult",
+      "outcome": "passed",
+      "seconds": 55.618
+    },
+    {
+      "class": "MCPLearningUITests",
+      "method": "testDeclinedLocalMemoryPreservesDraftWithoutDataOrRemoteAttempt",
+      "outcome": "passed",
+      "seconds": 178.402
+    },
+    {
+      "class": "MCPLearningUITests",
+      "method": "testProfileApprovalSurvivesRemoteDeclineAndRelaunch",
+      "outcome": "passed",
+      "seconds": 141.746
+    },
+    {
+      "class": "MCPLearningUITests",
+      "method": "testRemoteThenMemoryApprovalFinishesAndUndoRemainsAbsentAfterRelaunch",
+      "outcome": "passed",
+      "seconds": 184.577
+    }
+  ],
+  "retries": 0,
+  "run_id": 42866536800,
+  "runtime": {
+    "device_name": "iPhone 17",
+    "runtime_build": "23C54",
+    "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+    "runtime_version": "26.2"
+  },
+  "schema_version": 1,
+  "scope": "Native current ui-mcp fixture: eight source-listed methods actually completed once; no skips.",
+  "source_listed_methods_exactly_completed_once": true,
+  "xcresult_summary_counts": {
+    "expectedFailures": 0,
+    "failedTests": 0,
+    "passedTests": 8,
+    "skippedTests": 0,
+    "totalTestCount": 8
+  }
+}

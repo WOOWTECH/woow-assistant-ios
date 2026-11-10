@@ -102,15 +102,15 @@ final class UserProfileUITests: XCTestCase {
         XCTAssertTrue(item("Keep this profile").exists, "Turning memory off preserves saved profile")
         tap("profile.close")
         tap("memory.clear", scroll: true)
-        tap("memory.clear.continue")
+        _ = advanceClearToFinalConfirmation()
         tap("memory.clear.cancel")
         absent(app.buttons["memory.clear.confirm"].firstMatch)
         tap("memory.profile.open", scroll: true)
         XCTAssertTrue(item("Keep this profile").waitForExistence(timeout: 5), "Cancel at second confirmation preserves profile")
         tap("profile.close")
         tap("memory.clear", scroll: true)
-        tap("memory.clear.continue")
-        tap("memory.clear.confirm")
+        let confirm = advanceClearToFinalConfirmation()
+        confirm.tap()
         absent(app.buttons["memory.clear.confirm"].firstMatch)
         launch(reset: false); openProfile()
         XCTAssertTrue(app.staticTexts["profile.empty"].firstMatch.waitForExistence(timeout: 5))
@@ -199,6 +199,36 @@ final class UserProfileUITests: XCTestCase {
         let element = app.buttons[identifier].firstMatch
         if scroll { revealLearningElement(element, in: app) }
         ready(element); element.tap()
+    }
+
+    private func advanceClearToFinalConfirmation() -> XCUIElement {
+        // 61f current: after a logged Continue tap, failure AX still showed
+        // stage 1 and no confirm button. Scope the action to the presented
+        // sheet, verify its actual geometry, and require stage 2 even on the
+        // cancellation branch. One native tap; no input retry or extra delay.
+        let stage = app.staticTexts["memory.clear.stage"].firstMatch
+        XCTAssertTrue(stage.waitForExistence(timeout: 5))
+        XCTAssertEqual(stage.label, "第一步：確認清除範圍")
+        let viewport = app.scrollViews.containing(.staticText, identifier: "memory.clear.stage").firstMatch
+        XCTAssertTrue(viewport.exists)
+        let navigation = app.navigationBars["清除資料"].firstMatch
+        XCTAssertTrue(navigation.exists)
+        let next = viewport.buttons["memory.clear.continue"].firstMatch
+        let confirm = viewport.buttons["memory.clear.confirm"].firstMatch
+        XCTAssertFalse(confirm.exists, "Final confirmation must not be available at stage 1")
+        ready(next)
+        let frame = next.frame
+        XCTAssertFalse(frame.isEmpty)
+        XCTAssertTrue(app.frame.contains(frame) && viewport.frame.contains(frame))
+        XCTAssertGreaterThanOrEqual(frame.minY, navigation.frame.maxY)
+        XCTAssertFalse(app.keyboards.firstMatch.exists)
+        next.tap()
+        // Keep the existing 10-second readiness bound, then assert the actual
+        // product state. Absence after cancel alone did not prove stage 2.
+        ready(confirm)
+        XCTAssertEqual(stage.label, "第二步：最後確認")
+        XCTAssertFalse(next.exists)
+        return confirm
     }
 
     private func ready(_ element: XCUIElement) {

@@ -81,14 +81,17 @@ import Darwin
     let experiment: PDFNativePickerExperiment.Configuration?
     let onCompletion: (Result<[URL], Error>) -> Void
     var onObservation: (String) -> Void = { _ in }
+    // Supplied only from the validated synthetic fixture. Observation never
+    // selects an experimental picker mode or changes the user's import choice.
+    var observationNamespace: UUID? = nil
 
     @ViewBuilder func body(content: Content) -> some View {
         presentation(content)
             #if DEBUG
             .background {
-                if let experiment {
-                    PDFPickerModeProbe(configuration: experiment,
-                                       source: choice == .importCopy ? "user-copy" : experiment.source,
+                if let namespace = experiment?.namespace ?? observationNamespace {
+                    PDFPickerModeProbe(namespace: namespace,
+                                       source: choice == .importCopy ? "user-copy" : (experiment?.source ?? "swiftui"),
                                        isPresented: isPresented,
                                        onObservation: onObservation)
                         .frame(width: 0, height: 0).allowsHitTesting(false).accessibilityHidden(true)
@@ -163,14 +166,14 @@ import Darwin
 /// A passive, bounded public-API observation in this view's own window. No
 /// private class names/KVC, responder hooks, delegate replacement or AX probing.
 @MainActor private struct PDFPickerModeProbe: UIViewControllerRepresentable {
-    let configuration: PDFNativePickerExperiment.Configuration
+    let namespace: UUID
     let source: String
     let isPresented: Bool
     let onObservation: (String) -> Void
 
     func makeUIViewController(context: Context) -> ProbeController { ProbeController() }
     func updateUIViewController(_ controller: ProbeController, context: Context) {
-        controller.update(configuration: configuration, source: source,
+        controller.update(namespace: namespace, source: source,
                           isPresented: isPresented, onObservation: onObservation)
     }
     static func dismantleUIViewController(_ controller: ProbeController, coordinator: ()) { controller.stop() }
@@ -179,16 +182,16 @@ import Darwin
         private var observation: Task<Void, Never>?
         private var presenting = false
         private var reported = false
-        private var activeConfiguration: PDFNativePickerExperiment.Configuration?
+        private var activeNamespace: UUID?
         private var activeSource: String?
 
-        func update(configuration: PDFNativePickerExperiment.Configuration, source: String, isPresented: Bool,
+        func update(namespace: UUID, source: String, isPresented: Bool,
                     onObservation: @escaping (String) -> Void) {
             guard isPresented else { stop(); return }
             guard !presenting else { return }
             presenting = true
             reported = false
-            activeConfiguration = configuration
+            activeNamespace = namespace
             activeSource = source
             observation = Task { @MainActor [weak self] in
                 // Defer until the SwiftUI presentation transaction completes.
@@ -209,7 +212,7 @@ import Darwin
                         }
                         let value = "source=\(source) mode=\(mode) allowsMultipleSelection=\(picker.allowsMultipleSelection)"
                         self.reported = true
-                        Self.record(configuration: configuration, value: value)
+                        Self.record(namespace: namespace, value: value)
                         onObservation(value)
                         return
                     }
@@ -217,16 +220,16 @@ import Darwin
                 }
                 guard let self, !Task.isCancelled else { return }
                 self.reported = true
-                Self.record(configuration: configuration, value: "source=\(source) mode=unobserved")
+                Self.record(namespace: namespace, value: "source=\(source) mode=unobserved")
             }
         }
 
         func stop() {
-            if presenting, !reported, let configuration = activeConfiguration, let source = activeSource {
-                Self.record(configuration: configuration, value: "source=\(source) mode=unobserved")
+            if presenting, !reported, let namespace = activeNamespace, let source = activeSource {
+                Self.record(namespace: namespace, value: "source=\(source) mode=unobserved")
             }
             presenting = false
-            activeConfiguration = nil
+            activeNamespace = nil
             activeSource = nil
             observation?.cancel(); observation = nil
         }
@@ -247,8 +250,8 @@ import Darwin
             return nil
         }
 
-        private static func record(configuration: PDFNativePickerExperiment.Configuration, value: String) {
-            print("SKILL_PDF_PICKER_PRESENTATION namespace=\(configuration.namespace.uuidString) \(value) sampledAt=\(Date().timeIntervalSince1970)")
+        private static func record(namespace: UUID, value: String) {
+            print("SKILL_PDF_PICKER_PRESENTATION namespace=\(namespace.uuidString) \(value) sampledAt=\(Date().timeIntervalSince1970)")
             fflush(stdout)
         }
     }
