@@ -45,11 +45,12 @@ func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
         return (bounds.insetBy(dx: 0, dy: 4), container ?? app)
     }
     var previousTargetWasPresent = false
+    var hasSeenTarget = false
     var searchUp = true
     var maximumDistance: CGFloat = 120
     var lastKnownIdentifier = "unmaterialized element"
-    var searchAnchor: XCUIElement?
-    var searchAnchorFrame: CGRect?
+    var previousContent: LearningScrollContent?
+    var reversedAtBoundary = false
     for attempt in 0...8 {
         let (bounds, scrollTarget) = viewport()
         let exists = element.exists
@@ -72,44 +73,42 @@ func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
             return
         }
         let targetIsPresent = exists && !frame.isEmpty
+        hasSeenTarget = hasSeenTarget || targetIsPresent
+        // One snapshot supplies all visible labels, including metadata without
+        // identifiers. Avoid a separate AX query for every row on each gesture.
+        let content = targetIsPresent ? nil : learningScrollContent(in: scrollTarget, viewport: bounds)
         if !targetIsPresent && previousTargetWasPresent {
             searchUp.toggle()
             maximumDistance = max(24, maximumDistance / 2)
-        } else if !targetIsPresent, let anchor = searchAnchor,
-                  let previousFrame = searchAnchorFrame, anchor.exists,
-                  abs(anchor.frame.minY - previousFrame.minY) < 1 {
+        } else if let content, let previousContent, content.isUnchanged(from: previousContent) {
             // A missing row may be above the starting viewport. At a real
             // boundary, reverse instead of spending every remaining gesture
-            // pushing against the same end of the List.
-            searchUp.toggle()
-        }
-        searchAnchor = nil; searchAnchorFrame = nil
-        if !targetIsPresent {
-            // Only the unknown-target search needs an anchor. Capture a stable
-            // identified visible label, never a virtualized cell's index.
-            for label in scrollTarget.staticTexts.allElementsBoundByIndex where label.exists {
-                let identifier = label.identifier
-                let labelFrame = label.frame
-                if !identifier.isEmpty, bounds.intersects(labelFrame) {
-                    searchAnchor = scrollTarget.staticTexts[identifier].firstMatch
-                    searchAnchorFrame = labelFrame
-                    break
-                }
+            // pushing against the same end of the List. A pinned label alone
+            // is not a boundary: the entire visible text set must be unchanged.
+            guard !reversedAtBoundary else {
+                XCTFail("Learning search made no visible progress in either direction while revealing \(lastKnownIdentifier).",
+                        file: file, line: line)
+                return
             }
+            searchUp.toggle()
+            reversedAtBoundary = true
         }
+        previousContent = content
         let scrollFrame = scrollTarget.frame
         guard let drag = LearningScrollDrag.make(
             listFrame: scrollFrame, viewport: bounds,
             targetFrame: targetIsPresent ? frame : nil,
-            searchUp: searchUp, maximumDistance: maximumDistance, visibility: visibility
+            searchUp: searchUp, maximumDistance: maximumDistance, visibility: visibility,
+            searchByPage: !hasSeenTarget
         ) else {
             XCTFail("No safe bounded scroll can reveal \(lastKnownIdentifier); visibility remains required.",
                     file: file, line: line)
             return
         }
-        // Full-list swipes skipped virtualized skill controls on SE and then
-        // kept scrolling away from them. Reuse the bounded import/rollback
-        // gesture; hold before release to prevent an inertial overshoot.
+        // Eight 120pt drags stopped inside PDF metadata on SE/current before the
+        // status row. Search half a viewport while its position is unknown, so
+        // successive views overlap; retain fine corrections once it appears.
+        // Hold before release to prevent an inertial overshoot.
         let origin = scrollTarget.coordinate(withNormalizedOffset: .zero)
         let start = origin.withOffset(CGVector(dx: drag.start.x - scrollFrame.minX,
                                                dy: drag.start.y - scrollFrame.minY))
@@ -119,6 +118,43 @@ func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
                     withVelocity: .slow, thenHoldForDuration: 0.2)
         previousTargetWasPresent = targetIsPresent
         searchUp = drag.end.y < drag.start.y
+    }
+}
+
+private func learningScrollContent(in element: XCUIElement, viewport: CGRect) -> LearningScrollContent? {
+    guard let snapshot = try? element.snapshot() else { return nil }
+    var rows: [LearningScrollContent.Row] = []
+    func visit(_ node: XCUIElementSnapshot) {
+        if node.elementType == .staticText, !node.frame.isEmpty, viewport.intersects(node.frame),
+           !node.identifier.isEmpty || !node.label.isEmpty {
+            rows.append(.init(identifier: node.identifier, label: node.label, frame: node.frame))
+        }
+        for child in node.children { visit(child) }
+    }
+    visit(snapshot)
+    return rows.isEmpty ? nil : LearningScrollContent(viewport: viewport, rows: rows)
+}
+
+/// Compare actual visible content, not reusable cell indices. Labels stay in
+/// memory; they are never written to diagnostics by this helper.
+struct LearningScrollContent {
+    struct Row {
+        let identifier: String
+        let label: String
+        let frame: CGRect
+    }
+    let viewport: CGRect
+    let rows: [Row]
+
+    func isUnchanged(from previous: Self) -> Bool {
+        guard viewport == previous.viewport, !rows.isEmpty, rows.count == previous.rows.count else { return false }
+        return zip(rows, previous.rows).allSatisfy { current, old in
+            current.identifier == old.identifier && current.label == old.label
+                && abs(current.frame.minX - old.frame.minX) < 1
+                && abs(current.frame.minY - old.frame.minY) < 1
+                && abs(current.frame.width - old.frame.width) < 1
+                && abs(current.frame.height - old.frame.height) < 1
+        }
     }
 }
 
@@ -139,10 +175,14 @@ struct LearningScrollDrag {
 
     static func make(listFrame: CGRect, viewport: CGRect, targetFrame: CGRect?,
                      searchUp: Bool, maximumDistance: CGFloat,
-                     visibility: LearningElementVisibility = .fullyVisible) -> Self? {
+                     visibility: LearningElementVisibility = .fullyVisible,
+                     searchByPage: Bool = false) -> Self? {
         guard valid(listFrame), valid(viewport), listFrame.contains(viewport),
               viewport.width >= 48, maximumDistance.isFinite, maximumDistance > 0 else { return nil }
-        let limit = min(maximumDistance, viewport.height * 0.3)
+        // Page search is opt-in and only for an unmaterialized target. Other
+        // callers (including Memory import/rollback) retain their 120pt limit.
+        let limit = searchByPage && targetFrame == nil
+            ? viewport.height * 0.5 : min(maximumDistance, viewport.height * 0.3)
         guard limit >= 16 else { return nil }
         let up: Bool
         let distance: CGFloat
