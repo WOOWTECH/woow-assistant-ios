@@ -220,8 +220,23 @@ struct SkillExecutionPickerChecks {
         }
         try require(!skillPDFThumbnailIsVisible(image, cell: cell,
             viewport: CGRect(x: 0, y: 250, width: 402, height: 624), navigation: navigation))
+        // 74f7b71 assembly: the exact multi-select cell has three Images,
+        // including a selection circle. Its native cell is the tap target.
+        let multiCell = CGRect(x: 10, y: 212, width: 122, height: 189.7)
+        try require(skillPDFMultiSelectionCellIsVisible(multiCell, viewport: viewport, navigation: navigation))
+        let clippedViewport = CGRect(x: 0, y: 202, width: 402, height: 180)
+        let visibleThumbnail = CGRect(x: 39, y: 216, width: 65, height: 84)
+        try require(skillPDFThumbnailIsVisible(visibleThumbnail, cell: multiCell,
+            viewport: clippedViewport, navigation: navigation))
+        try require(!skillPDFMultiSelectionCellIsVisible(multiCell,
+            viewport: clippedViewport, navigation: navigation))
+        for invalid in [CGRect.zero, CGRect.infinite, multiCell.offsetBy(dx: 400, dy: 0),
+                        multiCell.offsetBy(dx: 0, dy: -30)] {
+            try require(!skillPDFMultiSelectionCellIsVisible(invalid, viewport: viewport, navigation: navigation))
+        }
         print("PASS bounded Skills Files route: no repeated Browse, real successor progress, local folder and exact-file terminal")
         print("PASS observed PDF thumbnail geometry; reject absent, unrelated, covered and clipped targets")
+        print("PASS multi-selection whole-cell geometry; a visible thumbnail alone cannot authorize a clipped cell tap")
     }
 }
 #else
@@ -653,22 +668,38 @@ final class SkillExecutionUITests: XCTestCase {
     private func chooseSyntheticPDFInPresentedPicker(selected: XCUIElement, expectedLabel: String,
                                                      allowsMultipleSelection: Bool = false) {
         guard let file = navigateNativeFiles(exporting: false) else { return }
-        // The iOS 26 failure recording shows a visible PDF thumbnail whose AX
-        // Image is not hittable. A whole-cell tap lands on the filename instead.
-        // Anchor the gesture to the exact cell's verified visible image; never
-        // substitute a label/cell-center tap or a fixed screen coordinate.
-        let images = file.images.allElementsBoundByIndex
         let list = app.collectionViews["File View"]
         let navigation = app.navigationBars["FullDocumentManagerViewControllerNavigationBar"]
-        guard images.count == 1, let thumbnail = images.first, thumbnail.exists,
-              file.isEnabled, file.isHittable, list.exists, navigation.exists,
-              skillPDFThumbnailIsVisible(thumbnail.frame, cell: file.frame,
-                  viewport: list.frame.intersection(app.frame), navigation: navigation.frame) else {
-            recordPickerDiagnostics(stage: "exact-thumbnail-not-visible")
-            XCTFail("The exact selected PDF must expose one fully visible thumbnail inside its Files cell.")
-            return
+        if allowsMultipleSelection {
+            // 74f7b71 actual multi-picker AX: three Images, including a circle.
+            // Select the unique exact-name native cell, not an arbitrary Image.
+            // Whole-cell visibility is stricter than the single-picker target.
+            let matches = list.cells.matching(NSPredicate(format: "identifier == %@", stem + ", pdf"))
+            let exactFile = matches.firstMatch
+            guard list.exists, navigation.exists, matches.count == 1,
+                  exactFile.staticTexts.matching(selectedFileNames).count == 1,
+                  exactFile.isEnabled, exactFile.isHittable,
+                  skillPDFMultiSelectionCellIsVisible(exactFile.frame,
+                      viewport: list.frame.intersection(app.frame), navigation: navigation.frame) else {
+                recordPickerDiagnostics(stage: "exact-multi-selection-cell-not-visible")
+                XCTFail("Multi-selection requires one fully visible, hittable Files cell with this exact PDF filename.")
+                return
+            }
+            exactFile.tap()
+        } else {
+            // Single-picker evidence: the thumbnail's AX Image is not hittable,
+            // and a whole-cell tap can land on its filename. Keep this route.
+            let images = file.images.allElementsBoundByIndex
+            guard images.count == 1, let thumbnail = images.first, thumbnail.exists,
+                  file.isEnabled, file.isHittable, list.exists, navigation.exists,
+                  skillPDFThumbnailIsVisible(thumbnail.frame, cell: file.frame,
+                      viewport: list.frame.intersection(app.frame), navigation: navigation.frame) else {
+                recordPickerDiagnostics(stage: "exact-thumbnail-not-visible")
+                XCTFail("The exact selected PDF must expose one fully visible thumbnail inside its Files cell.")
+                return
+            }
+            thumbnail.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         }
-        thumbnail.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         if allowsMultipleSelection {
             // Assembly uses a multi-select importer. Files may either return
             // immediately or enable its own confirmation after selection.
@@ -941,4 +972,8 @@ private struct SkillPickerRoute {
 private func skillPDFThumbnailIsVisible(_ image: CGRect, cell: CGRect, viewport: CGRect, navigation: CGRect) -> Bool {
     guard [image, cell, viewport, navigation].allSatisfy({ !$0.isEmpty && !$0.isNull && !$0.isInfinite }) else { return false }
     return cell.contains(image) && viewport.contains(image) && !navigation.intersects(image)
+}
+
+private func skillPDFMultiSelectionCellIsVisible(_ cell: CGRect, viewport: CGRect, navigation: CGRect) -> Bool {
+    skillPDFThumbnailIsVisible(cell, cell: cell, viewport: viewport, navigation: navigation)
 }

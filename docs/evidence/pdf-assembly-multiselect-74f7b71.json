@@ -1,0 +1,101 @@
+{
+  "schema_version": 1,
+  "source_commit": "74f7b71b4a4691814ba8b7867d34efe17a6dc072",
+  "run_id": 42847896649,
+  "job_id": 129940252999,
+  "artifact_id": 13780878598,
+  "method": "SkillExecutionUITests.testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+  "device": "iPhone 17",
+  "runtime": "iOS 26.2 (23C54)",
+  "total": 1,
+  "passed": 0,
+  "failed": 1,
+  "skipped": 0,
+  "duration_seconds": 85.661,
+  "case_deadline_seconds": 240,
+  "failure": {
+    "category": "test_driver_assumes_single_image_in_multiselect_cell",
+    "file": "Tests/WoowAssistantUITests/SkillExecutionUITests.swift",
+    "line": 662,
+    "message": "The exact selected PDF must expose one fully visible thumbnail inside its Files cell.",
+    "failing_guard": "images.count == 1",
+    "actual_exact_cell_image_count": 3,
+    "image_identifiers": [
+      "",
+      "circle",
+      ""
+    ],
+    "query_seconds": 75.01,
+    "file_tapped": false,
+    "importer_callback_reached": false,
+    "source_read_approval_reached": false,
+    "page_order_review_reached": false,
+    "assembly_reached": false,
+    "export_reached": false
+  },
+  "evidence_notes": {
+    "session_log_lines_20110_20116": "Resolved remote query finds exactly three descendant Images for the exact namespace-specific PDF cell.",
+    "session_log_lines_20184_20196": "All three images are inside the same exact File View cell, including an Image identified circle.",
+    "frame_74": "Native Files shows the exact synthetic PDF thumbnail with an unchecked selection circle; no file has been selected.",
+    "ios_tests_log_lines_3041_3045": "Exact namespace cell is found; image enumeration is followed immediately by failure diagnostics, before any thumbnail tap."
+  },
+  "assessment": "Confirmed harness mismatch between the single-selection helper and real multi-selection picker AX structure. No evidence about importer or assembly correctness because these stages were not reached.",
+  "code_change": {
+    "file": "Tests/WoowAssistantUITests/SkillExecutionUITests.swift",
+    "scope": "allowsMultipleSelection == true only",
+    "selection": "One native cell tap after unique exact namespace PDF identifier, exactly one exact filename label, enabled/hittable checks, and full cell visibility inside File View and outside the navigation bar.",
+    "single_picker_thumbnail_guard_and_tap": "unchanged",
+    "native_confirmation_and_callback_block": "byte_identical_to_parent_HEAD",
+    "approvals_exact_plan_results_and_export_cancellation": "unchanged",
+    "case_deadline_seconds": 240,
+    "wait_budgets": "unchanged",
+    "retry": false,
+    "direct_URL_or_preselection": false,
+    "validation": {
+      "Swift_parse": "passed",
+      "standalone_existing_route_and_single_thumbnail_checks": "passed",
+      "standalone_multi_whole_cell_geometry_checks": "passed",
+      "native_UI_after_change": "not_run"
+    },
+    "candidate_file_sha256": "cfeed85a8ab7623c354bb227d079b392ec469c3a92a8d21e2fd25c0664c0d5a4"
+  },
+  "local_evidence_directory": "/tmp/woow-74-assembly-current",
+  "evidence": [
+    {
+      "file": "test-summary.json",
+      "sha256": "7253f201dfce63c4c438a853cd0b4cc9d8f40e5de268e9849f239d176ffc90dc"
+    },
+    {
+      "file": "ios-tests.log",
+      "sha256": "784eb56df39c4b9f1b39dc897a55120fa372bd44453582e30e609803402ee3ff"
+    },
+    {
+      "file": "Session-WoowAssistantUITests-2026-11-10_161903-7B35VC.log",
+      "sha256": "2a922eb23ecdc063853f0e1a2b8e51f62b09b4c11487a4443e61964b219f8f45"
+    },
+    {
+      "file": "frame-74.png",
+      "sha256": "3b33acf5abbf905f75c3d750f59a4ed25390556b435673c0ce4a3f4fdb83fc3f"
+    },
+    {
+      "file": "frame-82.png",
+      "sha256": "3b33acf5abbf905f75c3d750f59a4ed25390556b435673c0ce4a3f4fdb83fc3f"
+    }
+  ],
+  "same_source_large_failure": {
+    "job_id": 129940253486,
+    "artifact_id": 13780824583,
+    "device": "iPhone 16 Pro Max",
+    "runtime": "iOS 18.5 (22F77)",
+    "total": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "duration_seconds": 75.769,
+    "failure_file_line": 662,
+    "failure_message": "The exact selected PDF must expose one fully visible thumbnail inside its Files cell.",
+    "reached_file_tap": false,
+    "actual_image_count": "not independently extracted",
+    "evidence_directory": "/tmp/woow-74-assembly-large"
+  }
+}
