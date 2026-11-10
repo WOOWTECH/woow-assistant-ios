@@ -6,8 +6,10 @@ import AssistantBrowser
 struct BrowserView: View {
     @ObservedObject var browser: BrowserSession
     @ObservedObject var chat: ChatSession
+    @ObservedObject var workspace: BrowserWorkspace
     @State private var showResearch = false
     @State private var showInteractions = false
+    @State private var showLibrary = false
     @FocusState private var addressFocused: Bool
     var body: some View {
         VStack(spacing: 8) {
@@ -18,7 +20,7 @@ struct BrowserView: View {
                     .onSubmit { open() }.accessibilityIdentifier("browser.address")
                 Button("開啟") { open() }.accessibilityIdentifier("browser.open")
             }
-            .padding(.horizontal).disabled(browser.isRunning || browser.isInteracting)
+            .padding(.horizontal).disabled(browser.isRunning || browser.isInteracting || workspace.isClearingWebsiteData)
             if let diagnostics = browser.manualLoadDiagnostics {
                 Text(browser.status).font(.caption).accessibilityIdentifier("browser.status")
                     .accessibilityValue(diagnostics)
@@ -37,19 +39,22 @@ struct BrowserView: View {
                     .disabled(!browser.canGoForward || browser.isRunning || browser.isInteracting)
                 Button { browser.reloadPage() } label: { Image(systemName: "arrow.clockwise") }
                     .accessibilityLabel("重新整理").accessibilityIdentifier("browser.reload")
-                    .disabled(browser.current == nil || browser.isRunning || browser.isInteracting)
+                    .disabled(browser.loadedURL == nil || browser.isRunning || browser.isInteracting)
                 Button("研究此網站") { addressFocused = false; showResearch = true }
                     .disabled(browser.current == nil || browser.isInteracting).accessibilityIdentifier("browser.research")
                 Button("操作") { addressFocused = false; showInteractions = true }
                     .disabled(browser.current == nil || browser.isRunning).accessibilityIdentifier("browser.interactions")
+                Button { addressFocused = false; browser.webView.endEditing(true); showLibrary = true } label: { Image(systemName: "square.on.square") }
+                    .accessibilityLabel("分頁、書籤與歷史").accessibilityIdentifier("browser.library")
                 if browser.isRunning {
                     Button("停止") { browser.cancel() }.accessibilityIdentifier("browser.cancel")
                 }
             }
-            BrowserWebView(webView: browser.webView, coveredByResearch: showResearch || showInteractions)
-                .allowsHitTesting(!browser.isRunning && !browser.isInteracting)
-                .accessibilityHidden(showResearch || showInteractions)
-            Text("提供公開網站瀏覽、同站唯讀研究及逐次核准的 DOM 操作；可信輸入、登入、分頁與下載仍待整合。")
+            BrowserWebView(webView: browser.webView, coveredByResearch: showResearch || showInteractions || showLibrary || browser.pageDialog != nil)
+                .id(ObjectIdentifier(browser))
+                .allowsHitTesting(!browser.isRunning && !browser.isInteracting && !workspace.isClearingWebsiteData)
+                .accessibilityHidden(showResearch || showInteractions || showLibrary || browser.pageDialog != nil)
+            Text("可手動登入網站及選取上傳檔案；網站資料保留於此 App。模型研究與每次核准的操作各自受限。")
                 .font(.caption2).foregroundStyle(.secondary).padding(.horizontal)
                 .accessibilityIdentifier("browser.explanation")
         }
@@ -59,11 +64,39 @@ struct BrowserView: View {
         .sheet(isPresented: $showInteractions, onDismiss: { browser.cancelInteraction() }) {
             BrowserInteractionView(browser: browser, chat: chat)
         }
+        .sheet(isPresented: $showLibrary) { BrowserLibraryView(workspace: workspace) }
+        .sheet(item: $browser.pageDialog, onDismiss: { browser.resolveDialog(nil) }) { dialog in
+            BrowserDialogView(dialog: dialog, browser: browser)
+        }
+        .onAppear { workspace.activateSelected() }
+        .onChange(of: ObjectIdentifier(browser)) { _, _ in showResearch = false; showInteractions = false }
         .onChange(of: browser.interactionProposal?.id) { _, value in
             if value != nil && !showResearch { addressFocused = false; showInteractions = true }
         }
     }
     private func open() { addressFocused = false; browser.openAddress() }
+}
+
+@MainActor
+private struct BrowserDialogView: View {
+    let dialog: BrowserPageDialog
+    @ObservedObject var browser: BrowserSession
+    @State private var text = ""
+    var body: some View {
+        NavigationStack {
+            Form {
+                Text(dialog.host).font(.caption)
+                Text(verbatim: dialog.message).accessibilityIdentifier("browser.dialog.message")
+                if dialog.kind == .prompt { TextField("輸入內容", text: $text).accessibilityIdentifier("browser.dialog.input") }
+                Button("確定") { browser.resolveDialog(dialog.kind == .prompt ? text : "") }
+                    .accessibilityIdentifier("browser.dialog.accept")
+                if dialog.kind != .alert {
+                    Button("取消", role: .cancel) { browser.resolveDialog(nil) }.accessibilityIdentifier("browser.dialog.cancel")
+                }
+            }.navigationTitle("網站訊息")
+                .onAppear { text = dialog.initial }
+        }
+    }
 }
 
 @MainActor

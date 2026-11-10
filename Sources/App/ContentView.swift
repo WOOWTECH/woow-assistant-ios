@@ -5,7 +5,8 @@ struct ContentView: View {
     @State private var selection: AppSection = .chat
     @StateObject private var session = ChatSession()
     @StateObject private var mcpSession = MCPSession()
-    @StateObject private var browser = BrowserSession()
+    @StateObject private var browserWorkspace = BrowserWorkspace()
+    private var browser: BrowserSession { browserWorkspace.selected }
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some View {
@@ -22,7 +23,7 @@ struct ContentView: View {
                     MemoryDataView(store: session.learning, browser: browser, modelAccess: session.modelAccess,
                                    onOpenBrowser: { selection = .browser })
                 case .browser:
-                    BrowserView(browser: browser, chat: session)
+                    BrowserView(browser: browser, chat: session, workspace: browserWorkspace)
                 }
             }
             .navigationTitle(selection.title)
@@ -32,16 +33,15 @@ struct ContentView: View {
             }
         }
         .onAppear {
-            session.learning.onUserChange = { [weak browser] in
-                if browser?.isRunning == true { browser?.cancel() }
-                browser?.cancelInteraction()
+            session.learning.onUserChange = { [weak browserWorkspace] in
+                browserWorkspace?.cancelAllWork()
             }
             mcpSession.onConnectionChange = { [weak session] in session?.cancelMCP() }
         }
         .onChange(of: scenePhase) { _, phase in
             if phase != .active {
                 session.cancelMCP()
-                browser.cancelInteraction()
+                browserWorkspace.cancelAllWork()
                 if mcpSession.phase == .connected || mcpSession.isBusy { mcpSession.disconnect() }
             }
         }

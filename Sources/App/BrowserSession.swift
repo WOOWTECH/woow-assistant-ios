@@ -6,17 +6,28 @@ import Foundation
 import WebKit
 
 @MainActor
-final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WebResearchExecuting {
+final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WKUIDelegate, WebResearchExecuting {
     private var storedWebView: WKWebView?
+    private let websiteDataStore: WKWebsiteDataStore
+    private let suppliedConfiguration: WKWebViewConfiguration?
+    var onPageFinished: ((URL, String) -> Void)?
+    var onCreateWindow: ((WKWebViewConfiguration, URLRequest) -> WKWebView?)?
+    var onCloseWindow: (() -> Void)?
+    var canPresentUI: () -> Bool = { true }
+    @Published private(set) var loadedURL: URL?
+    @Published private(set) var pageTitle = "新分頁"
+    @Published var pageDialog: BrowserPageDialog?
+    private var answerDialog: ((String?) -> Void)?
     // WebKit is created when its view is requested, after the App has a scene.
     // Chat/settings startup must not depend on launching WebKit's processes.
     var webView: WKWebView {
         if let storedWebView { return storedWebView }
-        let configuration = WKWebViewConfiguration()
-        configuration.websiteDataStore = .nonPersistent()
+        let configuration = suppliedConfiguration ?? WKWebViewConfiguration()
+        configuration.websiteDataStore = websiteDataStore
         configuration.preferences.javaScriptCanOpenWindowsAutomatically = false
         let view = WKWebView(frame: .zero, configuration: configuration)
         view.navigationDelegate = self
+        view.uiDelegate = self
         view.allowsBackForwardNavigationGestures = true
         #if os(iOS)
         view.accessibilityIdentifier = "browser.webView"
@@ -68,9 +79,13 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     private var diagnosticTicker: Task<Void, Never>?
     let fixtureMode: Bool
 
-    override init() {
+    override convenience init() { self.init(dataStore: .nonPersistent()) }
+
+    init(dataStore: WKWebsiteDataStore, configuration: WKWebViewConfiguration? = nil) {
+        websiteDataStore = dataStore
+        suppliedConfiguration = configuration
         #if DEBUG
-        fixtureMode = ProcessInfo.processInfo.arguments.contains("-UITestMode")
+        fixtureMode = ProcessInfo.processInfo.arguments.contains("-UITestMode") && !ProcessInfo.processInfo.arguments.contains("-UITestBrowserNetwork")
         #else
         fixtureMode = false
         #endif
@@ -81,8 +96,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
         guard !isRunning, !isInteracting else { return }
         invalidateControls()
         error = nil; answer = nil; current = nil
-        guard let url = URL(string: address), permitted(url) else {
-            error = "請使用公開 HTTPS 網址；不接受內網、憑證網址或操作端點。"; return
+        guard let url = URL(string: address), manualPermitted(url) else {
+            error = "請使用公開 HTTPS 網址，不可把帳密放在網址中。"; return
         }
         status = "正在載入…"
         preparePageNavigation()
@@ -91,6 +106,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     }
 
     func cancel() {
+        resolveDialog(nil)
         cancelInteraction()
         invalidatePageObservation()
         trackedNavigation = nil; requestedNavigationPending = false
@@ -521,8 +537,10 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
            navigationAction.request.url == allowance.url, navigationAction.request.httpMethod == "POST", Date() < allowance.expires {
             postPermitted = true; postAllowance = nil
         } else { postPermitted = false }
+        let automated = isRunning || isInteracting || postPermitted
         guard let url = navigationAction.request.url,
-              permitted(url), navigationAction.request.httpMethod == "GET" || postPermitted,
+              automated ? permitted(url) : manualPermitted(url),
+              !automated || navigationAction.request.httpMethod == "GET" || postPermitted,
               origin == nil || Self.origin(url) == origin else {
             decisionHandler(.cancel); error = "此導覽不在目前允許的公開網站範圍內。"
             if !isRunning, navigationAction.targetFrame?.isMainFrame == true { failManualLoad(.policyRejected) }
@@ -557,7 +575,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
 
     func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
                  decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
-        guard navigationResponse.canShowMIMEType, let url = navigationResponse.response.url, permitted(url),
+        guard navigationResponse.canShowMIMEType, let url = navigationResponse.response.url,
+              isRunning || isInteracting ? permitted(url) : manualPermitted(url),
               origin == nil || Self.origin(url) == origin else {
             decisionHandler(.cancel)
             if !isRunning, navigationResponse.isForMainFrame { failManualLoad(.responseRejected) }
@@ -569,8 +588,18 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         guard let navigation, trackedNavigation === navigation else { return }
         canGoBack = webView.canGoBack; canGoForward = webView.canGoForward
+        loadedURL = webView.url
+        pageTitle = String((webView.title ?? webView.url?.host ?? "網頁").prefix(256))
+        if let url = loadedURL { address = url.absoluteString; onPageFinished?(url, pageTitle) }
         if expectedNavigation === navigation { navigationFinished = true; expectedNavigation = nil }
         if !isRunning {
+            // A login/callback/query page can be browsed manually without turning
+            // it into research evidence or exposing its fields to the model.
+            if let url = loadedURL, !permitted(url) {
+                current = nil; error = nil; status = "頁面已載入；此頁面僅供手動瀏覽"
+                traceLoad(.observed)
+                return
+            }
             let generation = pageGeneration
             traceLoad(.finished)
             pageObservationTask = Task { [weak self] in
@@ -701,6 +730,40 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
         guard url.scheme?.lowercased() == "https", (try? WebsiteOrigin(url: url)) != nil else { return false }
         return !fixtureMode || url.host == "research.example.invalid"
     }
+    private func manualPermitted(_ url: URL) -> Bool {
+        BrowserManualNavigationPolicy.allows(url) && (!fixtureMode || url.host == "research.example.invalid")
+    }
+
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
+                 for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        guard !isRunning, !isInteracting, navigationAction.targetFrame == nil,
+              let url = navigationAction.request.url, manualPermitted(url) else { return nil }
+        return onCreateWindow?(configuration, navigationAction.request)
+    }
+    func webViewDidClose(_ webView: WKWebView) { onCloseWindow?() }
+    func webView(_ webView: WKWebView, runJavaScriptAlertPanelWithMessage message: String,
+                 initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping () -> Void) {
+        presentDialog(kind: .alert, message: message, initial: "", frame: frame) { _ in completionHandler() }
+    }
+    func webView(_ webView: WKWebView, runJavaScriptConfirmPanelWithMessage message: String,
+                 initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (Bool) -> Void) {
+        presentDialog(kind: .confirm, message: message, initial: "", frame: frame) { completionHandler($0 != nil) }
+    }
+    func webView(_ webView: WKWebView, runJavaScriptTextInputPanelWithPrompt prompt: String,
+                 defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
+        presentDialog(kind: .prompt, message: prompt, initial: defaultText ?? "", frame: frame, completion: completionHandler)
+    }
+    private func presentDialog(kind: BrowserPageDialog.Kind, message: String, initial: String,
+                               frame: WKFrameInfo, completion: @escaping (String?) -> Void) {
+        guard canPresentUI(), !isRunning, !isInteracting, pageDialog == nil else { completion(nil); return }
+        answerDialog = completion
+        pageDialog = BrowserPageDialog(kind: kind, host: frame.securityOrigin.host,
+            message: String(message.prefix(2000)), initial: String(initial.prefix(2000)))
+    }
+    func resolveDialog(_ value: String?) {
+        let completion = answerDialog; answerDialog = nil; pageDialog = nil
+        completion?(value)
+    }
     private static func origin(_ url: URL) -> String? {
         guard let host = url.host else { return nil }
         return "https://" + host.lowercased() + ":" + String(url.port ?? 443)
@@ -712,7 +775,17 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, We
         let pages = ["alpha", "beta", "gamma", "delta", "epsilon"]
         let links = pages.map { "<a href='https://research.example.invalid/\($0)'>\($0)</a>" }.joined(separator: "<br>")
         let html: String
-        if url.path == "/interaction" {
+        if url.path.hasPrefix("/workspace-") {
+            let name = url.path == "/workspace-two" ? "Workspace second" : "Workspace first"
+            html = """
+            <!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><title>\(name)</title></head>
+            <body><h1>\(name)</h1><p>Local WebKit workspace fixture.</p>
+            <label>Tab note <input type="text" aria-label="Tab note"></label>
+            <button onclick="document.getElementById('dialog-result').textContent=confirm('Fixture confirmation')?'CONFIRMED':'CANCELLED'">Confirm fixture</button>
+            <p id="dialog-result">NO DIALOG RESULT</p><input type="file" aria-label="Select upload file">
+            </body></html>
+            """
+        } else if url.path == "/interaction" {
             html = Self.interactionFixtureHTML
         } else {
             html = "<html><head><title>Research guide</title></head><body><h1>Website guide</h1><p>Section \(url.lastPathComponent). Verified marker WOOW_WEB_GUIDE. Each section explains its own step.</p>\(links)</body></html>"
