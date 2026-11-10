@@ -492,6 +492,7 @@ class RuntimeTests(unittest.TestCase):
                     return subprocess.CompletedProcess(args, 0)
                 with patch.object(ios17, "run", side_effect=command) as runner, \
                      patch.object(ios17, "boot_simulator"), \
+                     patch.object(ios17, "prelaunch_test_daemon") as prelaunch, \
                      patch.object(ios17, "collect_boot_diagnostics") as diagnostic, \
                      patch.object(ios17, "ensure_runtime", return_value=self.payload()["runtimes"][0]), \
                      patch.object(ios17, "generate_project", return_value=output / "Project.xcodeproj"), \
@@ -503,6 +504,7 @@ class RuntimeTests(unittest.TestCase):
                     else:
                         ios17.execute(output, "17.0.1", False, scope)
                     diagnostic.assert_not_called()
+                    prelaunch.assert_not_called()  # Experimental prelaunch is off by default in every scope.
                 report = json.loads((output / "report.json").read_text())
                 succeeded = not timed_out and exit_code == 0 and not skipped
                 self.assertEqual(report["test_scope"], scope)

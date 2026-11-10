@@ -1,5 +1,14 @@
 # Verification — 2026-11-10
 
+## iOS 17 method failures separated from runner bootstrap failures
+
+The newer core run `2fce6cf` executed **144 methods: 142 passed, 2 failed**. One was the transcript transport-cancellation acknowledgement repaired in `9a53e61`; the other did not find the expected synthetic Cookie record before deletion. It does not prove `removeData` failed. The new observation preserves the original 15-second limit and all deletion assertions, distinguishing a missing publication from returned names/types that fail the predicate.
+
+The same-source skills group executed **10 UI: 9 passed, 1 failed**. All three transcript UI cases passed. Only the original-Python availability text assertion was stale; `9a53e61` now checks the actual requirement for a separate service, no local Python, available native PDF extraction and incomplete original-tool support.
+
+Workspace `347971e`, memory `32f4ecb` and learning `2fce6cf` each booted but executed **zero methods** before runner bootstrap SIGKILL. Preserved old startup diagnostics identify a RunningBoard initialization assertion expiry and a 106.6-second test daemon launch delay; the underlying system delay remains unknown. An **opt-in, default-off** one-shot daemon prelaunch experiment has a shared 120-second budget, no restart/retry and no claim that process liveness proves XCTest readiness. The next experiment must execute the unchanged native startup case. [Bounded reports and exact run references](evidence/ios17-bootstrap-and-core-2fce6cf.json).
+
+
 ## Transcript bounded command repair ready for native and live regression
 
 The runtime now permits one fixed schema correction across the entire task, within the original **24 calls / 180 seconds**. A second invalid command, invalid byte range, incomplete coverage or unverifiable quote stops without executing the rejected operation. Actual HTTP tests cover cancellation acknowledgements before session teardown, context revocation, cumulative deadlines, no unknown tool/path execution and preservation of previous valid reads. All **14 local HTTP/core groups** passed, with DEBUG/Release UI fixture guards and warnings-as-errors compilation of the Session/probe. Native and actual-model runs on the repair are still required.

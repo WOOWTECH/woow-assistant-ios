@@ -49,9 +49,62 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
         XCTAssertFalse(isolatedCookies.contains { $0.name == shared.name })
 
         let pending = try await proposeTyping(in: second, text: "不得在清除後寫入")
+        // Observe this one production fetch separately from its domain predicate.
+        // A missing record is not evidence that WebKit never called back.
+        let enumeration = WebsiteRecordObservation()
+        let recordObservation = workspace.$websiteRecords.dropFirst().sink { records in
+            enumeration.publicationCount += 1
+            enumeration.records = records
+        }
+        defer { recordObservation.cancel() }
+        host.store.httpCookieStore.getAllCookies { cookies in
+            // This isolated random store has only these synthetic cookies.
+            // Never attach values, arbitrary domains, or unrelated cookie names.
+            enumeration.nativeCookieNames = cookies.map(\.name).filter {
+                ["workspace_cookie", "other_site_cookie"].contains($0)
+            }.sorted()
+        }
         workspace.refreshWebsiteRecords()
-        try await waitUntil("Cookie records were not returned") {
-            workspace.websiteRecords.contains { $0.displayName.contains("example.invalid") && $0.dataTypes.contains(WKWebsiteDataTypeCookies) }
+        do {
+            try await waitUntil("Website-record callback did not publish within 15 seconds") { enumeration.records != nil }
+            let returned = try XCTUnwrap(enumeration.records)
+            guard returned.contains(where: {
+                $0.displayName.contains("example.invalid") && $0.dataTypes.contains(WKWebsiteDataTypeCookies)
+            }) else {
+                XCTFail("Website-record callback returned without the expected synthetic cookie record")
+                throw FixtureFailure.unexpectedWebsiteRecords
+            }
+            XCTAssertEqual(enumeration.publicationCount, 1, "One refresh must publish one actual WebKit result")
+        } catch {
+            let allowedNames = ["example.invalid", "research.example.invalid", "invalid", "example.org"]
+            func recordMetadata(_ records: [WKWebsiteDataRecord]) -> [[String: Any]] {
+                records.prefix(8).map { record in
+                    ["name": allowedNames.contains(record.displayName) ? record.displayName :
+                        (record.displayName.isEmpty ? "empty" : "other"),
+                     "types": record.dataTypes.intersection(WKWebsiteDataStore.allWebsiteDataTypes()).sorted()]
+                }
+            }
+            let metadata: [String: Any] = [
+                "phase": "cookie_record_enumeration",
+                "isRefreshingObserved": enumeration.records == nil,
+                "callbackPublications": enumeration.publicationCount,
+                "workspaceHasError": workspace.error != nil,
+                "returnedCount": enumeration.records?.count ?? 0,
+                "returnedRecords": recordMetadata(enumeration.records ?? []),
+                "currentCount": workspace.websiteRecords.count,
+                "currentRecords": recordMetadata(workspace.websiteRecords),
+                "nativeCookieCallbackReturned": enumeration.nativeCookieNames != nil,
+                "syntheticCookieNames": enumeration.nativeCookieNames ?? [],
+                "reopenedProfileContainedSharedCookie": reopenedCookies.contains { $0.name == shared.name && $0.value == shared.value }
+            ]
+            let data = try JSONSerialization.data(withJSONObject: metadata, options: [.sortedKeys])
+            let text = String(decoding: data, as: UTF8.self)
+            let attachment = XCTAttachment(string: text)
+            attachment.name = "synthetic-cookie-record-enumeration"
+            attachment.lifetime = .keepAlways
+            add(attachment)
+            print("SYNTHETIC_COOKIE_RECORD_ENUMERATION " + text)
+            throw error
         }
         let records = workspace.websiteRecords.filter { $0.displayName.contains("example.invalid") }
         XCTAssertFalse(records.isEmpty)
@@ -359,7 +412,13 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
         guard condition() else { XCTFail(message); throw FixtureFailure.deadline }
     }
 
-    private enum FixtureFailure: Error { case unavailableStorage, deadline, unexpectedJavaScriptValue }
+    @MainActor private final class WebsiteRecordObservation {
+        var records: [WKWebsiteDataRecord]?
+        var publicationCount = 0
+        var nativeCookieNames: [String]?
+    }
+
+    private enum FixtureFailure: Error { case unavailableStorage, deadline, unexpectedJavaScriptValue, unexpectedWebsiteRecords }
 
     @MainActor private final class Host {
         let namespace = UUID()

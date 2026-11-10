@@ -1,0 +1,300 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "preserved_native_test_logs_and_metadata",
+  "runs": [
+    {
+      "scope": "workspace",
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42803795242",
+      "artifact_id": 13759480772,
+      "source_revision": "347971ee2ef05ff9b48c18bed54517016f0ae3bc",
+      "host_architecture": "arm64",
+      "host_macos": "15.8.2",
+      "xcode": "Xcode 16.4\nBuild version 16F6",
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "boot_succeeded": true,
+      "simulator_state_unavailable": true,
+      "exit_code": 65,
+      "selected_tests_succeeded": false,
+      "method_counts_from_tests_log": {
+        "started": 0,
+        "completed": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "classification": "xctest_bootstrap_before_methods",
+      "bootstrap_failure_log_line": 4169,
+      "failed_methods": [],
+      "verified_completion": null,
+      "hashes": {
+        "report.json": "091a06785d0bafcaccd92356a15b633b98fcfb3e73a8f72895fa70b19fd19cdc",
+        "tests.log": "4cacee950bac59de567945e626ff531a5d30e0c3085015b57b30a54834a61ab9"
+      }
+    },
+    {
+      "scope": "memory",
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805236470",
+      "artifact_id": 13762151204,
+      "source_revision": "32f4ecbe1fe1b51f1f7a15d2d039170592df6da7",
+      "host_architecture": "arm64",
+      "host_macos": "15.8.2",
+      "xcode": "Xcode 16.4\nBuild version 16F6",
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "boot_succeeded": true,
+      "simulator_state_unavailable": true,
+      "exit_code": 65,
+      "selected_tests_succeeded": false,
+      "method_counts_from_tests_log": {
+        "started": 0,
+        "completed": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "classification": "xctest_bootstrap_before_methods",
+      "bootstrap_failure_log_line": 4172,
+      "failed_methods": [],
+      "verified_completion": null,
+      "hashes": {
+        "report.json": "ddf0ce17951e99c76643986e92ad73789491534aa2c8edbfcbeb18d47446c9c8",
+        "tests.log": "71a9540b1935cbeca2918104065c0cf96e81003484a2649ba5023685d1091b6f"
+      }
+    },
+    {
+      "scope": "browser",
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805244364",
+      "artifact_id": 13762252777,
+      "source_revision": "32f4ecbe1fe1b51f1f7a15d2d039170592df6da7",
+      "host_architecture": "arm64",
+      "host_macos": "15.8.2",
+      "xcode": "Xcode 16.4\nBuild version 16F6",
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "boot_succeeded": true,
+      "simulator_state_unavailable": true,
+      "exit_code": 0,
+      "selected_tests_succeeded": true,
+      "method_counts_from_tests_log": {
+        "started": 5,
+        "completed": 5,
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0
+      },
+      "classification": "selected_methods_passed",
+      "bootstrap_failure_log_line": null,
+      "failed_methods": [],
+      "verified_completion": {
+        "verified": true,
+        "counts": {
+          "totalTestCount": 5,
+          "passedTests": 5,
+          "failedTests": 0,
+          "skippedTests": 0,
+          "expectedFailures": 0
+        },
+        "result": "Passed",
+        "expected_ui_count": 5,
+        "completed_ui_count": 5,
+        "missing_ui_tests": [],
+        "unexpected_ui_tests": [],
+        "nonpassing_or_repeated_ui_tests": []
+      },
+      "hashes": {
+        "report.json": "ea29a8adfae6cf6d8e95cc466a101eb35730384ee2d27ab6044260da99376938",
+        "tests.log": "2ea88c573bc07a7dd41a33338375fde2cb3c6ab8f78b1cb5fb54f83cd4e0d4ac"
+      }
+    },
+    {
+      "scope": "core",
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805377066",
+      "artifact_id": 13763285036,
+      "source_revision": "2fce6cffd41944d4ca9fff29158b6618e5621b52",
+      "host_architecture": "arm64",
+      "host_macos": "15.8.2",
+      "xcode": "Xcode 16.4\nBuild version 16F6",
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "boot_succeeded": true,
+      "simulator_state_unavailable": true,
+      "exit_code": 65,
+      "selected_tests_succeeded": false,
+      "method_counts_from_tests_log": {
+        "started": 144,
+        "completed": 144,
+        "passed": 142,
+        "failed": 2,
+        "skipped": 0
+      },
+      "classification": "method_assertion_failure",
+      "bootstrap_failure_log_line": null,
+      "failed_methods": [
+        {
+          "class": "AssistantSkillsTests.TranscriptRuntimeTests",
+          "method": "testHTTPTransportCancellationAndTimeout",
+          "outcome": "failed",
+          "seconds": 0.459,
+          "log_line": 4510
+        },
+        {
+          "class": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests",
+          "method": "testPersistentCookiesAreSharedAndRemovingOneRecordPreservesOtherSites",
+          "outcome": "failed",
+          "seconds": 17.364,
+          "log_line": 4665
+        }
+      ],
+      "verified_completion": null,
+      "hashes": {
+        "report.json": "c030982613718565299282df45996243f4464bfe229ba9c1d072c63dbcd99b76",
+        "tests.log": "e27ae6bc6567d00a92908a200ad97230d8d87d58f82ca6961766cd730e35e510"
+      }
+    },
+    {
+      "scope": "skills",
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805363337",
+      "artifact_id": 13762676304,
+      "source_revision": "2fce6cffd41944d4ca9fff29158b6618e5621b52",
+      "host_architecture": "arm64",
+      "host_macos": "15.8.2",
+      "xcode": "Xcode 16.4\nBuild version 16F6",
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "boot_succeeded": true,
+      "simulator_state_unavailable": true,
+      "exit_code": 65,
+      "selected_tests_succeeded": false,
+      "method_counts_from_tests_log": {
+        "started": 10,
+        "completed": 10,
+        "passed": 9,
+        "failed": 1,
+        "skipped": 0
+      },
+      "classification": "method_assertion_failure",
+      "bootstrap_failure_log_line": null,
+      "failed_methods": [
+        {
+          "class": "WoowAssistantUITests.SkillCatalogUITests",
+          "method": "testAllPinnedSkillsSearchFullOriginalAssetsAndLicense",
+          "outcome": "failed",
+          "seconds": 64.032,
+          "log_line": 6650
+        }
+      ],
+      "verified_completion": null,
+      "hashes": {
+        "report.json": "454cd5a893a2b9fc149476adfda4a1fd001c595a84c044c01d3f6ae6729be2ce",
+        "tests.log": "34488b1f4644906de8fe36a2026ac568b8125a704cbb8ef55863f72d30a69b1b"
+      }
+    },
+    {
+      "scope": "learning",
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805370316",
+      "artifact_id": 13764345380,
+      "source_revision": "2fce6cffd41944d4ca9fff29158b6618e5621b52",
+      "host_architecture": "arm64",
+      "host_macos": "15.8.2",
+      "xcode": "Xcode 16.4\nBuild version 16F6",
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "boot_succeeded": true,
+      "simulator_state_unavailable": true,
+      "exit_code": 65,
+      "selected_tests_succeeded": false,
+      "method_counts_from_tests_log": {
+        "started": 0,
+        "completed": 0,
+        "passed": 0,
+        "failed": 0,
+        "skipped": 0
+      },
+      "classification": "xctest_bootstrap_before_methods",
+      "bootstrap_failure_log_line": 4159,
+      "failed_methods": [],
+      "verified_completion": null,
+      "hashes": {
+        "report.json": "965d19e43de966f6a99be3a83dce0f02d42b45fbea3a2dc4448eb3523619f209",
+        "tests.log": "207b7a13f5f069c5b6eee7ee09b6cdfab570094f9a7210f929d5df2eb6aecc4b"
+      }
+    }
+  ],
+  "startup_diagnostics": {
+    "export_workflow_run": 42804681687,
+    "export_artifact_id": 13758791980,
+    "original_run": 42797738681,
+    "original_source": "6d480d8",
+    "export_reran_tests": false,
+    "methods_started": 0,
+    "daemon_proxy_to_running_seconds": 106.626564,
+    "daemon_control_session_timeout_seconds": 120,
+    "runner_pid": 17573,
+    "runner_reported_daemon_not_ready_at_utc": "2026-11-10T10:37:58.546650Z",
+    "runner_assertion": "XCTRunner Initialization",
+    "termination": {
+      "at_utc": "2026-11-10T10:39:58.650587Z",
+      "namespace": "OS_REASON_RUNNINGBOARD",
+      "code": "0x2182BAAD",
+      "signal": 9,
+      "launchd_log_line": 7088
+    },
+    "observed_process_launch_delays": {
+      "matched_service_pairs": 142,
+      "over_60_seconds": 20
+    },
+    "daemon_post_failure_snapshot": {
+      "running": true,
+      "initialized": true,
+      "launches": 1,
+      "exits": 0
+    },
+    "root_cause_boundary": "RunningBoard assertion expiry is proven. Why the daemon handshake stalled is not proven; no contemporaneous daemon/runner stack is available. Fresh-run SIGKILL logs alone do not prove the same RunningBoard reason.",
+    "shared_local_prefix": "/tmp/woow-ios1701-runner-exported/startup"
+  },
+  "interpretation": {
+    "inventory": "Inventory was unavailable in both successful browser and failed runs; this flag is not an XCTest readiness test.",
+    "core_cookie": "The predicate failed after a single refresh. The old log does not distinguish callback absence, empty/normalized records, or a stale publication. removeData was not reached.",
+    "skills": "Catalog Python requirement label assertion failed after the element was found; Lorentz owns the follow-up.",
+    "core_transcript": "Cancellation transport assertion failed; Cicero owns the follow-up."
+  },
+  "pending_changes": {
+    "prelaunch": "Explicit --prelaunch-test-daemon / ios17_prelaunch=false by default; one selected-simulator kickstart without -k, public signal-zero liveness check, shared 120-second budget. No claim of XCTest/AX readiness, no launchctl print field parsing, no retries. First native experiment should select exact 17.0.1 startup-smoke.",
+    "cookie": "Keep 15 seconds; observe actual record publication separately from the exact domain/cookie-type assertion. Failure metadata contains only fixture-name allowlist, public data types, counts, error booleans and synthetic cookie names, never values. Native outcome pending."
+  },
+  "limitations": [
+    "No App product change or deployment dispatch was performed for this diagnosis.",
+    "Method counts in failed runs are parsed exact completions, not a substitute for a separately verified xcresult summary.",
+    "The successful browser shard is 5/5 with zero skips; it does not establish full iOS 17 acceptance."
+  ],
+  "local_validation": {
+    "release_python_tests_passed": 51,
+    "prepare_live_simulator_python_tests_passed": 15,
+    "verify_live_ui_python_tests_passed": 16,
+    "ios17_swift_parse_debug": "passed",
+    "ios17_swift_parse_release": "passed",
+    "swift_compile_typecheck": "not_available_without_Xcode_iOS_SDK",
+    "yaml_parse": "passed",
+    "native_prelaunch_experiment": "not_run",
+    "native_cookie_diagnostic": "not_run"
+  }
+}

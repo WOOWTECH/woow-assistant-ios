@@ -219,6 +219,26 @@ jobs:
             xcrun xcresulttool export attachments --path build/Tests.xcresult --output-path build/screenshots
             xcrun xcresulttool export diagnostics --path build/Tests.xcresult --output-path build/diagnostics
           fi
+      - name: Verify every selected shard case completed without skips
+        if: always() && github.event_name == 'workflow_dispatch' && (startsWith(inputs.test_scope, 'ui-') || inputs.test_scope == 'native')
+        env:
+          VALIDATION_SCOPE: ${{ inputs.test_scope }}
+        run: |
+          python3 - <<'PY'
+          import json, os, sys
+          from pathlib import Path
+          sys.path.insert(0, 'scripts')
+          from release_ios17 import ui_inventory, selected_ui_tests, test_completion
+          scope = os.environ['VALIDATION_SCOPE']
+          catalog = ui_inventory(Path.cwd())
+          expected = selected_ui_tests(catalog, 'core' if scope == 'native' else scope)
+          summary = json.loads(Path('build/test-summary.json').read_text())
+          completion = test_completion(summary, Path('build/ios-tests.log'), expected, scope != 'native')
+          Path('build/ui-shard-completion.json').write_text(json.dumps(completion, indent=2) + '\n')
+          print(json.dumps(completion, sort_keys=True))
+          if not completion['verified']:
+              raise SystemExit('Selected tests did not all complete successfully without skips')
+          PY
       - name: Collect synthetic PDF fixture evidence
         if: always()
         run: |
@@ -237,6 +257,7 @@ jobs:
             build/*.log
             build/*.xcresult
             build/test-summary.json
+            build/ui-shard-completion.json
             build/app-configuration.json
             build/browser-site-clear.json
             build/skill-pdf-fixture-evidence.json

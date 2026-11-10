@@ -215,6 +215,78 @@ def boot_simulator(output, simulator, report):
         raise ReleaseError("iOS 17 Simulator 資料移轉失敗（Data Migration Failed）；未執行測試。")
 
 
+def prelaunch_test_daemon(simulator, report):
+    """Start this simulator's daemon once, before XCTest's control-session timer.
+
+    The preserved 17.0.1 startup trace spent 106.6s in xpcproxy. Public
+    launchctl kickstart (without -k) moves that initial launch out of the
+    handshake. Process startup is NOT proof of an XCTest/AX handshake: only
+    the subsequent, unchanged test invocation can establish that.
+    No restart, private notify state, DTX request, or repeated launch is used.
+    """
+    diagnostic = {"budget_seconds": 120, "attempts": 0,
+                  "status": "not_started", "handshake_verified": False}
+    report["test_daemon_prelaunch"] = diagnostic
+    started = time.monotonic()
+    deadline = started + diagnostic["budget_seconds"]
+    try:
+        uuid.UUID(simulator)
+        # Simulator's launchd uses the host user's domain (recorded as user/501
+        # in the failing archive). Never address the host launchd directly.
+        target = "user/%d/com.apple.testmanagerd" % os.getuid()
+        base = ["xcrun", "simctl", "spawn", simulator, "launchctl"]
+        environment = {key: os.environ[key] for key in
+                       ("PATH", "DEVELOPER_DIR", "HOME", "TMPDIR", "TMP", "TEMP") if key in os.environ}
+        environment.setdefault("PATH", "/usr/bin:/bin:/usr/sbin:/sbin")
+
+        def invoke(arguments):
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise subprocess.TimeoutExpired(base, 120)
+            result = subprocess.run(base + arguments, stdin=subprocess.DEVNULL,
+                                    stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                    env=environment, timeout=remaining)
+            if result.returncode != 0:
+                diagnostic["status"] = "command_failed"
+                raise ReleaseError("iOS 17 XCTest daemon 預啟動命令失敗；未執行測試。")
+            # -p's documented result is a PID. Never copy raw command output
+            # into reports, logs, or exceptions, including error output.
+            if len(result.stdout) > 64:
+                diagnostic["status"] = "invalid_command_output"
+                raise ReleaseError("iOS 17 XCTest daemon 狀態格式不符；未執行測試。")
+            return result.stdout.decode("utf-8", errors="replace")
+
+        diagnostic["attempts"] = 1
+        diagnostic["status"] = "starting"
+        pid = invoke(["kickstart", "-p", target]).strip()
+        if not re.fullmatch(r"[1-9][0-9]{0,9}", pid) or int(pid) > 2_147_483_647:
+            diagnostic["status"] = "invalid_pid"
+            raise ReleaseError("iOS 17 XCTest daemon 未回傳有效程序識別碼；未執行測試。")
+        if time.monotonic() >= deadline:
+            raise subprocess.TimeoutExpired(base, 120)
+        diagnostic["status"] = "checking_process"
+        # POSIX signal 0 checks existence/permission without sending a signal.
+        # launchctl's own manual explicitly says print output is NOT an API;
+        # do not infer readiness by parsing its state/initialized fields.
+        try:
+            os.kill(int(pid), 0)
+        except OSError:
+            diagnostic["status"] = "process_liveness_unconfirmed"
+            raise ReleaseError("iOS 17 XCTest daemon 程序存活尚未確認；未執行測試。") from None
+        if time.monotonic() >= deadline:
+            raise subprocess.TimeoutExpired(base, 120)
+        diagnostic["process_alive"] = True
+        diagnostic["status"] = "process_started_handshake_unverified"
+    except subprocess.TimeoutExpired:
+        diagnostic["status"] = "budget_exhausted"
+        raise ReleaseError("iOS 17 XCTest daemon 預啟動超過共用 120 秒預算；未重試或執行測試。") from None
+    except (OSError, ValueError):
+        diagnostic["status"] = "prelaunch_unavailable"
+        raise ReleaseError("iOS 17 XCTest daemon 預啟動不可用；未執行測試。") from None
+    finally:
+        diagnostic["elapsed_seconds"] = round(time.monotonic() - started, 3)
+
+
 def collect_boot_diagnostics(output, simulator):
     """Best-effort evidence from this fresh hosted device, never a personal Mac.
 
@@ -266,7 +338,7 @@ def collect_boot_diagnostics(output, simulator):
     return result
 
 
-def execute(output, requested, download, test_scope="all", expected_host_arch=None):
+def execute(output, requested, download, test_scope="all", expected_host_arch=None, prelaunch_daemon=False):
     if version(requested)[0] != 17:
         raise ReleaseError("只接受 iOS 17.x。")
     if test_scope not in TEST_SCOPES:
@@ -278,6 +350,7 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
               "deployment_target": "17.0", "physical_devices_used": False,
               "host_architecture": platform.machine(), "host_macos": platform.mac_ver()[0],
               "expected_host_architecture": expected_host_arch,
+              "experimental_prelaunch_test_daemon": prelaunch_daemon,
               "phase_history": [], "test_scope": test_scope,
               "selected_tests_succeeded": False,
               "full_acceptance_succeeded": False,
@@ -364,6 +437,12 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
                 report["simulator_state"] = [{key: item.get(key) for key in ("state", "isAvailable", "availabilityError")} for item in own]
             except (ReleaseError, ValueError, TypeError, AttributeError):
                 report["simulator_state_unavailable"] = True
+        if prelaunch_daemon:
+            checkpoint("prelaunching_test_daemon")
+            try:
+                prelaunch_test_daemon(simulator, report)
+            finally:
+                save_report()
         report["maximum_case_seconds"] = 420 if test_scope in ("all", "workspace", "ui-workspace") else 300
         # New class shards aim for 10–20 minutes of testing, with a bounded
         # 30-minute build+test budget. Existing repair scopes keep their bounds.
@@ -433,6 +512,8 @@ def main():
     parser.add_argument("--download", action="store_true")
     parser.add_argument("--test-scope", choices=TEST_SCOPES, default="all")
     parser.add_argument("--expected-host-arch", choices=("arm64", "x86_64"))
+    parser.add_argument("--prelaunch-test-daemon", action="store_true",
+                        help="Experimental one-shot daemon prelaunch; not proof of XCTest readiness (default off)")
     parser.add_argument("--check-ui-inventory", action="store_true",
                         help="Validate and print the UI class partition without invoking Xcode")
     parser.add_argument("--output", type=Path, default=Path("build/ios17"))
@@ -441,7 +522,8 @@ def main():
         if args.check_ui_inventory:
             print(json.dumps(ui_inventory(Path(__file__).resolve().parents[1]), indent=2))
             return 0
-        execute(args.output.resolve(), args.os, args.download, args.test_scope, args.expected_host_arch)
+        execute(args.output.resolve(), args.os, args.download, args.test_scope, args.expected_host_arch,
+                args.prelaunch_test_daemon)
     except (ReleaseError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
         print(str(error) if isinstance(error, ReleaseError) else "iOS 17 驗證未完成；請檢查輸出證據。", file=sys.stderr)
         return 1

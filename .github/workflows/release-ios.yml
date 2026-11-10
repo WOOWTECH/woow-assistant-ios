@@ -30,6 +30,10 @@ on:
         type: choice
         options: [arm64, x86_64]
         default: arm64
+      ios17_prelaunch:
+        description: 實驗：一次預啟動 XCTest daemon（先用 startup-smoke；不代表握手已就緒）
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -39,7 +43,7 @@ defaults:
     shell: bash
 
 concurrency:
-  group: release-ios-${{ github.ref }}-${{ inputs.mode }}-${{ inputs.ios17_version }}-${{ inputs.ios17_test_scope }}-${{ inputs.ios17_host_arch }}
+  group: release-ios-${{ github.ref }}-${{ inputs.mode }}-${{ inputs.ios17_version }}-${{ inputs.ios17_test_scope }}-${{ inputs.ios17_host_arch }}-${{ inputs.ios17_prelaunch }}
   cancel-in-progress: false
 
 jobs:
@@ -155,10 +159,14 @@ jobs:
           IOS17_VERSION: ${{ inputs.ios17_version }}
           IOS17_TEST_SCOPE: ${{ inputs.ios17_test_scope }}
           IOS17_HOST_ARCH: ${{ inputs.ios17_host_arch }}
+          IOS17_PRELAUNCH: ${{ inputs.ios17_prelaunch }}
         run: |
           args=()
           if [ "$VALIDATION_MODE" = ios17-hosted ]; then
             args+=(--download --expected-host-arch "$IOS17_HOST_ARCH")
+          fi
+          if [ "$IOS17_PRELAUNCH" = true ]; then
+            args+=(--prelaunch-test-daemon)
           fi
           python3 scripts/release_ios17.py --os "$IOS17_VERSION" --test-scope "$IOS17_TEST_SCOPE" "${args[@]}" --output build/ios17
       - name: 匯出 iOS 17 測試摘要
