@@ -1,5 +1,11 @@
 # Verification — 2026-11-11
 
+## Native learning baseline and real HA/memory UI acceptance
+
+At `61a94d6`, [42861631222](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42861631222) passed **213/213 native/hosted methods, zero skips**, on iPhone 17 / iOS 26.2, including all 18 profile/memory App-hosted methods. Portable Swift tests independently passed **173/173**. [Unique actual method completions and source hashes](evidence/native-current-61a94d6.json). This predates the MCP/local integration in `61f5377`; its regression runs are separate.
+
+The real HA workflow now has an isolated `memory-learning` scope. Its new native UI case selects only `ha_eval_template`, verifies the exact arithmetic arguments before approval, then separately reviews the synthetic preference write. It requires the actual remote result and model completion, one saved memory, native undo, and an empty encrypted memory store after relaunch. Existing native HA protocol probes and private configuration cleanup remain. This raises the inventory to **81 non-Live / 19 Live** methods; the new method is not a pass until its native run completes.
+
 ## MCP conversations now dispatch reviewed local learning tools
 
 The host offers local profile/memory actions separately from the selected remote MCP catalog. Exact raw arguments survive parsing; only the actual current utterance may authorize writes. The existing twelve model calls, six remote operations and 180-second deadline remain; local actions share the model budget and add no remote authorization. Local search is limited to one, profile/memory share one mutation, and one final model call is reserved before dispatching a local action. After native review the host rechecks the callback lease and request, then synchronously checks store state and atomically persists.
@@ -22,7 +28,7 @@ The `30bcaf1` Large PDF assembly case failed **0/1, zero skips**, in 132.538 sec
 
 ## Ordinary memory tools: local transactions and real-model App checks
 
-Ordinary chat now dispatches `memory_search`, `memory_save` and `memory_edit` through the production memory state, with actual search-result IDs, current-utterance grounding and explicit native review before atomic encrypted writes. Pending procedures still need activation approval. The tools share the profile flow's three foreground calls, one search, one mutation and 90-second budget; post-answer automatic extraction is a separate background call. MCP-mode integration remains absent. [Behavior and deliberate Mika differences](MEMORY_TOOLS.md).
+Ordinary chat now dispatches `memory_search`, `memory_save` and `memory_edit` through the production memory state, with actual search-result IDs, current-utterance grounding and explicit native review before atomic encrypted writes. Pending procedures still need activation approval. The tools share the profile flow's three foreground calls, one search, one mutation and 90-second budget; post-answer automatic extraction is a separate background call. MCP-mode integration was subsequently added in `61f5377`, described above. [Behavior and deliberate Mika differences](MEMORY_TOOLS.md).
 
 Core checks pass **245 memory-tool assertions / ten groups**, plus the existing **97 profile-tool / 91 memory-state** assertions. A real App regression first failed when preference changes removed a deleted-memory undo card; filtering against actual undo eligibility fixes it. The same targeted case now passes **84/84**. Final production App logic and isolated AES-GCM checks pass **468 Debug / 395 Release**, including 44 actual fixture-client checks. No iOS SDK is used locally. [Before/after App evidence and source hashes](evidence/memory-chat-app-local.json), [core baseline](evidence/memory-tools-core-local.json), [undo eligibility correction](evidence/memory-tools-can-undo-local.json).
 
@@ -30,7 +36,7 @@ A separate real-model run used the production HTTP client and App logic for **29
 
 At `856e8ec`, [42853401159](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42853401159) passed **193/193 native/hosted methods, zero skips**, on iPhone 17 / iOS 26.2, including **10/10 profile App integration methods**. Portable Swift tests independently passed **161/161**. This source predates the new ordinary-memory tools. [Unique actual completions and runtime evidence](evidence/native-856e8ec-current.json).
 
-The current inventory partitions all **78 non-Live UI methods** exactly once: memory 8, profile 9, memory tools 6, and the other existing shards. All **18 live methods** remain separately selected. Six new memory fixture cases and one new real-model case require iOS acceptance; inventory counts and local parsing are not executed UI results.
+The `61a94d6` inventory partitioned all **78 non-Live UI methods** exactly once: memory 8, profile 9, memory tools 6, and the other existing shards, with **18 live methods** separately selected. Later mixed-MCP additions expand that inventory as recorded above; inventory counts and local parsing are not executed UI results.
 
 ## SE user-selected PDF copy completed end to end
 

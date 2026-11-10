@@ -8,6 +8,11 @@ on:
         type: choice
         options: ['18.5', '17.0.1']
         default: '18.5'
+      ui_scope:
+        description: Real HA App UI scope; native protocol probes always run
+        type: choice
+        options: [all, memory-learning]
+        default: all
       ios17_prelaunch:
         description: Experimental 17.0.1 XCTest daemon prelaunch (one attempt; no readiness claim)
         type: boolean
@@ -21,7 +26,7 @@ defaults:
     shell: bash
 
 concurrency:
-  group: live-ha-mcp-${{ inputs.ios_version || '18.5' }}-${{ inputs.ios17_prelaunch && 'prelaunch' || 'standard' }}
+  group: live-ha-mcp-${{ inputs.ui_scope || 'all' }}-${{ inputs.ios_version || '18.5' }}-${{ inputs.ios17_prelaunch && 'prelaunch' || 'standard' }}
   cancel-in-progress: false
 
 jobs:
@@ -109,17 +114,25 @@ jobs:
           [ "${#test_runs[@]}" -eq 1 ] || { echo 'Expected one generated test runner'; exit 1; }
           python3 scripts/prepare_live_xctestrun.py "${test_runs[0]}" --service model
           python3 scripts/prepare_live_xctestrun.py "${test_runs[0]}" --service mcp
+          selectors=(WoowAssistantUITests/LiveMCPUITests WoowAssistantUITests/LiveMCPConversationUITests)
+          if [ '${{ inputs.ui_scope }}' = memory-learning ]; then
+            selectors=(WoowAssistantUITests/LiveMCPConversationUITests/testRealModelUsesRemoteToolThenReviewedLocalMemoryAndUndo)
+          fi
+          ui_filters=()
+          verification_filters=()
+          for selector in "${selectors[@]}"; do
+            ui_filters+=("-only-testing:$selector")
+            verification_filters+=(--selector "$selector")
+          done
           test_exit=0
           xcodebuild -xctestrun "${test_runs[0]}" \
             -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
             -resultBundlePath build/LiveMCPUI.xcresult \
-            -only-testing:WoowAssistantUITests/LiveMCPUITests \
-            -only-testing:WoowAssistantUITests/LiveMCPConversationUITests \
+            "${ui_filters[@]}" \
             -parallel-testing-enabled NO -test-timeouts-enabled YES \
             -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 300 test-without-building || test_exit=$?
           python3 scripts/verify_live_ui.py --result build/LiveMCPUI.xcresult \
-            --selector WoowAssistantUITests/LiveMCPUITests \
-            --selector WoowAssistantUITests/LiveMCPConversationUITests
+            "${verification_filters[@]}"
           exit "$test_exit"
       - name: Clear private runner configuration
         if: always()
