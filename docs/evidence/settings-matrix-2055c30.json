@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "source_revision": "2055c30",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42800167438",
+  "variants": [
+    {
+      "variant": "se",
+      "artifact_id": 13757383560,
+      "summary_sha256": "b4d8aa9dcb08e933f5d8a7a223d815fb35db30d952784e04ab15127f79621fe0",
+      "summary": {
+        "result": "Failed",
+        "totalTestCount": 10,
+        "passedTests": 9,
+        "failedTests": 1,
+        "skippedTests": 0,
+        "expectedFailures": 0,
+        "testFailures": [
+          {
+            "failureText": "failed - Learning element must meet its visibility requirement above navigation/keyboard: memory.segment.skills",
+            "targetName": "WoowAssistantUITests",
+            "testIdentifier": 10,
+            "testIdentifierString": "SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile()",
+            "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
+            "testName": "testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile()"
+          }
+        ]
+      },
+      "actual_appearance_pass": [
+        "Test Case '-[WoowAssistantUITests.SelfConfigurationUITests testManualAppearanceChangesActualThemePersistsAndModelPermissionDefaultsOff]' passed (57.293 seconds)."
+      ]
+    },
+    {
+      "variant": "large",
+      "artifact_id": 13757781235,
+      "summary_sha256": "2694e9e282bb66a376e2689140535b5045b1ad16fea2fba1dc24394736650d0d",
+      "summary": {
+        "result": "Failed",
+        "totalTestCount": 10,
+        "passedTests": 9,
+        "failedTests": 1,
+        "skippedTests": 0,
+        "expectedFailures": 0,
+        "testFailures": [
+          {
+            "failureText": "failed - Learning element must meet its visibility requirement above navigation/keyboard: memory.segment.skills",
+            "targetName": "WoowAssistantUITests",
+            "testIdentifier": 10,
+            "testIdentifierString": "SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile()",
+            "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
+            "testName": "testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile()"
+          }
+        ]
+      },
+      "actual_appearance_pass": [
+        "Test Case '-[WoowAssistantUITests.SelfConfigurationUITests testManualAppearanceChangesActualThemePersistsAndModelPermissionDefaultsOff]' passed (56.719 seconds)."
+      ]
+    },
+    {
+      "variant": "current",
+      "artifact_id": 13756939913,
+      "summary_sha256": "23906c55334436044128fc1394585878a18142430389807c753c0be8dd0e974a",
+      "summary": {
+        "result": "Failed",
+        "totalTestCount": 10,
+        "passedTests": 9,
+        "failedTests": 1,
+        "skippedTests": 0,
+        "expectedFailures": 0,
+        "testFailures": [
+          {
+            "failureText": "failed - Learning element must meet its visibility requirement above navigation/keyboard: memory.segment.skills",
+            "targetName": "WoowAssistantUITests",
+            "testIdentifier": 10,
+            "testIdentifierString": "SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile()",
+            "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
+            "testName": "testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile()"
+          }
+        ]
+      },
+      "actual_appearance_pass": [
+        "Test Case '-[WoowAssistantUITests.SelfConfigurationUITests testManualAppearanceChangesActualThemePersistsAndModelPermissionDefaultsOff]' passed (66.243 seconds)."
+      ]
+    }
+  ],
+  "diagnosis": "All three: eight native self-configuration cases and manual actual appearance/relaunch UI passed. Worker settings test stopped at the fixed Skills header because the Form scroll visibility helper excluded its geometry; no worker setup flow accepted. 2fce6cf switches that header to direct native readiness/tap and asserts selected state; retest pending."
+}

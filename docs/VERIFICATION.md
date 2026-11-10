@@ -1,5 +1,10 @@
 # Verification — 2026-11-10
 
+## Settings matrix `2055c30`: 9/10 per device, repair submitted
+
+[42800167438](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42800167438) ran the eight native appearance runtime cases plus two UI cases on SE/18.5, large/18.5 and current/26.2. Each variant passed **9/10, zero skips**: all native cases and actual manual appearance/persistence UI passed. Worker settings stopped before opening its form because a fixed Skills segment was incorrectly checked against the scrollable Form viewport. `2fce6cf` uses direct native readiness/tap for that fixed header and verifies its selected state; settings save/remove/relaunch and zero-read assertions remain unchanged. The corrected matrix is [42805681299](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42805681299), pending. [Retained evidence](evidence/settings-matrix-2055c30.json).
+
+
 ## Exact iOS 17.0.1 first full shard attempt (`6d480d8`)
 
 All 51 non-Live UI methods were assigned; the actual run outcomes are below.
