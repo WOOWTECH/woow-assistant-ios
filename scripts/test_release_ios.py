@@ -351,13 +351,15 @@ class RuntimeTests(unittest.TestCase):
             if "devices" in args:
                 return json.dumps({"devices": {"test": [{"udid": simulator, "state": "Booted", "isAvailable": True}]}}).encode()
             return b""
-        for scope, exit_code, timed_out in [("all", 65, False), ("all", None, True), ("core", 0, False), ("all", 0, False)]:
+        for scope, exit_code, timed_out in [("all", 65, False), ("all", None, True), ("core", 0, False), ("all", 0, False), ("startup-smoke", 0, False)]:
             with self.subTest(scope=scope, exit_code=exit_code, timed_out=timed_out), tempfile.TemporaryDirectory() as folder:
                 output = Path(folder) / "result"
                 def child(args, **kwargs):
                     if args[0] == "xcodebuild":
                         self.assertEqual(args[args.index("-maximum-test-execution-time-allowance") + 1], "420" if scope == "all" else "300")
                         if scope == "core": self.assertIn("-only-testing:AssistantDomainTests", args)
+                        elif scope == "startup-smoke":
+                            self.assertIn("-only-testing:WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded", args)
                         else: self.assertFalse(any(arg.startswith("-only-testing:") for arg in args))
                         if timed_out: raise subprocess.TimeoutExpired(args, kwargs["timeout"])
                         return subprocess.CompletedProcess(args, exit_code)
@@ -386,6 +388,22 @@ class RuntimeTests(unittest.TestCase):
                 self.assertEqual(report["test_timed_out"] if timed_out else report["test_exit_code"], True if timed_out else exit_code)
                 self.assertTrue(any(call.args[0] == ["xcrun", "simctl", "delete", simulator] for call in runner.call_args_list))
                 self.assertFalse((output / "report.json.tmp").exists())
+
+    def test_wrong_host_architecture_fails_before_any_tool_or_runtime_mutation(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / "result"
+            with patch.object(ios17.platform, "machine", return_value="x86_64"), \
+                 patch.object(ios17, "run") as runner, \
+                 patch.object(ios17, "ensure_runtime") as runtime, patch("builtins.print"):
+                with self.assertRaisesRegex(release.ReleaseError, "主機架構"):
+                    ios17.execute(output, "17.0.1", True, "startup-smoke", "arm64")
+            runner.assert_not_called()
+            runtime.assert_not_called()
+            report = json.loads((output / "report.json").read_text())
+            self.assertEqual(report["host_architecture"], "x86_64")
+            self.assertEqual(report["expected_host_architecture"], "arm64")
+            self.assertFalse(report["selected_tests_succeeded"])
+            self.assertFalse(report["runtime_tested"])
 
     def test_inventory_and_cleanup_cannot_mask_boot_outcome(self):
         simulator = "12345678-1234-1234-1234-123456789ABC"

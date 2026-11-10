@@ -25,6 +25,7 @@ TEST_SCOPES = {
     "files": ["AssistantSkillsTests", "AssistantDomainTests/BrowserDownloadTests", "AssistantDomainTests/BrowserNavigationIntentTests", "AssistantBrowserIntegrationTests", "WoowAssistantUITests/BrowserUploadUITests", "WoowAssistantUITests/SkillExecutionUITests"],
     "parity": ["AssistantMCPTests", "AssistantSkillsTests", "AssistantDomainTests", "AssistantBrowserIntegrationTests", "WoowAssistantUITests/MCPConversationUITests", "WoowAssistantUITests/BrowserInteractionUITests", "WoowAssistantUITests/BrowserLearningUITests", "WoowAssistantUITests/SkillCatalogUITests", "WoowAssistantUITests/MemoryUITests", "WoowAssistantUITests/MemoryRaceUITests"],
     "startup": ["WoowAssistantUITests/WoowAssistantUITests"],
+    "startup-smoke": ["WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded"],
 }
 
 
@@ -158,15 +159,18 @@ def collect_boot_diagnostics(output, simulator):
     return result
 
 
-def execute(output, requested, download, test_scope="all"):
+def execute(output, requested, download, test_scope="all", expected_host_arch=None):
     if version(requested)[0] != 17:
         raise ReleaseError("只接受 iOS 17.x。")
     if test_scope not in TEST_SCOPES:
         raise ReleaseError("未知的 iOS 17 測試範圍。")
+    if expected_host_arch not in (None, "arm64", "x86_64"):
+        raise ReleaseError("未知的主機架構。")
     output.mkdir(parents=True, exist_ok=False)
     report = {"requested_runtime": requested, "runtime_tested": False,
               "deployment_target": "17.0", "physical_devices_used": False,
               "host_architecture": platform.machine(), "host_macos": platform.mac_ver()[0],
+              "expected_host_architecture": expected_host_arch,
               "phase_history": [], "test_scope": test_scope,
               "selected_tests_succeeded": False}
     started = time.monotonic()
@@ -190,6 +194,8 @@ def execute(output, requested, download, test_scope="all"):
     simulator = None
     try:
         checkpoint("preflight")
+        if expected_host_arch and report["host_architecture"] != expected_host_arch:
+            raise ReleaseError("實際主機架構與指定比較條件不同；未執行測試。")
         report["xcode"] = run(["xcodebuild", "-version"], "需要完整 Xcode").decode().strip()
         checkpoint("checking_runtime")
         runtime = ensure_runtime(output, requested, download, checkpoint)
@@ -289,10 +295,11 @@ def main():
     parser.add_argument("--os", default="17.0.1", help="Exact OS version, not device model number")
     parser.add_argument("--download", action="store_true")
     parser.add_argument("--test-scope", choices=TEST_SCOPES, default="all")
+    parser.add_argument("--expected-host-arch", choices=("arm64", "x86_64"))
     parser.add_argument("--output", type=Path, default=Path("build/ios17"))
     args = parser.parse_args()
     try:
-        execute(args.output.resolve(), args.os, args.download, args.test_scope)
+        execute(args.output.resolve(), args.os, args.download, args.test_scope, args.expected_host_arch)
     except (ReleaseError, OSError, ValueError, KeyError, subprocess.TimeoutExpired) as error:
         print(str(error) if isinstance(error, ReleaseError) else "iOS 17 驗證未完成；請檢查輸出證據。", file=sys.stderr)
         return 1
