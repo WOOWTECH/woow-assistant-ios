@@ -49,6 +49,7 @@ final class ChatSession: ObservableObject {
     @Published private(set) var mcpDiagnostics: String?
     private var mcpPhase = "idle"
     private var mcpModelCalls = 0
+    private var mcpFormatCorrections = 0
     private var mcpApprovalContinuation: CheckedContinuation<Bool, Never>?
     private var isMCPRun = false
     private var mcpSentCount = 0
@@ -211,7 +212,7 @@ final class ChatSession: ObservableObject {
         mcpActivity = nil
         mcpSteps = []
         mcpSentCount = 0
-        mcpModelCalls = 0; mcpPhase = "starting"; updateMCPDiagnostics()
+        mcpModelCalls = 0; mcpFormatCorrections = 0; mcpPhase = "starting"; updateMCPDiagnostics()
         chatError = nil
         chatNotice = nil
         let client = client
@@ -249,6 +250,8 @@ final class ChatSession: ObservableObject {
                 }
                 // Do not surface provider error bodies/URLs: they may contain secrets.
                 let message = (error as? MCPChatStop)?.message
+                    ?? ((error as? MCPConversationError) == .invalidCommand
+                        ? "模型仍未提供可用的單一步驟指令，已停止；草稿與先前工具結果保留。" : nil)
                     ?? (mcpConnection == nil ? "傳送失敗，草稿已保留。請檢查模型設定或網路後重試。"
                         : "MCP 對話未完成，草稿與已收到的工具結果保留；請先確認已送出操作，不會自動重試。")
                 self.finish(id: id, error: message)
@@ -303,6 +306,7 @@ final class ChatSession: ObservableObject {
         guard self.requestID == requestID else { return }
         switch event {
         case .requestingModel(let count): mcpPhase = "requestingModel"; mcpModelCalls = count
+        case .correctingCommand: mcpPhase = "correctingCommand"; mcpFormatCorrections += 1
         case .awaitingApproval: mcpPhase = "awaitingApproval"
         case .executing: mcpPhase = "executing"; mcpSentCount += 1
         case .completed(let step): mcpPhase = "receivedResult"; mcpSteps.append(step)
@@ -316,7 +320,7 @@ final class ChatSession: ObservableObject {
     private func updateMCPDiagnostics(failure: String = "none") {
         #if DEBUG
         guard isUITestMode || ProcessInfo.processInfo.arguments.contains("-LiveMCPConversationUITest") else { return }
-        mcpDiagnostics = "phase=\(mcpPhase);modelCalls=\(mcpModelCalls);attempts=\(mcpSentCount);results=\(mcpSteps.count);toolErrors=\(mcpSteps.filter(\.isError).count);failure=\(failure)"
+        mcpDiagnostics = "phase=\(mcpPhase);modelCalls=\(mcpModelCalls);formatCorrections=\(mcpFormatCorrections);attempts=\(mcpSentCount);results=\(mcpSteps.count);toolErrors=\(mcpSteps.filter(\.isError).count);failure=\(failure)"
         #endif
     }
 

@@ -35,6 +35,9 @@ public struct MCPConversationStep: Equatable, Sendable {
 
 public enum MCPConversationEvent: Sendable, Equatable {
     case requestingModel(Int)
+    /// One bounded format correction for this conversation; no operation was
+    /// accepted from the invalid response. Contains no model-generated content.
+    case correctingCommand
     case awaitingApproval(MCPConversationProposal)
     /// Dispatch intent, emitted before entering the executor; not proof that the
     /// server received anything. Cancellation may still prevent dispatch. Once

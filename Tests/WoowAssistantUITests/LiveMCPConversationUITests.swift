@@ -86,7 +86,11 @@ final class LiveMCPConversationUITests: XCTestCase {
         XCTAssertTrue(answer.waitForExistence(timeout: 95), "No final answer after actual tools returned.")
         XCTAssertTrue(answer.label.trimmingCharacters(in: .whitespacesAndNewlines) == "MCP_OK_42", "Final answer did not use the literal arithmetic result.")
         XCTAssertFalse(app.staticTexts["chat.error"].exists)
-        XCTAssertTrue(app.staticTexts["chat.mcpActivity"].label.contains("2"), "Both completed calls must be reported.")
+        let diagnostics = app.staticTexts["chat.mcpActivity"].value as? String ?? "unavailable"
+        print("Live MCP completion: \(diagnostics)")
+        XCTAssertTrue(diagnostics.hasPrefix("phase=finished;"))
+        XCTAssertTrue(diagnostics.contains(";attempts=2;results=2;toolErrors=0;failure=none"),
+                      "Exactly two actual results and zero tool errors must be reported.")
     }
 
     func testRealModelToolRefusalKeepsDraft() {

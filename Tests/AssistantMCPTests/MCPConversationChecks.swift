@@ -168,6 +168,7 @@ enum MCPConversationChecks {
         let cases: [(String, MCPConversationError)] = [
             ("not JSON", .invalidCommand), ("```json\n" + finish + "\n```", .invalidCommand),
             (finish + finish, .invalidCommand), (#"{"action":"finish","answer":"ok","approved":true}"#, .invalidCommand),
+            ("[" + (try call()) + "," + (try call()) + "]", .invalidCommand),
             (#"{"action":"call_tool","name":"fixture_echo","arguments":[]}"#, .invalidCommand),
             (#"{"action":"call_tool","name":"fixture_echo"}"#, .invalidCommand),
             (#"{"action":"call_tool","name":"fixture_echo","arguments":{},"approval":true}"#, .invalidCommand),
@@ -176,11 +177,15 @@ enum MCPConversationChecks {
             (#"{"action":"read_resource","uri":"https://unselected.invalid/private"}"#, .unknownResource)
         ]
         for (raw, error) in cases {
-            let model = Model([raw]), executor = Executor(), record = Record()
-            count += try await expect(error) { _ = try await run(model, executor, approve: { await record.approve($0) }) }
+            let canCorrect = error == .invalidCommand
+            let model = Model(canCorrect ? [raw, raw] : [raw]), executor = Executor(), record = Record()
+            count += try await expect(error) {
+                _ = try await run(model, executor, approve: { await record.approve($0) }, event: { await record.event($0) })
+            }
             try c.expect(await executor.calls.isEmpty, "invalid command cannot execute")
             try c.expect(await record.approvals.isEmpty, "unknown/malformed operation never becomes approvable")
-            try c.expect(await model.inputs.count == 1, "no silent JSON retries")
+            try c.expect(await model.inputs.count == (canCorrect ? 2 : 1), "one bounded format correction only; unknown operations stop immediately")
+            try c.expect(await record.events.filter { $0 == .correctingCommand }.count == (canCorrect ? 1 : 0), "correction event is explicit and payload-free")
         }
         let executor = Executor(), record = Record()
         let resource = MCPResource(uri: "fixture://facts", name: "Facts", mimeType: "application/json")

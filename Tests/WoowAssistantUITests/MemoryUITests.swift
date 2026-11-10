@@ -13,6 +13,10 @@ final class MemoryUITests: XCTestCase {
 
     override func tearDownWithError() throws {
         if let testRun, testRun.failureCount > 0 {
+            let tree = XCTAttachment(string: app.debugDescription)
+            tree.name = "memory-fixture-failure-AX"
+            tree.lifetime = .keepAlways
+            add(tree)
             let attachment = XCTAttachment(screenshot: app.screenshot())
             attachment.name = "memory-fixture-failure"
             attachment.lifetime = .keepAlways
@@ -184,6 +188,8 @@ final class MemoryUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["settings.notice"].waitForExistence(timeout: 5))
         openMemory()
         addMemory("Keep until both confirmations")
+        XCTAssertTrue(memory("Keep until both confirmations").waitForExistence(timeout: 5),
+                      "Verify the exact saved fixture before testing cancellation or deletion.")
         importSkill(version: "PendingVersion")
         tap("memory.clear", scroll: true)
         XCTAssertFalse(app.buttons["memory.clear.confirm"].exists)
@@ -240,7 +246,27 @@ final class MemoryUITests: XCTestCase {
             waitUntilHittable(kind)
             kind.tap()
         }
-        enter(text, into: app.textViews["memory.editor.content"])
+        let content = app.textViews["memory.editor.content"]
+        waitUntilHittable(content)
+        content.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        // SE's failed clear fixture saved "Keep uil both confirmations":
+        // the memory survived Cancel, but the original key burst lost "nt".
+        // Verify first-key focus and every subsequent bounded chunk, without
+        // retries/repair or saving an unverified fixture.
+        var remaining = text[...]
+        var entered = ""
+        while !remaining.isEmpty {
+            let chunk = String(remaining.prefix(entered.isEmpty ? 1 : 16))
+            content.typeText(chunk)
+            entered += chunk
+            remaining = remaining.dropFirst(chunk.count)
+            let received = XCTNSPredicateExpectation(
+                predicate: NSPredicate(format: "value == %@", entered), object: content)
+            XCTAssertEqual(XCTWaiter.wait(for: [received], timeout: 5), .completed,
+                           "Memory editor must receive the exact fixture text before Save.")
+        }
+        XCTAssertEqual(content.value as? String, text)
         saveMemoryEditor()
     }
 
@@ -309,8 +335,55 @@ final class MemoryUITests: XCTestCase {
 
     private func tap(_ id: String, scroll: Bool = false) {
         let button = app.buttons[id]
-        if scroll { reveal(button) } else { waitUntilHittable(button) }
+        if scroll && id == "skills.import" {
+            guard revealSkillImport(button) else { return }
+        } else if scroll { reveal(button) } else { waitUntilHittable(button) }
         button.tap()
+    }
+
+    private func revealSkillImport(_ button: XCUIElement,
+                                   file: StaticString = #filePath, line: UInt = #line) -> Bool {
+        // The 40c SE trace saw this row, then one default-speed swipe moved it
+        // above the virtualized viewport. Seven further upward swipes searched
+        // only the bottom. Keep strict full-frame visibility, but use slow
+        // element gestures and reverse if a previously seen row disappears.
+        let list = app.collectionViews.firstMatch
+        waitUntilHittable(list)
+        var seen = false
+        var lastSwipeUp = true
+        for attempt in 0...8 {
+            var viewport = list.frame.intersection(app.frame)
+            let navigation = app.buttons["navigation.chat"]
+            if navigation.exists {
+                viewport.size.height = max(0, min(viewport.maxY, navigation.frame.minY) - viewport.minY)
+            }
+            if app.keyboards.firstMatch.exists {
+                viewport.size.height = max(0, min(viewport.maxY, app.keyboards.firstMatch.frame.minY) - viewport.minY)
+            }
+            viewport = viewport.insetBy(dx: 0, dy: 4)
+            let exists = button.exists
+            let frame = exists ? button.frame : .zero
+            if exists && learningFrameIsVisible(frame, in: viewport, visibility: .fullyVisible)
+                && button.isHittable {
+                return true
+            }
+            guard attempt < 8 else {
+                XCTFail("skills.import must be fully visible above navigation/keyboard before tapping.",
+                        file: file, line: line)
+                return false
+            }
+            let swipeUp: Bool
+            if exists && !frame.isEmpty {
+                seen = true
+                swipeUp = frame.minY >= viewport.minY
+            } else {
+                swipeUp = seen ? !lastSwipeUp : true
+            }
+            if swipeUp { list.swipeUp(velocity: .slow) }
+            else { list.swipeDown(velocity: .slow) }
+            lastSwipeUp = swipeUp
+        }
+        return false
     }
 
     private func tapFirst(prefix: String) {

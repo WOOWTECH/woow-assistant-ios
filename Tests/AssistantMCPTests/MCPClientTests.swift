@@ -14,6 +14,8 @@ struct MCPStandaloneSmoke {
             ("conversationCommands", MCPConversationChecks.strictCommandsAndSelection),
             ("conversationErrors", MCPConversationChecks.errorsAndBounds),
             ("modelFailureClassification", MCPConversationChecks.modelFailureClassification),
+            ("commandCorrection", MCPConversationChecks.commandCorrection),
+            ("correctionCancellation", MCPConversationChecks.correctionCancellationAndDeadline),
             ("conversationBudgets", MCPConversationChecks.budgetsAndRepeatedCalls),
             ("conversationCancellation", MCPConversationChecks.cancellationAndDeadline),
             ("authorizedTransport", MCPConversationChecks.singleCallTransportAPI)
