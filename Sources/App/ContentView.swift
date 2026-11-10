@@ -1,4 +1,5 @@
 import SwiftUI
+import AssistantSkills
 
 @MainActor
 struct ContentView: View {
@@ -6,6 +7,7 @@ struct ContentView: View {
     @StateObject private var session = ChatSession()
     @StateObject private var mcpSession = MCPSession()
     @StateObject private var browserWorkspace = BrowserWorkspace()
+    @StateObject private var preferences = SelfConfigurationStore.applicationPreferences()
     private var browser: BrowserSession { browserWorkspace.selected }
     @Environment(\.scenePhase) private var scenePhase
 
@@ -16,7 +18,7 @@ struct ContentView: View {
                 case .chat:
                     ChatView(session: session, mcp: mcpSession)
                 case .settings:
-                    ModelSettingsView(session: session)
+                    ModelSettingsView(session: session, preferences: preferences)
                 case .tools:
                     MCPToolsView(session: mcpSession)
                 case .memory:
@@ -32,6 +34,8 @@ struct ContentView: View {
                 sectionNavigation
             }
         }
+        .environmentObject(preferences)
+        .preferredColorScheme(preferences.preferredColorScheme)
         .onAppear {
             session.learning.onUserChange = { [weak browserWorkspace] in
                 browserWorkspace?.cancelAllWork()
@@ -296,6 +300,7 @@ private struct LearningChatNotes: View {
 @MainActor
 private struct ModelSettingsView: View {
     @ObservedObject var session: ChatSession
+    @ObservedObject var preferences: SelfConfigurationStore
     @FocusState private var editingField: Field?
     private enum Field: Hashable { case baseURL, model, key }
 
@@ -357,7 +362,11 @@ private struct ModelSettingsView: View {
                 }
                 Text("金鑰只儲存在此裝置的 Keychain。更換主機或連接埠必須重新輸入金鑰。")
                 Text("更換服務、模型或金鑰會開始新的對話，草稿保留。移除設定會清除本次對話及此 App 的模型金鑰。")
-                Text("儲存只代表設定已保存；首次傳送才會連線至你設定的服務。通知、語言與外觀設定仍待實作。")
+                Text("儲存只代表設定已保存；首次傳送才會連線至你設定的服務。")
+                NavigationLink {
+                    SelfConfigurationView(store: preferences, modelAccess: session.modelAccess)
+                } label: { Text("外觀與模型調整權限") }
+                    .accessibilityIdentifier("settings.appearance")
             }
             .textFieldStyle(.roundedBorder)
             .textInputAutocapitalization(.never)

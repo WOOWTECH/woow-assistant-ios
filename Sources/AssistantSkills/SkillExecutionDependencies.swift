@@ -36,7 +36,7 @@ public enum SkillExecutionDependencies {
             "現有 BrowserSession.inspect/openLink 與 WebResearchRunner 可讀公開頁面、同來源連結；尚未接入此執行器，不能讀取其他 App。")
         switch id {
         case "configure-mika": return [
-            row("settings_list / settings_set", .unavailable, "本 App 沒有可供技能呼叫的同等設定工具；模型、金鑰、登入、刪資料與容器網路均不可由技能修改。")]
+            row("settings_list / settings_set", .implementedInRuntime, "在外觀頁開啟模型權限後，可列出並修改本 App 的跟隨系統／淺色／深色；會讀回實際設定。模型、金鑰、登入、刪資料與容器網路不提供給此工具。")]
         case "content-transcribe": return [browser,
             row("read_file /workspace/inbox", .unavailable, "此增量只接受使用者選取的 PDF；尚未實作字幕或文字檔讀取。"),
             row("references/transcript-output-formats.md", .hostIntegrationRequired, "完整原文已固定封存並驗證雜湊；格式指引不產生執行權限。"),

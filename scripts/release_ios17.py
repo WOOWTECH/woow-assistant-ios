@@ -22,13 +22,13 @@ from release_ios import ReleaseError, generate_project, run, version, verify_set
 # This partition, unlike the legacy focused scopes below, owns every non-Live
 # UI class exactly once. Keep class selectors so new methods cannot be omitted.
 UI_SHARDS = {
-    "ui-startup": ["WoowAssistantUITests"],
+    "ui-startup": ["WoowAssistantUITests", "SelfConfigurationUITests"],
     "ui-workspace": ["BrowserWorkspaceUITests", "BrowserLoginUITests"],
     "ui-browser": ["BrowserInteractionUITests", "BrowserUploadUITests"],
     "ui-learning": ["BrowserLearningUITests"],
     "ui-memory": ["MemoryUITests", "MemoryRaceUITests"],
     "ui-skills": ["SkillCatalogUITests", "SkillAuthoringUITests"],
-    "ui-documents": ["SkillExecutionUITests"],
+    "ui-documents": ["SkillExecutionUITests", "SkillWorkerSettingsUITests"],
     "ui-mcp": ["MCPConversationUITests"],
 }
 LIVE_UI_CLASSES = {"LiveMCPUITests", "LiveMCPConversationUITests", "LiveModelUITests"}

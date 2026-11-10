@@ -36,8 +36,10 @@ struct SkillExecutionTextDocument: FileDocument {
 #if os(iOS)
 /// Parent integration: present SkillExecutionView() from the documents skill.
 /// A configured worker is optional; no endpoint or background upload is created.
-struct SkillExecutionView: View {
-    private let worker: (any SkillExecutionPDFWorker)?
+@MainActor struct SkillExecutionView: View {
+    private let suppliedWorker: (any SkillExecutionPDFWorker)?
+    @StateObject private var workerSettings = SkillWorkerPreferences()
+    private var worker: (any SkillExecutionPDFWorker)? { suppliedWorker ?? workerSettings.worker }
     @StateObject private var model = SkillExecutionViewModel()
     @State private var choosingFile = false
     @State private var pages = ""
@@ -50,7 +52,7 @@ struct SkillExecutionView: View {
     @State private var exportFilename = "PDF文字"
     @State private var exportStatus: String?
 
-    init(worker: (any SkillExecutionPDFWorker)? = nil) { self.worker = worker }
+    init(worker: (any SkillExecutionPDFWorker)? = nil) { self.suppliedWorker = worker }
 
     var body: some View {
         Form {
@@ -155,7 +157,13 @@ struct SkillExecutionView: View {
             case .failure: finishExport("文字未能儲存，請重新選擇位置再試一次。")
             }
         }, onCancellation: { finishExport("已取消匯出，擷取結果仍保留。") })
-        .onAppear { model.seedUITestIfRequested() }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                NavigationLink { SkillWorkerSettingsView(settings: workerSettings) } label: { Text("腳本服務") }
+                    .accessibilityIdentifier("skillExecution.workerSettings")
+            }
+        }
+        .onAppear { workerSettings.reload(); model.seedUITestIfRequested() }
         .onDisappear { resetExport(); model.clear() }
     }
 

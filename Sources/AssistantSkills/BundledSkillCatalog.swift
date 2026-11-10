@@ -20,7 +20,7 @@ public enum SkillCatalogRequirement: String, Codable, Sendable, CaseIterable {
 
     public var title: String {
         switch self {
-        case .settingsAutomation: return "原版設定修改工具：未提供"
+        case .settingsAutomation: return "可允許模型調整本 App 外觀；不提供模型、金鑰或手機操作設定"
         case .androidControl: return "Android／其他 App 操作：不在 iOS 範圍"
         case .legacyWebTools: return "原版網頁工具：iOS 提供受控研究與 DOM 操作，非完整瀏覽器能力對齊"
         case .workspaceFiles: return "原版工作區與檔案工具：未提供"
@@ -63,6 +63,7 @@ public struct SkillCatalogEntry: Decodable, Equatable, Sendable, Identifiable {
     public var originalExecutionSupported: Bool { false }
     public var readiness: String {
         switch id {
+        case "configure-mika": return "可調整本 App 外觀；原版能力未完整支援"
         case "skill-authoring": return "可請模型編寫並核准儲存；原版能力未完整支援"
         case "documents": return "可選取 PDF 擷取文字；原版能力未完整支援"
         default: return "可匯入 iOS 文字改寫；原版能力未完整支援"

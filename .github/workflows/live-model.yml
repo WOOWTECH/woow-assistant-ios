@@ -7,7 +7,7 @@ on:
       ui_scope:
         description: Live App UI coverage (native probes always run)
         type: choice
-        options: [all, browser, browser-learning, browser-interaction, skill-authoring]
+        options: [all, browser, browser-learning, browser-interaction, skill-authoring, self-configuration]
         default: all
 
 permissions:
@@ -125,6 +125,8 @@ jobs:
             ui_filter='-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelProposesObservedDOMLinkAndApprovedClickNavigates'
           elif [ '${{ inputs.ui_scope }}' = 'skill-authoring' ]; then
             ui_filter='-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelReadsOriginalSkillAndReviewedSaveSurvivesRelaunch'
+          elif [ '${{ inputs.ui_scope }}' = 'self-configuration' ]; then
+            ui_filter='-only-testing:WoowAssistantUITests/LiveModelUITests/testRealModelListsAndChangesAppearanceAndRelaunchPreservesIt'
           fi
           xcodebuild -xctestrun "${test_runs[0]}" \
             -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \

@@ -1,0 +1,145 @@
+{
+  "schema_version": 1,
+  "source_revision": "68c49a6bee31b9beeffcd4e9746149d857bd7509",
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42795218559",
+  "artifact_id": 13754741750,
+  "device": "iPhone SE (3rd generation)",
+  "runtime": "iOS 18.5",
+  "counts": {
+    "totalTestCount": 31,
+    "passedTests": 31,
+    "failedTests": 0,
+    "skippedTests": 0
+  },
+  "passed_cases": [
+    {
+      "case": "AssistantDomainTests.BrowserLibraryTests testBookmarksDeduplicateFragmentsAndPreserveUserTitles",
+      "seconds": 0.034
+    },
+    {
+      "case": "AssistantDomainTests.BrowserLibraryTests testCallbackSecretsNotRetainedOrBookmarked",
+      "seconds": 0.037
+    },
+    {
+      "case": "AssistantDomainTests.BrowserLibraryTests testCorruptLibraryIsRejectedInsteadOfReset",
+      "seconds": 0.014
+    },
+    {
+      "case": "AssistantDomainTests.BrowserLibraryTests testHistoryCapacityOrderAndSeparateClear",
+      "seconds": 0.091
+    },
+    {
+      "case": "AssistantDomainTests.BrowserLibraryTests testManualAddressRejectsMalformedPortsWithoutChangingTheDestination",
+      "seconds": 0.013
+    },
+    {
+      "case": "AssistantDomainTests.BrowserLibraryTests testManualNavigationDoesNotRelaxResearchPolicy",
+      "seconds": 0.021
+    },
+    {
+      "case": "AssistantDomainTests.BrowserLibraryTests testTabsSelectionClosingAndRestore",
+      "seconds": 0.003
+    },
+    {
+      "case": "AssistantDomainTests.BrowserNavigationIntentTests testActionAndResponseKindsCannotConsumeEachOthersPermit",
+      "seconds": 0.002
+    },
+    {
+      "case": "AssistantDomainTests.BrowserNavigationIntentTests testCancelledOrSupersededNavigationCannotDownload",
+      "seconds": 0.013
+    },
+    {
+      "case": "AssistantDomainTests.BrowserNavigationIntentTests testDownloadRequiresManualInitiationAndSingleUsePermit",
+      "seconds": 0.001
+    },
+    {
+      "case": "AssistantDomainTests.BrowserNavigationIntentTests testMatchingIssuerWithExpiredOrMismatchedURLConsumesPermitWithoutAcceptingDownload",
+      "seconds": 0.0
+    },
+    {
+      "case": "AssistantDomainTests.BrowserNavigationIntentTests testPermitRetainsIssuerUntilInvalidatedOrConsumedToPreventAddressReuse",
+      "seconds": 0.003
+    },
+    {
+      "case": "AssistantDomainTests.BrowserNavigationIntentTests testRedirectMustBelongToManualNavigationAndRemainPublicHTTPS",
+      "seconds": 0.001
+    },
+    {
+      "case": "AssistantDomainTests.BrowserNavigationIntentTests testReplacedPolicyObjectInSameGenerationCannotConsumeNewPermit",
+      "seconds": 0.0
+    },
+    {
+      "case": "AssistantDomainTests.BrowserNavigationIntentTests testSameURLLateCallbackCannotStealOrConsumeNewActionOrResponsePermit",
+      "seconds": 0.001
+    },
+    {
+      "case": "WoowAssistantUITests.BrowserLoginUITests testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+      "seconds": 119.48
+    },
+    {
+      "case": "WoowAssistantUITests.BrowserLoginUITests testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+      "seconds": 137.061
+    },
+    {
+      "case": "WoowAssistantUITests.BrowserWorkspaceUITests testBookmarkRenameHistoryClearAndRelaunch",
+      "seconds": 51.4
+    },
+    {
+      "case": "WoowAssistantUITests.BrowserWorkspaceUITests testManualQueryPageAndRealJavaScriptDialog",
+      "seconds": 20.166
+    },
+    {
+      "case": "WoowAssistantUITests.BrowserWorkspaceUITests testTabsKeepIndependentPageStateAndRestoreSelection",
+      "seconds": 42.743
+    },
+    {
+      "case": "AssistantBrowserIntegrationTests.BrowserDOMWebKitTests testActualDOMAndStaleIdentity",
+      "seconds": 7.688
+    },
+    {
+      "case": "AssistantBrowserIntegrationTests.BrowserDownloadIntegrationTests testRealWebKitSessionDownloadsRedirectsProgressAndCancellation",
+      "seconds": 2.165
+    },
+    {
+      "case": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests testActualUnreadableDOMEndsLoadingAndCannotRestoreOldPage",
+      "seconds": 0.452
+    },
+    {
+      "case": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests testLocalDocumentBecomesReadyAndMatchingFailuresStayTerminal",
+      "seconds": 0.448
+    },
+    {
+      "case": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests testMalformedAddressDoesNotStartANormalizedNavigation",
+      "seconds": 0.007
+    },
+    {
+      "case": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests testSearchBeyondExcerptDoesNotClaimAbsenceFromWholePage",
+      "seconds": 0.535
+    },
+    {
+      "case": "AssistantBrowserIntegrationTests.BrowserSessionNavigationTests testSyntheticProcessTerminationFencesQueuedAndLateFinish",
+      "seconds": 0.519
+    },
+    {
+      "case": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests testDeferredApprovedInputStaysRestrictedUntilExplicitManualDocumentCommits",
+      "seconds": 0.75
+    },
+    {
+      "case": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests testManualCallbackPageLoadsButCannotBecomeAutomationEvidenceOrSavedURL",
+      "seconds": 0.578
+    },
+    {
+      "case": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests testPersistentCookiesAreSharedAndRemovingOneRecordPreservesOtherSites",
+      "seconds": 12.289
+    },
+    {
+      "case": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests testTabsRetainDifferentDocumentsAndSwitchingOrClosingRevokesProposals",
+      "seconds": 2.114
+    }
+  ],
+  "evidence_sha256": {
+    "test-summary.json": "d247564d61facb4bff8558f7f45feff2fc7cfa3353bb845ac26afbc130eb3cda",
+    "ios-tests.log": "96f3250154a17aee528603e3d6ebf9bf8f9b3b0cdbb59eed42d516fd5dfeffac"
+  },
+  "scope": "Native and hosted browser workspace plus actual login/cookie removal/relaunch UI; not full App or original skills acceptance"
+}

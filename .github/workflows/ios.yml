@@ -21,7 +21,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, pdf-export, authoring, memory-ui, memory-rollback, learning, browser, core, startup]
+        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, pdf-export, authoring, skill-settings, memory-ui, memory-rollback, learning, browser, core, startup]
         default: all
 
 permissions:
@@ -78,6 +78,8 @@ jobs:
         run: |
           swiftc -DDEBUG -parse-as-library Sources/App/MCPSettings.swift scripts/MCPSettingsChecks.swift -o build/MCPSettingsChecks
           build/MCPSettingsChecks
+      - name: Test dedicated script-service settings and credential isolation
+        run: bash scripts/CheckSkillWorkerSettings.sh
       - name: Install XcodeGen
         run: |
           tool_dir="$(mktemp -d "$RUNNER_TEMP/woow-xcodegen.XXXXXX")"
@@ -144,6 +146,9 @@ jobs:
               ;;
             authoring)
               test_filters=(-only-testing:AssistantSkillsTests/SkillAuthoringBridgeTests -only-testing:WoowAssistantUITests/SkillAuthoringUITests)
+              ;;
+            skill-settings)
+              test_filters=(-only-testing:AssistantSkillsTests/SelfConfigurationTests -only-testing:WoowAssistantUITests/SelfConfigurationUITests -only-testing:WoowAssistantUITests/SkillWorkerSettingsUITests)
               ;;
             files)
               test_filters=(-only-testing:AssistantSkillsTests -only-testing:AssistantDomainTests/BrowserDownloadTests -only-testing:AssistantDomainTests/BrowserNavigationIntentTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/BrowserUploadUITests -only-testing:WoowAssistantUITests/SkillExecutionUITests)

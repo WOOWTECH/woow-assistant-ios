@@ -42,6 +42,18 @@ Latest completed simulator evidence (passed test cases / selected cases, not ass
 | [SE login 42784628988](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42784628988), `5dd9047` | UI 1/1 | Not selected | Not selected |
 | PDF export `afa1a72`: [SE 42785936385](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42785936385), [current 42785943219](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42785943219) | UI 1/2 | Not selected | UI 0/2 |
 | [Current export 42789964607](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42789964607), `645036e` | Not selected | Not selected | UI 1/2 |
+| Workspace `68c49a6`: [SE 42795218559](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42795218559), [current 42795228599](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42795228599) | Native/hosted 26/26; UI 5/5 | Not selected | Native/hosted 26/26; UI 4/5 |
+
+`68c49a6` waits for actual website-data removal before publishing/mounting the
+replacement tab. The hosted regression now mounts each replacement immediately,
+as the real SwiftUI view does. SE passed all 31 cases with zero skips, including
+actual form login, shared cookies, relaunch, logout and per-site data removal
+with HTTP denial and persistence after relaunch. Its clear-site UI case took
+137.061 seconds; [case identities and log hashes](evidence/workspace-se-68c49a6.json)
+are retained. Current iOS passed the website-data case and every hosted check;
+its separate login case failed at the post-form authenticated-page assertion
+(`BrowserLoginUITests.swift:419`, 117.555 seconds). It is recorded as 30/31,
+not a full workspace pass; the login failure remains under investigation.
 
 The `776f5f9` and `1747c20` variants passed 98 portable cases. The completed
 `1b0f3d8` files variants passed 103, including the five new authoring

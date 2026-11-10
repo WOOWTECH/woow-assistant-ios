@@ -357,6 +357,51 @@ final class LiveModelUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["memory.error"].exists)
     }
 
+    func testRealModelListsAndChangesAppearanceAndRelaunchPreservesIt() throws {
+        var app = try launchLiveApp()
+        navigate(to: "settings", in: app)
+        tapLearningButton("settings.appearance", in: app)
+        let permission = app.switches["selfConfiguration.permission"]
+        revealLearningElement(permission, in: app)
+        XCTAssertEqual(permission.value as? String, "0", "The new permission must default to disabled.")
+        XCTAssertFalse(app.textViews["selfConfiguration.request"].exists)
+        let native = permission.switches.firstMatch
+        (native.exists ? native : permission).tap()
+        let request = app.textViews["selfConfiguration.request"]
+        revealLearningElement(request, in: app); request.tap()
+        request.typeText("請先查詢可修改的設定，再將本 App 外觀改成深色；只改外觀。")
+        app.buttons["selfConfiguration.keyboard.done"].tap()
+        tapLearningButton("selfConfiguration.start", in: app)
+        let status = app.staticTexts["selfConfiguration.status"]
+        revealLearningElement(status, in: app)
+        let complete = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            status.label == "已讀回外觀：深色。已立即套用。" || app.staticTexts["selfConfiguration.error"].exists
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [complete], timeout: 65), .completed)
+        XCTAssertFalse(app.staticTexts["selfConfiguration.error"].exists)
+        XCTAssertEqual(status.label, "已讀回外觀：深色。已立即套用。")
+        for (index, label) in ["settings_list：已讀取外觀及三個可選值", "settings_set：已寫入並讀回「深色」"].enumerated() {
+            let step = app.staticTexts["selfConfiguration.step.\(index)"]
+            revealLearningElement(step, in: app)
+            XCTAssertEqual(step.label, label)
+        }
+        let appearance = app.staticTexts["selfConfiguration.appliedAppearance"]
+        revealLearningElement(appearance, in: app)
+        XCTAssertEqual(appearance.label, "目前顯示：深色", "The root's actual SwiftUI color scheme must change.")
+        app.terminate()
+        app = try launchLiveApp()
+        navigate(to: "settings", in: app)
+        tapLearningButton("settings.appearance", in: app)
+        XCTAssertEqual(app.staticTexts["selfConfiguration.appliedAppearance"].label, "目前顯示：深色")
+        let restoredPermission = app.switches["selfConfiguration.permission"]
+        revealLearningElement(restoredPermission, in: app)
+        XCTAssertEqual(restoredPermission.value as? String, "1")
+        let restoredNative = restoredPermission.switches.firstMatch
+        (restoredNative.exists ? restoredNative : restoredPermission).tap()
+        XCTAssertEqual(restoredPermission.value as? String, "0")
+        XCTAssertFalse(app.buttons["selfConfiguration.start"].exists)
+    }
+
     private func openPublicIANA(in app: XCUIApplication) {
         navigate(to: "browser", in: app)
         let address = app.textFields["browser.address"]

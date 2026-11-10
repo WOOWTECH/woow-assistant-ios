@@ -120,7 +120,22 @@ class WorkerTests(unittest.TestCase):
 
 
 class ValidationHandler(worker.Handler):
+    # Test-only authentication route. This is not an internet gateway.
+    redirected_requests = 0
+    authenticated_requests = 0
+
     def do_POST(self):
+        if self.path == "/v1/unexpected-redirect-target":
+            type(self).redirected_requests += 1
+            self.send_error(403)
+            return
+        if self.path == "/v1/authenticated":
+            if self.headers.get("Authorization") != "Bearer synthetic-pdf-worker-bearer":
+                self.send_error(401)
+                return
+            type(self).authenticated_requests += 1
+            self.path = "/v1/extract-pdf"
+            return super().do_POST()
         if self.path == "/v1/extract-pdf":
             return super().do_POST()
         if self.path in ("/v1/invalid-hash", "/v1/invalid-pages"):
@@ -137,7 +152,7 @@ class ValidationHandler(worker.Handler):
             self.wfile.write(body)
         elif self.path == "/v1/redirect":
             self.send_response(307)
-            self.send_header("Location", "/v1/extract-pdf")
+            self.send_header("Location", "/v1/unexpected-redirect-target")
             self.send_header("Content-Length", "0")
             self.end_headers()
         elif self.path == "/v1/oversized":
@@ -187,11 +202,15 @@ class HTTPIntegrationTests(unittest.TestCase):
             self.skipTest("set SKILL_EXECUTION_TEST_BINARY to the compiled standalone checker")
         repo = Path(__file__).resolve().parents[2]
         endpoint = "http://127.0.0.1:%d/v1/extract-pdf" % self.server.server_port
+        ValidationHandler.redirected_requests = 0
+        ValidationHandler.authenticated_requests = 0
         result = subprocess.run([binary, str(repo / "Sources/AssistantSkills/Resources/MikaBundledSkills.json"), endpoint, "--test-protocol-rejections"],
                                 capture_output=True, timeout=120)
         self.assertEqual(result.returncode, 0, result.stderr.decode(errors="replace")[-2000:])
         self.assertIn(b"PASS Swift HTTP -> pinned original Python script integration", result.stdout)
         self.assertIn(b"PASS real HTTP redirect, provenance, page and size rejection", result.stdout)
+        self.assertEqual(ValidationHandler.authenticated_requests, 1)
+        self.assertEqual(ValidationHandler.redirected_requests, 0, "Neither a PDF nor its bearer may follow a redirect")
 
 
 if __name__ == "__main__":

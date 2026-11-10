@@ -240,6 +240,25 @@ enum SkillExecutionChecks {
             let worker = try SkillExecutionHTTPWorker(endpoint: url, allowLoopbackForTesting: true)
             try await rejects(error) { _ = try await worker.extract(data: pdf(), options: .init()) }
         }
+        let authenticatedURL = endpoint.deletingLastPathComponent().appendingPathComponent("authenticated")
+        let token = "synthetic-pdf-worker-bearer"
+        let authenticated = try SkillExecutionHTTPWorker(endpoint: authenticatedURL,
+            authorizationBearer: token, allowLoopbackForTesting: true)
+        let result = try await authenticated.extract(data: pdf(), options: .init(pages: "1"))
+        try expect(result.pages.map(\.text) == ["Alpha evidence"], "authenticated request executes actual original script")
+        try expect(!authenticated.destination.contains(token), "plan destination never contains the bearer")
+        for invalid in [nil, "wrong-synthetic-token"] {
+            let denied = try SkillExecutionHTTPWorker(endpoint: authenticatedURL,
+                authorizationBearer: invalid, allowLoopbackForTesting: true)
+            try await rejects(.workerFailed) { _ = try await denied.extract(data: pdf(), options: .init()) }
+        }
+        for invalid in ["", "has space", "line\r\nbreak", "非ASCII", String(repeating: "a", count: 4097)] {
+            try await rejects(.unavailable) { _ = try SkillExecutionHTTPWorker(endpoint: authenticatedURL,
+                authorizationBearer: invalid, allowLoopbackForTesting: true) }
+        }
+        let redirect = try SkillExecutionHTTPWorker(endpoint: endpoint.deletingLastPathComponent().appendingPathComponent("redirect"),
+            authorizationBearer: token, allowLoopbackForTesting: true)
+        try await rejects(.workerFailed) { _ = try await redirect.extract(data: pdf(), options: .init()) }
     }
 
     /// A real Foundation file presenter with unsaved synthetic content. The

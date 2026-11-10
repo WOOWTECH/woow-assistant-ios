@@ -6,13 +6,21 @@ public struct SkillExecutionHTTPWorker: SkillExecutionPDFWorker {
     public static let scriptSHA256 = "41c2e2b51cd23173e0891084d0cd93d54e300e5fd571876740de36ac5968817c"
     public let destination: String
     private let endpoint: URL
+    private let authorizationBearer: String?
 
-    public init(endpoint: URL, allowLoopbackForTesting: Bool = false) throws {
+    public init(endpoint: URL, authorizationBearer: String? = nil, allowLoopbackForTesting: Bool = false) throws {
         let loopback = ["127.0.0.1", "localhost", "[::1]"].contains(endpoint.host ?? "")
         guard endpoint.scheme == "https" || (allowLoopbackForTesting && endpoint.scheme == "http" && loopback),
               endpoint.host != nil, endpoint.user == nil, endpoint.password == nil,
               endpoint.query == nil, endpoint.fragment == nil else { throw SkillExecutionError.unavailable }
+        if let authorizationBearer {
+            guard !authorizationBearer.isEmpty, authorizationBearer.utf8.count <= 4096,
+                  authorizationBearer.unicodeScalars.allSatisfy({ (33...126).contains($0.value) }) else {
+                throw SkillExecutionError.unavailable
+            }
+        }
         self.endpoint = endpoint; destination = endpoint.absoluteString
+        self.authorizationBearer = authorizationBearer
     }
 
     public func extract(data: Data, options: SkillExecutionPDFOptions) async throws -> SkillExecutionPDFResult {
@@ -26,6 +34,7 @@ public struct SkillExecutionHTTPWorker: SkillExecutionPDFWorker {
         var request = URLRequest(url: endpoint)
         request.httpMethod = "POST"; request.timeoutInterval = 65
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let authorizationBearer { request.setValue("Bearer " + authorizationBearer, forHTTPHeaderField: "Authorization") }
         request.httpBody = try JSONSerialization.data(withJSONObject: payload)
         let config = URLSessionConfiguration.ephemeral
         config.httpCookieStorage = nil; config.urlCache = nil; config.urlCredentialStorage = nil

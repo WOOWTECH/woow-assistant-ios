@@ -93,6 +93,7 @@ struct SkillCatalogView: View {
 @MainActor
 private struct SkillCatalogDetail: View {
     @ObservedObject var store: LearningStore
+    @EnvironmentObject private var preferences: SelfConfigurationStore
     let catalog: BundledSkillCatalog
     let entry: SkillCatalogEntry
     let modelAccess: () throws -> ModelAccess
@@ -103,6 +104,15 @@ private struct SkillCatalogDetail: View {
 
     var body: some View {
         List {
+            if entry.id == "configure-mika" {
+                Section("調整本 App 外觀") {
+                    NavigationLink { SelfConfigurationView(store: preferences, modelAccess: modelAccess) } label: {
+                        Text("外觀與模型調整權限")
+                    }.accessibilityIdentifier("catalog.configure-mika.open")
+                    Text("可設定跟隨系統、淺色或深色；允許模型調整的開關預設關閉。")
+                        .font(.caption)
+                }
+            }
             if entry.id == "skill-authoring" {
                 Section("編寫個人技能") {
                     NavigationLink { SkillAuthoringView(store: store, catalog: catalog) } label: {
