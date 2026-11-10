@@ -41,6 +41,8 @@ TEST_SCOPES = {
     "parity": ["AssistantMCPTests", "AssistantSkillsTests", "AssistantDomainTests", "AssistantBrowserIntegrationTests", "WoowAssistantUITests/MCPConversationUITests", "WoowAssistantUITests/BrowserInteractionUITests", "WoowAssistantUITests/BrowserLearningUITests", "WoowAssistantUITests/SkillCatalogUITests", "WoowAssistantUITests/MemoryUITests", "WoowAssistantUITests/MemoryRaceUITests"],
     "startup": ["WoowAssistantUITests/WoowAssistantUITests"],
     "startup-smoke": ["WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded"],
+    "picker-user-copy": ["WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText"],
+    "pdf-assembly": ["WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
     **{scope: ["WoowAssistantUITests/" + name for name in classes]
        for scope, classes in UI_SHARDS.items()},
 }

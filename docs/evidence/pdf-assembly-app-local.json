@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "evidence_kind": "local_actual_app_logic_acceptance",
+  "recorded_at_utc": "2026-11-10T15:12:51+00:00",
+  "base_head": "04481261ec1bfa636ca666de029ea554a49563e1",
+  "source_identity": "Working-tree snapshots, including new uncommitted assembly files; hashes below define tested code.",
+  "host": {
+    "os": "macOS 13.7.8",
+    "architecture": "x86_64",
+    "toolchain": "Apple Swift version 5.8.1 (swiftlang-5.8.0.124.5 clang-1403.0.22.11.100)",
+    "xcode_or_ios_sdk_used": false
+  },
+  "configuration_meaning": "App/harness compiled with DEBUG defined or omitted; same actual static AssistantSkills/AssistantModels modules. CLT defaults, not Xcode build schemes or iOS Release acceptance.",
+  "configurations": [
+    {
+      "name": "Debug",
+      "build_exit_code": 0,
+      "run_exit_code": 0,
+      "assertions_passed": 57,
+      "assertions_total": 57,
+      "assertions_failed": 0,
+      "checks_skipped": 0,
+      "run_elapsed_seconds": 0.363
+    },
+    {
+      "name": "Release",
+      "build_exit_code": 0,
+      "run_exit_code": 0,
+      "assertions_passed": 57,
+      "assertions_total": 57,
+      "assertions_failed": 0,
+      "checks_skipped": 0,
+      "run_elapsed_seconds": 0.351
+    }
+  ],
+  "count_meaning": "Assertion invocations per configuration, including repeated shared completion checks; not XCTest methods or 114 distinct scenarios.",
+  "actual_execution": {
+    "session": "Sources/App/SkillPDFAssemblySession.swift compiled unchanged",
+    "document": "Sources/App/SkillPDFAssemblyView.swift FileDocument compiled unchanged on macOS",
+    "runtime": "Actual AssistantSkills runtime, NSFileCoordinator selected-file reader and PDFKit assembler; no substitutes or injected runtime.",
+    "catalog": "BundledSkillCatalog.bundled() loads original pinned resource from temporary .app/Contents/Resources.",
+    "fixtures": {
+      "files": 2,
+      "page_counts": [
+        3,
+        2
+      ],
+      "generated_with": "CoreGraphics/CoreText",
+      "synthetic_only": true,
+      "expected_output_markers": [
+        "ASSEMBLY_B_PAGE_2",
+        "ASSEMBLY_A_PAGE_3",
+        "ASSEMBLY_B_PAGE_1",
+        "ASSEMBLY_A_PAGE_1",
+        "ASSEMBLY_A_PAGE_3"
+      ]
+    },
+    "checks": [
+      "Selecting files produces no receipts or output; prepare/assemble blocked until each file has separate read approval.",
+      "Duplicate read does not execute again; actual receipts and default order use actual page counts.",
+      "Reviewed source/page order and duplicate pages preserved; assembled PDFKit text matches each exact expected marker.",
+      "Editing raw orderText before SwiftUI onChange blocks assembly of the previous reviewed order.",
+      "Changing order while prepare is queued prevents obsolete review publication; explicit invalidation removes plan.",
+      "Result binds reviewed plan and actual SHA256; assembly status does not claim destination save.",
+      "Completed output cannot assemble again; replacement selection revokes old receipts and plan.",
+      "Invalid replacement and real missing-file read publish failure with no old success or filesystem path.",
+      "Both original input PDFs remain byte-identical after all operations."
+    ],
+    "async_coordinator_cancellation": {
+      "actual_external_NSFilePresenter": true,
+      "held_real_savePresentedItemChanges_callback_observed_before_cancel": true,
+      "scenarios": [
+        "clear while real selected-file read waits",
+        "replace while real selected-file read waits"
+      ],
+      "release_and_completion": "Presenter callback always released; captured actual App Task awaited after Session drops its handle.",
+      "task_capture": "Read-only Mirror of the App task property; no private OS API or state mutation.",
+      "observed": "No obsolete receipt emission, result, status or running-state overwrite; replacement can read its own file after separate approval.",
+      "additional_queued_operations": [
+        "prepare then clear",
+        "assemble then clear"
+      ]
+    },
+    "immutable_export": {
+      "production_snapshot_method": "SkillPDFAssemblyDocument.snapshot(); fileWrapper(configuration:) delegates to it.",
+      "snapshot_survives_session_clear_and_caller_Data_mutation": true,
+      "actual_FileWrapper_disk_write": true,
+      "actual_FileWrapper_readback": true,
+      "readback_bytes_equal_original_output": true,
+      "actual_PDFKit_readback_page_markers_equal_expected": true,
+      "non_pdf_snapshot_rejected": true,
+      "destination": "Unique synthetic temporary directory, removed after checks; no native destination picker exercised."
+    }
+  },
+  "geometry_patch_binding": {
+    "core_matches_owner_final_checkpoint": true,
+    "native_source_sha256": "91f69b7137f7e8cf684aeec849c8170eb98cf915c4ebfee92db71e0da2e6f6da",
+    "scope": "Rebuilt App checks against finite four-ULP geometry implementation. Fractional-geometry/bitmap assertions belong to separate core evidence; not counted here."
+  },
+  "limitations": [
+    "macOS App logic only; no iOS hosted XCTest or native picker/exporter UI execution.",
+    "Session.select is called with the two synthetic URLs; native file choice and UI approval button delivery are not exercised.",
+    "FileDocument snapshot and disk readback tested; SwiftUI exporter destination, cancel/completion callbacks and ReadConfiguration initializer are not invoked.",
+    "Clear/replace tested during an actual held coordinated read; assembly cancellation here is queued-task cancellation, not forced interruption during synchronous PDFKit serialization.",
+    "No hard peak-memory bound, visual equivalence proof, original Python runtime parity or remote deployment is established by this App check.",
+    "This evidence does not establish a complete iOS suite pass."
+  ],
+  "source_sha256": {
+    "Sources/AssistantModels/ChatSSEParser.swift": "daaf8668b25edac1d67cb6fb1e804f3d359bbcd9580368bb30618d56022aad5d",
+    "Sources/AssistantModels/HTTPChatModelClient.swift": "94e7ccb5ffc86d0cff2bb6f4a822a55a2ef94ac064d9d39ea76482395c0e1d8c",
+    "Sources/AssistantModels/ModelConfiguration.swift": "b886eede4c8c41247a9010b668849d9fceb67fca4dcd399baffe47b90e951142",
+    "Sources/AssistantSkills/BundledSkillCatalog.swift": "7f2314d60f904b457f83f20947ce800c61224d42968725de4f89d382992de43e",
+    "Sources/AssistantSkills/SelfConfigurationRuntime.swift": "813abaa88284192c2e4372d5e84d31f6082fd0c4919d781c1e519ddfb04e245d",
+    "Sources/AssistantSkills/SelfConfigurationStore.swift": "10107071276deafab8d5e57ef537e1b4fea22de376a131804245777257c0deb1",
+    "Sources/AssistantSkills/SkillAuthoringBridge.swift": "afb2b96a33b7827858c3a95a1628bfa315d2730cc94b8a97e8df18e5f0789110",
+    "Sources/AssistantSkills/SkillDocument.swift": "f8f816f022a6570bd7e5f9c367e9c2ef10323af0de00686668a24779b0204039",
+    "Sources/AssistantSkills/SkillExecutionDependencies.swift": "655ee489aedf4c06d97035443329671aaac8884d9f9ea9a0fbabeae6a8a40d3e",
+    "Sources/AssistantSkills/SkillExecutionPDF.swift": "503699512b828faabfafb456e4c28033227f6b7df4b6f6678055c1f8e77a8bbf",
+    "Sources/AssistantSkills/SkillExecutionRuntime.swift": "ed414d76a87749f934dcf5ee51b61a1722c2ac967d020f5af4efb79c58b3d650",
+    "Sources/AssistantSkills/SkillExecutionTypes.swift": "748fe7c152690ebaf7803785161fc72c8a0d4486c32593eea9f769dbf175193d",
+    "Sources/AssistantSkills/SkillExecutionWorker.swift": "daf86d6884c4d3aaf67db774dd133b6201d05da77e65237f7b1970f4d0d89684",
+    "Sources/AssistantSkills/SkillLearning.swift": "83a44eb4ab4495905efc75d2ca040ed050a0da5cee4d196fecc5c57e9649902b",
+    "Sources/AssistantSkills/SkillLearningSafety.swift": "96fe72ad19a1bc3806d86fff3063bf0ba5d65f53dda00b8812b5ae368168dce0",
+    "Sources/AssistantSkills/SkillLearningService.swift": "d0a17f0e1af20870c46f530681c85c69e238c46562a9343b0f4549e21de87a18",
+    "Sources/AssistantSkills/SkillPDFAssemblyNative.swift": "91f69b7137f7e8cf684aeec849c8170eb98cf915c4ebfee92db71e0da2e6f6da",
+    "Sources/AssistantSkills/SkillPDFAssemblyRuntime.swift": "9652e1062c2419dd0ced80fb9af14754b95100179d445c0db6f555addea20e43",
+    "Sources/AssistantSkills/SkillPDFAssemblyTypes.swift": "aeb8e474cfd9d3ef67f55a0d76fa20083dbb5da1f315c8f86f82000d4f75f428",
+    "Sources/AssistantSkills/SkillRetrieval.swift": "47f3499031ba9cda5c96fce503fec797432e12b651e412c816b433323b5824ca",
+    "Sources/AssistantSkills/SkillSensitiveContent.swift": "6d1627820b2dddf7504f008ecd2db8b32227f204b857f737dc639f8b651b11f0",
+    "Sources/AssistantSkills/SkillTaskEvidence.swift": "4ff23d2fb36fa9ef6897837de6a1756d8b3d4ad5e35bb6edd51f362d39f316df",
+    "Sources/AssistantSkills/SkillToolCommand.swift": "5bff3061b948d2766df99dbaedb3bd2596185f7f26304487bda755780c60a164",
+    "Sources/AssistantSkills/SkillToolSession.swift": "f2c1e77316c9847daa12e7efa87cb3c3b46a382788b43422c4ca4b209df32226",
+    "Sources/AssistantSkills/SkillToolTypes.swift": "9c3496eea3a24e58e7c24ebe4dad7c65473b9122a5751078b0cf7eefe8c7aef0",
+    "Sources/AssistantSkills/SkillTypes.swift": "e050e01d760d68bc4d43030218a417b00a5d744280dfcaf67aec58193e3a113c",
+    "Sources/AssistantSkills/SkillsState.swift": "fea8f8a0ecc3a9ecbbab69df480711ddd21b93f599ecdbf9f9c5c2565673717e",
+    "Sources/AssistantSkills/TranscriptCommand.swift": "0f98ef1c25d766fd82e25f6fe4f2fe4a5a41acfe1d94bef7578d414f9c37a75c",
+    "Sources/AssistantSkills/TranscriptFileAccess.swift": "4c5fa61ac0bb91b17e0f9a2bad92c4a85e262dfeab2a2c1649125c7a2086c168",
+    "Sources/AssistantSkills/TranscriptRuntime.swift": "8dd8b7e66b0397a5cf1c58e94450a6a9706a8651874b976e2ac938c34ad0d131",
+    "Sources/AssistantSkills/TranscriptTypes.swift": "051814db9e18752ba445f8c515e61e24a92c938786ca99a7f49bd5c024d26428",
+    "Sources/AssistantSkills/TranscriptWebSource.swift": "635984c44e580d9f9c9c02477200fde44bdbd77217830fecabc4371f7ab37e01",
+    "Sources/App/SkillPDFAssemblySession.swift": "e0465a3e1a54fd3d11cdb13f9e889088401c30e84f517a51ac1564edcec78119",
+    "Sources/App/SkillPDFAssemblyView.swift": "8df47109560adef525c459d87c74c70d548f50c060b36a00d83e04d246c7ab08",
+    "Sources/App/SkillExecutionUITestSupport.swift": "ecf9d38504df009ca31e886c16868a2720ae0b8339b5a8cb40adc0b218708ac2",
+    "scripts/SkillPDFAssemblyAppChecks.swift": "21d7bedd9ab69f32ff92ab319a6d9d54d9ef53aed969c21b915ca6226e542b48"
+  },
+  "resource_sha256": {
+    "Sources/AssistantSkills/Resources/MikaBundledSkills.json": "e7389c7c3b39d0dd0bb133d0d7f8733cd1ecfbd3a2e2eb4b66d28b43850a9176"
+  },
+  "local_artifacts": {
+    "directory": "/tmp/woow-pdf-assembly-app-check",
+    "build_report": "build-report.json",
+    "debug_log": "app-run.log",
+    "release_log": "release-run.log",
+    "reproduction_driver": "Build.py"
+  },
+  "network_requests_or_live_credentials_used": false,
+  "commit_push_or_ci_dispatch_performed": false
+}

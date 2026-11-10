@@ -42,6 +42,8 @@ struct SkillExecutionTextDocument: FileDocument {
     private var worker: (any SkillExecutionPDFWorker)? { suppliedWorker ?? workerSettings.worker }
     @StateObject private var model = SkillExecutionViewModel()
     @State private var choosingFile = false
+    @State private var importChoice: PDFImportChoice = .original
+    @State private var importCopyExpanded = false
     @State private var pages = ""
     @State private var password = ""
     @State private var metadataOnly = false
@@ -77,8 +79,25 @@ struct SkillExecutionTextDocument: FileDocument {
                     SecureField("PDF 密碼（需要時填寫）", text: $password)
                     Toggle("只讀取文件資訊", isOn: $metadataOnly)
                     if worker != nil { Toggle("使用已設定的原版腳本服務", isOn: $useWorker) }
-                    Button("選取 PDF") { choosingFile = true }
+                    Button("選取 PDF") { presentPicker(.original) }
                         .accessibilityIdentifier("skillExecutionSelectPDF")
+                    Button {
+                        importCopyExpanded.toggle()
+                    } label: {
+                        HStack {
+                            Text("改用匯入副本")
+                            Spacer()
+                            Image(systemName: importCopyExpanded ? "chevron.down" : "chevron.right")
+                        }
+                    }
+                    .accessibilityIdentifier("skillExecution.importCopy.options")
+                    .accessibilityValue(importCopyExpanded ? "已展開" : "已收合")
+                    if importCopyExpanded {
+                        Text("選檔後，系統會先建立暫存副本並占用儲存空間，不會更動原檔。App 讀取與後續擷取仍需分別核准。App 最多讀取 10 MiB；系統複製的大小不受此上限限制。")
+                            .accessibilityIdentifier("skillExecution.importCopy.notice")
+                        Button("選取 PDF 並匯入副本") { presentPicker(.importCopy) }
+                            .accessibilityIdentifier("skillExecutionImportPDFCopy")
+                    }
                 }
                 #if DEBUG
                 if let fixture = model.uiTestFixture {
@@ -147,7 +166,7 @@ struct SkillExecutionTextDocument: FileDocument {
         }
         .accessibilityIdentifier("skillExecution.form")
         .navigationTitle("執行 PDF 技能")
-        .modifier(PDFImportPresentation(isPresented: $choosingFile, experiment: pickerExperiment,
+        .modifier(PDFImportPresentation(isPresented: $choosingFile, choice: importChoice, experiment: pickerExperiment,
                                        onCompletion: receivePDFSelection, onObservation: { value in
             #if DEBUG
             pickerObservation = value
@@ -169,6 +188,14 @@ struct SkillExecutionTextDocument: FileDocument {
         }
         .onAppear { workerSettings.reload(); model.seedUITestIfRequested() }
         .onDisappear { resetExport(); model.clear() }
+    }
+
+    private func presentPicker(_ choice: PDFImportChoice) {
+        // Every presentation gets an explicit choice; cancelling a copy import
+        // cannot change the behavior of the original selection button.
+        guard !choosingFile, model.plan == nil else { return }
+        importChoice = choice
+        choosingFile = true
     }
 
     private func receivePDFSelection(_ outcome: Result<[URL], Error>) {

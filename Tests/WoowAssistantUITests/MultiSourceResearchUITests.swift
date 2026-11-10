@@ -75,11 +75,30 @@ final class MultiSourceResearchUITests: XCTestCase {
         XCTAssertTrue(app.staticTexts["chat.status"].waitForExistence(timeout: 10))
     }
     private func fillRoots(second: String) {
-        enter("比較兩個合成來源的頁面標記", into: app.textViews["multiResearch.goal"].exists ? app.textViews["multiResearch.goal"] : app.textFields["multiResearch.goal"])
-        enter("https://research.example.invalid/start", into: app.textFields["multiResearch.rootText1"])
-        enter(second, into: app.textFields["multiResearch.rootText2"])
+        enterResearchField("比較兩個合成來源的頁面標記", into: app.textViews["multiResearch.goal"].exists ? app.textViews["multiResearch.goal"] : app.textFields["multiResearch.goal"])
+        enterResearchField("https://research.example.invalid/start", into: app.textFields["multiResearch.rootText1"])
+        enterResearchField(second, into: app.textFields["multiResearch.rootText2"])
+    }
+    private func enterResearchField(_ text: String, into field: XCUIElement) {
+        revealLearningElement(field, in: app)
+        field.tap(); field.typeText(text)
+        XCTAssertEqual(field.value as? String, text, "The exact research field must contain the entered value")
+        // The multiline goal's Return key inserts a newline and leaves the
+        // keyboard visible. Close it using the public toolbar before asking the
+        // Form scroll helper to reveal another field (the keyboard also exposes
+        // a CollectionView for its candidate bar).
         let done = app.buttons["multiResearch.keyboardDone"]
-        if done.exists { done.tap() }
+        let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            done.exists && done.isHittable && done.isEnabled
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 5), .completed)
+        XCTAssertFalse(done.frame.isEmpty)
+        XCTAssertTrue(app.frame.contains(done.frame), "Keyboard toolbar must be inside the app")
+        done.tap()
+        let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            !self.app.keyboards.firstMatch.exists
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 5), .completed)
     }
     private func enter(_ text: String, into field: XCUIElement) {
         revealLearningElement(field, in: app)

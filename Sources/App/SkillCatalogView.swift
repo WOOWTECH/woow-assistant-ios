@@ -145,6 +145,8 @@ private struct SkillCatalogDetail: View {
                 Section("實際文件處理") {
                     NavigationLink { SkillExecutionView() } label: { Text("選取 PDF 並擷取文字") }
                         .accessibilityIdentifier("catalog.documents.execute")
+                    NavigationLink { SkillPDFAssemblyView() } label: { Text("擷取頁面、重排與合併 PDF") }
+                        .accessibilityIdentifier("catalog.documents.assemble")
                     Text("在裝置上處理你選取的 PDF；逐步核准，不會自動上傳文件。")
                         .font(.caption)
                 }

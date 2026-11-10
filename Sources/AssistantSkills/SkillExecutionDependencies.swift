@@ -44,14 +44,15 @@ public enum SkillExecutionDependencies {
             row("語音辨識", .unavailable, "原版也沒有本機語音轉文字；只有音訊時需要文字稿。")]
         case "documents": return [browser,
             row("/workspace/inbox /workspace/downloads / web_downloads", .implementedInRuntime,
-                "選取單一 PDF 的檔案選擇器取代工作區路徑；不掃描下載或資料夾。"),
+                "由系統選檔器取得本次選取的 PDF；文字擷取限一檔，頁面處理限三檔，不掃描下載或資料夾。"),
             row("run_bundled_script: skills/documents/scripts/extract_pdf.py", .implementedInRuntime,
                 "預設以原生 PDFKit 取文、選頁、資訊與密碼解鎖；原始腳本僅由另行設定且核准上傳的 worker 執行。"),
             row("scripts/manifest.json: apk:py3-pypdf; Python argparse/json/logging/os/sys", .hostIntegrationRequired,
                 "iOS 不執行 Python。可選 worker 需要 Python 與 pypdf；原版未固定 pypdf 版本。"),
-            row("--out / share_file", .hostIntegrationRequired, "App 可讓使用者選擇位置儲存擷取文字；尚未提供可由技能呼叫的分享工具。"),
+            row("--out / share_file", .hostIntegrationRequired, "App 可讓使用者選擇位置儲存擷取文字或組裝 PDF；尚未提供可由技能呼叫的分享工具。"),
             row("read_file / search_files", .unavailable, "尚未提供輸出文字的分段讀取或搜尋工具；不開放一般檔案系統存取。"),
-            row("run_command + pypdf 拆分／合併／抽頁", .excluded, "不執行任意 Shell 或 Python；未提供 PDF 編輯或 OCR。")]
+            row("PDF 抽頁／重排／合併", .implementedInRuntime, "可核准讀取一至三個靜態 PDF，再核對頁序產生新文件；合計輸入與輸出各限 200 頁，不支援加密、表單、註記、書籤、標記結構、圖層或互動文件。這是 PDFKit 實作，並非原版 Python。"),
+            row("run_command + pypdf / OCR", .excluded, "iOS 不執行任意 Shell 或 Python；尚未提供 OCR 或通用遠端命令環境。")]
         case "info-research": return [browser,
             row("跨來源搜尋與兩個獨立原始來源", .hostIntegrationRequired, "瀏覽器受來源與導航政策限制；需要上層逐站授權並保留實際閱讀證據。"),
             row("Android App 站內搜尋", .excluded, "手機與其他原生 App 自動化不在範圍。")]

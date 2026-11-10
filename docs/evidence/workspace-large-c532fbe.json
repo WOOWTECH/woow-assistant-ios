@@ -1,0 +1,179 @@
+{
+  "schema_version": 1,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42832418470",
+  "job_id": 129885652040,
+  "artifact_id": 13773089690,
+  "artifact_archive_bytes": 5502964,
+  "source_revision": "c532fbe091f31232eef13df72a6c9d22b0f16400",
+  "scope": "workspace",
+  "counts": {
+    "totalTestCount": 40,
+    "passedTests": 40,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "result": "Passed",
+  "completed_unique_method_count": 40,
+  "counts_by_target": {
+    "AssistantDomainTests": 15,
+    "WoowAssistantUITests": 5,
+    "AssistantBrowserIntegrationTests": 20
+  },
+  "devices": [
+    {
+      "device": {
+        "architecture": "arm64",
+        "deviceId": "41E4762F-B20D-41AC-BFA5-AE0DB661BB84",
+        "deviceName": "iPhone 16 Pro Max",
+        "modelName": "iPhone 16 Pro Max",
+        "osBuildNumber": "22F77",
+        "osVersion": "18.5",
+        "platform": "iOS Simulator"
+      },
+      "expectedFailures": 0,
+      "failedTests": 0,
+      "passedTests": 40,
+      "skippedTests": 0,
+      "testPlanConfiguration": {
+        "configurationId": "1",
+        "configurationName": "Test Scheme Action"
+      }
+    }
+  ],
+  "key_methods": [
+    {
+      "class": "WoowAssistantUITests.BrowserLoginUITests",
+      "method": "testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+      "result": "passed",
+      "seconds": 99.41,
+      "log_line": 3148
+    },
+    {
+      "class": "WoowAssistantUITests.BrowserLoginUITests",
+      "method": "testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+      "result": "passed",
+      "seconds": 91.536,
+      "log_line": 3438
+    },
+    {
+      "class": "WoowAssistantUITests.BrowserWorkspaceUITests",
+      "method": "testBookmarkRenameHistoryClearAndRelaunch",
+      "result": "passed",
+      "seconds": 42.789,
+      "log_line": 3630
+    },
+    {
+      "class": "WoowAssistantUITests.BrowserWorkspaceUITests",
+      "method": "testManualQueryPageAndRealJavaScriptDialog",
+      "result": "passed",
+      "seconds": 21.544,
+      "log_line": 3714
+    },
+    {
+      "class": "WoowAssistantUITests.BrowserWorkspaceUITests",
+      "method": "testTabsKeepIndependentPageStateAndRestoreSelection",
+      "result": "passed",
+      "seconds": 42.686,
+      "log_line": 3891
+    },
+    {
+      "class": "AssistantBrowserIntegrationTests.BrowserWorkspaceIntegrationTests",
+      "method": "testPersistentCookiesAreSharedAndRemovingOneRecordPreservesOtherSites",
+      "result": "passed",
+      "seconds": 1.508,
+      "log_line": 4027
+    }
+  ],
+  "native_removal_events": [
+    {
+      "log_line": 4012,
+      "elapsedMs": "0",
+      "persistent": "1",
+      "phase": "begin",
+      "records": "1",
+      "sessions": "2"
+    },
+    {
+      "log_line": 4013,
+      "elapsedMs": "0",
+      "index": "0",
+      "phase": "pageBegin"
+    },
+    {
+      "log_line": 4016,
+      "elapsedMs": "18",
+      "index": "0",
+      "phase": "pageFinished",
+      "stopped": "1"
+    },
+    {
+      "log_line": 4017,
+      "elapsedMs": "18",
+      "index": "1",
+      "phase": "pageBegin"
+    },
+    {
+      "log_line": 4020,
+      "elapsedMs": "29",
+      "index": "1",
+      "phase": "pageFinished",
+      "stopped": "1"
+    },
+    {
+      "log_line": 4021,
+      "elapsedMs": "29",
+      "phase": "pagesDiscarded",
+      "ready": "1"
+    },
+    {
+      "log_line": 4022,
+      "elapsedMs": "32",
+      "phase": "recordsSelected",
+      "records": "1",
+      "types": "2"
+    },
+    {
+      "log_line": 4023,
+      "elapsedMs": "32",
+      "phase": "removeRequested"
+    },
+    {
+      "log_line": 4024,
+      "elapsedMs": "47",
+      "phase": "removeCompleted"
+    },
+    {
+      "log_line": 4025,
+      "allRecords": "1",
+      "elapsedMs": "49",
+      "phase": "recordsRefreshed",
+      "selectedCookieRecords": "0",
+      "selectedDiskCacheRecords": "0",
+      "selectedMemoryCacheRecords": "0",
+      "selectedOtherDataTypes": "0",
+      "selectedRecords": "0"
+    },
+    {
+      "log_line": 4026,
+      "elapsedMs": "58",
+      "phase": "sessionsReplaced",
+      "ready": "1"
+    }
+  ],
+  "validated_regressions": [
+    "Selected-site cookie and late-added localStorage disappear after fresh post-stop record enumeration.",
+    "Unrelated-site cookie remains; refreshes initiated before or during removal cannot overwrite the verified final list.",
+    "Old loaded documents are blank and a replacement is mounted only after verification.",
+    "Actual form login shares the cookie across tabs and relaunch; logout and website-record clearing remain effective after relaunch."
+  ],
+  "hashes": {
+    "test-summary.json": "749af16ec3ed1ad899a62d801f38c0b6a2f67019f0093ee99f27c3c51c2b86fd",
+    "ios-tests.log": "95664385fa1e6ff2637a0dbc7ce736b3fbe5734866afb99393244ccd396393ae"
+  },
+  "limits": [
+    "One iPhone 16 Pro Max / iOS 18.5 simulator run; this is not a matched performance benchmark.",
+    "The later 111650c permanent session retirement, progress UI and unmaterialized-session regression are not in this revision; faf7536 workspace matrix is separate.",
+    "No physical iPhone or third-party OAuth/MFA login is implied."
+  ]
+}

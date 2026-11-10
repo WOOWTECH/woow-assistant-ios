@@ -1,0 +1,193 @@
+{
+  "schemaVersion": 1,
+  "run": 42828634934,
+  "job": 129872479188,
+  "artifact": 13774681679,
+  "sourceRevision": "e09db9604d9e2e71175595a5c9a306d4bfe0bbd4",
+  "test": "testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+  "device": {
+    "architecture": "arm64",
+    "deviceId": "BC7CEBFB-6B90-4D7E-B85E-BB0102C99F06",
+    "deviceName": "iPhone 17",
+    "modelName": "iPhone 17",
+    "osBuildNumber": "23C54",
+    "osVersion": "26.2",
+    "platform": "iOS Simulator"
+  },
+  "result": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "expectedFailures": 0,
+    "secondsIncludingTeardown": 214.259,
+    "executionTimeAllowanceSeconds": 240
+  },
+  "actualPresentation": {
+    "line": 72978,
+    "namespace": "DCA3738D-4019-4329-821D-C0A30942DB03",
+    "source": "uikit-copy",
+    "mode": "import",
+    "multiple": "false",
+    "utc": "2026-11-10T14:44:56.641356+00:00"
+  },
+  "actualCallback": {
+    "line": 131607,
+    "namespace": "DCA3738D-4019-4329-821D-C0A30942DB03",
+    "outcome": "success",
+    "count": 1,
+    "utc": "2026-11-10T14:45:24.437768+00:00"
+  },
+  "appAuditStates": [
+    {
+      "firstLine": 35675,
+      "counts": [
+        0,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "firstLine": 132032,
+      "counts": [
+        1,
+        0,
+        0,
+        0
+      ]
+    },
+    {
+      "firstLine": 173799,
+      "counts": [
+        1,
+        1,
+        0,
+        0
+      ]
+    },
+    {
+      "firstLine": 236106,
+      "counts": [
+        1,
+        1,
+        1,
+        1
+      ]
+    }
+  ],
+  "actualOutputLabel": {
+    "bothPageSeparators": true,
+    "bothFixtureMarkers": true,
+    "exactNamespace": true,
+    "rawTextPublished": false
+  },
+  "timing": {
+    "nativeThumbnailTapSeconds": 84.86,
+    "approvalTapSeconds": [
+      101.93,
+      168.66
+    ],
+    "summaryLabelSeconds": 203.77,
+    "textLabelSeconds": 205.64,
+    "finalAuditSeconds": 212.46,
+    "introAfterCallback": {
+      "testLogLines": [
+        3117,
+        3118
+      ],
+      "fromSeconds": 91.44,
+      "nextActivitySeconds": 91.58,
+      "gapSeconds": 0.14
+    },
+    "summaryToText": {
+      "testLogLines": [
+        3458,
+        3473
+      ],
+      "seconds": 1.87,
+      "interveningTopReset": false
+    },
+    "remainingObservedAXDelays": [
+      {
+        "testLogLines": [
+          3217,
+          3218
+        ],
+        "fromSeconds": 112.55,
+        "toSeconds": 123.39,
+        "seconds": 10.84,
+        "stage": "keyboard existence query to next status query"
+      },
+      {
+        "testLogLines": [
+          3221,
+          3222
+        ],
+        "fromSeconds": 132.4,
+        "toSeconds": 141.9,
+        "seconds": 9.5,
+        "stage": "status query to predicate check"
+      }
+    ]
+  },
+  "comparison": {
+    "priorRun": 42815645050,
+    "priorSource": "21c29d232c090a518c9e602c5029fd8de1d5844b",
+    "priorFailed": 1,
+    "priorPassed": 0,
+    "priorIntroCallGapSeconds": 42.98,
+    "priorSecondsIncludingFailedTeardown": 323.189,
+    "controlledPerformanceBenchmark": false,
+    "interpretation": "This run completed the unchanged selection/approval/content/audit assertions within240s. The previous43s intro interval did not recur and the redundant result top-scroll is absent; total elapsed difference is not attributed wholly to those edits."
+  },
+  "limits": [
+    "DEBUG UIKit import-copy experiment only; the newer user-chosen copy entry and PDF assembly UI case are not included.",
+    "Matching e09 UIKit open result is still pending; no claim that import-copy universally fixes provider resolution.",
+    "Prior callback failures and copy timeout remain failed evidence."
+  ],
+  "materials": [
+    {
+      "file": "test-summary.json",
+      "bytes": 970,
+      "sha256": "ca08d05c5919c92e938e404c6dd51fd65a3872318d81f1cffd69c7c033b2940c"
+    },
+    {
+      "file": "ios-tests.log",
+      "bytes": 929910,
+      "sha256": "b1c21df999f56993155998568808741ae98d13c43d69f593195ffb1415e7a954"
+    },
+    {
+      "file": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+      "bytes": 36988407,
+      "sha256": "ffcdc1b822ed810c48d540f04a2d20f2465a9b8e92b4935c1d84b342e09e4370"
+    },
+    {
+      "file": "skill-pdf-fixture-evidence.json",
+      "bytes": 1075,
+      "sha256": "36fd65524c6504ebe53aeef502ac59a78900350f1a7a5a865e00ee967675e2df"
+    }
+  ],
+  "artifactRetrieval": "Named entries only via bounded ZIP HTTP ranges; no full artifact download",
+  "noNewDispatch": true,
+  "evidenceFrozenAtUTC": "2026-11-10T15:03:45+00:00",
+  "runURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828634934",
+  "artifactURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828634934/artifacts/13774681679",
+  "appAuditColumns": [
+    "selections",
+    "reads",
+    "extractionAttempts",
+    "results"
+  ],
+  "sameHeadOpen": {
+    "run": 42828639826,
+    "job": 129872493763,
+    "sourceRevision": "e09db9604d9e2e71175595a5c9a306d4bfe0bbd4",
+    "runURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828639826",
+    "statusAtCopyEvidenceFreeze": "pending_result",
+    "lastObservedStep": "Test",
+    "artifactResultVerified": false,
+    "comparisonConclusion": "Not yet available; this report establishes only the import-copy result."
+  },
+  "publicationScope": "Fixed counts, timing, source/artifact identity and material hashes only; no complete AX tree, logs, source contents or credentials included."
+}

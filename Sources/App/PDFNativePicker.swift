@@ -1,5 +1,20 @@
 import Foundation
 
+/// A per-presentation user choice. No launch argument or persisted preference
+/// can select import-copy in a production build.
+enum PDFImportChoice {
+    case original, importCopy
+
+    func mode(experiment: PDFNativePickerExperiment.Configuration?) -> PDFNativePickerExperiment.Mode {
+        if self == .importCopy { return .uikitImportCopy }
+        #if DEBUG
+        return experiment?.mode ?? .swiftUI
+        #else
+        return .swiftUI
+        #endif
+    }
+}
+
 /// The experiment can only attach to an already validated synthetic fixture.
 /// Parsing these arguments never resolves a directory or selects a file.
 enum PDFNativePickerExperiment {
@@ -52,8 +67,8 @@ enum PDFNativePickerExperiment {
 #if os(iOS)
 import SwiftUI
 import UniformTypeIdentifiers
-#if DEBUG
 import UIKit
+#if DEBUG
 import Darwin
 #endif
 
@@ -62,23 +77,24 @@ import Darwin
 /// import arm asks the OS picker to make a copy before the App's read approval.
 @MainActor struct PDFImportPresentation: ViewModifier {
     @Binding var isPresented: Bool
+    let choice: PDFImportChoice
     let experiment: PDFNativePickerExperiment.Configuration?
     let onCompletion: (Result<[URL], Error>) -> Void
     var onObservation: (String) -> Void = { _ in }
 
     @ViewBuilder func body(content: Content) -> some View {
-        #if DEBUG
         presentation(content)
+            #if DEBUG
             .background {
                 if let experiment {
-                    PDFPickerModeProbe(configuration: experiment, isPresented: isPresented,
+                    PDFPickerModeProbe(configuration: experiment,
+                                       source: choice == .importCopy ? "user-copy" : experiment.source,
+                                       isPresented: isPresented,
                                        onObservation: onObservation)
                         .frame(width: 0, height: 0).allowsHitTesting(false).accessibilityHidden(true)
                 }
             }
-        #else
-        swiftUIImporter(content)
-        #endif
+            #endif
     }
 
     private func swiftUIImporter(_ content: Content) -> some View {
@@ -86,11 +102,11 @@ import Darwin
                              allowsMultipleSelection: false, onCompletion: onCompletion)
     }
 
-    #if DEBUG
     @ViewBuilder private func presentation(_ content: Content) -> some View {
-        if let experiment, experiment.usesUIKit {
+        let mode = choice.mode(experiment: experiment)
+        if mode.usesUIKit {
             content.sheet(isPresented: $isPresented) {
-                PDFNativePicker(asCopy: experiment.mode.asCopy) { outcome in
+                PDFNativePicker(asCopy: mode.asCopy) { outcome in
                     isPresented = false
                     // Cancellation matches fileImporter: dismiss without a
                     // success/empty callback or a prepared execution plan.
@@ -101,11 +117,10 @@ import Darwin
             swiftUIImporter(content)
         }
     }
-    #endif
 }
 
-#if DEBUG
-/// Explicit open/import-copy experiment. No directoryURL, preselection,
+/// Explicit user import-copy, plus the DEBUG open/import-copy experiments.
+/// No directoryURL, preselection,
 /// bookmark recreation, URL substitution, automatic retry or picker fallback.
 @MainActor private struct PDFNativePicker: UIViewControllerRepresentable {
     let asCopy: Bool
@@ -144,16 +159,19 @@ import Darwin
     }
 }
 
+#if DEBUG
 /// A passive, bounded public-API observation in this view's own window. No
 /// private class names/KVC, responder hooks, delegate replacement or AX probing.
 @MainActor private struct PDFPickerModeProbe: UIViewControllerRepresentable {
     let configuration: PDFNativePickerExperiment.Configuration
+    let source: String
     let isPresented: Bool
     let onObservation: (String) -> Void
 
     func makeUIViewController(context: Context) -> ProbeController { ProbeController() }
     func updateUIViewController(_ controller: ProbeController, context: Context) {
-        controller.update(configuration: configuration, isPresented: isPresented, onObservation: onObservation)
+        controller.update(configuration: configuration, source: source,
+                          isPresented: isPresented, onObservation: onObservation)
     }
     static func dismantleUIViewController(_ controller: ProbeController, coordinator: ()) { controller.stop() }
 
@@ -162,14 +180,16 @@ import Darwin
         private var presenting = false
         private var reported = false
         private var activeConfiguration: PDFNativePickerExperiment.Configuration?
+        private var activeSource: String?
 
-        func update(configuration: PDFNativePickerExperiment.Configuration, isPresented: Bool,
+        func update(configuration: PDFNativePickerExperiment.Configuration, source: String, isPresented: Bool,
                     onObservation: @escaping (String) -> Void) {
             guard isPresented else { stop(); return }
             guard !presenting else { return }
             presenting = true
             reported = false
             activeConfiguration = configuration
+            activeSource = source
             observation = Task { @MainActor [weak self] in
                 // Defer until the SwiftUI presentation transaction completes.
                 await Task.yield()
@@ -187,7 +207,7 @@ import Darwin
                         case .moveToService: mode = "move"
                         @unknown default: mode = "unknown"
                         }
-                        let value = "source=\(configuration.source) mode=\(mode) allowsMultipleSelection=\(picker.allowsMultipleSelection)"
+                        let value = "source=\(source) mode=\(mode) allowsMultipleSelection=\(picker.allowsMultipleSelection)"
                         self.reported = true
                         Self.record(configuration: configuration, value: value)
                         onObservation(value)
@@ -197,16 +217,17 @@ import Darwin
                 }
                 guard let self, !Task.isCancelled else { return }
                 self.reported = true
-                Self.record(configuration: configuration, value: "source=\(configuration.source) mode=unobserved")
+                Self.record(configuration: configuration, value: "source=\(source) mode=unobserved")
             }
         }
 
         func stop() {
-            if presenting, !reported, let configuration = activeConfiguration {
-                Self.record(configuration: configuration, value: "source=\(configuration.source) mode=unobserved")
+            if presenting, !reported, let configuration = activeConfiguration, let source = activeSource {
+                Self.record(configuration: configuration, value: "source=\(source) mode=unobserved")
             }
             presenting = false
             activeConfiguration = nil
+            activeSource = nil
             observation?.cancel(); observation = nil
         }
 

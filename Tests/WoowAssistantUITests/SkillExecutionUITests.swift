@@ -240,10 +240,10 @@ final class SkillExecutionUITests: XCTestCase {
     private var exportStem: String { stem + "-文字" }
 
     private enum PickerArm {
-        case swiftUI, uikitOpen, uikitImportCopy
+        case swiftUI, uikitOpen, uikitImportCopy, userImportCopy
         var launchFlag: String? {
             switch self {
-            case .swiftUI: return nil
+            case .swiftUI, .userImportCopy: return nil
             case .uikitOpen: return "-UITestPDFUIKitPicker"
             case .uikitImportCopy: return "-UITestPDFUIKitCopyPicker"
             }
@@ -253,6 +253,7 @@ final class SkillExecutionUITests: XCTestCase {
             case .swiftUI: return nil
             case .uikitOpen: return "source=uikit mode=open allowsMultipleSelection=false"
             case .uikitImportCopy: return "source=uikit-copy mode=import allowsMultipleSelection=false"
+            case .userImportCopy: return "source=user-copy mode=import allowsMultipleSelection=false"
             }
         }
     }
@@ -289,9 +290,86 @@ final class SkillExecutionUITests: XCTestCase {
         assertNativePDFRead(fixtureWriteMode: "coordinated", picker: .uikitImportCopy)
     }
 
+    func testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText() {
+        // Standard fixture creation and an explicit product UI choice; no
+        // launch flag selects the picker mode for this acceptance case.
+        assertNativePDFRead(fixtureWriteMode: nil, picker: .userImportCopy)
+    }
+
+    func testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult() {
+        launchPDFScreen(fromCatalog: true, catalogEntry: "catalog.documents.assemble",
+                        fixtureIdentifier: "pdfAssembly.uitest.fixture")
+        let form = app.collectionViews["pdfAssembly.form"]
+        XCTAssertFalse(form.staticTexts["pdfAssembly.source.1"].exists)
+        XCTAssertFalse(form.staticTexts["pdfAssembly.result"].exists)
+        tap("pdfAssembly.select", scroll: true)
+        requireHittable(nativeCancel, timeout: 45)
+        chooseSyntheticPDFInPresentedPicker(selected: form.staticTexts["pdfAssembly.source.1"],
+                                            expectedLabel: "來源 1：" + filename,
+                                            allowsMultipleSelection: true)
+        XCTAssertFalse(form.staticTexts["pdfAssembly.receipt.1"].exists,
+                       "Native selection must not approve reading the source.")
+        XCTAssertFalse(form.buttons["pdfAssembly.assemble"].exists)
+        tap("pdfAssembly.read.1", scroll: true)
+        let receipt = form.staticTexts["pdfAssembly.receipt.1"]
+        revealLearningElement(receipt, in: app, visibility: .readableText)
+        XCTAssertTrue(receipt.waitForExistence(timeout: 15))
+        XCTAssertNotNil(receipt.label.range(of: "^已讀取 2 頁，[1-9][0-9]* 位元組$", options: .regularExpression))
+        XCTAssertFalse(form.buttons["pdfAssembly.read.1"].exists)
+        XCTAssertFalse(form.staticTexts["pdfAssembly.result"].exists,
+                       "Reading approval must not authorize PDF assembly.")
+
+        // SwiftUI's vertical TextField may expose a TextField or TextView.
+        // Bind to the exact identifier and require an actual editable AX role.
+        let order = form.descendants(matching: .any).matching(identifier: "pdfAssembly.order").firstMatch
+        revealLearningElement(order, in: app)
+        XCTAssertTrue(order.elementType == .textField || order.elementType == .textView)
+        requireHittable(order)
+        XCTAssertEqual(order.value as? String, "1:1-2")
+        order.tap()
+        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
+        order.typeText(String(repeating: XCUIKeyboardKey.delete.rawValue, count: "1:1-2".count))
+        wait(order, "value == %@", "")
+        order.typeText("1:2,1:1")
+        wait(order, "value == %@", "1:2,1:1")
+        tap("pdfAssembly.keyboardDone")
+        tap("pdfAssembly.prepare", scroll: true)
+        let count = form.staticTexts["pdfAssembly.plan.count"]
+        revealLearningElement(count, in: app, visibility: .readableText)
+        XCTAssertTrue(count.waitForExistence(timeout: 15))
+        XCTAssertEqual(count.label, "共 2 頁")
+        for (index, label) in ["第 1 頁 ← 來源 1 第 2 頁", "第 2 頁 ← 來源 1 第 1 頁"].enumerated() {
+            let row = form.staticTexts["pdfAssembly.plan.page.\(index + 1)"]
+            revealLearningElement(row, in: app, visibility: .readableText)
+            XCTAssertEqual(row.label, label)
+        }
+        XCTAssertFalse(form.staticTexts["pdfAssembly.result"].exists,
+                       "Reviewing an exact page order must not produce a PDF before approval.")
+        tap("pdfAssembly.assemble", scroll: true)
+        let result = form.staticTexts["pdfAssembly.result"]
+        revealLearningElement(result, in: app, visibility: .readableText)
+        XCTAssertTrue(result.waitForExistence(timeout: 15))
+        let originalResult = result.label
+        XCTAssertNotNil(originalResult.range(of: "^已產生 2 頁，[1-9][0-9]* 位元組$", options: .regularExpression))
+        XCTAssertFalse(form.buttons["pdfAssembly.assemble"].exists)
+        tap("pdfAssembly.export", scroll: true)
+        requireHittable(nativeExportConfirmation)
+        cancelNativeExporter()
+        guard waitForNativeExporterDismissal() else { return }
+        let exportStatus = form.staticTexts["pdfAssembly.export.status"]
+        revealLearningElement(exportStatus, in: app, visibility: .readableText)
+        wait(exportStatus, "label == %@", "已取消儲存，新 PDF 仍保留。")
+        revealLearningElement(result, in: app, visibility: .readableText)
+        XCTAssertEqual(result.label, originalResult)
+        let export = form.buttons["pdfAssembly.export"]
+        revealLearningElement(export, in: app)
+        requireHittable(export)
+        XCTAssertFalse(nativeCancel.exists)
+    }
+
     private func assertNativePDFRead(fixtureWriteMode: String?, picker: PickerArm = .swiftUI) {
         launchFixture(fromCatalog: true, fixtureWriteMode: fixtureWriteMode, picker: picker)
-        chooseSyntheticPDF()
+        chooseSyntheticPDF(picker: picker)
         assertAudit(selections: 1, reads: 0, extractionAttempts: 0, results: 0)
         if let expectedObservation = picker.expectedObservation {
             XCTAssertEqual(app.staticTexts["skillExecution.uitest.fixture"].value as? String,
@@ -476,15 +554,7 @@ final class SkillExecutionUITests: XCTestCase {
     }
 
     private func assertExportStatus(_ expected: String) {
-        // Save can return while Files is still saving. Wait for dismissal before
-        // any gesture can drag that sheet instead of scrolling the app form.
-        // This readiness wait remains inside the case's 240-second allowance.
-        let dismissed = XCTNSPredicateExpectation(
-            predicate: NSPredicate(format: "exists == false"), object: nativeFilesNavigation)
-        guard XCTWaiter.wait(for: [dismissed], timeout: 30) == .completed else {
-            XCTFail("Native Files exporter must dismiss within 30 seconds before inspecting the execution form.")
-            return
-        }
+        guard waitForNativeExporterDismissal() else { return }
         let status = executionForm.staticTexts["skillExecution.export.status"]
         scrollExecutionToTop()
         revealLearningElement(status, in: app, visibility: .readableText)
@@ -492,7 +562,27 @@ final class SkillExecutionUITests: XCTestCase {
         XCTAssertFalse(nativeCancel.exists)
     }
 
+    private func waitForNativeExporterDismissal() -> Bool {
+        // Save can return while Files is still saving. Wait for dismissal before
+        // any gesture can drag that sheet instead of scrolling the app form.
+        // This readiness wait remains inside the case's 240-second allowance.
+        let dismissed = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == false"), object: nativeFilesNavigation)
+        guard XCTWaiter.wait(for: [dismissed], timeout: 30) == .completed else {
+            XCTFail("Native Files exporter must dismiss within 30 seconds before inspecting the execution form.")
+            return false
+        }
+        return true
+    }
+
     private func launchFixture(fromCatalog: Bool, fixtureWriteMode: String? = nil, picker: PickerArm = .swiftUI) {
+        launchPDFScreen(fromCatalog: fromCatalog, fixtureWriteMode: fixtureWriteMode, picker: picker)
+        assertAudit(selections: 0, reads: 0, extractionAttempts: 0, results: 0)
+    }
+
+    private func launchPDFScreen(fromCatalog: Bool, fixtureWriteMode: String? = nil, picker: PickerArm = .swiftUI,
+                                 catalogEntry: String = "catalog.documents.execute",
+                                 fixtureIdentifier: String = "skillExecution.uitest.fixture") {
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW",
             "-UITestMode", "-UITestNamespace", namespace, "-UITestResetStorage", "-UITestSkillExecution"]
         if let fixtureWriteMode { app.launchArguments += ["-UITestSkillFixtureWriteMode", fixtureWriteMode] }
@@ -510,17 +600,33 @@ final class SkillExecutionUITests: XCTestCase {
             search.tap(); search.typeText("documents\n")
             wait(search, "value == %@", "documents")
             tap("catalog.entry.documents", scroll: true)
-            tap("catalog.documents.execute", scroll: true)
+            tap(catalogEntry, scroll: true)
         } else { tap("skills.documents.execute", scroll: true) }
-        let fixture = app.staticTexts["skillExecution.uitest.fixture"]
+        let fixture = app.staticTexts[fixtureIdentifier]
         revealLearningElement(fixture, in: app, visibility: .readableText)
         XCTAssertEqual(fixture.label, "測試文件已建立：" + filename,
                        "DEBUG seeder must create only this namespace's real PDF.")
-        assertAudit(selections: 0, reads: 0, extractionAttempts: 0, results: 0)
     }
 
-    private func openNativePicker() {
-        tap("skillExecutionSelectPDF", scroll: true)
+    private func openNativePicker(picker: PickerArm = .swiftUI) {
+        if case .userImportCopy = picker {
+            XCTAssertFalse(app.launchArguments.contains { $0.hasPrefix("-UITestPDFUIKit") },
+                           "The user entry must select import-copy without a picker experiment flag.")
+            XCTAssertFalse(app.launchArguments.contains("-UITestSkillFixtureWriteMode"))
+            tap("skillExecution.importCopy.options", scroll: true)
+            let notice = app.staticTexts["skillExecution.importCopy.notice"]
+            revealLearningElement(notice, in: app, visibility: .readableText)
+            XCTAssertEqual(notice.label,
+                           "選檔後，系統會先建立暫存副本並占用儲存空間，不會更動原檔。App 讀取與後續擷取仍需分別核准。App 最多讀取 10 MiB；系統複製的大小不受此上限限制。")
+            let copy = app.buttons["skillExecutionImportPDFCopy"]
+            // The copy button follows its disclosure. Keep this viewport and
+            // retain the same visibility/hittability rules as other controls.
+            revealLearningElement(copy, in: app)
+            requireHittable(copy)
+            copy.tap()
+        } else {
+            tap("skillExecutionSelectPDF", scroll: true)
+        }
         // iOS 17 evidence: Files initialization can exhaust the old 15-second
         // readiness budget. Wait for the actual native control once;
         // do not retap the launch button or bypass the document picker.
@@ -533,8 +639,13 @@ final class SkillExecutionUITests: XCTestCase {
         nativeFilesNavigation.buttons.matching(NSPredicate(format: "label IN %@", ["取消", "Cancel"])).firstMatch
     }
 
-    private func chooseSyntheticPDF() {
-        openNativePicker()
+    private func chooseSyntheticPDF(picker: PickerArm = .swiftUI) {
+        openNativePicker(picker: picker)
+        chooseSyntheticPDFInPresentedPicker(selected: app.staticTexts["skillExecution.filename"], expectedLabel: filename)
+    }
+
+    private func chooseSyntheticPDFInPresentedPicker(selected: XCUIElement, expectedLabel: String,
+                                                     allowsMultipleSelection: Bool = false) {
         guard let file = navigateNativeFiles(exporting: false) else { return }
         // The iOS 26 failure recording shows a visible PDF thumbnail whose AX
         // Image is not hittable. A whole-cell tap lands on the filename instead.
@@ -552,12 +663,33 @@ final class SkillExecutionUITests: XCTestCase {
             return
         }
         thumbnail.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
-        let selected = app.staticTexts["skillExecution.filename"]
-        if !selected.waitForExistence(timeout: 3), let open = knownButton(["開啟", "Open", "完成", "Done"]) { open.tap() }
+        if allowsMultipleSelection {
+            // Assembly uses a multi-select importer. Files may either return
+            // immediately or enable its own confirmation after selection.
+            // Wait for actual readiness; never retap the file or a disabled
+            // confirmation. Both waits remain inside the same 240-second case.
+            let open = nativeFilesNavigation.buttons.matching(
+                NSPredicate(format: "label IN %@", ["開啟", "Open"])).firstMatch
+            let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+                selected.exists || (open.exists && open.isEnabled && open.isHittable)
+            }, object: nil)
+            guard XCTWaiter.wait(for: [ready], timeout: 15) == .completed else {
+                recordPickerDiagnostics(stage: "multi-selection-not-ready")
+                XCTFail("Files must deliver the selected source or expose an enabled, hittable Open confirmation within 15 seconds.")
+                return
+            }
+            // Auto-dismissal can race this check. If Open has disappeared,
+            // require the real callback below instead of tapping another item.
+            if !selected.exists && open.exists && open.isEnabled && open.isHittable {
+                open.tap()
+            }
+        } else {
+            if !selected.waitForExistence(timeout: 3), let open = knownButton(["開啟", "Open", "完成", "Done"]) { open.tap() }
+        }
         let received = selected.waitForExistence(timeout: 15)
         if !received { recordPickerDiagnostics(stage: "selection-not-delivered") }
         XCTAssertTrue(received, "Files selection must reach the real importer callback.")
-        XCTAssertEqual(selected.label, filename)
+        XCTAssertEqual(selected.label, expectedLabel)
         XCTAssertFalse(nativeCancel.exists, "The document picker must have dismissed.")
     }
 

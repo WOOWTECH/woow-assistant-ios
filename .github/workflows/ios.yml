@@ -25,7 +25,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, picker-uikit, picker-uikit-copy, pdf-export, authoring, skill-settings, transcript, memory-ui, memory-rollback, learning, browser, core, native, startup, ui-startup, ui-workspace, ui-browser, ui-learning, ui-memory, ui-skills, ui-documents, ui-mcp]
+        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, picker-uikit, picker-uikit-copy, picker-user-copy, pdf-assembly, pdf-export, authoring, skill-settings, transcript, memory-ui, memory-rollback, learning, browser, core, native, startup, ui-startup, ui-workspace, ui-browser, ui-learning, ui-memory, ui-skills, ui-documents, ui-mcp]
         default: all
 
 permissions:
@@ -122,7 +122,7 @@ jobs:
         # login/tab/relaunch/logout flow; other cases retain their own limits.
         # Single-method picker experiments need bounded bootstrap feedback.
         # Other scopes retain their previous limit; this does not retry a case.
-        timeout-minutes: ${{ contains(fromJSON('["picker-direct","picker-coordinated","picker-uikit","picker-uikit-copy"]'), inputs.test_scope) && 20 || 55 }}
+        timeout-minutes: ${{ contains(fromJSON('["picker-direct","picker-coordinated","picker-uikit","picker-uikit-copy","picker-user-copy","pdf-assembly"]'), inputs.test_scope) && 20 || 55 }}
         run: |
           simulator_options=()
           if [ "$WOOW_FRESH_SIMULATOR" = true ]; then simulator_options+=(--fresh); fi
@@ -171,6 +171,12 @@ jobs:
               ;;
             picker-uikit-copy)
               test_filters=(-only-testing:WoowAssistantUITests/SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText)
+              ;;
+            picker-user-copy)
+              test_filters=(-only-testing:WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText)
+              ;;
+            pdf-assembly)
+              test_filters=(-only-testing:WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult)
               ;;
             pdf-export)
               test_filters=(-only-testing:WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder -only-testing:WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry)
@@ -232,7 +238,7 @@ jobs:
             xcrun xcresulttool export diagnostics --path build/Tests.xcresult --output-path build/diagnostics
           fi
       - name: Verify every selected shard case completed without skips
-        if: always() && github.event_name == 'workflow_dispatch' && (startsWith(inputs.test_scope, 'ui-') || inputs.test_scope == 'native')
+        if: always() && github.event_name == 'workflow_dispatch' && (startsWith(inputs.test_scope, 'ui-') || contains(fromJSON('["native","picker-user-copy","pdf-assembly"]'), inputs.test_scope))
         env:
           VALIDATION_SCOPE: ${{ inputs.test_scope }}
         run: |

@@ -23,7 +23,7 @@ on:
       ios17_test_scope:
         description: iOS 17 範圍；core 加全部 ui-* 涵蓋非 Live，局部或略過不代表完整驗收
         type: choice
-        options: [all, core, workspace, files, parity, startup, startup-smoke, ui-startup, ui-workspace, ui-browser, ui-learning, ui-memory, ui-skills, ui-documents, ui-mcp]
+        options: [all, core, workspace, files, parity, startup, startup-smoke, picker-user-copy, pdf-assembly, ui-startup, ui-workspace, ui-browser, ui-learning, ui-memory, ui-skills, ui-documents, ui-mcp]
         default: all
       ios17_host_arch:
         description: Hosted iOS 17 主機架構；明確比較，不自動替換 runtime

@@ -104,6 +104,10 @@ does not establish iOS-to-production connectivity or complete original-tool pari
 and its current availability; the historical text-adaptation table below describes
 that earlier path, not the new PDF execution capability.
 
+### Native PDF page assembly — 2026-11-10
+
+The documents entry additionally supports approved 1–3-file static PDF page extraction, ordered/interleaved merging and repeated pages. Each selected file is read once into an immutable snapshot; a separately reviewed page plan produces a new PDF, and the user chooses the native export destination. Inputs total at most 200 pages; each input is at most 10 MiB, and output is at most 200 pages / 20 MiB. Encrypted documents and document-wide forms/annotations/attachments/outlines/tag structures/layers are outside this bounded adapter. No generic shell, Python execution or OCR is implied. Native PDFKit core checks passed 284 assertions, including real raster pixels and fractional geometry; actual App Session/FileDocument checks passed 57 assertions in each local configuration. iOS UI acceptance remains separate. See [runtime contract](SKILL_RUNTIME.md) and [verification](VERIFICATION.md).
+
 ### Bundled Skills catalog increment — 2026-11-10
 
 The local catalog archives **all six SKILL.md entries at the pinned Mika revision**,

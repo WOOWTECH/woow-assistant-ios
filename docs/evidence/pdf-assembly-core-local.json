@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "collected_at_utc": "2026-11-10T15:07:54.050201+00:00",
+  "status": "FROZEN_READY_FOR_INTEGRATION_IOS_VALIDATION_PENDING",
+  "scope": "Native PDF page assembly core/runtime; existing execution capability enum unchanged.",
+  "source_sha256": {
+    "Sources/AssistantSkills/SkillPDFAssemblyNative.swift": "91f69b7137f7e8cf684aeec849c8170eb98cf915c4ebfee92db71e0da2e6f6da",
+    "Sources/AssistantSkills/SkillPDFAssemblyRuntime.swift": "9652e1062c2419dd0ced80fb9af14754b95100179d445c0db6f555addea20e43",
+    "Sources/AssistantSkills/SkillPDFAssemblyTypes.swift": "aeb8e474cfd9d3ef67f55a0d76fa20083dbb5da1f315c8f86f82000d4f75f428",
+    "Tests/AssistantSkillsTests/SkillPDFAssemblyTests.swift": "c7988cd1361cc78cf6cc2814e5408c70ec11ce03b57358875bff4f470c60a8a5",
+    "scripts/check_pdf_assembly.py": "20ae730dce0b34f1e55d59d344160033049d32d584485a2f1a8bed0ef17ce5a8"
+  },
+  "host": {
+    "os": "macOS 13.7.8",
+    "architecture": "x86_64",
+    "compiler": "Apple Swift 5.8.1",
+    "macos_sdk": "13.3",
+    "developer_directory": "/Library/Developer/CommandLineTools",
+    "full_xcode_available": false,
+    "ios_sdk_available": false,
+    "xctest_module_available": false
+  },
+  "validation": {
+    "command": "python3 scripts/check_pdf_assembly.py",
+    "native_standalone_assertions": {
+      "passed": 284,
+      "failed": 0
+    },
+    "shared_hosted_xctest_methods": 5,
+    "hosted_xctest_executed": false,
+    "actual_pdfkit_executed": true,
+    "actual_existing_NSFileCoordinator_reader_executed": true,
+    "actual_presenter_save_before_snapshot_verified": true,
+    "macos_core_module_emission_passed": true,
+    "parent_app_session_macos_typecheck_passed": true,
+    "ios17_debug_release_syntax_parse_passed": true,
+    "ios_sdk_typecheck_or_runtime_validation": false,
+    "unavailable_backend_typecheck_passed": true,
+    "unavailable_backend_note": "PDF_ASSEMBLY_NO_PDFKIT branch checked using macOS SDK; not a Linux SDK or iOS execution claim.",
+    "standalone_build_note": "Actual new core and reader compiled with repository sources; SKILL_EXECUTION_SMOKE excludes unrelated model dependencies, and SkillLearningService.swift is omitted. No fake PDFKit/reader implementation.",
+    "diff_check_passed": true,
+    "cases": [
+      "actual page extraction, reorder, cross-file interleave and repeated pages",
+      "decoded real RGB Image XObject samples and rendered pixel equality",
+      "selectable text, intrinsic rotation, box dimensions and media-relative geometry",
+      "aggregate 200-input-page positive and negative boundaries; 200/201 output-page bounds",
+      "per-file byte limits, invalid pages, source identity and unsupported documents",
+      "encrypted/restricted documents and selected-page annotations rejected",
+      "one-use read and assembly grants; wrong runtime, replay, expiry and stale/invalid order revocation",
+      "actual coordinated storage read; no read before execution grant; immutable snapshot after original deletion",
+      "cancelled late read and actual native assembly result suppressed; busy exclusion; positive late-result control",
+      "output-byte-bound rejection; original files unchanged; no automatic output file"
+    ]
+  },
+  "fractional_geometry": {
+    "fixture": {
+      "media_origin_points": [
+        10.125,
+        20.375
+      ],
+      "media_widths_points": [
+        420.1234,
+        490.1234,
+        560.1234
+      ],
+      "fractional_crop_and_other_boxes": true,
+      "rotations_degrees": [
+        0,
+        90,
+        270
+      ]
+    },
+    "strict_negative_baseline": {
+      "reproduced": true,
+      "setup": "Isolated source copy restores exact relative-CGRect comparison; same actual fractional fixture page 3 is assembled. No repository source rollback.",
+      "outcome": "SkillPDFAssemblyError.verification",
+      "fixed_log": "CONFIRMED exact-relative-CGRect baseline rejects the real fractional page with verification error",
+      "log_sha256": "96dd4e16cdf1fc98eac3b697ebad177588677facb52da35af53bdd4376daff5a"
+    },
+    "measured_max_difference_points": 1.1368683772161603e-13,
+    "measured_max_difference_in_representable_steps": 1,
+    "policy": "All x/y/width/height components must be finite; abs(expected-actual) <= 4 * max(expected.ulp, actual.ulp). No fixed broad point or percentage epsilon.",
+    "fractional_fixture_absolute_delta_assertion_points": 2e-13,
+    "negative_controls": [
+      "five representable steps",
+      "1e-6 point width change",
+      "1e-6 point relative-origin change",
+      "NaN",
+      "Infinity"
+    ],
+    "rendering": {
+      "backend": "Actual CoreGraphics drawPDFPage",
+      "raster_dimensions": [
+        256,
+        256
+      ],
+      "rgba_bytes_per_pixel": 4,
+      "fractional_pages_compared": 3,
+      "different_pixel_bytes_per_page": [
+        0,
+        0,
+        0
+      ],
+      "real_image_XObject_page_included": true
+    },
+    "measurement_json_sha256": "3e677069b711b56c5fcddcf868f750795709d86f8a18beb5a5f8609f8de08d16"
+  },
+  "bounds": {
+    "selected_files": 3,
+    "input_bytes_per_file": 10485760,
+    "total_input_bytes": 31457280,
+    "aggregate_input_pages": 200,
+    "output_pages": 200,
+    "accepted_serialized_output_bytes": 20971520,
+    "order_text_utf8_bytes": 4096,
+    "approval_validity_seconds": 120,
+    "test_gate_wait_seconds": 10,
+    "standalone_compile_timeout_seconds": 180,
+    "standalone_execution_timeout_seconds": 120
+  },
+  "limitations": [
+    "No iOS SDK compilation, hosted XCTest or native picker/export UI execution on this CLT host; CI is required.",
+    "Four ULP accounts only for floating-point representation error; other geometry changes still fail verification. Absolute MediaBox origins may be normalized by PDFKit.",
+    "Pixel equality is evidence for the synthetic integer/fractional fixtures, not a universal guarantee for arbitrary PDFs.",
+    "PDFKit serialization is synchronous and cannot be forcibly interrupted; cancellation prevents late publication.",
+    "Serialized-output limit is checked after PDFKit allocation; no hard peak-memory or PDFKit CPU deadline guarantee.",
+    "Encrypted documents, unsupported document-wide relationships and selected-page annotations are rejected rather than silently stripped.",
+    "Core returns immutable PDF bytes and does not write originals, export, execute, upload or run Python. A separately user-requested native export may replace a selected destination only after native explicit confirmation.",
+    "No original Python/pypdf parity claim."
+  ],
+  "integration_contract": {
+    "init": "SkillPDFAssemblyRuntime(selectedFiles:catalog:)",
+    "read": "authorizeRead(sourceID:) then read(_:) for each selected source",
+    "plan": "prepare(orderText:) accepts explicit one-based source:page/range components such as 1:3,1:1-2,2:1, preserving interleaving and duplicates",
+    "assemble": "authorizeAssembly(planID:) then assemble(_:) returns immutable data, plan, pageCount and sha256",
+    "cancel": "Terminal revocation; replace runtime when selection changes or view closes."
+  }
+}
