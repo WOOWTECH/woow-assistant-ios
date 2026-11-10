@@ -372,6 +372,15 @@ final class SkillExecutionUITests: XCTestCase {
     }
 
     private func assertExportStatus(_ expected: String) {
+        // Save can return while Files is still saving. Wait for dismissal before
+        // any gesture can drag that sheet instead of scrolling the app form.
+        // This readiness wait remains inside the case's 240-second allowance.
+        let dismissed = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == false"), object: nativeFilesNavigation)
+        guard XCTWaiter.wait(for: [dismissed], timeout: 30) == .completed else {
+            XCTFail("Native Files exporter must dismiss within 30 seconds before inspecting the execution form.")
+            return
+        }
         let status = executionForm.staticTexts["skillExecution.export.status"]
         scrollExecutionToTop()
         revealLearningElement(status, in: app, visibility: .readableText)
