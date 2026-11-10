@@ -32,6 +32,7 @@ Apple 提供 `xcodebuild -downloadPlatform iOS -buildVersion <版本>` 安裝指
 | --- | --- | --- |
 | `unsigned-device`（預設） | `macos-15-intel`、Xcode 26.2 | Release `iphoneos` arm64 編譯；檢查實際 build settings、App Info.plist、App／framework／Swift dylib 的 Mach-O 最低版本；不產生 IPA |
 | `signed-export` | 同上；repository Actions secrets | 既有 distribution 憑證與 profile 預檢、手動簽章 archive、`destination=export` 本地 IPA 匯出；驗證簽章完整性及實際 leaf certificate |
+| `signed-testflight` | 同上；另需三項 App Store Connect secrets | 強制 App Store distribution 匯出、比對已驗證 IPA 雜湊，明確上傳至 Apple；不宣稱處理完成或已可下載 |
 | `ios17-hosted` | `macos-15-intel`、Xcode 16.4 | 指定 runtime 若缺少便下載；建立專用 iPhone 15 simulator，執行現有 `WoowAssistant` 完整 XCTest scheme，保存 `.xcresult`／測試 log |
 | `ios17-self-hosted` | `[self-hosted, macOS, woow-ios17]`，使用 runner 已選定的 Xcode | 僅用已預裝的指定 runtime；缺少即失敗，不自動改用其他 OS |
 
@@ -57,9 +58,34 @@ unsigned build、signed archive 與匯出 IPA 的實際 App `Info.plist` 均不�
 
 匯入的有效 distribution 身分必須與 profile 的 certificate SHA-1 相符且唯一。暫存 keychain 的搜尋清單會在 `finally` 還原，僅刪除本次安裝的 profile；同 UUID 檔案已存在時拒絕覆寫。簽章 secrets 不傳給 XcodeGen／xcodebuild 子程序環境；`security` 需要的密碼僅作參數傳入，命令、輸出及密碼不回顯。
 
-簽章作業限 hosted ephemeral runner。一般錯誤會清理 keychain／profile；強制終止仍依賴 GitHub 銷毀 VM。工作流程最後移除本次 archive／IPA，只上傳不含憑證資料的 `report.json`，**不保存 IPA artifact**。App Store／TestFlight／GitHub Release 上傳均未實作，需依選定發行方式補上實際交付，不能把本地 export 稱為已發布。未使用 `-allowProvisioningUpdates`，不會自動註冊裝置或建立憑證。
+簽章作業限 hosted ephemeral runner。一般錯誤會清理 keychain／profile；強制終止仍依賴 GitHub 銷毀 VM。工作流程最後移除本次 archive／IPA，只上傳不含憑證資料的 `report.json`，**不保存 IPA artifact**。只有另外選擇 `signed-testflight` 才會呼叫 Apple 上傳工具；其他模式不連線上傳。GitHub Release 與 Ad Hoc 包交付尚未實作，不能把本地 export 稱為已發布。未使用 `-allowProvisioningUpdates`，不會自動註冊裝置或建立憑證。
 
 Apple 自 2026-04-28 起要求 App Store Connect 上傳使用 Xcode 26 以上與 iOS 26 SDK 以上，因此簽章匯出使用 Xcode 26.2，並檢查 SDK；這不要求把 deployment target 提高到 iOS 26。[Apple SDK 要求](https://developer.apple.com/news/upcoming-requirements/?id=04282026a)
+
+## 可選的 TestFlight 上傳路徑（尚未實際發行）
+
+`mode=signed-testflight` 使用既有五項簽章 secrets，另需 repository secrets
+`ASC_KEY_ID`、`ASC_ISSUER_ID`、`ASC_PRIVATE_KEY_BASE64`（既有 App Store Connect
+團隊 API `.p8` 的 Base64）。工作流程先離線檢查其格式；不建立新金鑰、App
+記錄、憑證或描述檔。簽章步驟強制 `app-store-connect`，不使用 Ad Hoc profile。
+
+每次 workflow 的 `github.run_number` 作為建置編號，並檢查 archive／匯出 IPA
+實際 `CFBundleVersion`；上傳模式禁止重新執行同一次 run，因為它不會產生新的編號。需先查核 Apple 的接收狀態，再明確啟動新 run。`release_testflight.py` 只接受同次建置的簽章成功報告、正確
+Bundle ID、App Store 匯出方法及完全相同的 IPA SHA-256；不接受 unsigned
+產物或匯出後被修改的檔案。
+
+私鑰只放在權限受限暫存目錄的 `private_keys/AuthKey_<ID>.p8`；子程序環境
+移除簽章與上傳 secrets，不修改 HOME。先安裝並檢查 Apple 官方獨立 Transporter；Xcode 14 起不再內附此工具。使用 `/usr/local/itms/bin/iTMSTransporter -m upload -assetFile ... -apiKey ... -apiIssuer ...`，原始工具輸出不進公開日誌或 artifacts。
+一般成功、錯誤與逾時都會清理暫存 key。此路徑依據 [Apple Transporter 文件](https://help.apple.com/itc/transporteruserguide/en.lproj/static.html)。
+
+上傳只執行一次。`upload-report.json` 區分是否已嘗試、工具是否回報接受；非零退出或逾時均保留未知結果；已有嘗試紀錄不自動重送。即使退出 0，仍記錄
+`processing_verified: false`、`testflight_available: null`；需由 Apple 完成
+後續處理並確認測試人員可用，才能提供下載。沒有自動邀請測試者、提交 App
+Store 審核或設定公開 TestFlight 連結。[Apple 上傳說明](https://developer.apple.com/help/app-store-connect/manage-builds/upload-builds/)
+
+目前 32 項發行腳本測試包含合成 IPA 的雜湊與匯出類型拒絕、金鑰位置／權限／
+環境隔離、成功／失敗／逾時後清理與重送阻擋、建置編號及實際 plist 不符拒絕。
+這些替代命令測試沒有連線 Apple，不證明真實簽章、上傳或 TestFlight 已完成。
 
 ## 整合介面與母任務修改點
 
@@ -110,7 +136,7 @@ minimum-ios17:
 
 ## 測試與待補輸入
 
-本機已通過 26 個 Python tests，包含真實子程序的 secrets 環境隔離、錯誤輸出隔離、缺少 secrets 的 CLI 失敗，以及 profile／身分匹配、簽章清理、framework 設定隔離、最低版本、隱私 manifest 與 runtime 選擇；另驗證 ad-hoc seal 與不同 leaf certificate 不能通過 distribution 驗證。ATS 測試以真實 XML／binary plist 驗證拒絕 Debug loopback 設定、全域例外、空字典與錯誤型別，並驗證 unsigned／signed 無 ATS 的通過回報。簽章匯入清理、Mach-O 及產物憑證測試使用合成資料與替代命令；不代表真實 iOS 編譯或簽章已成功。實際本機 CLI 的缺少 Xcode 失敗路徑另確認退出 1、即時 preflight 訊息與 `runtime_tested: false` 的完整報告，沒有遺留半寫入的暫存報告。shell 語法、YAML 解析及 actionlint 1.7.12 已通過。
+本機已通過 32 個 Python tests，包含真實子程序的 secrets 環境隔離、錯誤輸出隔離、缺少 secrets 的 CLI 失敗，以及 profile／身分匹配、簽章清理、framework 設定隔離、最低版本、隱私 manifest 與 runtime 選擇；另驗證 ad-hoc seal 與不同 leaf certificate 不能通過 distribution 驗證。ATS 測試以真實 XML／binary plist 驗證拒絕 Debug loopback 設定、全域例外、空字典與錯誤型別，並驗證 unsigned／signed 無 ATS 的通過回報。簽章匯入清理、Mach-O 及產物憑證測試使用合成資料與替代命令；不代表真實 iOS 編譯或簽章已成功。實際本機 CLI 的缺少 Xcode 失敗路徑另確認退出 1、即時 preflight 訊息與 `runtime_tested: false` 的完整報告，沒有遺留半寫入的暫存報告。shell 語法、YAML 解析及 actionlint 1.7.12 已通過。
 
 已實際下載並核對固定 XcodeGen 2.44.1 的 SHA-256，在本機暫存目錄產生真實專案，套用合成簽章設定後以 `plutil -lint` 驗證，確認 App 有 profile、其他 target 沒有 App profile。首次產生因 session 缺少 `USER` 失敗；只在驗證子程序補入 OS 帳號名稱後成功，未修改系統設定。此為專案產生／設定驗證，不是 Xcode 編譯。
 

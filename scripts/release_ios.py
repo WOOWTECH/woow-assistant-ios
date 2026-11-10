@@ -213,8 +213,10 @@ def verify_required_reasons(app):
             raise ReleaseError("App 缺少正確且唯一的 required-reason API 宣告：" + category)
 
 
-def verify_app(app, signed=False, identity=None):
+def verify_app(app, signed=False, identity=None, expected_build_number=None):
     info = plistlib.loads((app / "Info.plist").read_bytes())
+    if expected_build_number is not None and info.get("CFBundleVersion") != expected_build_number:
+        raise ReleaseError("實際產物建置編號與指定發行編號不符。")
     if (info.get("CFBundleIdentifier") != BUNDLE_ID
             or version(info.get("MinimumOSVersion", "")) != (17, 0, 0)
             or info.get("DTPlatformName") != "iphoneos"):
@@ -326,13 +328,18 @@ def generate_project(root, output):
     return output / (SCHEME + ".xcodeproj")
 
 
-def build(root, output, signed, method):
+def build(root, output, signed, method, build_number=None):
+    if build_number is not None and not re.fullmatch(r"[1-9][0-9]{0,17}", build_number):
+        raise ReleaseError("建置編號必須是 1 至 18 位正整數。")
     metadata = toolchain(signed)
     output.mkdir(parents=True, exist_ok=False)  # never reuse stale products
     project = generate_project(root, output)
     common = ["xcodebuild", "-project", str(project), "-scheme", SCHEME, "-configuration", "Release",
               "-sdk", "iphoneos", "-destination", "generic/platform=iOS",
               "-derivedDataPath", str(output / "DerivedData")]
+    if build_number is not None:
+        common.append("CURRENT_PROJECT_VERSION=" + build_number)
+        metadata["build_number"] = build_number
     # Do not leak signing secrets to project build phases / dependency tools.
     child_env = {k: v for k, v in os.environ.items() if k not in SECRET_NAMES}
     verify_settings(json.loads(run(common + ["-showBuildSettings", "-json"], "檢查實際最低系統設定", env=child_env)))
@@ -340,7 +347,7 @@ def build(root, output, signed, method):
         run(common + ["build", "CODE_SIGNING_ALLOWED=NO", "CODE_SIGNING_REQUIRED=NO", "CODE_SIGN_IDENTITY="],
             "未簽章裝置建置", timeout=2400, env=child_env, diagnostic_log=output / "device-build.log")
         app = output / "DerivedData/Build/Products/Release-iphoneos/WoowAssistant.app"
-        metadata.update(verify_app(app))
+        metadata.update(verify_app(app, expected_build_number=build_number))
         metadata["artifact_kind"] = "unsigned-device-build-not-installable"
     else:
         with signing_material(method) as signing:
@@ -351,7 +358,7 @@ def build(root, output, signed, method):
             archive = output / "WoowAssistant.xcarchive"
             run(common + ["-archivePath", str(archive), "archive", "CODE_SIGNING_ALLOWED=YES",
                           "OTHER_CODE_SIGN_FLAGS=--keychain " + signing["keychain"]], "簽章封存", timeout=2400, env=child_env)
-            verify_app(archive / "Products/Applications/WoowAssistant.app", signed=True, identity=signing["identity"])
+            verify_app(archive / "Products/Applications/WoowAssistant.app", signed=True, identity=signing["identity"], expected_build_number=build_number)
             options = {"method": method, "destination": "export", "signingStyle": "manual",
                        "teamID": signing["team"], "signingCertificate": signing["identity"],
                        "provisioningProfiles": {BUNDLE_ID: signing["profile_id"]},
@@ -371,7 +378,7 @@ def build(root, output, signed, method):
                 apps = list((expanded / "Payload").glob("*.app"))
                 if len(apps) != 1:
                     raise ReleaseError("IPA 中找不到唯一的 App。")
-                metadata.update(verify_app(apps[0], signed=True, identity=signing["identity"]))
+                metadata.update(verify_app(apps[0], signed=True, identity=signing["identity"], expected_build_number=build_number))
                 metadata["ipa_sha256"] = hashlib.sha256(ipas[0].read_bytes()).hexdigest()
             metadata.update(artifact_kind="signed-local-export", export_method=method)
     metadata.update(runtime_tested=False, uploaded=False)
@@ -385,6 +392,7 @@ def main():
     parser.add_argument("--signed", action="store_true")
     parser.add_argument("--export-method", choices=["app-store-connect", "release-testing"], default="app-store-connect")
     parser.add_argument("--output", type=Path, default=Path("build/release"))
+    parser.add_argument("--build-number", help="Unique numeric build number for a signed delivery")
     args = parser.parse_args()
     try:
         if args.command == "preflight":
@@ -394,7 +402,7 @@ def main():
                 with signing_material(args.export_method):
                     result["signing_material_verified"] = True
         else:
-            result = build(Path(__file__).resolve().parents[1], args.output.resolve(), args.signed, args.export_method)
+            result = build(Path(__file__).resolve().parents[1], args.output.resolve(), args.signed, args.export_method, args.build_number)
         print(json.dumps(result, ensure_ascii=False, indent=2))
     except (ReleaseError, OSError, ValueError, KeyError, plistlib.InvalidFileException):
         error = sys.exc_info()[1]

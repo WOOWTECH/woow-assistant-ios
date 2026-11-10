@@ -1,13 +1,13 @@
 name: iOS release readiness
 
-# Manual only. No App Store, TestFlight, GitHub Release, or IPA upload step.
+# Manual only. Only signed-testflight sends an IPA to App Store Connect.
 on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 驗證路徑（簽章模式只在 runner 本地匯出）
+        description: 驗證或發行路徑（signed-testflight 會上傳至 Apple）
         type: choice
-        options: [unsigned-device, signed-export, ios17-hosted, ios17-self-hosted]
+        options: [unsigned-device, signed-export, signed-testflight, transporter-check, ios17-hosted, ios17-self-hosted]
         default: unsigned-device
         required: true
       export_method:
@@ -39,9 +39,9 @@ concurrency:
 
 jobs:
   device-build:
-    if: inputs.mode == 'unsigned-device' || inputs.mode == 'signed-export'
+    if: inputs.mode == 'unsigned-device' || inputs.mode == 'signed-export' || inputs.mode == 'signed-testflight'
     runs-on: macos-15-intel
-    timeout-minutes: 65
+    timeout-minutes: 100
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
     steps:
@@ -52,19 +52,52 @@ jobs:
         run: python3 -m unittest discover -s scripts -p 'test_release_*.py' -v
       - name: 安裝固定版本 XcodeGen
         run: bash scripts/release_install_xcodegen.sh
+      - name: 檢查上傳 secrets 格式（不連線）
+        if: inputs.mode == 'signed-testflight'
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+          RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          if [ "$RUN_ATTEMPT" != 1 ]; then
+            echo 'This upload workflow cannot be rerun. Check Apple receipt status, then explicitly dispatch a new build if needed.'
+            exit 1
+          fi
+          python3 - <<'PY'
+          import os, sys
+          sys.path.insert(0, 'scripts')
+          from release_testflight import credentials
+          credentials(os.environ)
+          print('Upload secret format checked; no network request made.')
+          PY
+      - name: 安裝並檢查 Apple Transporter
+        if: inputs.mode == 'signed-testflight'
+        run: bash scripts/release_install_transporter.sh
       - name: 未簽章裝置編譯與最低版本檢查
         if: inputs.mode == 'unsigned-device'
-        run: python3 scripts/release_ios.py build --output build/release
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: python3 scripts/release_ios.py build --build-number "$BUILD_NUMBER" --output build/release
       - name: 既有憑證簽章、封存與本地匯出
-        if: inputs.mode == 'signed-export'
+        if: inputs.mode == 'signed-export' || inputs.mode == 'signed-testflight'
         env:
           IOS_SIGNING_CERTIFICATE_BASE64: ${{ secrets.IOS_SIGNING_CERTIFICATE_BASE64 }}
           IOS_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}
           IOS_PROVISION_PROFILE_BASE64: ${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}
           IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
           IOS_KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
-          EXPORT_METHOD: ${{ inputs.export_method }}
-        run: python3 scripts/release_ios.py build --signed --export-method "$EXPORT_METHOD" --output build/release
+          EXPORT_METHOD: ${{ inputs.mode == 'signed-testflight' && 'app-store-connect' || inputs.export_method }}
+          BUILD_NUMBER: ${{ github.run_number }}
+        run: python3 scripts/release_ios.py build --signed --export-method "$EXPORT_METHOD" --build-number "$BUILD_NUMBER" --output build/release
+      - name: 上傳已驗證的簽章 IPA 至 App Store Connect
+        if: inputs.mode == 'signed-testflight'
+        timeout-minutes: 31
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY_BASE64: ${{ secrets.ASC_PRIVATE_KEY_BASE64 }}
+        run: python3 scripts/release_testflight.py --release build/release
       - name: 保留不含簽章資料的驗證摘要
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
@@ -72,12 +105,24 @@ jobs:
           name: release-check-${{ inputs.mode }}-${{ github.run_id }}
           path: |
             build/release/report.json
+            build/release/upload-report.json
             build/release/device-build.log
           if-no-files-found: warn
           retention-days: 14
       - name: 清除本地封存與匯出產物
         if: always()
         run: rm -rf -- build/release
+
+  transporter-validation:
+    if: inputs.mode == 'transporter-check'
+    runs-on: macos-15-intel
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: 安裝與啟動實際 Apple Transporter（不含帳號、不上傳）
+        run: bash scripts/release_install_transporter.sh
 
   ios17-validation:
     if: inputs.mode == 'ios17-hosted' || inputs.mode == 'ios17-self-hosted'
