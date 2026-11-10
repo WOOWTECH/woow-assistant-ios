@@ -31,11 +31,48 @@ def profile():
                              "get-task-allow": False}}
 
 
+def copy_privacy_manifest(app):
+    source = Path(__file__).resolve().parents[1] / "Sources/App/PrivacyInfo.xcprivacy"
+    (app / "PrivacyInfo.xcprivacy").write_bytes(source.read_bytes())
+
+
 def secret_env():
     env = {name: "synthetic-password" for name in release.SECRET_NAMES}
     env.update(IOS_TEAM_ID=TEAM, IOS_SIGNING_CERTIFICATE_BASE64=base64.b64encode(b"p12").decode(),
                IOS_PROVISION_PROFILE_BASE64=base64.b64encode(b"cms").decode())
     return env
+
+
+class PrivacyManifestTests(unittest.TestCase):
+    def test_packaged_resource_accepts_xml_and_binary(self):
+        source = Path(__file__).resolve().parents[1] / "Sources/App/PrivacyInfo.xcprivacy"
+        payload = plistlib.loads(source.read_bytes())
+        with tempfile.TemporaryDirectory() as directory:
+            app = Path(directory)
+            for fmt in [plistlib.FMT_XML, plistlib.FMT_BINARY]:
+                (app / "PrivacyInfo.xcprivacy").write_bytes(plistlib.dumps(payload, fmt=fmt))
+                release.verify_required_reasons(app)
+
+    def test_missing_corrupt_wrong_reason_and_duplicate_entries_fail(self):
+        source = Path(__file__).resolve().parents[1] / "Sources/App/PrivacyInfo.xcprivacy"
+        payload = plistlib.loads(source.read_bytes())
+        missing = copy.deepcopy(payload)
+        missing["NSPrivacyAccessedAPITypes"] = missing["NSPrivacyAccessedAPITypes"][:1]
+        wrong = copy.deepcopy(payload)
+        wrong["NSPrivacyAccessedAPITypes"][1]["NSPrivacyAccessedAPITypeReasons"] = ["8FFB.1"]
+        duplicate = copy.deepcopy(payload)
+        duplicate["NSPrivacyAccessedAPITypes"].append(copy.deepcopy(duplicate["NSPrivacyAccessedAPITypes"][1]))
+        variants = [None, b"not-a-plist", plistlib.dumps(missing), plistlib.dumps(wrong),
+                    plistlib.dumps(duplicate), plistlib.dumps([])]
+        with tempfile.TemporaryDirectory() as directory:
+            app = Path(directory)
+            target = app / "PrivacyInfo.xcprivacy"
+            for index, data in enumerate(variants):
+                with self.subTest(index=index):
+                    if data is not None: target.write_bytes(data)
+                    elif target.exists(): target.unlink()
+                    with self.assertRaises(release.ReleaseError):
+                        release.verify_required_reasons(app)
 
 
 class ProfileTests(unittest.TestCase):
@@ -174,6 +211,7 @@ class BuildTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             app = Path(directory) / "Example.app"
             app.mkdir()
+            copy_privacy_manifest(app)
             for signed in [False, True]:
                 for fmt in [plistlib.FMT_XML, plistlib.FMT_BINARY]:
                     for ats in variants:
@@ -191,6 +229,7 @@ class BuildTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             app = Path(directory) / "Example.app"
             app.mkdir()
+            copy_privacy_manifest(app)
             (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleIdentifier": release.BUNDLE_ID,
                 "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True},
                 fmt=plistlib.FMT_BINARY))
@@ -205,12 +244,14 @@ class BuildTests(unittest.TestCase):
                 with self.subTest(signed=signed), patch.object(release, "run", side_effect=fake_run):
                     report = release.verify_app(app, signed=signed, identity=DIGEST if signed else None)
                     self.assertTrue(report["ats_key_absent"])
+                    self.assertTrue(report["required_reason_entries_verified"])
                     self.assertEqual(report["signature_verified"], signed)
 
     def test_adhoc_codesign_seal_cannot_pass_as_distribution(self):
         with tempfile.TemporaryDirectory() as directory:
             app = Path(directory) / "Example.app"
             app.mkdir()
+            copy_privacy_manifest(app)
             (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleIdentifier": release.BUNDLE_ID,
                 "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True}))
             (app / "embedded.mobileprovision").write_bytes(b"synthetic")
@@ -226,6 +267,7 @@ class BuildTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             app = Path(directory) / "Example.app"
             app.mkdir()
+            copy_privacy_manifest(app)
             (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleIdentifier": release.BUNDLE_ID,
                 "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True}))
             (app / "embedded.mobileprovision").write_bytes(b"synthetic")

@@ -195,6 +195,24 @@ def verify_macho(output):
         raise ReleaseError("Mach-O 最低系統版本無法驗證或高於 iOS 17.0。")
 
 
+def verify_required_reasons(app):
+    # Audit the packaged file, not merely the repository resource. These are
+    # the two directly used categories: app settings and elapsed-time timers.
+    try:
+        privacy = plistlib.loads((app / "PrivacyInfo.xcprivacy").read_bytes())
+    except (OSError, ValueError, plistlib.InvalidFileException):
+        raise ReleaseError("App 缺少可讀取的 PrivacyInfo.xcprivacy。") from None
+    entries = privacy.get("NSPrivacyAccessedAPITypes") if isinstance(privacy, dict) else None
+    if not isinstance(entries, list) or any(not isinstance(entry, dict) for entry in entries):
+        raise ReleaseError("App 的 required-reason API 宣告格式不正確。")
+    for category, reason in [("NSPrivacyAccessedAPICategoryUserDefaults", "CA92.1"),
+                             ("NSPrivacyAccessedAPICategorySystemBootTime", "35F9.1")]:
+        matches = [entry for entry in entries if entry.get("NSPrivacyAccessedAPIType") == category]
+        reasons = matches[0].get("NSPrivacyAccessedAPITypeReasons") if len(matches) == 1 else None
+        if not isinstance(reasons, list) or reason not in reasons or any(not isinstance(value, str) for value in reasons):
+            raise ReleaseError("App 缺少正確且唯一的 required-reason API 宣告：" + category)
+
+
 def verify_app(app, signed=False, identity=None):
     info = plistlib.loads((app / "Info.plist").read_bytes())
     if (info.get("CFBundleIdentifier") != BUNDLE_ID
@@ -207,6 +225,7 @@ def verify_app(app, signed=False, identity=None):
         raise ReleaseError("Release App 的 Info.plist 不得含 NSAppTransportSecurity；請檢查 Debug 測試例外是否混入產物。")
     if not all(info.get(key) is True for key in ("UIFileSharingEnabled", "LSSupportsOpeningDocumentsInPlace")):
         raise ReleaseError("Release App 缺少系統檔案選擇器所需的 Documents 共享設定。")
+    verify_required_reasons(app)
     binaries = [app / info["CFBundleExecutable"]]
     for framework in (app / "Frameworks").glob("*.framework"):
         data = plistlib.loads((framework / "Info.plist").read_bytes())
@@ -239,7 +258,8 @@ def verify_app(app, signed=False, identity=None):
                 raise ReleaseError("App 未使用指定 distribution 憑證簽章。")
     return {"bundle_id": BUNDLE_ID, "minimum_os": "17.0", "platform": "iphoneos",
             "verified_binary_count": len(binaries), "signature_verified": signed,
-            "ats_key_absent": True, "native_documents_enabled": True}
+            "ats_key_absent": True, "native_documents_enabled": True,
+            "required_reason_entries_verified": True}
 
 
 @contextmanager
