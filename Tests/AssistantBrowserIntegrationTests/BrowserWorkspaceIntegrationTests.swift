@@ -57,7 +57,19 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
         XCTAssertTrue(records.allSatisfy { !$0.displayName.contains("example.org") })
         workspace.removeWebsiteData(records)
         XCTAssertTrue(workspace.isClearingWebsiteData)
-        try await waitUntil("Website-record removal did not complete") { !workspace.isClearingWebsiteData }
+        do {
+            try await waitUntil("Website-record removal did not complete") { !workspace.isClearingWebsiteData }
+        } catch {
+            // Preserve the state before teardown can interrupt a pending blank
+            // navigation. Fixed fixture categories only, no cookie contents.
+            let states = [firstWebView, secondWebView].enumerated().map { index, view in
+                "tab=\(index);blank=\(view.url?.absoluteString == "about:blank");loading=\(view.isLoading);attached=\(view.window != nil);delegate=\(view.navigationDelegate != nil)"
+            }.joined(separator: "\n")
+            let attachment = XCTAttachment(string: "clearing=\(workspace.isClearingWebsiteData);error=\(workspace.error != nil)\n" + states)
+            attachment.lifetime = .keepAlways
+            add(attachment)
+            throw error
+        }
         XCTAssertNil(workspace.error, "Quiescence failure must not be mistaken for completed record removal")
         XCTAssertNil(second.interactionProposal)
         XCTAssertNil(second.controlSnapshot)
@@ -409,6 +421,17 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
         }
 
         func close() async {
+            // A failed 15s assertion can leave the production removal Task in
+            // its second per-tab 10s discard. Do not remove its delegate or
+            // profile while that Task still owns the sessions/store. This is
+            // failure cleanup only; it cannot turn the original failure green.
+            if workspace?.isClearingWebsiteData == true {
+                let deadline = ProcessInfo.processInfo.systemUptime + Double(max(1, sessions.count) * 10)
+                while workspace?.isClearingWebsiteData == true, ProcessInfo.processInfo.systemUptime < deadline {
+                    try? await Task.sleep(nanoseconds: 20_000_000)
+                }
+                XCTAssertFalse(workspace?.isClearingWebsiteData == true, "Website removal remained active during fixture cleanup")
+            }
             workspace?.cancelAllWork()
             for session in sessions {
                 session.cancel()
