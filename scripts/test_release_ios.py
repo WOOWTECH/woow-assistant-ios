@@ -2,6 +2,7 @@ import base64
 import copy
 import datetime as dt
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
@@ -11,6 +12,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from contextlib import redirect_stderr, redirect_stdout
 from unittest.mock import patch
 
 import release_ios as release
@@ -746,6 +748,120 @@ class RuntimeTests(unittest.TestCase):
                 self.assertTrue(report["simulator_state_unavailable"])
                 self.assertTrue(report["simulator_shutdown_incomplete"])
                 self.assertFalse(report["simulator_deleted"])
+
+
+class RuntimeFailureDiagnosticsTests(unittest.TestCase):
+    SENTINEL = "SYNTHETIC_PRIVATE_DIAGNOSTIC_91"
+    INVENTORY = ["xcrun", "simctl", "list", "runtimes", "--json"]
+
+    def assert_safe(self, text, private_path):
+        for forbidden in [self.SENTINEL, str(private_path), "import os", "subprocess.run", "command", "stdout", "stderr"]:
+            self.assertNotIn(forbidden, text)
+
+    def test_actual_timeout_and_nonzero_child_publish_only_closed_category(self):
+        with tempfile.TemporaryDirectory(prefix="woow-private-child-") as directory:
+            folder = Path(directory)
+            for category, tail in [("timeout", "time.sleep(5)"), ("nonzeroExit", "sys.exit(7)")]:
+                with self.subTest(category=category):
+                    marker = folder / category
+                    code = ("import os,sys,time; from pathlib import Path; "
+                            "print(sys.argv[2], flush=True); print(os.environ['PRIVATE_TEST_VALUE'], file=sys.stderr, flush=True); "
+                            "Path(sys.argv[1]).write_text('started'); " + tail)
+                    output = io.StringIO()
+                    with redirect_stdout(output), redirect_stderr(output), self.assertRaises(release.ReleaseToolError) as caught:
+                        release.run([sys.executable, "-c", code, str(marker), self.SENTINEL], "固定測試操作",
+                                    timeout=1, env={**os.environ, "PRIVATE_TEST_VALUE": self.SENTINEL})
+                    self.assertEqual(marker.read_text(), "started")
+                    self.assertEqual(caught.exception.category, category)
+                    self.assertIsInstance(caught.exception, release.ReleaseError)
+                    self.assertEqual(vars(caught.exception), {"category": category})
+                    self.assert_safe(str(caught.exception) + output.getvalue(), folder)
+
+    def test_actual_missing_executable_has_no_private_path(self):
+        with tempfile.TemporaryDirectory(prefix="woow-private-launch-") as directory:
+            missing = Path(directory) / self.SENTINEL
+            with self.assertRaises(release.ReleaseToolError) as caught:
+                release.run([str(missing)], "固定測試操作")
+            self.assertEqual(caught.exception.category, "launchFailed")
+            self.assert_safe(str(caught.exception), missing)
+
+    def test_unknown_failure_category_is_not_published(self):
+        with self.assertRaises(ValueError) as caught:
+            release.ReleaseToolError("固定測試操作", self.SENTINEL)
+        self.assertNotIn(self.SENTINEL, str(caught.exception))
+
+    def exercise_report_failure(self, category):
+        actual_run = subprocess.run
+        with tempfile.TemporaryDirectory(prefix="woow-private-report-") as directory:
+            folder = Path(directory); output = folder / "result"; marker = folder / "child-started"
+            seen = []
+            def child(args, **kwargs):
+                seen.append(args)
+                if args == ["xcodebuild", "-version"]:
+                    return subprocess.CompletedProcess(args, 0, b"Xcode 16.4", b"")
+                self.assertEqual(args, self.INVENTORY)  # No other command or retry is permitted.
+                self.assertEqual(kwargs["timeout"], 120)
+                self.assertTrue(kwargs["capture_output"])
+                if category == "timeout":
+                    # The product still requests 120s; only this real synthetic
+                    # child gets a 1s deadline so the local regression is bounded.
+                    code = ("import sys,time; from pathlib import Path; "
+                            "print(sys.argv[2], flush=True); print(sys.argv[2], file=sys.stderr, flush=True); "
+                            "Path(sys.argv[1]).write_text('started'); time.sleep(5)")
+                    return actual_run([sys.executable, "-c", code, str(marker), self.SENTINEL],
+                                      **{**kwargs, "timeout": 1})
+                if category == "launchFailed":
+                    raise FileNotFoundError(str(folder / self.SENTINEL))
+                return subprocess.CompletedProcess(args, 7, self.SENTINEL.encode(), self.SENTINEL.encode())
+            captured = io.StringIO()
+            with patch.object(release.subprocess, "run", side_effect=child), \
+                 patch.object(ios17, "generate_project") as generate, \
+                 patch.object(ios17, "boot_simulator") as boot, \
+                 patch.object(ios17, "prelaunch_test_daemon") as prelaunch, \
+                 patch.object(sys, "argv", ["release_ios17.py", "--os", "17.0.1", "--test-scope", "ui-workspace", "--output", str(output)]), \
+                 redirect_stdout(captured), redirect_stderr(captured):
+                self.assertEqual(ios17.main(), 1)
+                generate.assert_not_called(); boot.assert_not_called(); prelaunch.assert_not_called()
+            self.assertEqual(seen, [["xcodebuild", "-version"], self.INVENTORY])
+            if category == "timeout": self.assertEqual(marker.read_text(), "started")
+            report_text = (output / "report.json").read_text()
+            report = json.loads(report_text)
+            self.assert_safe(report_text + captured.getvalue(), folder)
+            self.assertEqual(report["phase"], "checking_runtime")
+            self.assertEqual([event["phase"] for event in report["phase_history"]], ["preflight", "checking_runtime"])
+            self.assertFalse(report["runtime_tested"])
+            self.assertFalse(report["selected_tests_succeeded"])
+            self.assertFalse(report["full_acceptance_succeeded"])
+            self.assertEqual(set(report["failure"]), {"category", "operation", "elapsed_seconds", "timeout_seconds"})
+            self.assertEqual(report["failure"]["category"], category)
+            self.assertEqual(report["failure"]["operation"], "simulator_runtime_inventory")
+            self.assertEqual(report["failure"]["timeout_seconds"], 120)
+            self.assertGreaterEqual(report["failure"]["elapsed_seconds"], 1 if category == "timeout" else 0)
+            self.assertLess(report["failure"]["elapsed_seconds"], 10)
+            self.assertEqual({p.name for p in output.iterdir()}, {"report.json", "ui-test-inventory.json"})
+
+    def test_actual_timeout_persists_safe_report_and_exit_one_without_test_or_retry(self):
+        self.exercise_report_failure("timeout")
+
+    def test_launch_and_exit_failures_keep_distinct_categories_without_test_or_retry(self):
+        for category in ["launchFailed", "nonzeroExit"]:
+            with self.subTest(category=category): self.exercise_report_failure(category)
+
+    def test_successful_inventory_keeps_default_bound_and_existing_metadata(self):
+        payload = RuntimeTests().payload()
+        payload["unrelated"] = self.SENTINEL
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            with patch.object(release.subprocess, "run", return_value=subprocess.CompletedProcess(
+                    self.INVENTORY, 0, json.dumps(payload).encode(), self.SENTINEL.encode())) as child:
+                self.assertEqual(ios17.inventory(output, "runtimes-before.json"), payload)
+            child.assert_called_once()
+            self.assertEqual(child.call_args.args[0], self.INVENTORY)
+            self.assertEqual(child.call_args.kwargs["timeout"], 120)
+            recorded = (output / "runtimes-before.json").read_text()
+            self.assertNotIn(self.SENTINEL, recorded)
+            self.assertEqual(json.loads(recorded)["runtimes"][0]["version"], "17.0.1")
+            self.assertEqual({p.name for p in output.iterdir()}, {"runtimes-before.json"})
 
 
 if __name__ == "__main__":

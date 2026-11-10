@@ -1,0 +1,89 @@
+{
+  "actual_UI_methods_completed": 0,
+  "actual_UI_methods_started": 0,
+  "actual_diagnostic_gap": "report.json retains only checking_runtime; fixed timeout reason is present only in the job log, not in the artifact report.",
+  "actual_failed_UI_methods": [],
+  "app_build_started": false,
+  "app_started": false,
+  "artifact_files": [
+    {
+      "bytes": 4054,
+      "entry": "report.json",
+      "sha256": "14d0df9f931db42e4c3527649ef9b3fce970a12a6b8bed3c2dbc6f1a3144d21d"
+    },
+    {
+      "bytes": 15970,
+      "entry": "ui-test-inventory.json",
+      "sha256": "67875f86a60fd81551a718e8d2978fd7bac038897b628a70405d6d9af0c84342"
+    }
+  ],
+  "artifact_id": 13809552295,
+  "artifact_zip_bytes": 4769,
+  "cause_boundary": "The host xcrun/simctl runtime inventory call timed out before runtime selection, project generation, simulator creation or any App/UI method. No evidence distinguishes xcrun, simctl, CoreSimulatorService or runtime availability as the underlying cause.",
+  "classification": "ENVIRONMENT_PREFLIGHT_FAIL",
+  "elapsed_seconds": 120.023,
+  "evidence_scope": "Completed 8c4195f run only. The later diagnostic reporting patch does not change this failure or establish any App/UI test result.",
+  "failed_phase": "checking_runtime",
+  "fixed_operation": "simulator_runtime_inventory",
+  "host_architecture": "arm64",
+  "host_macos": "15.8.2",
+  "job_conclusion": "failure",
+  "job_events": {
+    "actual_xctest_methods_completed": 0,
+    "actual_xctest_methods_started": 0,
+    "actual_xctest_suites_started": 0,
+    "exit_log_line": "2026-11-10T22:41:46.7498630Z ##[error]Process completed with exit code 1.",
+    "phase_log_line": "2026-11-10T22:39:46.6832130Z {\"phase\": \"checking_runtime\", \"requested_runtime\": \"17.0.1\", \"at\": \"2026-11-10T22:39:46.682604+00:00\", \"elapsed_seconds\": 0.4}",
+    "timeout_log_line": "2026-11-10T22:41:46.7057920Z 取得 Simulator runtime 清單：工具執行逾時。"
+  },
+  "job_id": 130162868217,
+  "process_exit_code": 1,
+  "project_generated": false,
+  "public_command": [
+    "xcrun",
+    "simctl",
+    "list",
+    "runtimes",
+    "--json"
+  ],
+  "readonly_diagnosis_sha256": "efb825f9b10ef651dd8a0974caaccd774e7b6a41d902313c9eaca4e89c697b54",
+  "requested_runtime": "17.0.1",
+  "rerun_or_dispatch_performed": false,
+  "run_id": 42911452525,
+  "runtime_tested": false,
+  "schema_version": 1,
+  "selected_UI_count": 5,
+  "selected_UI_methods": [
+    "WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+    "WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testBookmarkRenameHistoryClearAndRelaunch",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testManualQueryPageAndRealJavaScriptDialog",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testTabsKeepIndependentPageStateAndRestoreSelection"
+  ],
+  "selected_runtime": null,
+  "simulator_created": false,
+  "source_hashes": {
+    "scripts/release_ios.py": {
+      "current_equal_run_source": true,
+      "run_source_sha256": "d0519df1a4c5823b44cecb37dfc94bb47590e22ba2df2cc3d52f40eb76398638"
+    },
+    "scripts/release_ios17.py": {
+      "current_equal_run_source": true,
+      "run_source_sha256": "f8869c62446143df7f89de07b3164cc083478c62ee01ef35e29f3070c6233c1f"
+    },
+    "scripts/test_release_ios.py": {
+      "current_equal_run_source": true,
+      "run_source_sha256": "ce0324c6bb57b6f99d7c2a7a0d87ddef24a2d27e3e02322dcbf1621274d88311"
+    }
+  },
+  "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+  "started_at_UTC": "2026-11-10T22:39:46.682604+00:00",
+  "test_scope": "ui-workspace",
+  "tests_log_present": false,
+  "timeout_at_UTC": "2026-11-10T22:41:46.705792+00:00",
+  "tool_timeout_seconds": 120,
+  "ui_started": false,
+  "workflow_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42911452525",
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "xcresult_present": false
+}

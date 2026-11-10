@@ -13,6 +13,7 @@ import tempfile
 import uuid
 
 MARKER = "SKILL_PDF_FIXTURE_BASELINE "
+PAIR_MARKER = "SKILL_PDF_ASSEMBLY_FIXTURE_BASELINE "
 LIMIT = 128 * 1024
 STAT_FIELDS = {"bytes", "device", "inode", "modifiedSeconds", "modifiedNanoseconds", "sha256"}
 STATUSES = {"valid", "directoryUnavailable", "missing", "openRejected", "statFailed",
@@ -20,10 +21,38 @@ STATUSES = {"valid", "directoryUnavailable", "missing", "openRejected", "statFai
 
 
 def checked(value):
-    if not isinstance(value, dict) or set(value) != {"version", "namespace", "phase", "evidence"}:
+    if not isinstance(value, dict):
         raise ValueError()
-    if type(value["version"]) is not int or value["version"] != 1 or value["phase"] not in ("created", "existing"):
+    version = value.get("version")
+    expected_keys = {"version", "namespace", "phase", "evidence"}
+    if version == 2:
+        expected_keys |= {"role", "ordinal", "location"}
+    if type(version) is not int or version not in (1, 2) or set(value) != expected_keys:
         raise ValueError()
+    if version == 1:
+        if value["phase"] not in ("created", "existing"):
+            raise ValueError()
+    else:
+        if value["role"] not in ("A", "B") or type(value["ordinal"]) is not int:
+            raise ValueError()
+        if value["phase"] in ("created", "existing"):
+            if value["ordinal"] != 0:
+                raise ValueError()
+        elif value["phase"] in ("prePicker", "selectionReturned", "selectionFailure", "cancelled"):
+            if not 1 <= value["ordinal"] <= 3:
+                raise ValueError()
+        else:
+            raise ValueError()
+        location = value["location"]
+        if not isinstance(location, dict) or set(location) not in (
+                {"urlSHA256"}, {"urlSHA256", "parentDevice", "parentInode"}):
+            raise ValueError()
+        if not isinstance(location["urlSHA256"], str) or re.fullmatch(r"[0-9a-f]{64}", location["urlSHA256"]) is None:
+            raise ValueError()
+        if "parentDevice" in location and (type(location["parentDevice"]) is not int
+                or type(location["parentInode"]) is not int or not -(2**31) <= location["parentDevice"] < 2**31
+                or not 0 <= location["parentInode"] < 2**64):
+            raise ValueError()
     if not isinstance(value["namespace"], str) or str(uuid.UUID(value["namespace"])).upper() != value["namespace"]:
         raise ValueError()
     evidence = value["evidence"]
@@ -46,6 +75,8 @@ def checked(value):
 
 def baselines_from_logs(directory):
     baselines = {}
+    pair_snapshots = {}
+    namespaces = set()
     files = records = total = 0
     for path in sorted(directory.rglob("StandardOutputAndStandardError-io.woowtech.assistant.txt")):
         files += 1
@@ -60,22 +91,40 @@ def baselines_from_logs(directory):
                 if total > 256 * 1024 * 1024:
                     raise ValueError()
                 text = line.decode("utf-8", errors="replace")
-                if MARKER not in text:
+                markers = [marker for marker in (MARKER, PAIR_MARKER) if marker in text]
+                if not markers:
                     continue
-                payload = text.split(MARKER, 1)[1].strip()
+                if len(markers) != 1:
+                    raise ValueError()
+                marker = markers[0]
+                payload = text.split(marker, 1)[1].strip()
                 if len(payload) > 4096:
                     raise ValueError()
                 value = checked(json.loads(payload))
+                if value["version"] != (2 if marker == PAIR_MARKER else 1):
+                    raise ValueError()
                 records += 1
                 if records > 64:
                     raise ValueError()
+                namespaces.add(value["namespace"])
+                if len(namespaces) > 16:
+                    raise ValueError()
+                if value["version"] == 2:
+                    # Keep every real bounded lifecycle observation, including
+                    # missing/replaced sources. Never substitute the latest
+                    # sample for the original creation evidence.
+                    key = (value["namespace"], value["role"], value["phase"], value["ordinal"])
+                    if key in pair_snapshots:
+                        raise ValueError()
+                    pair_snapshots[key] = value
+                    continue
                 # Keep the first creation baseline, never replace it on re-entry.
                 prior = baselines.get(value["namespace"])
                 if prior is None or (prior["phase"] == "existing" and value["phase"] == "created"):
                     baselines[value["namespace"]] = value
                 if len(baselines) > 16:
                     raise ValueError()
-    return list(baselines.values())
+    return list(baselines.values()) + list(pair_snapshots.values())
 
 
 def main():

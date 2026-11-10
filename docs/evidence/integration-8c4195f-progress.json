@@ -1,8 +1,8 @@
 {
   "schema_version": 1,
-  "observed_at": "2026-11-10T22:22:40.775059+00:00",
+  "observed_at": "2026-11-10T23:01:34.883445+00:00",
   "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
-  "status": "PENDING_NATIVE_ACCEPTANCE",
+  "status": "PARTIAL_RESULTS_RECORDED_SEPARATELY",
   "test_plan_only": true,
   "test_results_accepted": false,
   "non_live_ui_expected": 90,
@@ -19,8 +19,8 @@
         "current_only": "true",
         "fresh_simulator": "true"
       },
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "label": "archive-current",
@@ -32,8 +32,8 @@
         "current_only": "true",
         "fresh_simulator": "true"
       },
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "label": "archive-se",
@@ -45,8 +45,8 @@
         "compact_only": "true",
         "fresh_simulator": "true"
       },
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "label": "pdf-pair-current",
@@ -89,8 +89,8 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "label": "documents-output-exact17",
@@ -107,8 +107,8 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "label": "notifications-se",
@@ -120,8 +120,8 @@
         "compact_only": "true",
         "fresh_simulator": "true"
       },
-      "status": "in_progress",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "label": "notifications-current",
@@ -133,8 +133,8 @@
         "current_only": "true",
         "fresh_simulator": "true"
       },
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "label": "ui-startup-exact17",
@@ -151,8 +151,8 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "label": "ui-notifications-exact17",
@@ -169,8 +169,8 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "label": "ui-workspace-exact17",
@@ -187,8 +187,8 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "failure"
     },
     {
       "label": "ui-browser-exact17",
@@ -205,8 +205,8 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "queued",
-      "conclusion": null
+      "status": "completed",
+      "conclusion": "success"
     },
     {
       "label": "ui-learning-exact17",
@@ -223,8 +223,8 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "queued",
-      "conclusion": null
+      "status": "in_progress",
+      "conclusion": ""
     },
     {
       "label": "ui-memory-exact17",
@@ -241,8 +241,8 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "queued",
-      "conclusion": null
+      "status": "in_progress",
+      "conclusion": ""
     },
     {
       "label": "ui-profile-exact17",
@@ -259,8 +259,8 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "queued",
-      "conclusion": null
+      "status": "in_progress",
+      "conclusion": ""
     },
     {
       "label": "ui-memory-tools-exact17",
@@ -277,8 +277,8 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "queued",
-      "conclusion": null
+      "status": "in_progress",
+      "conclusion": ""
     },
     {
       "label": "ui-skills-exact17",
@@ -295,8 +295,8 @@
         "ios17_bounded_test_diagnostics": "true",
         "ios17_build_before_boot": "true"
       },
-      "status": "queued",
-      "conclusion": null
+      "status": "in_progress",
+      "conclusion": ""
     },
     {
       "label": "ui-mcp-exact17",
@@ -314,7 +314,7 @@
         "ios17_build_before_boot": "true"
       },
       "status": "queued",
-      "conclusion": null
+      "conclusion": ""
     },
     {
       "label": "documents-read-exact17",
@@ -332,7 +332,7 @@
         "ios17_build_before_boot": "true"
       },
       "status": "queued",
-      "conclusion": null
+      "conclusion": ""
     },
     {
       "label": "core-exact17",
@@ -346,7 +346,7 @@
         "ios17_host_arch": "arm64"
       },
       "status": "queued",
-      "conclusion": null
+      "conclusion": ""
     }
   ],
   "boundaries": [

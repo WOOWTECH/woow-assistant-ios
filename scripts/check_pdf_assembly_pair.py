@@ -9,6 +9,7 @@ import re
 import signal
 import subprocess
 import tempfile
+from copy_skill_fixture_diagnostics import PAIR_MARKER, checked
 
 
 def run(args, repo, timeout):
@@ -49,6 +50,7 @@ def main():
 
         support, session, view, tests = map(snapshot, owned)
         snapshot('scripts/check_pdf_assembly_pair.py')
+        snapshot('scripts/copy_skill_fixture_diagnostics.py')
         sources = [snapshot(p.relative_to(repo)) for p in sorted((repo / 'Sources/AssistantSkills').glob('*.swift'))
                    if p.name != 'SkillLearningService.swift']
         catalog = snapshot(Path('Sources/AssistantSkills/Resources/MikaBundledSkills.json'))
@@ -62,7 +64,19 @@ def main():
             run(['swiftc', '-warnings-as-errors', '-parse-as-library', '-D', 'SKILL_ASSEMBLY_PAIR_CHECKS',
                  '-D', 'SKILL_ASSEMBLY_PAIR_MODULE', *flags, *dependencies, support, tests, '-o', binary], repo, 180)
             stdout = run([binary, catalog], repo, 120)
-            match = re.fullmatch(r'PAIR_CHECKS passed=(\d+) nativePicker=false\n?', stdout)
+            lines = stdout.splitlines()
+            observations = []
+            for line in lines[:-1]:
+                if name != 'debug' or not line.startswith(PAIR_MARKER):
+                    raise ValueError('unexpected_diagnostic_output')
+                observations.append(checked(json.loads(line[len(PAIR_MARKER):])))
+            if name == 'debug':
+                if (len(observations) != 4 or len({o['namespace'] for o in observations}) != 1
+                        or {(o.get('role'), o['phase'], o.get('ordinal')) for o in observations}
+                        != {(role, phase, 0) for role in ('A', 'B') for phase in ('created', 'existing')}
+                        or any(o['version'] != 2 or o['evidence']['status'] != 'valid' for o in observations)):
+                    raise ValueError('invalid_pair_baseline_evidence')
+            match = re.fullmatch(r'PAIR_CHECKS passed=(\d+) nativePicker=false', lines[-1] if lines else '')
             if not match:
                 raise ValueError('unexpected_check_output')
             result[name + '_passed'] = int(match.group(1))
@@ -74,7 +88,8 @@ def main():
                  support, session, view, tests], repo, 30)
             result[name + '_app_logic_typecheck'] = True
             result[name + '_ios17_syntax_parse'] = True
-            print(name.upper() + ' ' + stdout.strip(), flush=True)
+            result[name + '_pair_baseline_records'] = len(observations)
+            print(name.upper() + ' ' + lines[-1], flush=True)
         # Fail rather than attribute an old snapshot's pass to edited sources.
         result['live_sources_match_snapshot'] = all(
             hashlib.sha256((repo / name).read_bytes()).hexdigest() == digest for name, digest in hashes.items())

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "purpose": "Bounded synthetic pair lifecycle/source identity diagnostics; not a production FileProvider repair.",
+  "trigger_evidence": "docs/evidence/pdf-assembly-add-8c4195f.json",
+  "source_sha256": {
+    "Sources/App/SkillExecutionUITestSupport.swift": "aba8cf1a387abc7f631b13e8bb3db0bd9c84c91a11122640cd183753b7563aa8",
+    "Sources/App/SkillPDFAssemblySession.swift": "6e5220cd97807a96572d9cbee6922dafca5efcf8c7d5be877fc0eb222173829d",
+    "scripts/copy_skill_fixture_diagnostics.py": "a601d01c018afee1e2ce7969e4b161a6fd0353bcdbdf42e5b02f9fd25560e609",
+    "scripts/SkillFixtureInventory.swift": "cda93cca9fc8538f39ba67745ab3741c444afa8cb7d88b3820a8d620f161c86e",
+    "scripts/check_skill_fixture_diagnostics.py": "c5e4be26417e19999c752f34d0002b667b31abad0cd5c4eb70cae8caf875afe0",
+    "scripts/check_pdf_assembly_pair.py": "d2dae7a15af92f03fa29d86a2b0d4c2d932ed712c319f98e02b37839c43b9d09"
+  },
+  "changes": {
+    "app": "DEBUG pair create/existing, prePicker and actual returned/failure/cancel observations; at most first three explicit picker presentations; no timers/retries/selection injection.",
+    "host": "Post-test inventory reuses the existing CI invocation, reconstructs only recorded namespace/role basenames and reads each pair source once. All earlier lifecycle observations are preserved.",
+    "identity": "File data and parent identity come from the same open directory descriptor. O_NOFOLLOW, regular-file/link-count checks, named descriptor identity and parent path revalidation bound the observation.",
+    "privacy": "Only synthetic roles/namespace, stat fields, SHA256 of source bytes and standardized source path. No raw path, contents, selected-user URL or Live inventory."
+  },
+  "validation": {
+    "diagnostic_check": "PASS: real PDFKit/POSIX; 24 pair records; replacement/missing/wrong-role; different/recreated directory; schema/marker/ordinal/duplicate rejection; existing single-file and silent Live/Release gates.",
+    "diagnostic_log_sha256": "a64c9e52be55a61e89e2b7a083641510a7ee20d9bc1814bb44bafaa39611fa3e",
+    "pair_debug_assertions": 48,
+    "pair_release_assertions": 24,
+    "pair_debug_baselines": 4,
+    "pair_release_baselines": 0,
+    "app_debug_assertions": 71,
+    "app_release_assertions": 71,
+    "legacy_app_debug_assertions": 57,
+    "legacy_app_release_assertions": 57,
+    "picker_debug_gates": 56,
+    "picker_release_gates": 50,
+    "debug_release_actual_app_logic_typecheck": true,
+    "debug_release_ios17_syntax_parse": true,
+    "source_hashes_match_completed_checks": true,
+    "native_ios_picker_execution": false,
+    "ios_sdk_typecheck": false
+  },
+  "integration": {
+    "workflow_edits_required": false,
+    "existing_entry": "python3 scripts/copy_skill_fixture_diagnostics.py <selected-simulator-UUID> <diagnostics-directory> <output-json>",
+    "output": "skill-pdf-fixture-evidence.json",
+    "new_stdout_marker": "SKILL_PDF_ASSEMBLY_FIXTURE_BASELINE",
+    "pair_schema_version": 2,
+    "single_schema_version_unchanged": 1,
+    "same_UI_selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages"
+  },
+  "unchanged": {
+    "fixture_write_mode": "direct withoutOverwriting",
+    "native_picker_mode": "explicit user-copy; single selection",
+    "App_callback_and_request_fencing": true,
+    "UI_assertions": true,
+    "case_cap_seconds": 300,
+    "callback_wait_seconds": 15,
+    "commits_pushes_dispatches_cancellations": 0
+  },
+  "limitations": [
+    "A post-test snapshot does not prove presence at the exact earlier picker failure.",
+    "The snapshot does not inspect internal FileProvider databases or assert why did=3 was absent.",
+    "Local macOS PDFKit and typechecks do not replace pending iOS runtime acceptance.",
+    "No retrial of selection and no fallback URL/picker was introduced."
+  ]
+}

@@ -47,7 +47,8 @@
         "frame_after_tap": "docs/evidence/pdf-assembly-add-8c4195f-current-selection.png",
         "frame_sha256": "e5e50afd499ef8f8f145a4ce1b067087625392586436254a73877150d4c61d48",
         "xctest_event_synthesis_completed": true,
-        "files_remote_process_acknowledged_touch_events_completed": true
+        "files_remote_process_acknowledged_touch_events_completed": true,
+        "document_manager_confirmed_exact_file_selection": true
       },
       "not_reached": [
         "two accepted sources",
@@ -106,6 +107,25 @@
           "touch_synthesis": 35835,
           "remote_process_touch_ack": 35848
         }
+      },
+      "provider_failure": {
+        "domain": "NSFileProviderErrorDomain",
+        "code": -1005,
+        "item_identifier": "localstorage/did=3",
+        "document_manager": "nil URL returned from fetchURL",
+        "exact_synthetic_selection_validated": true,
+        "before_app_delegate": true,
+        "events": [
+          "2026-11-10 22:17:14.585 Df com.apple.DocumentManager.Service[17906:d533] [com.apple.DocumentManager:UI] validateNodeSelectionAndPerformDidPickIfNeeded(_:isCommittingPreview:completion:) [TAP] [Interaction] Validating selection of item SkillAssembly-B-6C23547A-F9AB-4895-9350-97ACA934E64C.pdf",
+          "2026-11-10 22:17:14.586 Df com.apple.DocumentManager.Service[17906:d533] [com.apple.DocumentManager:UI] [TAP] [Interaction] Fetching URL for item SkillAssembly-B-6C23547A-F9AB-4895-9350-97ACA934E64C.",
+          "2026-11-10 22:17:14.658 E  5B61A3DB-74D2-3C1B-8D79-B0809BE08B9B[6451:d58a] [com.apple.FileProvider:default] [ERROR] Cannot get URL for item ID “localstorage/did=3” for extension com.apple.FileProvider.LocalStorage. Error: NSError: FP -1005 \"The operation couldn’t be completed. (NSFileProviderErrorDomain error -1005.)\" UserInfo={NSFileProviderErrorNonExistentItemIdentifier=did=3} }",
+          "2026-11-10 22:17:14.659 E  com.apple.DocumentManager.Service[17906:d533] [com.apple.DocumentManager:UI] [TAP] [Interaction]  Got a nil url returned from fetchURL for SkillAssembly-B-6C23547A-F9AB-4895-9350-97ACA934E64C, clearing lastOpenedNode"
+        ],
+        "decoded_file_sha256": "cc463b169224cc58468b14930e16326eaf5c08a5332edda739918e35e5a63490",
+        "decoded_file_bytes": 4273,
+        "symbol_crc32_matches_this_artifact": true,
+        "symbols_reused_from_matching_cache": true,
+        "format_sha256": "0a5c63c96c7a8788c86a5dcb06d1965b7a1a85d2ed44cdd750bbd8b9aca7fe43"
       }
     },
     {
@@ -151,7 +171,8 @@
         "frame_after_tap": "docs/evidence/pdf-assembly-add-8c4195f-se-selection.png",
         "frame_sha256": "17f4954e06205841dec7bd9d0adfdf9791639460c690077a25f19d64255e0495",
         "xctest_event_synthesis_completed": true,
-        "files_remote_process_acknowledged_touch_events_completed": true
+        "files_remote_process_acknowledged_touch_events_completed": true,
+        "document_manager_confirmed_exact_file_selection": true
       },
       "not_reached": [
         "two accepted sources",
@@ -199,19 +220,46 @@
           "touch_synthesis": 25778,
           "remote_process_touch_ack": 25791
         }
+      },
+      "provider_failure": {
+        "domain": "NSFileProviderErrorDomain",
+        "code": -1005,
+        "item_identifier": "localstorage/did=3",
+        "document_manager": "nil URL returned from fetchURL",
+        "exact_synthetic_selection_validated": true,
+        "before_app_delegate": true,
+        "events": [
+          "2026-11-10 22:18:53.837 Df com.apple.DocumentManager.Service[21550:f151] [com.apple.DocumentManager:UI] validateNodeSelectionAndPerformDidPickIfNeeded(_:isCommittingPreview:completion:) [TAP] [Interaction] Validating selection of item SkillAssembly-A-9BAFFABF-24A8-4FAF-BB14-36C5ADB3ABA2.pdf",
+          "2026-11-10 22:18:53.840 Df com.apple.DocumentManager.Service[21550:f151] [com.apple.DocumentManager:UI] [TAP] [Interaction] Fetching URL for item SkillAssembly-A-9BAFFABF-24A8-4FAF-BB14-36C5ADB3ABA2.",
+          "2026-11-10 22:18:55.000 E  087256A5-9C47-3263-B755-8E91AA510666[7709:f29d] [com.apple.FileProvider:default] [ERROR] Cannot get URL for item ID “localstorage/did=3” for extension com.apple.FileProvider.LocalStorage. Error: NSError: FP -1005 \"The operation couldn’t be completed. (NSFileProviderErrorDomain error -1005.)\" UserInfo={NSFileProviderErrorNonExistentItemIdentifier=did=3} }",
+          "2026-11-10 22:18:55.000 E  com.apple.DocumentManager.Service[21550:f151] [com.apple.DocumentManager:UI] [TAP] [Interaction]  Got a nil url returned from fetchURL for SkillAssembly-A-9BAFFABF-24A8-4FAF-BB14-36C5ADB3ABA2, clearing lastOpenedItem"
+        ],
+        "decoded_file_sha256": "2856f66e022a43d74137cbeb7a7e1904b452a3f2fee2d72e99662f8b686e3033",
+        "decoded_file_bytes": 3585,
+        "symbol_crc32_matches_this_artifact": true,
+        "symbols_reused_from_matching_cache": true,
+        "format_sha256": "f7ca234195c563c03c33481b9813e6959c8566f924cfbf7e422101cdf5f443a7"
       }
     }
   ],
   "diagnosis": {
-    "confirmed": "current26 returns A then never invokes nativePicked for B; SE never invokes nativePicked for A. Both synthesized touches are at the respective visible thumbnail centers and the native Files screen remains visible. XCTest event synthesis completes; the corresponding Files remote process acknowledges TouchEventsCompleted on both failed taps. This excludes a missing synthesized touch, but does not prove document selection/import began.",
+    "confirmed": "Both native Files presentations receive the correct synthetic-file tap and validate the exact selected filename. FileProvider then reports NSFileProviderErrorDomain -1005 for localstorage/did=3; DocumentManager receives nil from fetchURL before any App delegate callback. current26 fails on B in the second presentation after successful A; SE fails on A in the first presentation.",
     "not_proven": [
-      "second presentation stale Session completion",
-      "shared root cause across devices",
-      "OS picker or provider root cause",
-      "test gesture root cause"
+      "underlying reason provider item identifier is nonexistent",
+      "physical deletion of synthetic source",
+      "internal resolver database state",
+      "production repair"
     ],
     "callback_fencing": "nativePicked is logged before the Coordinator completed guard. No rejected second completion is observed; no reason yet to remove immutable callbacks or request fencing.",
-    "status": "investigation_in_progress_no_source_patch"
+    "status": "common_provider_failure_boundary_confirmed_underlying_cause_unresolved_no_source_patch",
+    "excluded_simple_explanations": [
+      "tap did not reach Files",
+      "wrong synthetic filename selected",
+      "second-presentation-only Session request rejection",
+      "delegate cleared by dismantle before the failed selection"
+    ],
+    "prior_evidence": "Prior single-file coordinated creation/open failures also report did=3/-1005; therefore coordinating the pair seeder is not established as a repair. Current failure occurs during fetchURL, before import-copy and App completion, rather than the old host bookmark resolver boundary.",
+    "fixture_limit": "Pair seeder validates both real PDFs at creation. The archived post-test inventory only supports the single-file fixture and contains no pair baselines; physical source identity at the failing tap cannot be reconstructed from this artifact."
   },
   "acceptance_unchanged": {
     "case_cap_seconds": 300,
@@ -226,6 +274,10 @@
   "retrieval": {
     "whole_zip_downloaded": false,
     "unrelated_user_provider_AX_dump": false,
-    "secrets_published": false
+    "secrets_published": false,
+    "incomplete_optional_attempts": [
+      "Broad symbol-table request ended at bounded timeout; only complete known entries used.",
+      "Current DSC transfer reached its 180-second bound; complete cached DSC reused after exact size/CRC verification against this artifact."
+    ]
   }
 }

@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "status": "LOCAL_PASS_NATIVE_DIAGNOSIS_PENDING",
+  "base": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7",
+  "source_sha256": {
+    "Sources/App/SkillExecutionUITestSupport.swift": "aba8cf1a387abc7f631b13e8bb3db0bd9c84c91a11122640cd183753b7563aa8",
+    "Sources/App/SkillPDFAssemblySession.swift": "6e5220cd97807a96572d9cbee6922dafca5efcf8c7d5be877fc0eb222173829d",
+    "scripts/copy_skill_fixture_diagnostics.py": "a601d01c018afee1e2ce7969e4b161a6fd0353bcdbdf42e5b02f9fd25560e609",
+    "scripts/SkillFixtureInventory.swift": "cda93cca9fc8538f39ba67745ab3741c444afa8cb7d88b3820a8d620f161c86e",
+    "scripts/check_skill_fixture_diagnostics.py": "c5e4be26417e19999c752f34d0002b667b31abad0cd5c4eb70cae8caf875afe0",
+    "scripts/check_pdf_assembly_pair.py": "d2dae7a15af92f03fa29d86a2b0d4c2d932ed712c319f98e02b37839c43b9d09",
+    "docs/evidence/ui-workspace-8c4195f-preflight.json": "47eea853318b5fece7b2c85432adf1cb8c02526747b5fd2fc95aa621c126960d",
+    "scripts/release_ios.py": "432ea532a90b307d94c0e60fe691d12758f919147bc8f713adbd53f8d5d8301b",
+    "scripts/release_ios17.py": "7073189ff9d23fbbd69337ed075c241a341395d1fbbda6a93e64b9ad41ef3d38",
+    "scripts/test_release_ios.py": "40e6d1bb9299c238cdd1a303a7f7a50639fe17b11d7809ddeca3453f0614f6f3"
+  },
+  "validation": {
+    "python_tests_passed": 265,
+    "fixture_identity_diagnostics": "PASS",
+    "pair_debug_assertions": 48,
+    "pair_release_assertions": 24,
+    "actionlint": "PASS",
+    "ui_inventory_nonlive_methods": 91,
+    "diff_check": "PASS"
+  },
+  "unchanged": {
+    "picker_behavior": true,
+    "test_assertions": true,
+    "model_calls": 0,
+    "case_timeout_seconds": 300,
+    "callback_wait_seconds": 15,
+    "runtime_inventory_seconds": 120,
+    "automatic_retry_added": false
+  },
+  "boundary": "Additional observation and preflight failure classification; not FileProvider repair or native acceptance."
+}

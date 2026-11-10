@@ -130,6 +130,39 @@ import PDFKit
 }
 '''
 
+PAIR_BUILDER = r'''
+import Foundation
+import PDFKit
+@main struct PairFixtures {
+    static func main() throws {
+        let root = URL(fileURLWithPath: CommandLine.arguments[1], isDirectory: true)
+        var names: [String: String] = [:]
+        for name in ["unchanged", "replacedA", "missingB", "wrongRoleA"] {
+            let id = UUID(); names[name] = id.uuidString
+            let args = ["-UITestMode", "-UITestSkillExecution", "-UITestNamespace", id.uuidString, "-UITestSkillAssemblyPair"]
+            let pair = try SkillExecutionUITestSupport.seedAssemblyPairIfRequested(arguments: args, documentsDirectory: { root })!
+            SkillExecutionUITestSupport.recordPairSnapshot(pair, phase: "prePicker", ordinal: 1)
+            if name == "replacedA" {
+                let pdf = PDFDocument(url: pair.sources[0].url)!
+                var attrs = pdf.documentAttributes!
+                attrs[PDFDocumentAttribute.subjectAttribute] = "changed synthetic bytes"
+                pdf.documentAttributes = attrs
+                try pdf.dataRepresentation()!.write(to: pair.sources[0].url, options: .atomic)
+            } else if name == "missingB" {
+                try FileManager.default.removeItem(at: pair.sources[1].url)
+            } else if name == "wrongRoleA" {
+                try Data(contentsOf: pair.sources[1].url).write(to: pair.sources[0].url, options: .atomic)
+            }
+            SkillExecutionUITestSupport.recordPairSnapshot(pair, phase: "prePicker", ordinal: 2)
+            // Invalid observations cannot produce an extra log or filesystem read.
+            SkillExecutionUITestSupport.recordPairSnapshot(pair, phase: "arbitrary", ordinal: 1)
+            SkillExecutionUITestSupport.recordPairSnapshot(pair, phase: "prePicker", ordinal: 4)
+        }
+        try JSONEncoder().encode(names).write(to: root.deletingLastPathComponent().appendingPathComponent("pair-names.json"))
+    }
+}
+'''
+
 
 def run(args):
     return subprocess.run([str(a) for a in args], capture_output=True, text=True, check=True, timeout=60)
@@ -202,6 +235,64 @@ def main():
         unavailable = json.loads(report_file.read_text())
         assert unavailable["observation"] == "unavailable" and unavailable["reason"] == "baselines-unavailable-or-rejected"
         assert "never-export-this" not in report_file.read_text()
+        pair_source = work / "PairFixtures.swift"
+        pair_source.write_text(PAIR_BUILDER)
+        run(["swiftc", "-DDEBUG", "-parse-as-library", SUPPORT, pair_source, "-o", work / "pair-fixtures"])
+        pair_root = work / "PairDocuments"
+        pair_created = run([work / "pair-fixtures", pair_root])
+        assert str(work) not in pair_created.stdout and "WOOW_ASSEMBLY_" not in pair_created.stdout
+        pair_logs = work / "pair-logs"; pair_logs.mkdir()
+        pair_log = pair_logs / "StandardOutputAndStandardError-io.woowtech.assistant.txt"
+        pair_log.write_text(pair_created.stdout)
+        snapshots = collector.baselines_from_logs(pair_logs)
+        assert len(snapshots) == 24 and all(b["version"] == 2 for b in snapshots)
+        pair_names = json.loads((work / "pair-names.json").read_text())
+        baseline_file.write_text(json.dumps(snapshots))
+        run([work / "inventory", pair_root, baseline_file, report_file])
+        pair_report = json.loads(report_file.read_text())
+        assert pair_report["observation"] == "post-test-only" and not pair_report["provesPresenceAtEarlierPickerFailure"]
+        def pair_entry(name, role, phase="created", ordinal=0):
+            return next(e for e in pair_report["entries"] if e["baseline"]["namespace"] == pair_names[name]
+                        and e["baseline"]["role"] == role and e["baseline"]["phase"] == phase
+                        and e["baseline"]["ordinal"] == ordinal)
+        for role in ("A", "B"):
+            for phase, ordinal in [("created", 0), ("prePicker", 1), ("prePicker", 2)]:
+                e = pair_entry("unchanged", role, phase, ordinal)
+                assert all(e[key] for key in ("sameHash", "sameSize", "sameIdentity", "sameSourceURL", "sameParentIdentity"))
+        changed = pair_entry("replacedA", "A")
+        assert changed["current"]["status"] == "valid" and not changed["sameHash"] and not changed["sameIdentity"]
+        assert changed["sameSourceURL"] and changed["sameParentIdentity"]
+        assert pair_entry("replacedA", "A", "prePicker", 2)["sameHash"]
+        assert pair_entry("replacedA", "B")["sameHash"]
+        for name, role, status in [("missingB", "B", "missing"), ("wrongRoleA", "A", "invalidFixture")]:
+            e = pair_entry(name, role)
+            assert e["current"]["status"] == status and "sameHash" not in e
+            assert pair_entry(name, role, "prePicker", 2)["baseline"]["evidence"]["status"] == status
+        # Identity and path remain independent: the same basename in a different
+        # directory is not evidence for the original selected source location.
+        other = work / "DifferentDocuments"; other.mkdir()
+        run([work / "inventory", other, baseline_file, report_file])
+        moved = json.loads(report_file.read_text())["entries"]
+        assert all(e["current"]["status"] == "missing" and not e["sameSourceURL"] and not e["sameParentIdentity"] for e in moved)
+        pair_root.rename(work / "PreviousPairDocuments"); pair_root.mkdir()
+        run([work / "inventory", pair_root, baseline_file, report_file])
+        recreated = json.loads(report_file.read_text())["entries"]
+        assert all(e["current"]["status"] == "missing" and e["sameSourceURL"] and not e["sameParentIdentity"] for e in recreated)
+        for key, value in [("role", "../outside"), ("ordinal", True), ("ordinal", 4), ("phase", "postTests")]:
+            bad = copy.deepcopy(snapshots[0]); bad[key] = value
+            try: collector.checked(bad)
+            except (ValueError, TypeError): pass
+            else: raise AssertionError("pair schema accepted " + key)
+        bad = copy.deepcopy(snapshots[0]); bad["location"]["urlSHA256"] = "/private/path"
+        try: collector.checked(bad)
+        except ValueError: pass
+        else: raise AssertionError("pair raw path accepted")
+        for log in [pair_created.stdout + pair_created.stdout.splitlines()[0] + "\n",
+                    collector.MARKER + json.dumps(snapshots[0]) + "\n"]:
+            pair_log.write_text(log)
+            try: collector.baselines_from_logs(pair_logs)
+            except ValueError: pass
+            else: raise AssertionError("duplicate or crossed pair schema accepted")
         # The existing exact seeder checks also verify inactive/invalid gates and
         # Release's zero filesystem access, with the new baseline code compiled out.
         original_checks = REPO / "Tests/WoowAssistantUITests/SkillExecutionUITests.swift"
@@ -217,6 +308,7 @@ def main():
             assert live_result.stdout == "", "Live seeding must not print file inventory or source content"
     print("PASS real PDF seed baselines including abrupt _exit; unchanged/replaced/missing files; byte limit; symbolic/hard/directory links; metadata refusal; strict log schema; DEBUG/Release gates")
     print("PASS live PDFKit source, 17 invalid/mixed/cleanup gates before file access, idempotence, overwrite refusal, zero runtime audit, silent live output and Release no-file-access")
+    print("PASS pair lifecycle: 24 real snapshots; A/B role validation; replacement/missing source; path versus parent identity; immutable earlier samples; strict marker/schema/ordinal bounds; post-test-only limitation")
 
 
 if __name__ == "__main__":

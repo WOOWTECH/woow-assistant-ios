@@ -33,6 +33,15 @@ class ReleaseError(Exception):
     pass
 
 
+class ReleaseToolError(ReleaseError):
+    """Closed published metadata, without command arguments or child output."""
+    def __init__(self, message, category):
+        if category not in {"timeout", "launchFailed", "nonzeroExit"}:
+            raise ValueError("Unknown tool failure category")
+        super().__init__(message)
+        self.category = category
+
+
 def run(args, label, timeout=120, env=None, diagnostic_log=None):
     """Do not echo commands: security arguments may contain passwords."""
     if env is None:
@@ -42,13 +51,13 @@ def run(args, label, timeout=120, env=None, diagnostic_log=None):
     except subprocess.TimeoutExpired as error:
         if diagnostic_log is not None:
             diagnostic_log.write_bytes((error.stdout or b"") + (error.stderr or b""))
-        raise ReleaseError(label + "：工具執行逾時。") from None
+        raise ReleaseToolError(label + "：工具執行逾時。", "timeout") from None
     except OSError:
-        raise ReleaseError(label + "：工具不存在或執行逾時。") from None
+        raise ReleaseToolError(label + "：工具不存在或執行逾時。", "launchFailed") from None
     if diagnostic_log is not None:
         diagnostic_log.write_bytes(result.stdout + result.stderr)
     if result.returncode:
-        raise ReleaseError(label + "：失敗（退出碼 %d；未輸出可能含憑證的內容）。" % result.returncode)
+        raise ReleaseToolError(label + "：失敗（退出碼 %d；未輸出可能含憑證的內容）。" % result.returncode, "nonzeroExit")
     return result.stdout
 
 

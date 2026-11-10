@@ -1,5 +1,14 @@
 # Verification — 2026-11-11
 
+## Native PDF selection diagnosis extended — 2026-11-11
+
+Current and SE `8c4195f` logs place the failed selection before any App callback: the exact synthetic filename is selected, FileProvider reports `NSFileProviderErrorDomain -1005` for its local item identifier, and DocumentManager obtains no URL. This does not establish why the provider item is unavailable or whether the original file still existed at the precise failure. Independent local creation/re-entry checks found no App deletion path. The observed provider identifier is not a filesystem inode. [Preserved failure evidence](evidence/pdf-assembly-add-8c4195f.json).
+
+The diagnostic increment records only the two strictly gated synthetic pair files: creation, each explicit picker presentation and actual callbacks, followed by the existing post-test inventory. It compares bytes, filesystem identity, hashed URL and parent directory identity. It adds no timer, selection retry or replacement picker path; the same two real selections, approvals, output checks and 300/15-second limits remain. Local real-PDF/POSIX identity checks and Debug/Release gates passed. Native diagnosis is pending, not a product repair. [Pair evidence](evidence/pdf-assembly-pair-identity-local.json), [parent integration](evidence/pdf-pair-runtime-diagnostics-integration.json).
+
+The unrelated `8c4195f` exact17 workspace job failed during the 120-second simulator runtime inventory, before build or any of its five UI methods. New reporting preserves this timeout and exit 1 while adding fixed operation/category/elapsed fields; it makes no retry. All 265 tooling regressions passed, including real-child timeout/nonzero/launch failures and output privacy checks. [Original preflight evidence](evidence/ui-workspace-8c4195f-preflight.json).
+
+
 ## Manual browser site modes integrated — 2026-11-11
 
 Manual mobile/desktop preferences now persist by normalized hostname in the existing encrypted browser library. A confirmed manual GET reloads once after the explicit mode change, with Cookie storage retained. POST, unknown-method and automation-owned documents defer until the next manual navigation. The navigation delegate retains existing URL/origin/method/download restrictions; mode selection grants no new network or model authority. Details and pinned Mika behavior: [manual website display preferences](MANUAL_BROWSER_SITE_MODES.md).

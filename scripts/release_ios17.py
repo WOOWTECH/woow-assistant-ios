@@ -18,7 +18,21 @@ import sys
 import time
 import uuid
 
-from release_ios import ReleaseError, generate_project, run, version, verify_settings
+from release_ios import ReleaseError, ReleaseToolError, generate_project, run, version, verify_settings
+
+RUNTIME_INVENTORY_TIMEOUT_SECONDS = 120
+
+
+class RuntimeInventoryError(ReleaseError):
+    """Only fixed, public diagnostics for the bounded runtime inventory call."""
+    def __init__(self, error, elapsed):
+        super().__init__(str(error))
+        self.diagnostic = {
+            "category": error.category,
+            "operation": "simulator_runtime_inventory",
+            "elapsed_seconds": round(max(0.0, elapsed), 3),
+            "timeout_seconds": RUNTIME_INVENTORY_TIMEOUT_SECONDS,
+        }
 
 # This partition, unlike the legacy focused scopes below, owns every non-Live
 # UI class exactly once. Keep class selectors so new methods cannot be omitted.
@@ -210,7 +224,13 @@ def select_runtime(payload, requested):
 
 
 def inventory(output, name):
-    payload = json.loads(run(["xcrun", "simctl", "list", "runtimes", "--json"], "取得 Simulator runtime 清單"))
+    started = time.monotonic()
+    try:
+        data = run(["xcrun", "simctl", "list", "runtimes", "--json"], "取得 Simulator runtime 清單",
+                   timeout=RUNTIME_INVENTORY_TIMEOUT_SECONDS)
+    except ReleaseToolError as error:
+        raise RuntimeInventoryError(error, time.monotonic() - started) from None
+    payload = json.loads(data)
     # Public OS/install-path metadata, not personal device names or UDIDs.
     metadata = {"runtimes": [{key: r.get(key) for key in
                 ("identifier", "version", "buildversion", "isAvailable", "availabilityError", "bundlePath")}
@@ -691,6 +711,11 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
         report["runtime_tested"] = test_scope == "all"
         report["full_acceptance_succeeded"] = test_scope == "all"
         checkpoint("passed")
+    except RuntimeInventoryError as error:
+        # The original exception still reaches main() and exits 1. Persist only
+        # the fixed failure receipt; no extra command, retry or timeout change.
+        report["failure"] = error.diagnostic
+        raise
     finally:
         save_report()
         if simulator:

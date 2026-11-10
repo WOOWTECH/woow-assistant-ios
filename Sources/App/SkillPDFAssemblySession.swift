@@ -17,6 +17,11 @@ final class SkillPDFAssemblySession: ObservableObject {
     @Published private(set) var uiTestFixture: SkillExecutionUITestSupport.Fixture?
     @Published private(set) var uiTestPair: SkillExecutionUITestSupport.AssemblyPairFixture?
     @Published private(set) var uiTestPairOutput = "pair=none"
+    private var uiTestPairPickerOrdinal = 0
+    private func recordUITestPair(_ phase: String) {
+        guard let pair = uiTestPair else { return }
+        SkillExecutionUITestSupport.recordPairSnapshot(pair, phase: phase, ordinal: uiTestPairPickerOrdinal)
+    }
     func observeUITestPairOutput() {
         guard let pair = uiTestPair, let output = result else { return }
         let digests = Dictionary(receipts.map { ($0.source.filename, $0.sha256) },
@@ -52,22 +57,37 @@ final class SkillPDFAssemblySession: ObservableObject {
         guard !running, pendingPicker == nil, adding ? canAdd : sources.isEmpty else { return nil }
         let request = PickerRequest(generation: generation, adding: adding)
         pendingPicker = request
+        #if DEBUG
+        if uiTestPair != nil {
+            uiTestPairPickerOrdinal = min(uiTestPairPickerOrdinal + 1, 4)
+            recordUITestPair("prePicker")
+        }
+        #endif
         return request
     }
 
     func cancelPicker(_ request: PickerRequest) {
         guard pendingPicker == request else { return }
+        #if DEBUG
+        recordUITestPair("cancelled")
+        #endif
         pendingPicker = nil // A late completion cannot authorize selection.
     }
 
     func pickerFailed(_ request: PickerRequest) {
         guard pendingPicker == request, request.generation == generation else { return }
+        #if DEBUG
+        recordUITestPair("selectionFailure")
+        #endif
         pendingPicker = nil; selectionFailed()
     }
 
     @discardableResult
     func finishPicker(_ request: PickerRequest, urls: [URL]) -> Bool {
         guard pendingPicker == request, request.generation == generation, !running else { return false }
+        #if DEBUG
+        recordUITestPair("selectionReturned")
+        #endif
         pendingPicker = nil // One callback consumes this presentation, even on validation failure.
         guard urls.count == 1 else {
             status = "每次請只選取一份 PDF，再使用「加入 PDF」加入其他來源。"

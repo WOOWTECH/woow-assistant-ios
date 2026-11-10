@@ -157,7 +157,8 @@ enum SkillExecutionUITestSupport {
             let filename = "SkillAssembly-\(role)-\(namespace.uuidString).pdf"
             let url = directory.appendingPathComponent(filename)
             let title = "WOOW_ASSEMBLY_\(role)_\(namespace.uuidString)"
-            if !FileManager.default.fileExists(atPath: url.path) {
+            let existed = FileManager.default.fileExists(atPath: url.path)
+            if !existed {
                 let buffer = NSMutableData()
                 var bounds = CGRect(x: 0, y: 0, width: 612, height: 792)
                 guard let consumer = CGDataConsumer(data: buffer),
@@ -190,6 +191,8 @@ enum SkillExecutionUITestSupport {
                 throw Failure.existingFile
             }
             sources.append(.init(role: role, url: url, sha256: pairDigest(bytes)))
+            recordPairSnapshot(in: directory, namespace: namespace, role: role,
+                               phase: existed ? "existing" : "created", ordinal: 0)
         }
         guard Set(sources.map(\.sha256)).count == 2 else { throw Failure.existingFile }
         return AssemblyPairFixture(namespace: namespace, sources: sources)
@@ -288,14 +291,77 @@ enum SkillExecutionUITestSupport {
         let namespace: String
         let phase: String
         let evidence: FixtureEvidence
+        var role: String? = nil
+        var ordinal: Int? = nil
+        var location: FixtureLocation? = nil
+    }
+
+    struct FixtureLocation: Codable {
+        let urlSHA256: String
+        var parentDevice: Int32?
+        var parentInode: UInt64?
+    }
+
+    static func pairFixtureSample(in directory: URL, namespace: UUID, role: String)
+        -> (FixtureEvidence, FixtureLocation?) {
+        guard ["A", "B"].contains(role) else { return (FixtureEvidence(status: "invalidFixture"), nil) }
+        let url = directory.appendingPathComponent("SkillAssembly-\(role)-\(namespace.uuidString).pdf")
+        var location = FixtureLocation(urlSHA256: pairDigest(Data(url.standardizedFileURL.path.utf8)))
+        var parentIdentity: stat?
+        let evidence = fixtureEvidence(in: directory, namespace: namespace, role: role, parentIdentity: &parentIdentity)
+        if let value = parentIdentity {
+            location.parentDevice = value.st_dev; location.parentInode = UInt64(value.st_ino)
+        }
+        return (evidence, location)
+    }
+
+    /// Strictly synthetic pair only; never follows a selected document URL.
+    /// These snapshots observe the original files without supplying picker URLs
+    /// or changing selection/grants. No timer, retry, coordination or write.
+    static func recordPairSnapshot(_ fixture: AssemblyPairFixture, phase: String, ordinal: Int) {
+        guard ["prePicker", "selectionReturned", "selectionFailure", "cancelled"].contains(phase),
+              (1...3).contains(ordinal), fixture.sources.count == 2 else { return }
+        for source in fixture.sources {
+            guard ["A", "B"].contains(source.role),
+                  source.filename == "SkillAssembly-\(source.role)-\(fixture.namespace.uuidString).pdf" else { return }
+        }
+        for source in fixture.sources {
+            recordPairSnapshot(in: source.url.deletingLastPathComponent(), namespace: fixture.namespace,
+                               role: source.role, phase: phase, ordinal: ordinal)
+        }
+    }
+
+    private static func recordPairSnapshot(in directory: URL, namespace: UUID, role: String,
+                                           phase: String, ordinal: Int) {
+        let (evidence, location) = pairFixtureSample(in: directory, namespace: namespace, role: role)
+        let baseline = FixtureBaseline(version: 2, namespace: namespace.uuidString, phase: phase,
+            evidence: evidence, role: role, ordinal: ordinal, location: location)
+        if let bytes = try? JSONEncoder().encode(baseline), let json = String(data: bytes, encoding: .utf8) {
+            print("SKILL_PDF_ASSEMBLY_FIXTURE_BASELINE " + json)
+            fflush(stdout)
+        }
+    }
+
+    static func pairFixtureEvidence(in directory: URL, namespace: UUID, role: String) -> FixtureEvidence {
+        pairFixtureSample(in: directory, namespace: namespace, role: role).0
     }
 
     static func fixtureEvidence(in directory: URL, namespace: UUID) -> FixtureEvidence {
+        var parentIdentity: stat?
+        return fixtureEvidence(in: directory, namespace: namespace, role: nil, parentIdentity: &parentIdentity)
+    }
+
+    private static func fixtureEvidence(in directory: URL, namespace: UUID, role: String?,
+                                        parentIdentity: inout stat?) -> FixtureEvidence {
         let limit = 128 * 1024
         let parent = open(directory.path, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)
         guard parent >= 0 else { return FixtureEvidence(status: "directoryUnavailable") }
         defer { close(parent) }
-        let filename = "SkillExecution-\(namespace.uuidString).pdf"
+        var openedParent = stat()
+        guard fstat(parent, &openedParent) == 0 else { return FixtureEvidence(status: "statFailed") }
+        parentIdentity = openedParent
+        let filename = role.map { "SkillAssembly-\($0)-\(namespace.uuidString).pdf" }
+            ?? "SkillExecution-\(namespace.uuidString).pdf"
         let fd = openat(parent, filename, O_RDONLY | O_NONBLOCK | O_NOFOLLOW | O_CLOEXEC)
         guard fd >= 0 else {
             return FixtureEvidence(status: errno == ENOENT ? "missing" : "openRejected")
@@ -324,7 +390,10 @@ enum SkillExecutionUITestSupport {
         guard data.count <= limit else { return FixtureEvidence(status: "oversized") }
         var after = stat()
         var named = stat()
+        var namedParent = stat()
         guard fstat(fd, &after) == 0, fstatat(parent, filename, &named, AT_SYMLINK_NOFOLLOW) == 0,
+              lstat(directory.path, &namedParent) == 0, namedParent.st_mode & S_IFMT == S_IFDIR,
+              namedParent.st_dev == openedParent.st_dev, namedParent.st_ino == openedParent.st_ino,
               named.st_mode & S_IFMT == S_IFREG, after.st_nlink == 1, named.st_nlink == 1,
               named.st_dev == after.st_dev, named.st_ino == after.st_ino, named.st_size == after.st_size,
               before.st_dev == after.st_dev, before.st_ino == after.st_ino,
@@ -335,9 +404,14 @@ enum SkillExecutionUITestSupport {
               before.st_ctimespec.tv_nsec == after.st_ctimespec.tv_nsec else {
             return FixtureEvidence(status: "changedDuringRead")
         }
+        let title = role.map { "WOOW_ASSEMBLY_\($0)_\(namespace.uuidString)" }
+            ?? "WOOW_SKILL_PDF_FIXTURE_" + namespace.uuidString
         guard let pdf = PDFDocument(data: data), pdf.pageCount == 2,
-              pdf.documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String == "WOOW_SKILL_PDF_FIXTURE_" + namespace.uuidString,
+              pdf.documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String == title,
               pdf.documentAttributes?[PDFDocumentAttribute.authorAttribute] as? String == "Synthetic UI fixture" else {
+            return FixtureEvidence(status: "invalidFixture")
+        }
+        if let role, !(1...2).allSatisfy({ assemblyPairPage(pdf.page(at: $0 - 1), matches: role, number: $0, namespace: namespace) }) {
             return FixtureEvidence(status: "invalidFixture")
         }
         return FixtureEvidence(status: "valid", bytes: after.st_size, device: after.st_dev,
