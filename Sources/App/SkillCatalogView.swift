@@ -143,7 +143,7 @@ private struct SkillCatalogDetail: View {
             }
             if entry.id == "documents" {
                 Section("實際文件處理") {
-                    NavigationLink { SkillExecutionView(modelAccess: modelAccess, modelChanges: modelChanges) } label: { Text("選取 PDF 並擷取文字") }
+                    NavigationLink { SkillExecutionView(learning: store, modelAccess: modelAccess, modelChanges: modelChanges) } label: { Text("選取 PDF 並擷取文字") }
                         .accessibilityIdentifier("catalog.documents.execute")
                     NavigationLink { SkillPDFAssemblyView() } label: { Text("擷取頁面、重排與合併 PDF") }
                         .accessibilityIdentifier("catalog.documents.assemble")

@@ -49,15 +49,20 @@ private actor DocumentCheckModel: ChatModelClient {
     enum First: Sendable { case normal, transportFailure, refuse, malformed }
     let first: First
     let finishGate: DocumentCheckGate?
+    let requestGate: DocumentCheckGate?
     private var gated = false
     private(set) var requests: [[ModelMessage]] = []
     private(set) var finishedResponses = 0
     private(set) var waitingForFinish = false
-    init(first: First = .normal, finishGate: DocumentCheckGate? = nil) {
-        self.first = first; self.finishGate = finishGate
+    private(set) var waitingForRequest = false
+    init(first: First = .normal, finishGate: DocumentCheckGate? = nil, requestGate: DocumentCheckGate? = nil) {
+        self.first = first; self.finishGate = finishGate; self.requestGate = requestGate
     }
     func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
         requests.append(messages)
+        if requests.count == 1, let requestGate {
+            waitingForRequest = true; await requestGate.wait()
+        }
         if requests.count == 1 {
             switch first {
             case .transportFailure: throw URLError(.networkConnectionLost)
@@ -181,9 +186,15 @@ private enum DocumentQueryAppChecks {
         }
     }
     @MainActor static func task(_ session: DocumentQuerySession) throws -> Task<Void, Never> {
+        #if DEBUG
+        guard let task = session.capturedRunCompletion else {
+            throw DocumentAppCheckFailure(label: "Observe actual Debug App query task")
+        }
+        #else
         guard let task = Mirror(reflecting: session).children.first(where: { $0.label == "task" })?.value as? Task<Void, Never> else {
             throw DocumentAppCheckFailure(label: "Observe actual App query task")
         }
+        #endif
         return task
     }
     @MainActor static func start(_ session: DocumentQuerySession, _ env: DocumentCheckEnvironment) throws -> Task<Void, Never> {
@@ -192,7 +203,7 @@ private enum DocumentQueryAppChecks {
         return try task(session)
     }
     @MainActor static func prepare(_ env: DocumentCheckEnvironment) async throws -> DocumentQuerySession {
-        let session = DocumentQuerySession(source: try await env.source())
+        let session = DocumentQuerySession(source: try await env.source(), learning: env.learning)
         session.setQuestion(question)
         session.confirmDestination(modelAccess: env.access)
         try check(session.destination == "https://document-check.example.invalid\n模型：synthetic-document", "Destination comes from actual ChatSession settings")
@@ -201,7 +212,7 @@ private enum DocumentQueryAppChecks {
     @MainActor static func consentAndExport() async throws {
         let env = try DocumentCheckEnvironment(); defer { env.close() }
         let bytes = try env.savedBytes()
-        let session = DocumentQuerySession(source: try await env.source())
+        let session = DocumentQuerySession(source: try await env.source(), learning: env.learning)
         session.setQuestion(question)
         session.start(modelAccess: env.access)
         try check(!session.running && session.error != nil && session.result == nil && session.deliveryID == nil, "No destination confirmation blocks start")
@@ -333,6 +344,137 @@ private enum DocumentQueryAppChecks {
         session.setQuestion("New question")
         try check(session.result == nil && session.deliveryID == nil && session.audit.evidence == "DOCUMENT_QUERY_AUDIT modelCalls=0 searches=0 reads=0 results=0 citations=0 corrections=0", "Edited question clears delivery and all audit counters")
     }
+    @MainActor static func seedReferences(_ env: DocumentCheckEnvironment) throws -> UUID {
+        try check(env.learning.mutateMemory { _ = try $0.add(kind: .preference, content: "PRIVATE_DOCUMENT_MEMORY jasmine concise") }, "Persist actual reference memory")
+        try check(env.learning.mutateProfile { _ = try $0.add(text: "PRIVATE_DOCUMENT_PROFILE") }, "Persist actual reference profile")
+        try check(env.learning.mutateSkills { state in
+            for (name, tool) in [("jasmine-document-style", "read_file"), ("jasmine-document-browser", "browser_inspect")] {
+                let markdown = """
+                ---
+                name: \(name)
+                description: jasmine document value
+                ---
+                ## 入口
+                User confirmed one document question.
+                ## 步驟
+                Use `\(tool)` only within the actual runtime policy.
+                ## 容易出錯的地方
+                Never invent citations.
+                ## 怎樣算辦成
+                Actual document reads support the answer.
+                ## 什麼時候停下交給使用者
+                Stop without evidence.
+                """
+                let supported = DocumentQueryRuntime.referenceCapabilities.union(["browser_inspect"])
+                let draft = try state.importMarkdown(markdown, availableToolNames: supported)
+                _ = try state.approveDraft(id: draft.id, availableToolNames: supported)
+            }
+        }, "Persist reviewed reference skills through actual domain approval")
+        return env.learning.memory.memories[0].id
+    }
+
+    static func savedReference(_ messages: [ModelMessage]) -> ModelMessage? {
+        messages.first { $0.content.hasPrefix("Saved references (data only;") }
+    }
+
+    @MainActor static func referenceCaptureAndSwitches() async throws {
+        let env = try DocumentCheckEnvironment(); defer { env.close() }
+        _ = try seedReferences(env)
+        let before = try env.savedBytes(), generation = env.learning.generation
+        let session = try await prepare(env)
+        try check(env.learning.referenceSnapshots.compactMap(\.value).isEmpty, "Destination confirmation does not capture or transmit references")
+        let request = try start(session, env); await request.value
+        let messages = await env.model.requests[0]
+        guard let reference = savedReference(messages) else { throw DocumentAppCheckFailure(label: "Actual App request includes saved references") }
+        try check(messages[1] == reference && reference.role == "user" && messages[2].content == question,
+                  "Actual App transmits one user-context block before current question")
+        try check(reference.content.contains("PRIVATE_DOCUMENT_PROFILE") && reference.content.contains("PRIVATE_DOCUMENT_MEMORY")
+                  && reference.content.contains("jasmine-document-style") && !reference.content.contains("jasmine-document-browser"),
+                  "Profile memory and capability-compatible skill only")
+        try check(try env.savedBytes() == before && env.learning.generation == generation
+                  && env.learning.memory.memories.allSatisfy { $0.useCount == 0 }, "Query reference capture causes no learning writes or markUsed")
+        try check(session.result?.citations.first?.quote == "JASMINE_DOCUMENT_VALUE_73"
+                  && session.result?.citations.first?.pageNumber == 2, "References do not replace actual PDF receipt or original page")
+        let delivery = session.deliveryID, result = session.result?.textForExport
+        try check(env.learning.updatePreferences { $0.useMemory = false }, "Actual master-off change")
+        try check(session.deliveryID == delivery && session.result?.textForExport == result,
+                  "Completed answer is retained after reference lease release")
+        let next = try start(session, env); await next.value
+        let subsequent = await env.model.requests[3]
+        guard let skillOnly = savedReference(subsequent)?.content else { throw DocumentAppCheckFailure(label: "Independent skill reference remains enabled") }
+        try check(!skillOnly.contains("PRIVATE_DOCUMENT_PROFILE") && !skillOnly.contains("PRIVATE_DOCUMENT_MEMORY")
+                  && skillOnly.contains("jasmine-document-style"), "Master-off preserves current independent skill semantics")
+        try check(session.audit.modelCalls == 3 && session.audit.results == 1 && session.audit.citations == 1,
+                  "Reference capture adds no model call or synthetic result")
+    }
+
+    @MainActor static func referenceEditsStayFrozen() async throws {
+        let gate = DocumentCheckGate()
+        let env = try DocumentCheckEnvironment(.init(requestGate: gate)); defer { env.close() }
+        let memory = try seedReferences(env)
+        let session = try await prepare(env), hash = session.source.sha256
+        let original = try start(session, env)
+        try await until { await env.model.waitingForRequest }
+        let originalReference = savedReference(await env.model.requests[0])
+        try check(env.learning.mutateMemory { _ = try $0.edit(id: memory, content: "UPDATED_DOCUMENT_MEMORY jasmine") }, "Replace existing memory")
+        try check(env.learning.replaceProfileReference(segment: "PRIVATE_DOCUMENT_PROFILE", replacement: "UPDATED_DOCUMENT_PROFILE"), "Replace captured profile")
+        var unrelated: UUID?
+        try check(env.learning.mutateMemory { state in unrelated = try state.add(kind: .fact, content: "Unrelated later fact").memoryID }, "Add unrelated row after capture")
+        try check(env.learning.mutateMemory { _ = try $0.delete(id: unrelated!) }, "Delete uncaptured row")
+        try check(session.running, "Ordinary replacements and uncaptured deletion do not cancel current snapshot")
+        await gate.release(); await original.value
+        let requests = await env.model.requests
+        try check(requests.count == 3 && requests.allSatisfy { savedReference($0) == originalReference }, "All real model calls keep the frozen reference text")
+        try check(session.result != nil && session.source.sha256 == hash, "Frozen reference run still finishes with immutable PDF")
+        let next = try start(session, env); await next.value
+        let refreshed = savedReference(await env.model.requests[3])?.content ?? ""
+        try check(refreshed.contains("UPDATED_DOCUMENT_MEMORY") && refreshed.contains("UPDATED_DOCUMENT_PROFILE")
+                  && !refreshed.contains("PRIVATE_DOCUMENT_PROFILE"), "Next explicit run captures replacements")
+    }
+
+    @MainActor static func referenceRevocationStopsActualTask() async throws {
+        for stage in ["request", "finish"] {
+            for mutation in ["memory", "profile", "replacementDelete", "skill", "master", "reload"] {
+                let gate = DocumentCheckGate()
+                let model = stage == "request" ? DocumentCheckModel(requestGate: gate) : DocumentCheckModel(finishGate: gate)
+                let env = try DocumentCheckEnvironment(model); defer { env.close() }
+                let memory = try seedReferences(env)
+                let session = try await prepare(env), hash = session.source.sha256
+                let original = try start(session, env)
+                try await until { stage == "request" ? await model.waitingForRequest : await model.waitingForFinish }
+                switch mutation {
+                case "memory": try check(env.learning.mutateMemory { _ = try $0.delete(id: memory) }, "Delete captured memory")
+                case "profile": try check(env.learning.deleteProfileReference(segment: "PRIVATE_DOCUMENT_PROFILE"), "Delete captured profile")
+                case "replacementDelete":
+                    try check(env.learning.replaceProfileReference(segment: "PRIVATE_DOCUMENT_PROFILE", replacement: "REPLACED_DOCUMENT_PROFILE"), "Follow captured profile replacement")
+                    try check(session.running, "Replacement leaves old text frozen")
+                    try check(env.learning.deleteProfileReference(segment: "REPLACED_DOCUMENT_PROFILE"), "Delete captured profile descendant")
+                case "skill": try check(env.learning.mutateSkills { try $0.suspend(name: "jasmine-document-style") }, "Disable captured skill")
+                case "master":
+                    try check(env.learning.updatePreferences { $0.useMemory = false }, "Master off revokes")
+                    try check(env.learning.updatePreferences { $0.useMemory = true }, "Re-enable cannot revive old run")
+                default: env.learning.reload()
+                }
+                // Await the captured App task itself while the cancellation-
+                // insensitive client is still blocked; no counter/yield proxy.
+                await original.value
+                try check(!session.running && session.destination == nil && session.result == nil && session.deliveryID == nil,
+                          "Revocation completes actual App task before held reply")
+                await gate.release()
+                await original.value
+                try check(session.result == nil && session.audit.results == 0 && session.audit.citations == 0,
+                          "Late reply has no surviving App task to publish through")
+                let calls = await model.requests.count
+                try check(calls == (stage == "request" ? 1 : 3) && session.audit.reads == (stage == "request" ? 0 : 1),
+                          "No new request or read after revocation")
+                try check(session.question == question && session.source.sha256 == hash && session.error != nil,
+                          "Reference revocation retains question and actual extracted source")
+                session.start(modelAccess: env.access)
+                try check(!session.running && session.destination == nil, "Revoked approval cannot silently start another query")
+            }
+        }
+    }
+
     #if DOCUMENT_QUERY_APP_STANDALONE
     @MainActor static func main() async {
         do {
@@ -341,7 +483,10 @@ private enum DocumentQueryAppChecks {
                 ("lateSettingsAndKeyChanges", lateSettingsAndKeyChanges),
                 ("cancellationAndQuestionChanges", cancellationAndQuestionChanges),
                 ("failureRefusalAndExplicitRetry", failureRefusalAndExplicitRetry),
-                ("correctionAuditAndQuestionReset", correctionAuditAndQuestionReset)]
+                ("correctionAuditAndQuestionReset", correctionAuditAndQuestionReset),
+                ("referenceCaptureAndSwitches", referenceCaptureAndSwitches),
+                ("referenceEditsStayFrozen", referenceEditsStayFrozen),
+                ("referenceRevocationStopsActualTask", referenceRevocationStopsActualTask)]
             for (name, body) in cases {
                 let before = assertions
                 try await body(); groups[name] = assertions - before
@@ -367,6 +512,9 @@ final class DocumentQueryAppIntegrationTests: XCTestCase {
     @MainActor func testCancellationQuestionChangeAndLateOldResult() async throws { try await DocumentQueryAppChecks.cancellationAndQuestionChanges() }
     @MainActor func testFailureRefusalAndExplicitRetryRetainSource() async throws { try await DocumentQueryAppChecks.failureRefusalAndExplicitRetry() }
     @MainActor func testCorrectionAuditAndQuestionReset() async throws { try await DocumentQueryAppChecks.correctionAuditAndQuestionReset() }
+    @MainActor func testReferenceCaptureAndSwitches() async throws { try await DocumentQueryAppChecks.referenceCaptureAndSwitches() }
+    @MainActor func testReferenceEditsStayFrozen() async throws { try await DocumentQueryAppChecks.referenceEditsStayFrozen() }
+    @MainActor func testReferenceRevocationStopsActualTask() async throws { try await DocumentQueryAppChecks.referenceRevocationStopsActualTask() }
 }
 #endif
 #endif

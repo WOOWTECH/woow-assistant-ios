@@ -15,7 +15,7 @@ import time
 
 APP_SOURCES = [
     "BrowserUploadFixture", "BrowserLoginFixture", "SkillExecutionUITestSupport",
-    "BrowserWorkspace", "ChatSession", "BrowserSession", "LearningKeychainStore",
+    "BrowserWorkspace", "ChatSession", "ConversationArchiveStore", "BrowserSession", "LearningKeychainStore",
     "UITestModelFixture", "MCPSettings", "LiveModelUITestSupport", "ModelSettings",
     "LearningStore", "LearningRunContext", "UITestMCPFixture", "MCPSession", "MultiSourceResearchSession",
 ]

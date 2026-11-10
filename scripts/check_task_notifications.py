@@ -20,7 +20,7 @@ MODULES = [
 ]
 APPS = [
     "BrowserUploadFixture", "BrowserLoginFixture", "SkillExecutionUITestSupport", "BrowserWorkspace",
-    "ChatSession", "BrowserSession", "LearningKeychainStore", "UITestModelFixture", "MCPSettings",
+    "ChatSession", "ConversationArchiveStore", "BrowserSession", "LearningKeychainStore", "UITestModelFixture", "MCPSettings",
     "LiveModelUITestSupport", "ModelSettings", "LearningStore", "UITestMCPFixture", "MCPSession",
     "MultiSourceResearchSession", "LearningRunContext", "TaskNotificationCenterAdapter", "TaskNotificationStore", "TaskNotificationChatBridge",
 ]

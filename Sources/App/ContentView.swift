@@ -174,6 +174,7 @@ private struct ChatView: View {
     @ObservedObject var mcp: MCPSession
     @FocusState private var isEditingDraft: Bool
     @State private var showsMCPResults = false
+    @State private var showsArchive = false
 
     var body: some View {
         VStack(spacing: 12) {
@@ -181,10 +182,15 @@ private struct ChatView: View {
                 Text(session.chatStatus)
                     .font(.headline)
                     .accessibilityIdentifier("chat.status")
-                Text("對話紀錄僅保留於本次 App 工作階段，關閉程序後不會保存。")
+                Text("已完成的問答會加密保存在此裝置；未完成任務與未送出的草稿不會保存。")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("chat.historyNotice")
+                if session.archive != nil {
+                    Button("歷史對話") { isEditingDraft = false; showsArchive = true }
+                        .disabled(session.isSubmitting)
+                        .accessibilityIdentifier("chat.archive")
+                }
                 if session.isUITestMode {
                     Text("UI 測試模式：固定回覆，不會呼叫網路。")
                         .font(.caption)
@@ -259,6 +265,14 @@ private struct ChatView: View {
                     .font(.callout)
                     .accessibilityIdentifier("chat.notice")
             }
+            if let notice = session.archiveNotice {
+                Text(notice).font(.callout).foregroundStyle(.orange)
+                    .accessibilityIdentifier("chat.archiveNotice")
+                if session.canRetryArchiveSave {
+                    Button("重試保存") { session.retryArchiveSave() }
+                        .accessibilityIdentifier("chat.archiveRetry")
+                }
+            }
             TextField("輸入訊息", text: $session.draft)
                 .textFieldStyle(.roundedBorder)
                 .autocorrectionDisabled()
@@ -289,6 +303,9 @@ private struct ChatView: View {
             .frame(minHeight: 44)
         }
         .padding()
+        .sheet(isPresented: $showsArchive) {
+            if let store = session.archive { ConversationArchiveView(store: store, session: session) }
+        }
         .sheet(item: Binding(get: { session.pendingMCPApproval }, set: { _ in })) { proposal in
             MCPApprovalView(proposal: proposal,
                             approve: { session.resolveMCPApproval(id: proposal.id, approved: true) },

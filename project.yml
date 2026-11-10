@@ -212,6 +212,8 @@ targets:
       - scripts/CheckLearningRunContextApp.swift
       - scripts/CheckMultiSourceReferenceApp.swift
       - scripts/CheckTaskNotificationApp.swift
+      - scripts/CheckReplayReferencesApp.swift
+      - scripts/CheckConversationArchiveApp.swift
       - Tests/AssistantDomainTests/TaskNotificationChecks.swift
     dependencies:
       - target: WoowAssistant

@@ -12,9 +12,12 @@ struct ModelAccess {
 }
 
 struct ChatEntry: Identifiable {
-    let id = UUID()
+    let id: UUID
     let role: String
     let content: String
+    init(id: UUID = UUID(), role: String, content: String) {
+        self.id = id; self.role = role; self.content = content
+    }
 }
 
 struct MCPApprovalRequest: Identifiable {
@@ -31,7 +34,12 @@ struct MCPApprovalRequest: Identifiable {
 @MainActor
 final class ChatSession: ObservableObject {
     let learning: LearningStore
+    let archive: ConversationArchiveStore?
     private var conversationID = UUID().uuidString
+    private var conversationDestination: ConversationDestination?
+    @Published private(set) var archiveNotice: String?
+    private var pendingArchiveSave: (record: ArchivedConversation, expected: ArchivedConversation?)?
+    var canRetryArchiveSave: Bool { pendingArchiveSave != nil && !isSubmitting }
     @Published var draft = ""
     @Published var baseURLDraft = ""
     @Published var modelDraft = ""
@@ -70,9 +78,14 @@ final class ChatSession: ObservableObject {
     private var request: Task<Void, Never>?
     private var deadline: Task<Void, Never>?
     private var requestID: UUID?
+    #if DEBUG || CONVERSATION_ARCHIVE_APP_STANDALONE
+    /// Read-only completion handle for joining an already captured task after cancellation.
+    var capturedArchiveRequest: Task<Void, Never>? { request }
+    #endif
 
     init() {
         learning = LearningStore()
+        archive = ConversationArchiveStore()
         var bootstrapFailure: String?
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
@@ -109,8 +122,10 @@ final class ChatSession: ObservableObject {
 
     /// Dependency boundary for exercising actual App transactions and request
     /// lifecycles with isolated storage; production uses the initializer above.
-    init(learning: LearningStore, repository: ModelSettingsRepository, client: any ChatModelClient) {
+    init(learning: LearningStore, repository: ModelSettingsRepository, client: any ChatModelClient,
+         archive: ConversationArchiveStore? = nil) {
         self.learning = learning
+        self.archive = archive
         self.repository = repository
         self.client = client
         isUITestMode = false
@@ -133,8 +148,53 @@ final class ChatSession: ObservableObject {
 
     var canSend: Bool {
         savedSettings != nil && hasStoredKey && !isSubmitting
+            && (conversationDestination == nil || conversationDestination == archiveDestination)
             && !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
+
+    var archiveDestination: ConversationDestination? {
+        guard let savedSettings, let account = UUID(uuidString: savedSettings.credentialAccount) else { return nil }
+        return try? ConversationDestination(baseURL: savedSettings.baseURL.absoluteString,
+            model: savedSettings.model, credentialAccount: account)
+    }
+
+    func canOpenConversation(_ record: ArchivedConversation) -> Bool {
+        archive?.available == true && hasStoredKey && archiveDestination == record.destination
+    }
+
+    @discardableResult func openConversation(id: UUID) -> Bool {
+        guard let record = archive?.state.conversations.first(where: { $0.id == id }),
+              canOpenConversation(record) else { return false }
+        // Publish restored entries only after submitting and approvals have ended.
+        // Restored text cannot complete a notification ticket or resume a task.
+        cancel()
+        newConversation()
+        usesMCP = false
+        conversationID = record.id.uuidString
+        conversationDestination = record.destination
+        draft = ""
+        entries = record.turns.flatMap { [ChatEntry(id: $0.userID, role: "user", content: $0.userText),
+                                         ChatEntry(id: $0.assistantID, role: "assistant", content: $0.assistantText)] }
+        chatNotice = "已開啟保存的對話；尚未傳送任何訊息。"
+        return true
+    }
+
+    @discardableResult func deleteConversation(id: UUID) -> Bool {
+        if conversationID == id.uuidString { cancel() }
+        guard archive?.delete(id: id) == true else { return false }
+        if conversationID == id.uuidString { newConversation(); draft = "" }
+        return true
+    }
+
+    func retryArchiveSave() {
+        guard canRetryArchiveSave, let pendingArchiveSave, let archive else { return }
+        do {
+            try archive.save(pendingArchiveSave.record, expected: pendingArchiveSave.expected)
+            self.pendingArchiveSave = nil; archiveNotice = nil
+        } catch { archiveNotice = Self.archiveSaveFailure }
+    }
+
+    private static let archiveSaveFailure = "回覆已顯示，但本次對話未能保存；關閉程序後可能遺失。原有保存內容保留，沒有自動刪除舊對話。"
 
     func modelAccess() throws -> ModelAccess {
         guard let savedSettings, hasStoredKey else { throw HTTPChatModelError.invalidConfiguration }
@@ -169,6 +229,7 @@ final class ChatSession: ObservableObject {
             keyDraft = ""
             if changed {
                 entries = []
+                conversationDestination = nil; archiveNotice = nil; pendingArchiveSave = nil
                 profileReceipt = nil
                 profileReceiptRequestID = nil
                 memoryReceipt = nil
@@ -200,6 +261,7 @@ final class ChatSession: ObservableObject {
             modelDraft = ""
             keyDraft = ""
             entries = []
+            conversationDestination = nil; archiveNotice = nil; pendingArchiveSave = nil
             profileReceipt = nil
             profileReceiptRequestID = nil
             memoryReceipt = nil
@@ -235,6 +297,9 @@ final class ChatSession: ObservableObject {
             return
         }
         let prompt = draft
+        let archiveID = UUID(uuidString: conversationID)!
+        let destination = archiveDestination
+        let archivePrior = archive?.state.conversations.first { $0.id == archiveID }
         let window: ChatContextWindow
         do {
             window = try ChatContextWindow(
@@ -285,8 +350,30 @@ final class ChatSession: ObservableObject {
                     self.finish(id: id, error: "模型回傳空白內容，草稿已保留，請重試。")
                     return
                 }
-                self.entries.append(ChatEntry(role: "user", content: prompt))
-                self.entries.append(ChatEntry(role: "assistant", content: reply))
+                let userEntry = ChatEntry(role: "user", content: prompt)
+                let assistantEntry = ChatEntry(role: "assistant", content: reply)
+                if let archive = self.archive {
+                    self.pendingArchiveSave = nil
+                    do {
+                        guard let destination else { throw ConversationArchiveError.invalidData }
+                        let all = self.entries + [userEntry, assistantEntry]
+                        let turns = try stride(from: 0, to: all.count, by: 2).map { index in
+                            try ArchivedConversationTurn(userID: all[index].id, assistantID: all[index + 1].id,
+                                userText: all[index].content, assistantText: all[index + 1].content)
+                        }
+                        let record = try ArchivedConversation(id: archiveID, destination: destination,
+                            updatedAt: Date(), turns: turns)
+                        self.pendingArchiveSave = (record, archivePrior)
+                        try archive.save(record, expected: archivePrior)
+                        self.pendingArchiveSave = nil
+                        self.archiveNotice = nil
+                    } catch {
+                        self.archiveNotice = Self.archiveSaveFailure
+                    }
+                }
+                self.conversationDestination = destination
+                self.entries.append(userEntry)
+                self.entries.append(assistantEntry)
                 if self.draft == prompt { self.draft = "" }
                 self.finish(id: id)
                 // Deliver first. A separate, bounded extraction call receives only
@@ -637,6 +724,7 @@ final class ChatSession: ObservableObject {
         guard !isSubmitting else { return }
         learning.resetConversationPresentation()
         entries = []; conversationID = UUID().uuidString
+        conversationDestination = nil; archiveNotice = nil; pendingArchiveSave = nil
         mcpActivity = nil; mcpSteps = []; mcpSentCount = 0
         mcpDiagnostics = nil
         profileReceipt = nil

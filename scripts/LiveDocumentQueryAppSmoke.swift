@@ -1,4 +1,5 @@
 import AssistantModels
+import AssistantPersistence
 import AssistantSkills
 import CoreGraphics
 import CoreText
@@ -11,6 +12,15 @@ import PDFKit
 private enum DocumentLiveCheck: String, Error {
     case missingConfiguration, pdfCreation, extraction, source, consent, deadline
     case incomplete, answer, citations, export, preservation, budget, unknown
+}
+
+/// This probe must never open the user's learning Keychain or Application Support.
+private final class DocumentProbeKeys: LearningKeyStore {
+    private var values: [String: Data] = [:]
+    func read(id: String) throws -> Data? { values[id] }
+    func insert(_ key: Data, id: String) throws { values[id] = key }
+    func remove(id: String) throws { values.removeValue(forKey: id) }
+    func removeAll(except id: String) throws { values = values.filter { $0.key == id } }
 }
 
 private actor DocumentActualModel: ChatModelClient {
@@ -86,7 +96,10 @@ private actor DocumentActualModel: ChatModelClient {
         let snapshot = try DocumentTextSnapshot(result: extracted, filename: input.lastPathComponent, catalog: catalog)
         // Querying/exporting must use the completed snapshot, never reopen PDF.
         try FileManager.default.removeItem(at: input)
-        let session = DocumentQuerySession(source: snapshot)
+        let learning = LearningStore(vault: EncryptedLearningFile(
+            url: root.appendingPathComponent("probe-learning.vault"), keys: DocumentProbeKeys()))
+        guard learning.available else { throw DocumentLiveCheck.consent }
+        let session = DocumentQuerySession(source: snapshot, learning: learning)
         session.setQuestion("Search for WOOW_DOCUMENT_QUERY_PAGE. Read BOTH selected pages before finishing. Answer exactly DOCUMENT_QUERY_OK_42_73. Provide exactly two citations, quoting WOOW_DOCUMENT_QUERY_PAGE_1_VALUE_42 from original page 1 and WOOW_DOCUMENT_QUERY_PAGE_2_VALUE_73 from original page 2, using each actual returned read ID and byte offset. Do not invent evidence.")
         session.start(modelAccess: { access })
         guard !session.running, session.result == nil, session.error != nil, await client.calls == 0 else { throw DocumentLiveCheck.consent }

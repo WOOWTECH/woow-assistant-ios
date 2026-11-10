@@ -13,7 +13,7 @@
 
 ## M1 — Conversation core and browser shell
 
-- [ ] Encrypted conversation archive, list and explicit reopening; unfinished operations must never replay on restore. Durable run events/outbox remain a separate increment.
+- [ ] Encrypted conversation archive, list and explicit reopening implemented and locally checked; native/UI acceptance pending. Unfinished operations never replay on restore. Durable run events/outbox remain separate.
 - [x] Native JSON/SSE model transport with bounded requests and fixture coverage.
 - [x] Configurable actual model conversation, cancellation and retained drafts.
 - [ ] Stream partial model output into the chat UI.
@@ -45,5 +45,5 @@
 
 - [x] Page reader, grounded research and fixed DOM action bridge with single-action approval (full browser parity remains open).
 - [ ] Optional remote browser gateway contract for CDP-only capabilities.
-- [x] Default-off notification preferences and completed-job/approval-request scheduling with real OS permission and notification-tap integration. The new pending-approval preservation case is still under native acceptance; audible sound and physical-device behavior remain separate.
+- [x] Default-off notification preferences and completed-job/approval-request scheduling with real OS permission and notification-tap integration. Pending-approval preservation passed all three simulator variants at f49c8f7; later Chat/UI changes need their own regression. Audible sound and physical-device behavior remain separate.
 - [ ] Real-device iOS 17 validation matrix, TestFlight metadata and App Review demo mode.

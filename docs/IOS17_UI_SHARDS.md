@@ -6,6 +6,7 @@
 |---|---|---:|
 | `ui-startup` | `WoowAssistantUITests`、`SelfConfigurationUITests` | 13 |
 | `ui-notifications` | `NotificationUITests`、`NotificationApprovalUITests` | 2 |
+| `ui-archive` | `ConversationArchiveUITests` | 4 |
 | `ui-workspace` | `BrowserWorkspaceUITests`、`BrowserLoginUITests` | 5 |
 | `ui-browser` | `BrowserInteractionUITests`、`BrowserUploadUITests` | 5 |
 | `ui-learning` | `BrowserLearningUITests`、`MultiSourceResearchUITests` | 5 |
@@ -16,7 +17,7 @@
 | `ui-documents` | `SkillExecutionUITests`、`SkillWorkerSettingsUITests`、`SkillPDFAssemblyMultiFileUITests` | 15 |
 | `ui-mcp` | `MCPConversationUITests`、`MCPLearningUITests` | 8 |
 
-合計 23 個類別、86 個非 Live methods；另有 22 個 Live methods 明確分開。這是目前來源清單，不是已執行或全面通過的數目。`ui-notifications` 使用真實系統權限與原生通知橫幅，模型仍為固定測資；宜用此次作業專用的新模擬器，不能以 App 偏好重設冒充系統權限重設。
+合計 24 個類別、90 個非 Live methods；另有 22 個 Live methods 明確分開。這是目前來源清單，不是已執行或全面通過的數目。`ui-notifications` 使用真實系統權限與原生通知橫幅，模型仍為固定測資；宜用此次作業專用的新模擬器，不能以 App 偏好重設冒充系統權限重設。
 
 分片以約 10–20 分鐘測試工作量為規劃目標，尚未完成這批分片的原生時間量測；下載 runtime、啟動 simulator 與建置另計。新 `ui-*` scopes 的 build＋test 上限是 30 分鐘，其他 scope 保留原有 80 分鐘上限。每案例 240 秒預設、300 秒最大值保留；含 workspace 的新分片沿用既有 workspace 的 420 秒最大值。沒有以增加逾時或重跑失敗案例達成通過。
 
@@ -35,7 +36,7 @@ python3 -m unittest discover -s scripts -p 'test_release_*.py' -v
 python3 scripts/release_ios17.py --os 17.0.1 --expected-host-arch arm64 --test-scope ui-memory --output build/ios17-memory
 ```
 
-workflow 的 `ios17_host_arch`、`startup-smoke` 與精確 runtime 比對保持不變。17.0.1 與 17.5 要分別跑 `core` 和全部 11 個 UI 分片，不能混用版本／架構補齊。清單檢查也在 native 工作開始前執行；任何新非 Live 類別必須加入唯一分片，新 methods 自動跟隨所屬類別。清單拒絕遺漏、重複、錯字、把 Live 放進分片、以及無法判讀的宣告。現有來源採一個同名 Swift 檔案對應一個 XCTestCase 類別；新增繼承測試或 extension methods 時須明確更新檢查器。
+workflow 的 `ios17_host_arch`、`startup-smoke` 與精確 runtime 比對保持不變。17.0.1 與 17.5 要分別跑 `core` 和全部 12 個 UI 分片，不能混用版本／架構補齊。清單檢查也在 native 工作開始前執行；任何新非 Live 類別必須加入唯一分片，新 methods 自動跟隨所屬類別。清單拒絕遺漏、重複、錯字、把 Live 放進分片、以及無法判讀的宣告。現有來源採一個同名 Swift 檔案對應一個 XCTestCase 類別；新增繼承測試或 extension methods 時須明確更新檢查器。
 
 ## 結果界線
 
@@ -74,7 +75,7 @@ GitHub 上的原生執行結果。
 
 `e963698` 的 [exact 17.0.1 啟動測試](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42893709163) 已完成 1/1、零略過；下一步以同一預編譯時序驗證兩個 PDF assembly 入口。這不證明先前 bootstrap 失敗的根因，也不代表完整 iOS 17 驗收。
 
-`pdf-assembly-multi` 單獨選取新雙檔合併案例，仍歸 `ui-documents`／`documents-output` 管理。案例先宣告 300 秒上限；既有單檔案例保持 240 秒。兩次逐檔讀取核准、交錯頁序、真實 PDFKit 輸出與匯出取消後保存都必須完成，不能用允許多選的單檔結果代替。此新範圍尚未加入預編譯診斷的允許清單。
+`pdf-assembly-multi` 單獨選取新雙檔合併案例，仍歸 `ui-documents`／`documents-output` 管理。案例先宣告 300 秒上限；既有單檔案例保持 240 秒。新版流程逐次單選並明確加入兩份 PDF；兩次真實選檔回呼、逐檔讀取核准、交錯頁序、真實 PDFKit 輸出與匯出取消後保存都必須完成，不能用允許多選的單檔結果代替。此新範圍尚未加入預編譯診斷的允許清單。
 
 `aa676a3` 的一般與副本 PDF 重排入口在 exact 17.0.1 各通過 1/1、零略過，後續預編譯流程可明確選取 `documents-read`／`documents-output`。兩組仍共用各自原有的 1800 秒建置＋測試額度；全部方法必須按清單完成，失敗或略過不能當成通過。
 

@@ -15,10 +15,10 @@ import UniformTypeIdentifiers
     @State private var exportDeliveryID: UUID?
     @State private var exportStatus: String?
 
-    init(source: DocumentTextSnapshot, modelAccess: @escaping () throws -> ModelAccess,
+    init(source: DocumentTextSnapshot, learning: LearningStore, modelAccess: @escaping () throws -> ModelAccess,
          modelChanges: AnyPublisher<Void, Never>) {
         self.modelAccess = modelAccess; self.modelChanges = modelChanges
-        _session = StateObject(wrappedValue: DocumentQuerySession(source: source))
+        _session = StateObject(wrappedValue: DocumentQuerySession(source: source, learning: learning))
     }
 
     var body: some View {
@@ -26,7 +26,7 @@ import UniformTypeIdentifiers
             Section("本次已擷取的 PDF") {
                 Text(verbatim: session.source.filename).accessibilityIdentifier("documentQuery.filename")
                 Text("選取 \(session.source.pages.count) 頁 · \(session.source.byteCount) 位元組文字")
-                Text("查詢只使用這次擷取的文字；原 PDF 不會重新讀取。")
+                Text("文件引文只來自這次擷取的文字；原 PDF 不會重新讀取。")
                     .font(.caption)
                 DisclosureGroup("來源資訊") {
                     Text(verbatim: session.source.engine)
@@ -45,7 +45,7 @@ import UniformTypeIdentifiers
                 if let destination = session.destination {
                     Text(verbatim: destination).accessibilityIdentifier("documentQuery.destination")
                 }
-                Text("開始後，問題、檔名與模型搜尋或讀取的原文片段會傳給上述服務。回答不會自動加入記憶或技能。")
+                Text("開始後，問題、檔名、讀取片段與已啟用的個人檔案、相關記憶及適用技能會傳給上述服務。保存資料只作背景，不是文件證據或操作授權。回答不會自動儲存。")
                     .font(.caption)
                 Button("傳送問題並查詢這份 PDF") {
                     questionFocused = false; session.start(modelAccess: modelAccess)

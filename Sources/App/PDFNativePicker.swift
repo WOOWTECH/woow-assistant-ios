@@ -66,7 +66,7 @@ enum PDFNativePickerExperiment {
     /// Separate arm: extraction's open/copy flags never change assembly.
     static func assemblyConfiguration(arguments: [String], fixtureNamespace: UUID?) -> Configuration? {
         #if DEBUG
-        let flag = "-UITestPDFAssemblyUIKitOpenMulti"
+        let flag = "-UITestPDFAssemblyUIKitOpen"
         guard let base = configuration(arguments: arguments, fixtureNamespace: fixtureNamespace),
               base.mode == .swiftUI,
               arguments.filter({ $0 == flag }).count <= 1,
@@ -95,6 +95,7 @@ import Darwin
     let experiment: PDFNativePickerExperiment.Configuration?
     var allowsMultipleSelection: Bool = false
     let onCompletion: (Result<[URL], Error>) -> Void
+    var onCancellation: () -> Void = {}
     var onObservation: (String) -> Void = { _ in }
     // Supplied only from the validated synthetic fixture. Observation never
     // selects an experimental picker mode or changes the user's import choice.
@@ -125,9 +126,9 @@ import Darwin
 
     private func swiftUIImporter(_ content: Content) -> some View {
         content.fileImporter(isPresented: $isPresented, allowedContentTypes: [.pdf],
-                             allowsMultipleSelection: allowsMultipleSelection) { outcome in
+                             allowsMultipleSelection: allowsMultipleSelection, onCompletion: { outcome in
             deliver(outcome, source: "swiftui")
-        }
+        }, onCancellation: onCancellation)
     }
 
     @ViewBuilder private func presentation(_ content: Content) -> some View {
@@ -140,6 +141,7 @@ import Darwin
                     // Cancellation matches fileImporter: dismiss without a
                     // success/empty callback or a prepared execution plan.
                     if let outcome { deliver(outcome, source: "uikit") }
+                    else { onCancellation() }
                 }
             }
         } else {
@@ -193,7 +195,8 @@ import Darwin
     }
 
     func updateUIViewController(_ picker: UIDocumentPickerViewController, context: Context) {
-        context.coordinator.onCompletion = onCompletion
+        // One controller owns one immutable presentation callback. A late
+        // delegate must not acquire a newer selection request's closure.
     }
 
     static func dismantleUIViewController(_ picker: UIDocumentPickerViewController, coordinator: Coordinator) {
@@ -203,7 +206,7 @@ import Darwin
     }
 
     @MainActor final class Coordinator: NSObject, UIDocumentPickerDelegate {
-        var onCompletion: (Result<[URL], Error>?) -> Void
+        let onCompletion: (Result<[URL], Error>?) -> Void
         let onLifecycle: (String) -> Void
         private var completed = false
         #if DEBUG

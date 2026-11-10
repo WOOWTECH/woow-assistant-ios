@@ -1,5 +1,34 @@
 # Verification — 2026-11-11
 
+## Conversation archive, saved references and deliberate PDF addition integrated
+
+The new conversation archive stores completed question/answer pairs in a dedicated
+local encrypted vault, with explicit list/open/delete and retry after a failed save.
+Restoring never resumes unfinished commands or approvals; continuation requires the
+same endpoint, model and credential identity. Actual App checks pass 90 Debug / 76
+Release assertions, with 573 / 492 existing chat assertions and 30 independent
+review assertions. Native SwiftUI and four new archive UI cases remain pending.
+
+Saved memory/profile/compatible skills now reach route replay and PDF questions at
+explicit start. Deletion, disabling and cancellation invalidate in-flight work.
+Local route checks pass 239 assertions per configuration; PDF question App checks
+pass 357 per configuration, including the corrected standalone live-harness build.
+These local counts are not native UI acceptance or actual-model behavior claims.
+
+PDF assembly now selects one file at a time and offers explicit Add PDF controls,
+up to three sources. Each addition clears prior grants and requires fresh read and
+assembly review; cancellation preserves existing output. Local Debug/Release checks
+pass 53 new and 57 existing App assertions each. The two-file native test retains
+separate file identities, two real picker callbacks, approvals and exact A2/B1/A1
+output. This replaces the inconsistent batch flow without asserting an OS fix.
+New native runs must validate this combined source revision.
+
+The isolated integration snapshot passes 231 Python tests, actionlint, XcodeGen,
+fixture diagnostic guards and whitespace checks. Hosted replay/archive tests and a
+separate four-case archive UI shard are registered; iOS 17 UI inventory is now 90
+non-Live methods across 12 disjoint shards, plus 22 Live methods.
+
+
 
 ## Notification approval matrix completed at f49c8f7
 

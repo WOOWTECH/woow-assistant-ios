@@ -25,7 +25,7 @@ SAMPLE_SECONDS = 3
 SAMPLE_COMMAND_SECONDS = 15
 POLL_SECONDS = 0.2
 FIXTURE_CLASSES = frozenset({
-    "WoowAssistantUITests", "SelfConfigurationUITests", "BrowserWorkspaceUITests",
+    "WoowAssistantUITests", "SelfConfigurationUITests", "ConversationArchiveUITests", "BrowserWorkspaceUITests",
     "BrowserLoginUITests", "BrowserInteractionUITests", "BrowserUploadUITests",
     "BrowserLearningUITests", "MultiSourceResearchUITests", "MemoryUITests",
     "MemoryRaceUITests", "UserProfileUITests", "UserProfileToolUITests",

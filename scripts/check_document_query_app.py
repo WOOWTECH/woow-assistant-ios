@@ -22,7 +22,8 @@ from check_profile_chat_app import APP_SOURCES, MODULES
 PRIVATE_FIELDS = ("WOOW_MODEL_TEST_BASE_URL", "WOOW_MODEL_TEST_MODEL", "WOOW_MODEL_TEST_API_KEY")
 GROUPS = {"consentAndExport", "changedAccessBeforeStart", "lateSettingsAndKeyChanges",
           "cancellationAndQuestionChanges", "failureRefusalAndExplicitRetry",
-          "correctionAuditAndQuestionReset"}
+          "correctionAuditAndQuestionReset", "referenceCaptureAndSwitches",
+          "referenceEditsStayFrozen", "referenceRevocationStopsActualTask"}
 LOCAL_HARNESS = "scripts/CheckDocumentQueryApp.swift"
 LIVE_HARNESS = "scripts/LiveDocumentQueryAppSmoke.swift"
 RESOURCE = "Sources/AssistantSkills/Resources/MikaBundledSkills.json"

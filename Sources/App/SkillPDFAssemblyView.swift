@@ -33,6 +33,7 @@ struct SkillPDFAssemblyDocument: FileDocument {
 struct SkillPDFAssemblyView: View {
     @StateObject private var model = SkillPDFAssemblySession()
     @State private var choosingFile = false
+    @State private var pickerRequest: SkillPDFAssemblySession.PickerRequest?
     @State private var importChoice: PDFImportChoice = .original
     @State private var exporting = false
     @State private var exportDocument: SkillPDFAssemblyDocument?
@@ -43,6 +44,7 @@ struct SkillPDFAssemblyView: View {
     @State private var pickerObservation = "unobserved"
     @State private var importerCallbacks = 0
     @State private var importerOutcome = "none"
+    @State private var totalImporterCallbacks = 0
     #endif
 
     private var pickerExperiment: PDFNativePickerExperiment.Configuration? {
@@ -55,9 +57,10 @@ struct SkillPDFAssemblyView: View {
     }
 
     var body: some View {
+        let request = pickerRequest
         Form {
             Section("擷取頁面、重排與合併") {
-                Text("選取一至三個 PDF，依指定順序產生新文件。每個檔案最多 10 MiB，合計最多 200 頁；輸出最多 20 MiB。處理過程不改動原檔，也不會上傳。")
+                Text("逐份選取或加入 PDF，最多三份，再依指定順序產生新文件。每個檔案最多 10 MiB，合計最多 200 頁；輸出最多 20 MiB。處理過程不改動原檔，也不會上傳。")
                 Text("目前支援一般靜態 PDF；不支援加密、表單、註記、附件、書籤、標記結構、圖層與互動文件，也不會辨識掃描文字。")
                     .font(.caption)
                 if model.sources.isEmpty {
@@ -77,6 +80,7 @@ struct SkillPDFAssemblyView: View {
                 if model.uiTestPair != nil {
                     Text("測試雙檔已建立")
                         .font(.caption).accessibilityIdentifier("pdfAssembly.uitest.pair")
+                        .accessibilityValue("callbacks=\(totalImporterCallbacks) sources=\(model.sources.count)")
                 }
                 #endif
             }
@@ -105,6 +109,16 @@ struct SkillPDFAssemblyView: View {
                             }
                         }
                     }
+                    Text("加入文件會保留已選來源，但清除本次讀取核准、頁序及尚未儲存的結果；請重新核准各文件。取消選檔則保留原狀。")
+                        .font(.caption).accessibilityIdentifier("pdfAssembly.add.notice")
+                    Button("加入 PDF 文件") { presentPicker(.original, adding: true) }
+                        .disabled(!model.canAdd || choosingFile || exporting)
+                        .accessibilityIdentifier("pdfAssembly.add")
+                    Button("加入 PDF 副本") { presentPicker(.importCopy, adding: true) }
+                        .disabled(!model.canAdd || choosingFile || exporting)
+                        .accessibilityIdentifier("pdfAssembly.addCopy")
+                    Text("最多三份來源。匯入副本時，系統會在你選檔時建立副本，仍需另行核准讀取。")
+                        .font(.caption)
                 }
             }
             if model.receipts.count == model.sources.count && !model.sources.isEmpty && model.result == nil {
@@ -170,7 +184,13 @@ struct SkillPDFAssemblyView: View {
             }
         }
         .modifier(PDFImportPresentation(isPresented: $choosingFile, choice: importChoice, experiment: pickerExperiment,
-                                       allowsMultipleSelection: true, onCompletion: receiveSelection,
+                                       allowsMultipleSelection: false,
+                                       onCompletion: { receiveSelection($0, request: request) },
+                                       onCancellation: {
+            guard let request else { return }
+            model.cancelPicker(request)
+            if pickerRequest == request { pickerRequest = nil }
+        },
                                        onObservation: { value in
             #if DEBUG
             pickerObservation = value
@@ -197,14 +217,18 @@ struct SkillPDFAssemblyView: View {
         }
     }
 
-    private func presentPicker(_ choice: PDFImportChoice) {
+    private func presentPicker(_ choice: PDFImportChoice, adding: Bool = false) {
+        guard !choosingFile, !exporting, let request = model.beginPicker(adding: adding) else { return }
+        pickerRequest = request
         importChoice = choice
         choosingFile = true
     }
 
-    private func receiveSelection(_ outcome: Result<[URL], Error>) {
+    private func receiveSelection(_ outcome: Result<[URL], Error>, request: SkillPDFAssemblySession.PickerRequest?) {
+        guard let request else { return }
         #if DEBUG
         importerCallbacks = min(importerCallbacks + 1, 16)
+        totalImporterCallbacks = min(totalImporterCallbacks + 1, 16)
         let category: String
         switch outcome {
         case .success(let urls): category = urls.isEmpty ? "empty" : urls.count == 1 ? "one" : "multiple"
@@ -214,9 +238,11 @@ struct SkillPDFAssemblyView: View {
         recordPickerEvent("completion outcome=\(category)")
         #endif
         switch outcome {
-        case .success(let urls): model.select(urls)
-        case .failure: model.selectionFailed()
+        case .success(let urls):
+            if model.finishPicker(request, urls: urls) { resetExport() }
+        case .failure: model.pickerFailed(request)
         }
+        if pickerRequest == request { pickerRequest = nil }
     }
 
     #if DEBUG

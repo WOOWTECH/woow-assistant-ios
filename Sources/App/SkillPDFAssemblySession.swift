@@ -34,20 +34,72 @@ final class SkillPDFAssemblySession: ObservableObject {
     }
     #endif
     private var runtime: SkillPDFAssemblyRuntime?
+    private var selectedFiles: [SkillExecutionSelectedFile] = []
     private var preparedOrder: String?
     private var generation = UUID()
     private var task: Task<Void, Never>?
+    struct PickerRequest: Equatable {
+        fileprivate let id = UUID()
+        fileprivate let generation: UUID
+        let adding: Bool
+    }
+    private var pendingPicker: PickerRequest?
 
-    var canPrepare: Bool { !sources.isEmpty && receipts.count == sources.count && !running && result == nil }
+    var canPrepare: Bool { !sources.isEmpty && receipts.count == sources.count && !running && result == nil && pendingPicker == nil }
+    var canAdd: Bool { !running && pendingPicker == nil && !sources.isEmpty && sources.count < SkillPDFAssemblyLimits.files }
+
+    func beginPicker(adding: Bool) -> PickerRequest? {
+        guard !running, pendingPicker == nil, adding ? canAdd : sources.isEmpty else { return nil }
+        let request = PickerRequest(generation: generation, adding: adding)
+        pendingPicker = request
+        return request
+    }
+
+    func cancelPicker(_ request: PickerRequest) {
+        guard pendingPicker == request else { return }
+        pendingPicker = nil // A late completion cannot authorize selection.
+    }
+
+    func pickerFailed(_ request: PickerRequest) {
+        guard pendingPicker == request, request.generation == generation else { return }
+        pendingPicker = nil; selectionFailed()
+    }
+
+    @discardableResult
+    func finishPicker(_ request: PickerRequest, urls: [URL]) -> Bool {
+        guard pendingPicker == request, request.generation == generation, !running else { return false }
+        pendingPicker = nil // One callback consumes this presentation, even on validation failure.
+        guard urls.count == 1 else {
+            status = "每次請只選取一份 PDF，再使用「加入 PDF」加入其他來源。"
+            return false
+        }
+        do {
+            let incoming = try urls.map { try SkillExecutionSelectedFile(userSelectedURL: $0) }
+            let files = (request.adding ? selectedFiles : []) + incoming
+            // Validate first. Cancel, invalid input and a fourth source must not
+            // destroy the previous immutable result or its selected sources.
+            let execution = try SkillPDFAssemblyRuntime(selectedFiles: files, catalog: BundledSkillCatalog.bundled())
+            guard execution.available else { throw SkillExecutionError.unavailable }
+            clear()
+            runtime = execution; selectedFiles = files; sources = execution.sources
+            // Reuse the original SelectedFile values so their UUIDs remain
+            // stable, but revoke all old read/assembly grants and snapshots.
+            status = request.adding
+                ? "已加入文件；請重新核准各來源的讀取，再核對新頁序。"
+                : "請逐一確認要讀取的文件。"
+            return true
+        } catch { report(error); return false }
+    }
 
     func select(_ urls: [URL]) {
         clear()
         do {
+            let files = try urls.map { try SkillExecutionSelectedFile(userSelectedURL: $0) }
             let execution = try SkillPDFAssemblyRuntime(
-                selectedFiles: urls.map { try SkillExecutionSelectedFile(userSelectedURL: $0) },
+                selectedFiles: files,
                 catalog: BundledSkillCatalog.bundled())
             guard execution.available else { throw SkillExecutionError.unavailable }
-            runtime = execution; sources = execution.sources
+            runtime = execution; selectedFiles = files; sources = execution.sources
             status = "請逐一確認要讀取的文件。"
         } catch { report(error) }
     }
@@ -55,7 +107,7 @@ final class SkillPDFAssemblySession: ObservableObject {
     func selectionFailed() { status = "未能取得選取的 PDF，請重新選取。" }
 
     func read(_ sourceID: UUID) {
-        guard let runtime, !running, receipts.allSatisfy({ $0.id != sourceID }) else { return }
+        guard let runtime, !running, pendingPicker == nil, receipts.allSatisfy({ $0.id != sourceID }) else { return }
         let token = generation
         running = true; status = nil
         task = Task {
@@ -106,7 +158,7 @@ final class SkillPDFAssemblySession: ObservableObject {
     }
 
     func assemble() {
-        guard let runtime, let reviewed = plan, preparedOrder == orderText, !running, result == nil else { return }
+        guard let runtime, let reviewed = plan, preparedOrder == orderText, !running, pendingPicker == nil, result == nil else { return }
         let token = generation
         running = true; status = nil
         task = Task {
@@ -130,6 +182,7 @@ final class SkillPDFAssemblySession: ObservableObject {
         generation = UUID(); task?.cancel(); task = nil
         if let runtime { Task { await runtime.cancel() } }
         runtime = nil; sources = []; receipts = []; plan = nil; preparedOrder = nil; result = nil
+        selectedFiles = []; pendingPicker = nil
         orderText = ""; status = nil; running = false
         #if DEBUG
         uiTestPairOutput = "pair=none"

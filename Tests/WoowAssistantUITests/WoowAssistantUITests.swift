@@ -74,7 +74,7 @@ final class WoowAssistantUITests: XCTestCase {
         XCTAssertFalse(app.buttons["mcp.connect"].isEnabled)
     }
 
-    func testHTTPSValidationThenConfiguredChatAndSessionOnlyHistory() {
+    func testHTTPSValidationThenConfiguredChatWithoutAutomaticHistoryRestore() {
         let app = launchApp()
         fillConfiguration(in: app, baseURL: "http://model.example.invalid/v1")
         save(in: app)
@@ -87,7 +87,7 @@ final class WoowAssistantUITests: XCTestCase {
         openSection("chat", in: app)
         send("Hello fixture 17", in: app)
         assertReply("測試回覆：Hello fixture 17", in: app)
-        XCTAssertTrue(app.staticTexts["chat.historyNotice"].label.contains("本次 App 工作階段"))
+        XCTAssertTrue(app.staticTexts["chat.historyNotice"].label.contains("加密保存在此裝置"))
         assertDraft("", in: app)
         attachScreenshot("fixture-reply", in: app)
 

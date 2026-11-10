@@ -44,6 +44,7 @@ private struct DocumentQueryPresentation: Identifiable {
 /// Parent integration: present from the documents skill with current model access.
 /// A configured worker is optional; no endpoint or background upload is created.
 @MainActor struct SkillExecutionView: View {
+    private let learning: LearningStore
     private let modelAccess: () throws -> ModelAccess
     private let modelChanges: AnyPublisher<Void, Never>
     private let suppliedWorker: (any SkillExecutionPDFWorker)?
@@ -84,9 +85,9 @@ private struct DocumentQueryPresentation: Identifiable {
         #endif
     }
 
-    init(modelAccess: @escaping () throws -> ModelAccess, modelChanges: AnyPublisher<Void, Never>,
+    init(learning: LearningStore, modelAccess: @escaping () throws -> ModelAccess, modelChanges: AnyPublisher<Void, Never>,
          worker: (any SkillExecutionPDFWorker)? = nil) {
-        self.modelAccess = modelAccess; self.modelChanges = modelChanges; self.suppliedWorker = worker
+        self.learning = learning; self.modelAccess = modelAccess; self.modelChanges = modelChanges; self.suppliedWorker = worker
     }
 
     var body: some View {
@@ -208,7 +209,7 @@ private struct DocumentQueryPresentation: Identifiable {
         }, onCancellation: { finishExport("已取消匯出，擷取結果仍保留。") })
         .sheet(item: $documentQuery) { presentation in
             NavigationStack {
-                DocumentQueryView(source: presentation.source, modelAccess: modelAccess, modelChanges: modelChanges)
+                DocumentQueryView(source: presentation.source, learning: learning, modelAccess: modelAccess, modelChanges: modelChanges)
             }
         }
         .toolbar {

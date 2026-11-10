@@ -24,7 +24,7 @@ import AssistantSkills
         defer { try? FileManager.default.removeItem(at: directory) }
         var touched = false
         let invalid: [[String]] = [args, args + [flag], args + ["-LiveModelUITest"], args + ["-LiveMCPUITest"],
-                       args + ["-UITestPDFAssemblyUIKitOpenMulti"], args + ["-UITestSkillFixtureWriteMode", "coordinated"],
+                       args + ["-UITestPDFAssemblyUIKitOpen"], args + ["-UITestSkillFixtureWriteMode", "coordinated"],
                        args + ["-UITestNamespace", id.uuidString], args + [flag + "=1"],
                        args.filter { $0 != "-UITestMode" }, args.filter { $0 != "-UITestSkillExecution" },
                        args.map { $0 == id.uuidString ? "../outside" : $0 },
@@ -150,7 +150,7 @@ import CoreGraphics
     }
     override func tearDownWithError() throws { app.terminate() }
 
-    func testUserChosenCopyImportsTwoDistinctPDFsAndInterleavesApprovedPages() {
+    func testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages() {
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW", "-UITestMode",
             "-UITestNamespace", namespace, "-UITestResetStorage", "-UITestSkillExecution", "-UITestSkillAssemblyPair"]
         app.launchEnvironment = [:]; app.launch()
@@ -173,7 +173,17 @@ import CoreGraphics
         reveal(notice, reading: true); XCTAssertTrue(notice.label.contains("系統會在你選檔時建立副本"))
         tapForm("pdfAssembly.importCopy")
         ready(cancel, timeout: 45)
-        chooseBothNativeFiles()
+        chooseOneNativeFile("A", index: 1)
+        XCTAssertEqual(form.staticTexts["pdfAssembly.source.1"].label, "來源 1：" + filename("A"))
+        XCTAssertFalse(form.staticTexts["pdfAssembly.receipt.1"].exists)
+        XCTAssertFalse(form.staticTexts["pdfAssembly.source.2"].exists)
+        let addNotice = form.staticTexts["pdfAssembly.add.notice"]
+        reveal(addNotice, reading: true); XCTAssertTrue(addNotice.label.contains("重新核准各文件"))
+        tapForm("pdfAssembly.addCopy") // A second deliberate action, never automatic reopening.
+        ready(cancel, timeout: 45)
+        chooseOneNativeFile("B", index: 2)
+        XCTAssertEqual(form.staticTexts["pdfAssembly.source.1"].label, "來源 1：" + filename("A"))
+        XCTAssertEqual(form.staticTexts["pdfAssembly.uitest.pair"].value as? String, "callbacks=2 sources=2")
 
         var indices: [String: Int] = [:]
         for index in 1...2 {
@@ -185,10 +195,10 @@ import CoreGraphics
             guard let role = matches.first else { return }
             XCTAssertNil(indices.updateValue(index, forKey: role), "The picker must not return one source twice.")
             XCTAssertEqual(source.value as? String,
-                "source=user-copy mode=import allowsMultipleSelection=true callbacks=1 outcome=multiple sources=2")
+                "source=user-copy mode=import allowsMultipleSelection=false callbacks=1 outcome=one sources=2")
         }
         guard let a = indices["A"], let b = indices["B"], a != b else {
-            XCTFail("Actual callback must contain both distinct PDFs."); return
+            XCTFail("The two actual callbacks must retain both distinct PDFs."); return
         }
         XCTAssertFalse(cancel.exists)
         XCTAssertFalse(form.staticTexts["pdfAssembly.receipt.1"].exists)
@@ -256,7 +266,7 @@ import CoreGraphics
         XCTAssertFalse(cancel.exists)
     }
 
-    private func chooseBothNativeFiles() {
+    private func navigateToSyntheticFiles(_ role: String = "A") {
         // Known local locations only; no arbitrary provider enumeration, URLs,
         // injected selection, retapping files, or picker re-presentation.
         var used = Set<String>()
@@ -272,13 +282,13 @@ import CoreGraphics
             }
         }
         for _ in 0..<6 {
-            if exactCell("A").exists { break }
+            if exactCell(role).exists { break }
             // Scroll only inside the known local app folder, never through an
             // arbitrary provider tree. Two synthetic names are the sole target.
             if filesNavigation.staticTexts.matching(NSPredicate(format: "label IN %@", appLabels)).firstMatch.exists
                 || filesNavigation.buttons["渥屋助理, 「動作」選單"].exists {
                 for _ in 0..<3 {
-                    if exactCell("A").exists { break }
+                    if exactCell(role).exists { break }
                     guard filesList.exists else { XCTFail("Known app folder must expose Files list."); return }
                     filesList.swipeUp()
                 }
@@ -291,27 +301,39 @@ import CoreGraphics
             used.insert(next.0); let attempted = used; next.1.tap()
             let successors = next.0 == "app" ? [] : next.0 == "local" ? ["app"] : ["app", "local"]
             let progress = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-                self.exactCell("A").exists || successors.contains { !attempted.contains($0) && candidate($0) != nil }
+                self.exactCell(role).exists || successors.contains { !attempted.contains($0) && candidate($0) != nil }
             }, object: nil)
             XCTAssertEqual(XCTWaiter.wait(for: [progress], timeout: 12), .completed,
                            "Require a real known successor; never tap an unchanged Browse route twice.")
         }
-        for role in ["A", "B"] {
-            let cell = exactCell(role)
-            let stem = String(filename(role).dropLast(4))
-            let matches = filesList.cells.matching(NSPredicate(format: "identifier == %@", stem + ", pdf"))
-            XCTAssertEqual(matches.count, 1)
-            XCTAssertEqual(cell.staticTexts.matching(NSPredicate(format: "label IN %@", [filename(role), stem])).count, 1)
-            ready(cell)
-            let frame = cell.frame, viewport = filesList.frame.intersection(app.frame)
-            XCTAssertTrue(!frame.isEmpty && !frame.isInfinite && viewport.contains(frame) && !filesNavigation.frame.intersects(frame),
-                          "Each exact Files cell must be wholly visible before its one selection tap.")
-            cell.tap()
-            XCTAssertTrue(filesNavigation.exists, "One multi-selection presentation must retain both selections until Open.")
-        }
+    }
+
+    private func chooseOneNativeFile(_ role: String, index: Int) {
+        navigateToSyntheticFiles(role)
+        let cell = exactCell(role), stem = String(filename(role).dropLast(4))
+        XCTAssertEqual(filesList.cells.matching(NSPredicate(format: "identifier == %@", stem + ", pdf")).count, 1)
+        XCTAssertEqual(cell.staticTexts.matching(NSPredicate(format: "label IN %@", [filename(role), stem])).count, 1)
+        ready(cell)
+        let viewport = filesList.frame.intersection(app.frame)
+        // Use the exact single-file cell's sole thumbnail. A filename tap
+        // need not open the document in the native Files presentation.
+        let images = cell.images.allElementsBoundByIndex
+        XCTAssertEqual(images.count, 1)
+        guard let thumbnail = images.first else { return }
+        let frame = thumbnail.frame
+        XCTAssertTrue(!frame.isEmpty && !frame.isInfinite && cell.frame.contains(frame)
+                      && viewport.contains(frame) && !filesNavigation.frame.intersects(frame))
+        thumbnail.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        let received = form.staticTexts["pdfAssembly.source.\(index)"]
         let open = filesNavigation.buttons.matching(NSPredicate(format: "label IN %@", ["打開", "開啟", "Open"])).firstMatch
-        ready(open); open.tap()
-        XCTAssertTrue(form.staticTexts["pdfAssembly.source.1"].waitForExistence(timeout: 15), "Require the actual two-URL callback within the unchanged callback bound.")
+        let progress = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
+            received.exists || (open.exists && open.isEnabled && open.isHittable)
+        }, object: nil)
+        XCTAssertEqual(XCTWaiter.wait(for: [progress], timeout: 15), .completed)
+        if !received.exists && open.exists && open.isEnabled && open.isHittable { open.tap() }
+        XCTAssertTrue(received.waitForExistence(timeout: 15))
+        XCTAssertEqual(received.label, "來源 \(index)：" + filename(role))
+        XCTAssertFalse(cancel.exists)
     }
 
     private func exactCell(_ role: String) -> XCUIElement {

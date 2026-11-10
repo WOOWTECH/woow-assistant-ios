@@ -32,10 +32,19 @@ struct DocumentQueryAudit {
     private var operationID: UUID?
     private var runtime: DocumentQueryRuntime?
     private var task: Task<Void, Never>?
+    private let learning: LearningStore
+    private var references: LearningRunSnapshot?
+    #if DEBUG
+    /// Capture before cancellation clears the field; awaiting the real task
+    /// observes completion without modifying the query lifecycle.
+    var capturedRunCompletion: Task<Void, Never>? { task }
+    #endif
 
     private enum HostError: Error { case changed, cancelled }
 
-    init(source: DocumentTextSnapshot) { self.source = source }
+    init(source: DocumentTextSnapshot, learning: LearningStore) {
+        self.source = source; self.learning = learning
+    }
 
     func setQuestion(_ value: String) {
         guard value != question else { return }
@@ -69,8 +78,12 @@ struct DocumentQueryAudit {
         do {
             try validate(approvedAccess, current: modelAccess())
             let runtime = try DocumentQueryRuntime(source: source, question: question)
+            let snapshot = try learning.captureRunReferences(goal: question,
+                capabilities: DocumentQueryRuntime.referenceCapabilities)
             let id = UUID()
             operationID = id; self.runtime = runtime
+            references = snapshot
+            snapshot.onRevoke = { [weak self] in self?.referencesRevoked(for: id) }
             result = nil; deliveryID = nil; refusal = nil; error = nil; running = true
             audit = .init()
             status = "正在依問題搜尋與分段讀取已核准的 PDF 文字…"
@@ -78,8 +91,10 @@ struct DocumentQueryAudit {
                 do {
                     let outcome = try await runtime.run(client: approvedAccess.client,
                         configuration: approvedAccess.configuration, apiKey: approvedAccess.key,
+                        references: snapshot.references,
                         validateContext: { [weak self] in
                             guard let self, self.operationID == id else { throw HostError.cancelled }
+                            try snapshot.check()
                             try self.validate(approvedAccess, current: modelAccess())
                         }, onEvent: { [weak self] event in
                             guard let self, self.operationID == id else { return }
@@ -99,7 +114,9 @@ struct DocumentQueryAudit {
                             }
                         })
                     guard let self, self.operationID == id, !Task.isCancelled else { return }
+                    try snapshot.check()
                     try self.validate(approvedAccess, current: modelAccess())
+                    self.releaseReferences()
                     self.running = false; self.operationID = nil; self.task = nil; self.runtime = nil
                     switch outcome {
                     case .completed(let result):
@@ -121,6 +138,7 @@ struct DocumentQueryAudit {
     func cancel(notice: Bool = true) {
         operationID = nil
         task?.cancel(); task = nil; runtime?.cancel(); runtime = nil; running = false
+        releaseReferences()
         if notice { status = "已停止查詢，問題與已擷取的文字仍保留。" }
     }
 
@@ -128,6 +146,18 @@ struct DocumentQueryAudit {
         cancel(notice: false); approvedAccess = nil; destination = nil
         status = result == nil ? "模型設定已變更；請重新確認目的服務後再查詢。"
             : "模型設定已變更；已完成的回答仍保留，再次查詢前請重新確認目的服務。"
+    }
+
+    private func releaseReferences() {
+        let snapshot = references; references = nil
+        snapshot?.onRevoke = nil; snapshot?.revoke()
+    }
+
+    private func referencesRevoked(for id: UUID) {
+        guard operationID == id else { return }
+        cancel(notice: false); approvedAccess = nil; destination = nil
+        error = "本次參考資料已撤銷；請確認目前設定與目的服務後重新查詢。"
+        status = "查詢已停止，問題與已擷取的 PDF 文字仍保留；晚到回覆不會更新結果。"
     }
 
     private func validate(_ prior: ModelAccess, current: ModelAccess) throws {
@@ -139,7 +169,10 @@ struct DocumentQueryAudit {
 
     private func fail(_ failure: Error) {
         cancel(notice: false)
-        if failure is HostError || (failure as? DocumentQueryError) == .contextChanged {
+        if failure is RunReferenceError {
+            approvedAccess = nil; destination = nil
+            error = "無法使用本次參考資料；請確認記憶與資料設定後重新查詢。"
+        } else if failure is HostError || (failure as? DocumentQueryError) == .contextChanged {
             approvedAccess = nil; destination = nil
             error = "模型設定或本次查詢已變更，請重新確認後再開始。"
         } else {

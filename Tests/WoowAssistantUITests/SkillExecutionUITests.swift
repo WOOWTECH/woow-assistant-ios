@@ -162,15 +162,16 @@ enum SkillExecutionNativePickerChecks {
         for flags in [[openFlag, copyFlag], [copyFlag, openFlag], ["-UITestPDFUIKitCopyPicker=1"]] {
             try require(configuration(control + flags, fixture: id) == nil)
         }
-        let assemblyFlag = "-UITestPDFAssemblyUIKitOpenMulti"
+        let assemblyFlag = "-UITestPDFAssemblyUIKitOpen"
         func assembly(_ arguments: [String], fixture: UUID? = nil) -> PDFNativePickerExperiment.Configuration? {
             PDFNativePickerExperiment.assemblyConfiguration(arguments: arguments, fixtureNamespace: fixture)
         }
         try require(assembly(control + [assemblyFlag]) == nil)
         try require(assembly(control + [assemblyFlag], fixture: UUID()) == nil)
         let invalidAssembly: [[String]] = [control + [assemblyFlag, assemblyFlag], control + [assemblyFlag, openFlag],
-                     control + [assemblyFlag, copyFlag], control + ["-UITestPDFAssemblyUIKitOpenMulti=1"],
-                     control + ["-UITestPDFAssemblyUnknown"], control + [assemblyFlag, "-LiveModelUITest"],
+                     control + [assemblyFlag, copyFlag], control + ["-UITestPDFAssemblyUIKitOpen=1"],
+                     control + ["-UITestPDFAssemblyUnknown"], control + ["-UITestPDFAssemblyUIKitOpenMulti"],
+                     control + [assemblyFlag, "-LiveModelUITest"],
                      control + [assemblyFlag, "-UITestNamespace", id.uuidString],
                      ["-UITestMode", "-UITestNamespace", id.uuidString, assemblyFlag],
                      Array(control.dropLast()) + ["../personal", assemblyFlag]]
@@ -383,13 +384,13 @@ final class SkillExecutionUITests: XCTestCase {
         assertNativePDFAssembly(picker: .swiftUI)
     }
 
-    func testUIKitOpenMultiPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult() {
+    func testUIKitOpenPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult() {
         assertNativePDFAssembly(picker: .uikitOpen)
     }
 
     func testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult() {
         // Actual product button, no launch flag or automatic picker fallback.
-        // Multi-selection is enabled; this case selects one two-page PDF.
+        // Each presentation accepts one PDF; this case selects one two-page PDF.
         assertNativePDFAssembly(picker: .userImportCopy)
     }
 
@@ -402,13 +403,13 @@ final class SkillExecutionUITests: XCTestCase {
             case .uikitOpen: source = "uikit"
             case .userImportCopy: source = "user-copy"
             }
-            return "source=\(source) mode=\(self == .userImportCopy ? "import" : "open") allowsMultipleSelection=true callbacks=1"
+            return "source=\(source) mode=\(self == .userImportCopy ? "import" : "open") allowsMultipleSelection=false callbacks=1"
         }
     }
 
     private func assertNativePDFAssembly(picker: AssemblyPicker) {
         launchPDFScreen(fromCatalog: true, catalogEntry: "catalog.documents.assemble",
-                        fixtureIdentifier: "pdfAssembly.uitest.fixture", assemblyUIKitOpenMulti: picker == .uikitOpen)
+                        fixtureIdentifier: "pdfAssembly.uitest.fixture", assemblyUIKitOpen: picker == .uikitOpen)
         let form = app.collectionViews["pdfAssembly.form"]
         XCTAssertFalse(form.staticTexts["pdfAssembly.source.1"].exists)
         XCTAssertFalse(form.staticTexts["pdfAssembly.result"].exists)
@@ -423,10 +424,10 @@ final class SkillExecutionUITests: XCTestCase {
         requireHittable(nativeCancel, timeout: 45)
         chooseSyntheticPDFInPresentedPicker(selected: form.staticTexts["pdfAssembly.source.1"],
                                             expectedLabel: "來源 1：" + filename,
-                                            allowsMultipleSelection: true)
+                                            allowsMultipleSelection: false)
         XCTAssertEqual(app.staticTexts["pdfAssembly.uitest.fixture"].value as? String,
                        picker.observation,
-                       "The actual picker must match the user's chosen mode, enable multiple selection and return exactly one importer callback.")
+                       "The actual picker must match the user's chosen mode, allow one file and return exactly one importer callback.")
         XCTAssertFalse(form.staticTexts["pdfAssembly.receipt.1"].exists,
                        "Native selection must not approve reading the source.")
         XCTAssertFalse(form.buttons["pdfAssembly.assemble"].exists)
@@ -774,12 +775,12 @@ final class SkillExecutionUITests: XCTestCase {
     private func launchPDFScreen(fromCatalog: Bool, fixtureWriteMode: String? = nil, picker: PickerArm = .swiftUI,
                                  catalogEntry: String = "catalog.documents.execute",
                                  fixtureIdentifier: String = "skillExecution.uitest.fixture",
-                                 assemblyUIKitOpenMulti: Bool = false) {
+                                 assemblyUIKitOpen: Bool = false) {
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW",
             "-UITestMode", "-UITestNamespace", namespace, "-UITestResetStorage", "-UITestSkillExecution"]
         if let fixtureWriteMode { app.launchArguments += ["-UITestSkillFixtureWriteMode", fixtureWriteMode] }
         if let flag = picker.launchFlag { app.launchArguments.append(flag) }
-        if assemblyUIKitOpenMulti { app.launchArguments.append("-UITestPDFAssemblyUIKitOpenMulti") }
+        if assemblyUIKitOpen { app.launchArguments.append("-UITestPDFAssemblyUIKitOpen") }
         app.launchEnvironment = [:]
         app.launch()
         tap("navigation.memory")
