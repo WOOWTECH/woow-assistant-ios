@@ -14,6 +14,10 @@ on:
         description: Run only iPhone SE on iOS 18.5 when current_only is false
         type: boolean
         default: false
+      large_only:
+        description: Run only iPhone 16 Pro Max on iOS 18.5 when current/compact are false
+        type: boolean
+        default: false
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
@@ -28,7 +32,7 @@ defaults:
     shell: bash
 
 concurrency:
-  group: ios-${{ github.workflow }}-${{ github.ref }}-${{ inputs.test_scope || 'all' }}-${{ inputs.current_only && 'current' || inputs.compact_only && 'compact' || 'matrix' }}
+  group: ios-${{ github.workflow }}-${{ github.ref }}-${{ inputs.test_scope || 'all' }}-${{ inputs.current_only && 'current' || inputs.compact_only && 'compact' || inputs.large_only && 'large' || 'matrix' }}
   cancel-in-progress: true
 
 jobs:
@@ -38,7 +42,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ github.event_name == 'workflow_dispatch' && inputs.current_only && fromJSON('[{"label":"ios26-current","xcode":"26.2","runtime":"iOS-26-2","device":"iPhone 17"}]') || github.event_name == 'workflow_dispatch' && inputs.compact_only && fromJSON('[{"label":"ios18-compact","xcode":"16.4","runtime":"iOS-18-5","device":"iPhone SE (3rd generation)"}]') || fromJSON('[{"label":"ios18-compact","xcode":"16.4","runtime":"iOS-18-5","device":"iPhone SE (3rd generation)"},{"label":"ios18-large","xcode":"16.4","runtime":"iOS-18-5","device":"iPhone 16 Pro Max"},{"label":"ios26-current","xcode":"26.2","runtime":"iOS-26-2","device":"iPhone 17"}]') }}
+        include: ${{ github.event_name == 'workflow_dispatch' && inputs.current_only && fromJSON('[{"label":"ios26-current","xcode":"26.2","runtime":"iOS-26-2","device":"iPhone 17"}]') || github.event_name == 'workflow_dispatch' && inputs.compact_only && fromJSON('[{"label":"ios18-compact","xcode":"16.4","runtime":"iOS-18-5","device":"iPhone SE (3rd generation)"}]') || github.event_name == 'workflow_dispatch' && inputs.large_only && fromJSON('[{"label":"ios18-large","xcode":"16.4","runtime":"iOS-18-5","device":"iPhone 16 Pro Max"}]') || fromJSON('[{"label":"ios18-compact","xcode":"16.4","runtime":"iOS-18-5","device":"iPhone SE (3rd generation)"},{"label":"ios18-large","xcode":"16.4","runtime":"iOS-18-5","device":"iPhone 16 Pro Max"},{"label":"ios26-current","xcode":"26.2","runtime":"iOS-26-2","device":"iPhone 17"}]') }}
     env:
       DEVELOPER_DIR: /Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer
       WOOW_SIM_RUNTIME: ${{ matrix.runtime }}
