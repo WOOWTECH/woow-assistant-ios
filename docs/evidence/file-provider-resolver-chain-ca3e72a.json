@@ -1,0 +1,328 @@
+{
+  "schemaVersion": 1,
+  "sourceRevision": "ca3e72ada5d92210a9f3828e22cacbc1b76d48d3",
+  "pairedCaseEvidence": "file-provider-presenter-pair-ca3e72a.json",
+  "investigation": "Read-only synthetic-file resolver-chain comparison of the two preserved ca3 current failures.",
+  "arms": [
+    {
+      "arm": "current-uikit",
+      "run": 42806373840,
+      "artifact": 13763842496,
+      "namespace": "F378FB9C-DD4C-49D1-98F3-94A1975C51E9",
+      "visibleFolder": [
+        "我的iPhone",
+        "渥屋助理"
+      ],
+      "publicPickerMode": "open",
+      "syntheticPathComparison": {
+        "appCoordinatedWriteURLMatchesDocumentManagerPickedURL": true,
+        "normalization": "file URL percent-decoding only; complete absolute paths compared locally, not published",
+        "sameDataContainer": true,
+        "parentDirectory": "Documents",
+        "exactSyntheticBasenameMatches": true,
+        "completePathSHA256": "c144798aa085154d4e8306ee2ebf8e4cef5f67615d0d30b057aa8cadbbbe4f40",
+        "containerIdentifierSHA256": "e7f31aaa312b92828d49d47f67c3401bd4d8762cf7a712bc74ba3986c638a53f"
+      },
+      "providerItem": {
+        "providerIdentifier": "com.apple.FileProvider.LocalStorage",
+        "enumeratorFolder": "localstorage/#io.woowtech.assistant",
+        "parentItemIdentifier": "#io.woowtech.assistant",
+        "itemIdentifier": "did=3",
+        "fileID": 3553064,
+        "baselineInode": 3553064,
+        "postTestInode": 3553064,
+        "fileIDMatchesBothSamples": true,
+        "uti": "com.adobe.pdf"
+      },
+      "bookmark": {
+        "scheme": "fp",
+        "providerIdentifier": "com.apple.FileProvider.LocalStorage",
+        "domainPathComponent": "",
+        "itemIdentifier": "did=3",
+        "opaqueComponentOmitted": true,
+        "hostUsingBookmark": true,
+        "resolutionOptionBitmask": null,
+        "emptyDomainComponentInterpretation": "Not established by these logs; not treated as proof of an invalid domain."
+      },
+      "timeline": [
+        {
+          "kind": "App-coordinated-write-request",
+          "utc": "2026-11-10T12:11:07.180762Z",
+          "decodedLine": 1,
+          "processID": 17040,
+          "writeOptions": 0
+        },
+        {
+          "kind": "DocumentManager-selected-provider-item",
+          "utc": "2026-11-10T12:11:39.419434Z",
+          "decodedLine": 734,
+          "processID": 19816,
+          "itemIdentifier": "did=3",
+          "fileID": 3553064
+        },
+        {
+          "kind": "DocumentManager-service-picked-file-URL",
+          "utc": "2026-11-10T12:11:39.439152Z",
+          "decodedLine": 744,
+          "processID": 19816,
+          "isAppCallback": false
+        },
+        {
+          "kind": "fileproviderd-reported-migration",
+          "utc": "2026-11-10T12:11:39.763479Z",
+          "decodedLine": 767,
+          "processID": 5594,
+          "fromVersion": 0,
+          "toVersion": 1
+        },
+        {
+          "kind": "fileproviderd-reported-migration",
+          "utc": "2026-11-10T12:11:39.766439Z",
+          "decodedLine": 770,
+          "processID": 5594,
+          "fromVersion": 3,
+          "toVersion": 4
+        },
+        {
+          "kind": "DocumentManager-reported-sandbox-extension-and-bookmark",
+          "utc": "2026-11-10T12:11:39.777834Z",
+          "decodedLine": 771,
+          "processID": 19816,
+          "isProofOfHostFileRead": false
+        },
+        {
+          "kind": "host-framework-received-item-bookmark",
+          "utc": "2026-11-10T12:11:39.778833Z",
+          "decodedLine": 774,
+          "processID": 17040,
+          "usingBookmark": true
+        },
+        {
+          "kind": "host-framework-bookmark-resolution-error",
+          "utc": "2026-11-10T12:11:40.093112Z",
+          "decodedLine": 782,
+          "processID": 17040,
+          "code": -1005,
+          "underlyingCode": -1012,
+          "itemIdentifier": "did=3"
+        }
+      ],
+      "sourceSpecificErrorTimestamp": {
+        "AppStdoutUTC": "2026-11-10T12:11:40.093112Z",
+        "appStdoutLine": 119732,
+        "decodedUnifiedLogUTC": "2026-11-10T12:11:40.093112Z",
+        "note": "Keep each source clock/timestamp; do not silently replace the original App stdout failure time with the decoded unified-log time."
+      },
+      "timingsWithinDecodedUnifiedLog": {
+        "pickedURLToBookmarkSeconds": 0.338682,
+        "hostBookmarkToResolutionErrorSeconds": 0.314279
+      },
+      "appImporterCallbackTraceCount": 0,
+      "fileproviderdMigrationBoundary": "Version notices are observed immediately before the bookmark is delivered. The log does not identify the migrated database or establish that its item mapping was stale/reset.",
+      "evidence": {
+        "decodedWindowFile": "provider-decoded.ndjson",
+        "decodedWindowSHA256": "530b5854ef42be7a80341b5e9f9f57a38565c16894c873e07bb2fb5476a1e7bd",
+        "decodedEventCount": 841,
+        "composeFailureCount": 0,
+        "appStdoutSHA256": "432e3ea1f0a664225ea41e0a79c7bb62180f38dd413bf444f0a6ebd03ffbcd93",
+        "fixtureInventorySHA256": "719ce8bc858d79a1b51634c4332e98c2ec9f1b98bbb62e5c5f1799c9ccc9d4ed"
+      },
+      "limits": [
+        "Selected URL and provider file-ID equality are observed before host resolution, not a continuous filesystem-presence measurement at the failure instant.",
+        "The internal provider item database contents, effective resolver mapping and actual target resolved by the failing call are not exposed.",
+        "Write options 0 belong to the fixture file coordinator; they are not bookmark-resolution options.",
+        "The listed process IDs and loaded framework overrides are observed participants; the logs do not expose every resolver RPC argument or establish that an override caused the failure."
+      ],
+      "observedProcesses": {
+        "DocumentManagerService": 19816,
+        "LocalStorageFileProvider": 19962,
+        "fileproviderd": 5594,
+        "ResolverService": 20449,
+        "App": 17040
+      },
+      "resolverReady": {
+        "decodedLine": 763,
+        "timestampAsDecoded": "2026-11-10 12:11:39.750634+0000"
+      },
+      "frameworkOverrideModulesObserved": [
+        "com.apple.FileProviderOverride",
+        "com.apple.icloud.drive.fileprovider.override"
+      ]
+    },
+    {
+      "arm": "current-swiftui",
+      "run": 42806381100,
+      "artifact": 13766211467,
+      "namespace": "0453F5BB-C6F5-4F82-88E5-D55945B0DD68",
+      "visibleFolder": [
+        "我的iPhone",
+        "渥屋助理"
+      ],
+      "publicPickerMode": "open",
+      "syntheticPathComparison": {
+        "appCoordinatedWriteURLMatchesDocumentManagerPickedURL": true,
+        "normalization": "file URL percent-decoding only; complete absolute paths compared locally, not published",
+        "sameDataContainer": true,
+        "parentDirectory": "Documents",
+        "exactSyntheticBasenameMatches": true,
+        "completePathSHA256": "4e9c62b22e4073692e97d581beef12a980cde932e1005361fc7aacae72f68f03",
+        "containerIdentifierSHA256": "674fb904cab9cc7610dd8048e721f79c18725865e7a6e8b76417622184e6b0b9"
+      },
+      "providerItem": {
+        "providerIdentifier": "com.apple.FileProvider.LocalStorage",
+        "enumeratorFolder": "localstorage/#io.woowtech.assistant",
+        "parentItemIdentifier": "#io.woowtech.assistant",
+        "itemIdentifier": "did=3",
+        "fileID": 3594367,
+        "baselineInode": 3594367,
+        "postTestInode": 3594367,
+        "fileIDMatchesBothSamples": true,
+        "uti": "com.adobe.pdf"
+      },
+      "bookmark": {
+        "scheme": "fp",
+        "providerIdentifier": "com.apple.FileProvider.LocalStorage",
+        "domainPathComponent": "",
+        "itemIdentifier": "did=3",
+        "opaqueComponentOmitted": true,
+        "hostUsingBookmark": true,
+        "resolutionOptionBitmask": null,
+        "emptyDomainComponentInterpretation": "Not established by these logs; not treated as proof of an invalid domain."
+      },
+      "timeline": [
+        {
+          "kind": "App-coordinated-write-request",
+          "utc": "2026-11-10T12:39:05.996428Z",
+          "decodedLine": 9,
+          "processID": 31924,
+          "writeOptions": 0
+        },
+        {
+          "kind": "DocumentManager-selected-provider-item",
+          "utc": "2026-11-10T12:39:47.052071Z",
+          "decodedLine": 10295,
+          "processID": 33298,
+          "itemIdentifier": "did=3",
+          "fileID": 3594367
+        },
+        {
+          "kind": "DocumentManager-service-picked-file-URL",
+          "utc": "2026-11-10T12:39:47.074491Z",
+          "decodedLine": 10305,
+          "processID": 33298,
+          "isAppCallback": false
+        },
+        {
+          "kind": "fileproviderd-reported-migration",
+          "utc": "2026-11-10T12:40:26.789936Z",
+          "decodedLine": 11627,
+          "processID": 5963,
+          "fromVersion": 0,
+          "toVersion": 1
+        },
+        {
+          "kind": "fileproviderd-reported-migration",
+          "utc": "2026-11-10T12:40:26.795919Z",
+          "decodedLine": 11630,
+          "processID": 5963,
+          "fromVersion": 3,
+          "toVersion": 4
+        },
+        {
+          "kind": "DocumentManager-reported-sandbox-extension-and-bookmark",
+          "utc": "2026-11-10T12:40:26.834155Z",
+          "decodedLine": 11631,
+          "processID": 33298,
+          "isProofOfHostFileRead": false
+        },
+        {
+          "kind": "host-framework-received-item-bookmark",
+          "utc": "2026-11-10T12:40:26.844659Z",
+          "decodedLine": 11635,
+          "processID": 31924,
+          "usingBookmark": true
+        },
+        {
+          "kind": "host-framework-bookmark-resolution-error",
+          "utc": "2026-11-10T12:40:27.170706Z",
+          "decodedLine": 11647,
+          "processID": 31924,
+          "code": -1005,
+          "underlyingCode": -1012,
+          "itemIdentifier": "did=3"
+        }
+      ],
+      "sourceSpecificErrorTimestamp": {
+        "AppStdoutUTC": "2026-11-10T12:40:27.301422Z",
+        "appStdoutLine": 142874,
+        "decodedUnifiedLogUTC": "2026-11-10T12:40:27.170706Z",
+        "note": "Keep each source clock/timestamp; do not silently replace the original App stdout failure time with the decoded unified-log time."
+      },
+      "timingsWithinDecodedUnifiedLog": {
+        "pickedURLToBookmarkSeconds": 39.759664,
+        "hostBookmarkToResolutionErrorSeconds": 0.326047
+      },
+      "appImporterCallbackTraceCount": 0,
+      "fileproviderdMigrationBoundary": "Version notices are observed immediately before the bookmark is delivered. The log does not identify the migrated database or establish that its item mapping was stale/reset.",
+      "evidence": {
+        "decodedWindowFile": "provider-decoded.ndjson",
+        "decodedWindowSHA256": "478beb73cb2e2e93e6d5ccaaffd3f936934b3811c21b5b1f8b376faf39767b28",
+        "decodedEventCount": 11766,
+        "composeFailureCount": 0,
+        "appStdoutSHA256": "3936a9b8df7bf5dcef08a5b24903211228bc35e25851c8f580e22dc9db4e1bee",
+        "fixtureInventorySHA256": "0894d192b65b757eb098ad63b8aaa89844c956634dd318de89e0df69de41288a"
+      },
+      "limits": [
+        "Selected URL and provider file-ID equality are observed before host resolution, not a continuous filesystem-presence measurement at the failure instant.",
+        "The internal provider item database contents, effective resolver mapping and actual target resolved by the failing call are not exposed.",
+        "Write options 0 belong to the fixture file coordinator; they are not bookmark-resolution options.",
+        "The listed process IDs and loaded framework overrides are observed participants; the logs do not expose every resolver RPC argument or establish that an override caused the failure."
+      ],
+      "observedProcesses": {
+        "DocumentManagerService": 33298,
+        "LocalStorageFileProvider": 33391,
+        "fileproviderd": 5963,
+        "ResolverService": 34417,
+        "App": 31924
+      },
+      "resolverReady": {
+        "decodedLine": 11617,
+        "timestampAsDecoded": "2026-11-10 12:40:26.739515+0000"
+      },
+      "frameworkOverrideModulesObserved": [
+        "com.apple.FileProviderOverride",
+        "com.apple.icloud.drive.fileprovider.override"
+      ]
+    }
+  ],
+  "finding": "In both failures the native DocumentManager returned the exact complete file URL used for the App fixture coordinated write, with the same app data container and Documents basename. Its LocalStorage did=3 item file-ID equals the baseline/post fixture inode. The observed failure occurs after a provider bookmark is handed to the host framework, before the App importer callback.",
+  "causeBoundary": {
+    "visibleWrongFolderSupported": false,
+    "differentContainerOrSelectedPathObserved": false,
+    "staleProviderIdentityProven": false,
+    "internalResolverMappingKnown": false,
+    "requestedPublicMode": "open",
+    "hostBookmarkPathObserved": true,
+    "productionFixEstablished": false
+  },
+  "limitations": [
+    "The repeated did=3 identifier is scoped to each separate run; it is not evidence that the runs reused one physical simulator or one item database.",
+    "A reported sandbox extension does not prove that the host successfully accessed file contents.",
+    "The empty domain component in the serialized bookmark and migration notices are observations, not established causes.",
+    "The SwiftUI bookmark-delivery delay is measured separately; the UIKit arm reaches the same resolver error without that long delay.",
+    "Unified logs were decoded from bounded selected Persist/Special/LiveData/time-sync entries plus matching symbols. This is not a complete all-process/all-time archive audit.",
+    "Required selected events decoded with zero compose failures. The broad optional UIKit UUID-symbol fetch ended with HTTPError after partial collection; the required messages decoded from the matching DSC. No native test was rerun."
+  ],
+  "symbolProvenance": {
+    "sourceArtifact": 13763842496,
+    "sharedCacheUUID": "97ECA66BAD553F618379F8AB536FC272",
+    "bytes": 121738223,
+    "sha256": "0a5c63c96c7a8788c86a5dcb06d1965b7a1a85d2ed44cdd750bbd8b9aca7fe43",
+    "reuse": "The SwiftUI artifact lists the same DSC UUID, size and compressed size; this symbol data was reused for the same iOS26.2 build."
+  },
+  "actions": {
+    "productionChanges": false,
+    "testChanges": false,
+    "newCIDispatch": false
+  }
+}

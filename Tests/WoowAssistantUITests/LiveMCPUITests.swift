@@ -5,6 +5,7 @@ import XCTest
 final class LiveMCPUITests: XCTestCase {
     private let namespace = UUID().uuidString
     private var launched = false
+    private var initialLaunchCompleted = false
 
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -17,25 +18,33 @@ final class LiveMCPUITests: XCTestCase {
     override func tearDownWithError() throws {
         guard launched else { return }
         let app = XCUIApplication()
-        app.terminate()
+        try LiveMCPNativeLifecycle.stopAndShowHome(app)
+        guard initialLaunchCompleted else {
+            XCTFail("LIVE_MCP_CLEANUP initial launch did not complete; namespace cleanup is unverified and isolated simulator removal is required.")
+            return
+        }
         app.launchArguments = ["-UITestMode", "-UITestNamespace", namespace, "-UITestResetStorage"]
         app.launchEnvironment = [:]
         app.launch()
+        try LiveMCPNativeLifecycle.requireForeground(app)
         XCTAssertTrue(app.buttons["navigation.tools"].waitForExistence(timeout: 10))
         app.buttons["navigation.tools"].tap()
         XCTAssertTrue(app.staticTexts["mcp.status"].waitForExistence(timeout: 5))
         XCTAssertEqual(app.staticTexts["mcp.status"].label, "尚未設定 MCP")
-        app.terminate()
+        try LiveMCPNativeLifecycle.stopAndShowHome(app)
     }
 
     func testRealDiscoveryDisconnectAndReconnect() throws {
         let endpoint = try XCTUnwrap(ProcessInfo.processInfo.environment["WOOW_LIVE_MCP_URL"])
         let app = XCUIApplication()
+        try LiveMCPNativeLifecycle.stopAndShowHome(app)
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW",
                                "-UITestMode", "-UITestNamespace", namespace, "-UITestResetStorage", "-LiveMCPUITest"]
         app.launchEnvironment = ["WOOW_LIVE_MCP_URL": endpoint]
         launched = true
         app.launch()
+        try LiveMCPNativeLifecycle.requireForeground(app)
+        initialLaunchCompleted = true
         XCTAssertTrue(app.buttons["navigation.tools"].waitForExistence(timeout: 10))
         app.buttons["navigation.tools"].tap()
         XCTAssertTrue(app.staticTexts["mcp.status"].waitForExistence(timeout: 5))

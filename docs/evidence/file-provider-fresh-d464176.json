@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "run": 42819390644,
+  "job": 129840707953,
+  "artifact": 13768093062,
+  "sourceRevision": "d46417667f7ef9589b55bb36c949c6ca99a34819",
+  "runURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42819390644",
+  "test": "SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText()",
+  "device": {
+    "architecture": "arm64",
+    "deviceId": "EDAA49ED-511C-417A-B743-D205A72E38B3",
+    "deviceName": "Woow-CI-5c50e92eccbb4f1dbf78044b5bd838d4",
+    "modelName": "iPhone 17",
+    "osBuildNumber": "23C54",
+    "osVersion": "26.2",
+    "platform": "iOS Simulator"
+  },
+  "toolchain": {
+    "xcodeVersions": [
+      "26.2"
+    ],
+    "simulatorSDKVersions": [
+      "26.2"
+    ]
+  },
+  "result": {
+    "started": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "secondsIncludingTeardown": 129.547
+  },
+  "summaryFailure": "XCTAssertTrue failed - Files selection must reach the real importer callback.",
+  "namespace": "5DAA8B32-2EEF-4AA0-AB78-13D61D76E758",
+  "fixtureWriteMode": "coordinated",
+  "presentation": {
+    "appStdoutLine": 61506,
+    "namespace": "5DAA8B32-2EEF-4AA0-AB78-13D61D76E758",
+    "source": "uikit",
+    "mode": "open",
+    "allowsMultipleSelection": false,
+    "utc": "2026-11-10T13:17:10.403202Z"
+  },
+  "callbackTraceCount": 0,
+  "callbacks": [],
+  "providerErrors": [
+    {
+      "appStdoutLine": 128136,
+      "utc": "2026-11-10T13:17:45.954446Z",
+      "errorDomain": "NSFileProviderErrorDomain",
+      "code": -1005,
+      "underlyingDomain": "NSFileProviderResolverErrorDomain",
+      "underlyingCode": -1012,
+      "itemIdentifier": "did=3"
+    }
+  ],
+  "internalEmptyItemsMessages": [
+    {
+      "appStdoutLine": 128139,
+      "utc": "2026-11-10T13:17:45.960390Z",
+      "isAppCallback": false
+    }
+  ],
+  "appAuditStates": [
+    {
+      "selections": 0,
+      "reads": 0,
+      "extractionAttempts": 0,
+      "results": 0,
+      "firstAppStdoutLine": 35695
+    }
+  ],
+  "fixture": {
+    "baseline": {
+      "evidence": {
+        "bytes": 8360,
+        "device": 16777229,
+        "inode": 3549556,
+        "modifiedNanoseconds": 159450749,
+        "modifiedSeconds": 1794316620,
+        "sampledAt": 1794316620.160678,
+        "sha256": "70d8f39c8ef82d47c4855da0a338364564891fe90a26f6a44c4afea6918ee33e",
+        "status": "valid"
+      },
+      "namespace": "5DAA8B32-2EEF-4AA0-AB78-13D61D76E758",
+      "phase": "created",
+      "version": 1
+    },
+    "current": {
+      "bytes": 8360,
+      "device": 16777229,
+      "inode": 3549556,
+      "modifiedNanoseconds": 159450749,
+      "modifiedSeconds": 1794316620,
+      "sampledAt": 1794316819.660452,
+      "sha256": "70d8f39c8ef82d47c4855da0a338364564891fe90a26f6a44c4afea6918ee33e",
+      "status": "valid"
+    },
+    "sameHash": true,
+    "sameIdentity": true,
+    "sameSize": true,
+    "baselineUTC": "2026-11-10T13:17:00.160678Z",
+    "postTestUTC": "2026-11-10T13:20:19.660452Z"
+  },
+  "inventoryObservation": "post-test-only",
+  "provesPresenceAtEarlierPickerFailure": false,
+  "materials": [
+    {
+      "file": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+      "bytes": 16925602,
+      "sha256": "b71bbf909d790cc6d9128ade4fe5d30cc0fbb575942d19e02d85918c7c1fcbe6"
+    },
+    {
+      "file": "app-configuration.json",
+      "bytes": 80,
+      "sha256": "79b1cc9b6f8ae00eeff14405eb1da3055777791342053259054f1c2c0239f9aa"
+    },
+    {
+      "file": "ios-tests.log",
+      "bytes": 906460,
+      "sha256": "4fc644338d4a58bfa2e2869cea094462dde1ba627242a3501b77642672037ab7"
+    },
+    {
+      "file": "simulator-boot.log",
+      "bytes": 15308,
+      "sha256": "975b4ceed77e79f58b51f595b88b82ce61c9e12127b7d5f8e4134c98b3212dba"
+    },
+    {
+      "file": "skill-pdf-fixture-evidence.json",
+      "bytes": 1074,
+      "sha256": "b2adaa52603ad619c26faf0e32788d9bfaeacf5d2ebcd855355de4b6ac529400"
+    },
+    {
+      "file": "test-simulator.json",
+      "bytes": 883,
+      "sha256": "02e0611904491b0ed3f5ab99a07a2da53397fb0b7d0aad7f9390023ef6d3d403"
+    },
+    {
+      "file": "test-summary.json",
+      "bytes": 1599,
+      "sha256": "dfe983cc1026936927249ed99114adbf4b162f8a5bb17c8344569b5c98dff847"
+    }
+  ],
+  "artifactRetrieval": "Only named ZIP entries retrieved by bounded HTTP ranges; complete App stdout entry inspected, no full artifact ZIP download.",
+  "ownedSimulator": {
+    "record": {
+      "cleanup": "deleted",
+      "cleanup_at": "2026-11-10T13:20:33.381101+00:00",
+      "created_at": "2026-11-10T13:09:46.523413+00:00",
+      "created_name": "Woow-CI-5c50e92eccbb4f1dbf78044b5bd838d4",
+      "creation_attempted": true,
+      "delete_attempted": true,
+      "device_name": "iPhone 17",
+      "device_type_identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17",
+      "identity_verified_at": "2026-11-10T13:09:47.125035+00:00",
+      "mode": "fresh",
+      "owner": "woow-ci-test-simulator-v1",
+      "phase": "ready_to_boot",
+      "runtime_build": "23C54",
+      "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+      "runtime_version": "26.2",
+      "selected_at": "2026-11-10T13:09:45.878191+00:00",
+      "shutdown_succeeded": true,
+      "simulator_id": "EDAA49ED-511C-417A-B743-D205A72E38B3",
+      "source_simulator_id": "BC7CEBFB-6B90-4D7E-B85E-BB0102C99F06",
+      "source_simulator_state": "Shutdown"
+    },
+    "testDeviceIDMatchesOwnedCreatedID": true,
+    "testDeviceDiffersFromSourceID": true,
+    "bootFinishedUTC": "2026-11-10T13:11:25Z",
+    "bootEvidenceLines": [
+      333,
+      334
+    ],
+    "deleteStep": "success",
+    "postFixtureInventoryBeforeDeletion": true
+  },
+  "appConfiguration": {
+    "UIFileSharingEnabled": true,
+    "LSSupportsOpeningDocumentsInPlace": true
+  },
+  "failure": {
+    "file": "SkillExecutionUITests.swift",
+    "line": 557,
+    "testLogLine": 3156,
+    "kind": "actual-case-importer-callback-not-delivered",
+    "isBootstrapFailure": false
+  },
+  "selection": {
+    "testLogLine": 3035,
+    "elapsedSeconds": 85.05,
+    "exactNamespaceCell": true,
+    "nativeAction": "Tap Image",
+    "frame": {
+      "x": 38.7,
+      "y": 216.0,
+      "width": 65.0,
+      "height": 84.0
+    },
+    "testStartUTC": "2026-11-10T13:16:18.050Z",
+    "testEndUTC": "2026-11-10T13:18:27.615Z",
+    "selectionNotDeliveredCountsLogLine": 3155
+  },
+  "comparison": {
+    "reference": "file-provider-presenter-pair-ca3e72a.json",
+    "sameXcodeSDKAndCurrentRuntime": {
+      "xcode": "26.2",
+      "sdk": "26.2",
+      "runtime": "26.2",
+      "build": "23C54",
+      "model": "iPhone 17"
+    },
+    "priorCurrentArms": [
+      {
+        "arm": "current-uikit",
+        "run": 42806373840,
+        "sourceRevision": "ca3e72ada5d92210a9f3828e22cacbc1b76d48d3",
+        "result": {
+          "started": 1,
+          "passed": 0,
+          "failed": 1,
+          "skipped": 0,
+          "seconds": 122.419
+        },
+        "mode": "open",
+        "callbackTraceCount": 0
+      },
+      {
+        "arm": "current-swiftui",
+        "run": 42806381100,
+        "sourceRevision": "ca3e72ada5d92210a9f3828e22cacbc1b76d48d3",
+        "result": {
+          "started": 1,
+          "passed": 0,
+          "failed": 1,
+          "skipped": 0,
+          "seconds": 172.139
+        },
+        "mode": "open",
+        "callbackTraceCount": 0
+      }
+    ],
+    "sameHead": false,
+    "unchangedBetweenComparedRevisions": [
+      "SkillExecution runtime files",
+      "SkillExecutionView",
+      "SkillExecutionUITestSupport fixture seeder",
+      "LearningUITestSupport shared helper"
+    ],
+    "changedBetweenComparedRevisions": [
+      "PDFNativePicker configuration gained DEBUG import-copy arm; this arm still requests asCopy=false and actual probe is open.",
+      "SkillExecutionUITests gained copy case and picker enum; open method keeps the original native selection, approvals and text assertions.",
+      "Workflow gained owned fresh simulator lifecycle."
+    ]
+  },
+  "conclusions": [
+    "The selected test ran on the newly created, identity-verified simulator, not the source pre-existing device; its owned UUID was deleted after evidence collection.",
+    "Fresh UIKit open reproduced the same callback-before-failure boundary and -1005/-1012 did=3 signature as the prior current open arms. Fresh creation alone did not eliminate this observation.",
+    "This is not a same-head randomized comparison and does not establish a FileProvider root cause or a production user-file defect.",
+    "Equal baseline and post-test identity/hash do not prove continuous file presence or identity at the failure instant.",
+    "No approvals, application PDF reads or extraction were reached; no full acceptance pass."
+  ]
+}

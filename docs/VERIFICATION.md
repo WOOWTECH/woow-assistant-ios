@@ -1,5 +1,17 @@
 # Verification — 2026-11-10
 
+## Native picker experiments preserve failed acceptance results
+
+The fresh-peer current simulator at `d464176` [42819390644](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42819390644) still failed **0/1, zero skips** in actual UIKit open mode, with the same provider resolver errors and no App callback. Its newly created UUID was removed afterward. [Evidence](evidence/file-provider-fresh-d464176.json). A fresh simulator alone did not resolve this observation.
+
+The DEBUG import-copy experiment at `21c29d2` [42815645050](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42815645050) delivered one real native callback, then completed both separate App approvals, one read and one PDF extraction/result. The selected case nevertheless failed **0/1, zero skips** at its unchanged 240-second method deadline while revealing result text, followed by a termination failure. Post-timeout observations do not count as a pass. [Complete bounded timeline](evidence/file-provider-import-copy-21c29d2.json). This isolated observation neither proves intermittent failures eliminated nor changes the production picker; OS import-copy may copy/read before the App's read approval.
+
+The open-mode resolver trace matches the coordinated source URL, App document container and file inode at observed checkpoints; DocumentManager's selection is distinct from an App callback. [Trace](evidence/file-provider-resolver-chain-ca3e72a.json). Migration timing remains under comparison and is not asserted as the cause.
+
+## Exact iOS 17 live MCP launch handoff under investigation
+
+At `da553bc`, [42816449809](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42816449809), real discovery/disconnect/reconnect and model refusal passed, while the approved two-tool case failed in setup before issuing a model/tool request: SpringBoard denied launch because the App was installing or uninstalling. The workflow had two XCTest invocations. The next experiment keeps all three methods in one invocation, observes native termination/Home/foreground states without launch retries, preserves strict count and zero-skip verification, and always removes its dedicated simulator. These states do not establish installer readiness; native retest is required.
+
 ## Personal profile and multi-source research integration ready for native acceptance
 
 Manual profiles preserve the pinned active/superseded semantics and use the real encrypted learning vault. Local **173 state assertions / 58 actual persistence assertions** passed; native hosted, three UI and actual-model recall/master-switch tests are added, with results pending. [Scope](USER_PROFILE.md).
@@ -64,7 +76,7 @@ The workflow still failed its discovery case: initial discovery, background disc
 
 At `ca3e72a`, current iOS 26.2 [42806373840](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42806373840) executed the explicit UIKit open-in-place case and failed **0/1, zero skips**. The App independently observed actual picker mode `open`, then the exact synthetic PDF was tapped. FileProvider reported `-1005` with resolver `-1012`; no App importer callback arrived and neither App approval was reached. Fixture identity/hash matched before and after, which does not prove uninterrupted availability at the failure instant. [Bounded evidence](evidence/file-provider-uikit-ca3e72a.json).
 
-A separate DEBUG-only import-copy arm now uses the system's `asCopy:true` with the same actual returned URL, one-file check, two App approvals and exact PDF text assertions. Its test explicitly acknowledges that the OS may copy/read before the App read approval. Production/default remains SwiftUI. Local DEBUG **40** / Release **36** checks and iOS syntax parse passed; the actual import-copy case must still run on iOS 26.2. No picker repair is claimed from compilation or a changed test entry point.
+A separate DEBUG-only import-copy arm now uses the system's `asCopy:true` with the same actual returned URL, one-file check, two App approvals and exact PDF text assertions. Its test explicitly acknowledges that the OS may copy/read before the App read approval. Production/default remains SwiftUI. Local DEBUG **40** / Release **36** checks and iOS syntax parse passed; the actual import-copy case subsequently delivered the file but failed its result-inspection deadline, as recorded above. No picker repair is claimed from compilation or a changed test entry point.
 
 
 ## iOS 17 method failures separated from runner bootstrap failures

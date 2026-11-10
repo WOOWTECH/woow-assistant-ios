@@ -84,25 +84,11 @@ jobs:
             xcrun simctl list runtimes -j | python3 scripts/prepare_simulator_webkit.py \
               --runtime "$WOOW_LIVE_RUNTIME" --products build/LiveDerivedData/Build/Products/Debug-iphonesimulator
           fi
-      - name: Real MCP App discovery and reconnection
-        timeout-minutes: 8
-        env:
-          WOOW_HA_MCP_TEST_URL: ${{ secrets.WOOW_HA_MCP_TEST_URL }}
-        run: |
-          test_runs=(build/LiveDerivedData/Build/Products/*.xctestrun)
-          [ "${#test_runs[@]}" -eq 1 ] || { echo 'Expected one generated test runner'; exit 1; }
-          python3 scripts/prepare_live_xctestrun.py "${test_runs[0]}" --service mcp
-          test_exit=0
-          xcodebuild -xctestrun "${test_runs[0]}" \
-            -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
-            -resultBundlePath build/LiveMCPDiscovery.xcresult \
-            -only-testing:WoowAssistantUITests/LiveMCPUITests \
-            -parallel-testing-enabled NO test-without-building || test_exit=$?
-          python3 scripts/verify_live_ui.py --result build/LiveMCPDiscovery.xcresult --selector WoowAssistantUITests/LiveMCPUITests
-          exit "$test_exit"
-      - name: Real model selects and invokes approved HA tools in App
-        if: ${{ !cancelled() && steps.app-build.outcome == 'success' }}
-        timeout-minutes: 12
+      # Keep discovery and conversation in one XCTest invocation. An earlier
+      # exact-iOS-17 run hit an install/uninstall launch denial between runs.
+      # This removes that handoff; it does not assert installer readiness.
+      - name: Real MCP discovery and model-approved HA tools in App
+        timeout-minutes: 20
         env:
           WOOW_HA_MCP_TEST_URL: ${{ secrets.WOOW_HA_MCP_TEST_URL }}
           WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
@@ -116,11 +102,14 @@ jobs:
           test_exit=0
           xcodebuild -xctestrun "${test_runs[0]}" \
             -destination "platform=iOS Simulator,id=$WOOW_LIVE_SIMULATOR" \
-            -resultBundlePath build/LiveMCPConversation.xcresult \
+            -resultBundlePath build/LiveMCPUI.xcresult \
+            -only-testing:WoowAssistantUITests/LiveMCPUITests \
             -only-testing:WoowAssistantUITests/LiveMCPConversationUITests \
             -parallel-testing-enabled NO -test-timeouts-enabled YES \
             -default-test-execution-time-allowance 240 -maximum-test-execution-time-allowance 300 test-without-building || test_exit=$?
-          python3 scripts/verify_live_ui.py --result build/LiveMCPConversation.xcresult --selector WoowAssistantUITests/LiveMCPConversationUITests
+          python3 scripts/verify_live_ui.py --result build/LiveMCPUI.xcresult \
+            --selector WoowAssistantUITests/LiveMCPUITests \
+            --selector WoowAssistantUITests/LiveMCPConversationUITests
           exit "$test_exit"
       - name: Clear private runner configuration
         if: always()

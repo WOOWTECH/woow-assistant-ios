@@ -6,6 +6,7 @@ final class LiveMCPConversationUITests: XCTestCase {
     private let namespace = UUID().uuidString
     private var app = XCUIApplication()
     private var launched = false
+    private var initialLaunchCompleted = false
 
     override func setUpWithError() throws {
         continueAfterFailure = false
@@ -16,12 +17,15 @@ final class LiveMCPConversationUITests: XCTestCase {
                 throw XCTSkip("Combined private model/MCP configuration was not supplied.")
             }
         }
+        try LiveMCPNativeLifecycle.stopAndShowHome(app)
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW",
             "-LiveModelUITest", "-LiveModelUITestNamespace", namespace, "-LiveMCPConversationUITest"]
         app.launchEnvironment = Dictionary(uniqueKeysWithValues:
             ["WOOW_LIVE_API_KEY", "WOOW_LIVE_MODEL", "WOOW_LIVE_BASE_URL", "WOOW_LIVE_MCP_URL"].map { ($0, environment[$0]!) })
         launched = true
         app.launch()
+        try LiveMCPNativeLifecycle.requireForeground(app)
+        initialLaunchCompleted = true
         navigate("tools")
         revealLearningElement(app.buttons["mcp.connect"], in: app)
         app.buttons["mcp.connect"].tap()
@@ -40,15 +44,24 @@ final class LiveMCPConversationUITests: XCTestCase {
 
     override func tearDownWithError() throws {
         guard launched else { return }
-        app.terminate()
+        try LiveMCPNativeLifecycle.stopAndShowHome(app)
+        // Run 42816449809: initial launch was denied during install/uninstall;
+        // launching cleanup immediately caused a second launch failure. Keep
+        // the original failure and require the workflow's isolated simulator
+        // removal; never report this namespace as successfully cleaned.
+        guard initialLaunchCompleted else {
+            XCTFail("LIVE_MCP_CLEANUP initial launch did not complete; namespace cleanup is unverified and isolated simulator removal is required.")
+            return
+        }
         app.launchArguments = ["-LiveModelUITest", "-LiveModelUITestNamespace", namespace, "-LiveModelUITestCleanup"]
         app.launchEnvironment = [:]
         app.launch()
+        try LiveMCPNativeLifecycle.requireForeground(app)
         XCTAssertTrue(app.staticTexts["chat.status"].waitForExistence(timeout: 10))
         XCTAssertTrue(app.staticTexts["chat.status"].label == "尚未設定模型", "Private model cleanup failed.")
         navigate("tools")
         XCTAssertTrue(app.staticTexts["mcp.status"].label == "尚未設定 MCP", "Private MCP cleanup failed.")
-        app.terminate()
+        try LiveMCPNativeLifecycle.stopAndShowHome(app)
     }
 
     func testRealModelChoosesTwoReadOnlyToolsAndUsesTheirResults() throws {

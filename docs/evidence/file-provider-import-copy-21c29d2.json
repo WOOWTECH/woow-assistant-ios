@@ -1,0 +1,246 @@
+{
+  "schemaVersion": 1,
+  "run": 42815645050,
+  "job": 129827934689,
+  "artifact": 13768745337,
+  "sourceRevision": "21c29d232c090a518c9e602c5029fd8de1d5844b",
+  "runURL": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42815645050",
+  "test": "SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText()",
+  "device": {
+    "architecture": "arm64",
+    "deviceId": "BC7CEBFB-6B90-4D7E-B85E-BB0102C99F06",
+    "deviceName": "iPhone 17",
+    "modelName": "iPhone 17",
+    "osBuildNumber": "23C54",
+    "osVersion": "26.2",
+    "platform": "iOS Simulator"
+  },
+  "toolchain": {
+    "xcodeVersions": [
+      "26.2"
+    ],
+    "simulatorSDKVersions": [
+      "26.2"
+    ]
+  },
+  "result": {
+    "started": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "secondsIncludingTeardown": 323.189
+  },
+  "summaryFailure": "Test exceeded execution time allowance of 4 minutes",
+  "namespace": "05D465E8-31FB-4957-A537-330906E5F50A",
+  "fixtureWriteMode": "coordinated",
+  "presentation": {
+    "appStdoutLine": 61510,
+    "namespace": "05D465E8-31FB-4957-A537-330906E5F50A",
+    "source": "uikit-copy",
+    "mode": "import",
+    "allowsMultipleSelection": false,
+    "utc": "2026-11-10T13:17:48.406623Z"
+  },
+  "callbackTraceCount": 1,
+  "callbacks": [
+    {
+      "appStdoutLine": 120186,
+      "namespace": "05D465E8-31FB-4957-A537-330906E5F50A",
+      "outcome": "success",
+      "count": 1,
+      "utc": "2026-11-10T13:18:18.856764Z"
+    }
+  ],
+  "providerErrors": [],
+  "internalEmptyItemsMessages": [],
+  "appAuditStates": [
+    {
+      "selections": 0,
+      "reads": 0,
+      "extractionAttempts": 0,
+      "results": 0,
+      "firstAppStdoutLine": 35699
+    },
+    {
+      "selections": 1,
+      "reads": 0,
+      "extractionAttempts": 0,
+      "results": 0,
+      "firstAppStdoutLine": 120585
+    },
+    {
+      "selections": 1,
+      "reads": 1,
+      "extractionAttempts": 0,
+      "results": 0,
+      "firstAppStdoutLine": 149443
+    },
+    {
+      "selections": 1,
+      "reads": 1,
+      "extractionAttempts": 1,
+      "results": 1,
+      "firstAppStdoutLine": 191685
+    }
+  ],
+  "fixture": {
+    "baseline": {
+      "evidence": {
+        "bytes": 8480,
+        "device": 16777230,
+        "inode": 3594582,
+        "modifiedNanoseconds": 382073708,
+        "modifiedSeconds": 1794316656,
+        "sampledAt": 1794316656.383558,
+        "sha256": "2dd5bf35ec473396af42e673fc30ec0a9277dcc1754e4c51632e5994ee7e4669",
+        "status": "valid"
+      },
+      "namespace": "05D465E8-31FB-4957-A537-330906E5F50A",
+      "phase": "created",
+      "version": 1
+    },
+    "current": {
+      "bytes": 8480,
+      "device": 16777230,
+      "inode": 3594582,
+      "modifiedNanoseconds": 382073708,
+      "modifiedSeconds": 1794316656,
+      "sampledAt": 1794317036.811733,
+      "sha256": "2dd5bf35ec473396af42e673fc30ec0a9277dcc1754e4c51632e5994ee7e4669",
+      "status": "valid"
+    },
+    "sameHash": true,
+    "sameIdentity": true,
+    "sameSize": true,
+    "baselineUTC": "2026-11-10T13:17:36.383558Z",
+    "postTestUTC": "2026-11-10T13:23:56.811733Z"
+  },
+  "inventoryObservation": "post-test-only",
+  "provesPresenceAtEarlierPickerFailure": false,
+  "materials": [
+    {
+      "file": "StandardOutputAndStandardError-io.woowtech.assistant.txt",
+      "bytes": 30408068,
+      "sha256": "5a63a609a0a52ec47fea18f8794203db546b800cf7143fd44dddeb79b8b28f56"
+    },
+    {
+      "file": "ios-tests.log",
+      "bytes": 920442,
+      "sha256": "53533f8ee8f3a117f21ae4f774aaad4fa1b20d665100f209d7cb9faa0120f5fb"
+    },
+    {
+      "file": "skill-pdf-fixture-evidence.json",
+      "bytes": 1074,
+      "sha256": "581654a8c99f726a87c02358e0e4212892e55ea4ee73f61f4aae3fb50cdbf794"
+    },
+    {
+      "file": "test-summary.json",
+      "bytes": 1537,
+      "sha256": "1fad0788f1bd76cb81573f0ccae8c5b104889a47f0125aa4ef4c001c145af756"
+    }
+  ],
+  "artifactRetrieval": "Only named ZIP entries retrieved by bounded HTTP ranges; complete App stdout entry inspected, no full artifact ZIP download.",
+  "simulatorProvenance": {
+    "mode": "existing",
+    "sourceWorkflowRevision": "21c29d232c090a518c9e602c5029fd8de1d5844b",
+    "freshSimulatorInputAvailable": false
+  },
+  "failure": {
+    "kind": "XCTest-method-execution-time-allowance",
+    "isBootstrapFailure": false,
+    "isImporterCallbackFailure": false,
+    "allowanceSeconds": 240,
+    "timeoutTestLogLine": 3335,
+    "lastActionBeforeTimeout": {
+      "testLogLine": 3325,
+      "elapsedSeconds": 239.4,
+      "action": "native scroll while revealing skillExecution.result.text"
+    },
+    "teardownFailure": {
+      "testLogLine": 3387,
+      "file": "SkillExecutionUITests.swift",
+      "line": 270,
+      "message": "Failed to terminate io.woowtech.assistant",
+      "elapsedSecondsAtTeardownStart": 260.75
+    },
+    "testStartUTC": "2026-11-10T13:16:19.070Z",
+    "elapsedFailureDurationIncludesTeardown": true
+  },
+  "nativeFlow": {
+    "exactNamespaceThumbnailTap": {
+      "testLogLine": 3023,
+      "elapsedSeconds": 117.36,
+      "frame": {
+        "x": 38.7,
+        "y": 216.0,
+        "width": 65.0,
+        "height": 84.0
+      }
+    },
+    "firstApprovalExpectedValue": {
+      "testLogLine": 3081,
+      "elapsedSeconds": 175.75,
+      "value": "讀取選取的 PDF"
+    },
+    "secondApprovalExpectedValue": {
+      "testLogLine": 3171,
+      "elapsedSeconds": 198.51,
+      "value": "在裝置上擷取 PDF"
+    },
+    "completedStatusPredicate": {
+      "testLogLine": 3245,
+      "elapsedSeconds": 219.6,
+      "text": "擷取完成"
+    },
+    "summaryQueriedBeforeTimeout": {
+      "testLogLines": [
+        3299,
+        3302
+      ],
+      "elapsedSeconds": [
+        233.12,
+        233.46
+      ]
+    },
+    "resultTextQueriesAfterTimeout": {
+      "testLogLines": [
+        3348,
+        3355
+      ],
+      "elapsedSeconds": [
+        251.08,
+        252.4
+      ]
+    },
+    "finalAuditAndNoApproveButtonQueriedAfterTimeout": {
+      "testLogLines": [
+        3383,
+        3384
+      ],
+      "elapsedSeconds": [
+        260.31,
+        260.51
+      ]
+    },
+    "postTimeoutProgressDoesNotOverrideFailedResult": true
+  },
+  "providerObservation": {
+    "searchScope": "Complete App stdout entry only, not all unified-log processes",
+    "couldNotResolveBookmarkCount": 0,
+    "fileProviderMinus1005Count": 0,
+    "resolverMinus1012Count": 0,
+    "internalEmptyItemsCount": 0
+  },
+  "outputObservation": {
+    "bothPageMarkersInAppAX": true,
+    "namespaceInOutputObserved": true,
+    "exactTextAssertionAcceptance": "Not counted as pass: overall case already exceeded its time allowance; subsequent queries and final audit do not erase timeout."
+  },
+  "conclusions": [
+    "Actual public UIKit import mode delivered exactly one App callback, followed by separately approved read and extraction; this run did not reproduce the original callback failure in the complete App stdout evidence.",
+    "The selected method failed at its unchanged 240-second allowance while revealing result text, followed by an App termination failure; neither bootstrap nor original provider-selection failure explains the recorded failure.",
+    "One successful import delivery is not evidence that import-copy eliminates intermittent failures. Current open controls are different revisions; no same-head randomized causal claim.",
+    "System import-copy may read/write before App approval. Audit counters describe App runtime operations only.",
+    "Production/default picker remains unchanged; no acceptance pass, retries or timeout increase."
+  ]
+}
