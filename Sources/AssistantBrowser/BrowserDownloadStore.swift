@@ -75,7 +75,7 @@ final class BrowserDownloadStore {
         do {
             try fm.moveItem(at: source, to: destination)
             #if os(iOS)
-            try fm.setAttributes([.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], atPath: destination.path)
+            try fm.setAttributes([.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: destination.path)
             #endif
             let next = [result] + completed
             try save(next)
@@ -160,7 +160,7 @@ final class BrowserDownloadStore {
         // Atomic replacement; no full request or WebKit resume state is persisted.
         try data.write(to: manifest, options: .atomic)
         #if os(iOS)
-        try fm.setAttributes([.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], atPath: manifest.path)
+        try fm.setAttributes([.protectionKey: FileProtectionType.completeUntilFirstUserAuthentication], ofItemAtPath: manifest.path)
         #endif
     }
 

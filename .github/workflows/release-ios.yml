@@ -1,0 +1,109 @@
+name: iOS release readiness
+
+# Manual only. No App Store, TestFlight, GitHub Release, or IPA upload step.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 驗證路徑（簽章模式只在 runner 本地匯出）
+        type: choice
+        options: [unsigned-device, signed-export, ios17-hosted, ios17-self-hosted]
+        default: unsigned-device
+        required: true
+      export_method:
+        description: 簽章模式的描述檔類型
+        type: choice
+        options: [app-store-connect, release-testing]
+        default: app-store-connect
+      ios17_version:
+        description: 實測系統版本；17.5 不能代替 17.0 的測試證據
+        type: choice
+        options: ['17.0.1', '17.0', '17.5']
+        default: '17.0.1'
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    shell: bash
+
+concurrency:
+  group: release-ios-${{ github.ref }}-${{ inputs.mode }}
+  cancel-in-progress: false
+
+jobs:
+  device-build:
+    if: inputs.mode == 'unsigned-device' || inputs.mode == 'signed-export'
+    runs-on: macos-15-intel
+    timeout-minutes: 65
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.2.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: 測試發佈檢查程式
+        run: python3 -m unittest discover -s scripts -p 'test_release_*.py' -v
+      - name: 安裝固定版本 XcodeGen
+        run: bash scripts/release_install_xcodegen.sh
+      - name: 未簽章裝置編譯與最低版本檢查
+        if: inputs.mode == 'unsigned-device'
+        run: python3 scripts/release_ios.py build --output build/release
+      - name: 既有憑證簽章、封存與本地匯出
+        if: inputs.mode == 'signed-export'
+        env:
+          IOS_SIGNING_CERTIFICATE_BASE64: ${{ secrets.IOS_SIGNING_CERTIFICATE_BASE64 }}
+          IOS_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}
+          IOS_PROVISION_PROFILE_BASE64: ${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}
+          IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+          IOS_KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
+          EXPORT_METHOD: ${{ inputs.export_method }}
+        run: python3 scripts/release_ios.py build --signed --export-method "$EXPORT_METHOD" --output build/release
+      - name: 保留不含簽章資料的驗證摘要
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: release-check-${{ inputs.mode }}-${{ github.run_id }}
+          path: build/release/report.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: 清除本地封存與匯出產物
+        if: always()
+        run: rm -rf -- build/release
+
+  ios17-validation:
+    if: inputs.mode == 'ios17-hosted' || inputs.mode == 'ios17-self-hosted'
+    runs-on: ${{ inputs.mode == 'ios17-self-hosted' && fromJSON('["self-hosted", "macOS", "woow-ios17"]') || fromJSON('["macos-15-intel"]') }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: Hosted runner 固定 Xcode 16.4
+        if: inputs.mode == 'ios17-hosted'
+        run: echo 'DEVELOPER_DIR=/Applications/Xcode_16.4.app/Contents/Developer' >> "$GITHUB_ENV"
+      - name: 安裝固定版本 XcodeGen
+        run: bash scripts/release_install_xcodegen.sh
+      - name: 執行指定 iOS 17 runtime 的完整 XCTest scheme
+        env:
+          VALIDATION_MODE: ${{ inputs.mode }}
+          IOS17_VERSION: ${{ inputs.ios17_version }}
+        run: |
+          args=()
+          if [ "$VALIDATION_MODE" = ios17-hosted ]; then args+=(--download); fi
+          python3 scripts/release_ios17.py --os "$IOS17_VERSION" "${args[@]}" --output build/ios17
+      - name: 保留實際 runtime 與測試證據
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: ios17-${{ inputs.ios17_version }}-${{ github.run_id }}
+          path: |
+            build/ios17/*.json
+            build/ios17/*.log
+            build/ios17/*.xcresult
+          if-no-files-found: warn
+          retention-days: 14
+      - name: 清理此次驗證的建置資料
+        if: always()
+        run: rm -rf -- build/ios17
