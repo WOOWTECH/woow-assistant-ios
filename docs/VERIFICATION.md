@@ -1,5 +1,11 @@
 # Verification — 2026-11-10
 
+## Retired browser sessions cannot reopen deleted-site documents
+
+Source review found that stopped sessions retained after website deletion could still accept `manualNavigation`, after their WebKit delegates had been detached. Sessions now retire permanently before page disposal, including sessions whose WebView was never created; observations/navigation flags are cleared and later manual/model navigation is rejected. Browser and library views show the pending removal, and navigation controls stay disabled.
+
+The exact production-source macOS comparison reproduced the missing guard at `a97a7f0` (**8/10**, both retirement assertions failed) and passed the candidate (**10/10**). Debug/Release App-logic typechecks also passed. [Bounded evidence](evidence/browser-session-retirement-local.json). No WKWebView was created in that local comparison; a new hosted regression and retained-loaded-session assertions require native acceptance.
+
 ## Exact iOS 17 core with profile and multi-source research
 
 At `1ea3d08`, [42828238084](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42828238084) completed **163/163 native/hosted methods, zero skips**, on exact **17.0.1 / 21A342**, without the experimental test-daemon prelaunch. Actual method starts/completions are unique and agree with the result summary. The selected-site cookie case passed in 19.526 seconds. [Exact method and artifact evidence](evidence/ios17-core-1ea3d08.json). This revision includes the profile CR/LF fix and multi-source feature, but predates the refreshed website-deletion implementation; UI, live-service and physical-device acceptance remain separate.

@@ -21,6 +21,10 @@ struct BrowserLibraryView: View {
                     Text("分頁").tag(0); Text("書籤").tag(1); Text("歷史").tag(2); Text("網站").tag(3)
                 }.pickerStyle(.segmented).padding(.horizontal).accessibilityIdentifier("browser.library.sections")
                 if let error = workspace.error { Text(error).foregroundStyle(.red).accessibilityIdentifier("browser.library.error") }
+                if workspace.isClearingWebsiteData {
+                    ProgressView("正在清除網站資料…")
+                        .accessibilityIdentifier("browser.library.clearing")
+                }
                 List {
                     if section == 0 { tabs }
                     else if section == 1 { bookmarks }

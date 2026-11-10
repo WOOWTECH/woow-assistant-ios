@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "scope": "actual production BrowserSession on macOS, real nonpersistent WKWebsiteDataStore, no WKWebView created, no external network",
+  "base_revision": "a97a7f08b54616037f930548fec8b30532e0d741",
+  "before_browser_sha256": "ecb5fd2b9afa5fec833c33ccd355d377250fe57d79ec7bc31739292eb5705c27",
+  "after_browser_sha256": "c0301cc8add3b7973363597646b84b2f9f2882a89f67599886e61df5e31f05fc",
+  "before": {
+    "checks": [
+      {
+        "name": "active-session-manual-closure-executes",
+        "passed": true
+      },
+      {
+        "name": "no-view-discard-completes",
+        "passed": true
+      },
+      {
+        "name": "retired-no-view-manual-closure-is-rejected",
+        "passed": false
+      },
+      {
+        "name": "current-cleared",
+        "passed": true
+      },
+      {
+        "name": "loaded-url-cleared",
+        "passed": true
+      },
+      {
+        "name": "back-disabled",
+        "passed": true
+      },
+      {
+        "name": "forward-disabled",
+        "passed": true
+      },
+      {
+        "name": "repeat-discard-completes",
+        "passed": true
+      },
+      {
+        "name": "retirement-remains-irreversible",
+        "passed": false
+      },
+      {
+        "name": "no-model-or-interaction-running",
+        "passed": true
+      }
+    ],
+    "passed": 8,
+    "scope": "actual BrowserSession; real macOS WebKit nonpersistent data store; no WKWebView created, no network, no persistence",
+    "total": 10
+  },
+  "after": {
+    "checks": [
+      {
+        "name": "active-session-manual-closure-executes",
+        "passed": true
+      },
+      {
+        "name": "no-view-discard-completes",
+        "passed": true
+      },
+      {
+        "name": "retired-no-view-manual-closure-is-rejected",
+        "passed": true
+      },
+      {
+        "name": "current-cleared",
+        "passed": true
+      },
+      {
+        "name": "loaded-url-cleared",
+        "passed": true
+      },
+      {
+        "name": "back-disabled",
+        "passed": true
+      },
+      {
+        "name": "forward-disabled",
+        "passed": true
+      },
+      {
+        "name": "repeat-discard-completes",
+        "passed": true
+      },
+      {
+        "name": "retirement-remains-irreversible",
+        "passed": true
+      },
+      {
+        "name": "no-model-or-interaction-running",
+        "passed": true
+      }
+    ],
+    "passed": 10,
+    "scope": "actual BrowserSession; real macOS WebKit nonpersistent data store; no WKWebView created, no network, no persistence",
+    "total": 10
+  },
+  "app_logic_typecheck": [
+    {
+      "label": "Debug-typecheck",
+      "exit_code": 0,
+      "elapsed_s": 7.739,
+      "errors": 0,
+      "warnings": 17
+    },
+    {
+      "label": "Release-typecheck",
+      "exit_code": 0,
+      "elapsed_s": 5.471,
+      "errors": 0,
+      "warnings": 17
+    }
+  ],
+  "ios_sdk_typecheck": false,
+  "ios_hosted_or_ui_acceptance": false,
+  "stubs_used": false,
+  "hashes": {
+    "report.json": "c8c4b265b44c20093336217eaf29d02cd6ba930491df3245940c89c76a206a35",
+    "before-run.log": "686aad3770e71c3508dee24daf12fea1268cf5a49bdd2ec821ea7225f11c610d",
+    "after-run.log": "7d161b0ae004de944bfb8468e07ffa0259036dbdbb2338d30faf2b398c31a209"
+  },
+  "regressions_added": [
+    "Retired unmaterialized sessions reject their previously accepted manual navigation operation, including repeated discard.",
+    "Retained loaded sessions stay blank with cleared observation/navigation flags after website data removal."
+  ],
+  "limits": [
+    "The negative control reproduces the missing retirement guard without an actual loaded page.",
+    "Actual iOS loaded-page removal, UI progress and navigation behavior require the hosted/UI retest."
+  ]
+}

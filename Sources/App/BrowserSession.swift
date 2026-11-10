@@ -20,6 +20,9 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     private var discardTimeout: Task<Void, Never>?
     private var discardNavigation: WKNavigation?
     private var discardingPage = false
+    // Workspace replaces this session after deleting its shared website data.
+    // Retained references must never restart its old WebKit document.
+    private var retiredForDataRemoval = false
     @Published private(set) var loadedURL: URL?
     @Published private(set) var pageTitle = "新分頁"
     @Published var pageDialog: BrowserPageDialog?
@@ -143,7 +146,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func beginResearch(using chat: ChatSession) {
-        guard !isRunning, !isInteracting, current != nil, !goal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        guard !retiredForDataRemoval, !isRunning, !isInteracting, current != nil, !goal.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         invalidateControls()
         navigationIntent.invalidate()
         error = nil; answer = nil; actions = []; learningStatus = nil
@@ -395,7 +398,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
 
     /// Invoked only by the route review's explicit confirmation button.
     func replay(route: WebRoute, store: LearningStore, modelAccess: () throws -> ModelAccess) {
-        guard !isRunning, !isInteracting else { return }
+        guard !retiredForDataRemoval, !isRunning, !isInteracting else { return }
         invalidateControls()
         do {
             let access = try modelAccess()
@@ -522,7 +525,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     func requestModelInteraction(using chat: ChatSession) {
-        guard !isRunning, !isInteracting else { return }
+        guard !retiredForDataRemoval, !isRunning, !isInteracting else { return }
         do {
             let access = try chat.modelAccess(), taskGoal = interactionGoal
             let id = startInteraction(status: "模型正在提出下一個動作，尚未執行…")
@@ -940,6 +943,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     }
 
     private func permitted(_ url: URL) -> Bool {
+        guard !retiredForDataRemoval else { return false }
         guard url.scheme?.lowercased() == "https", (try? WebsiteOrigin(url: url)) != nil else { return false }
         if let approvedResearchRoot, !approvedResearchRoot.allows(url) { return false }
         #if DEBUG
@@ -948,6 +952,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         return !fixtureMode || url.host == "research.example.invalid"
     }
     private func manualPermitted(_ url: URL) -> Bool {
+        guard !retiredForDataRemoval else { return false }
         #if DEBUG
         if BrowserUploadFixture.enabled?.allows(url) == true { return true }
         if BrowserLoginFixture.enabled?.allows(url) == true { return true }
@@ -974,7 +979,9 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     /// Wait for a committed blank document before deleting shared website data.
     /// stopLoading alone does not stop an existing page's timers/storage writes.
     func discardPageForDataRemoval() async -> Bool {
+        retiredForDataRemoval = true
         cancel()
+        current = nil; loadedURL = nil; canGoBack = false; canGoForward = false
         guard let view = storedWebView else { return true }
         guard discardCompletion == nil else { return false }
         #if DEBUG

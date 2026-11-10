@@ -23,6 +23,10 @@ struct BrowserView: View {
                 Button("開啟") { open() }.accessibilityIdentifier("browser.open")
             }
             .padding(.horizontal).disabled(browser.isRunning || browser.isInteracting || workspace.isClearingWebsiteData)
+            if workspace.isClearingWebsiteData {
+                ProgressView("正在清除網站資料…")
+                    .font(.caption).accessibilityIdentifier("browser.sites.clearing")
+            }
             if let diagnostics = browser.manualLoadDiagnostics {
                 Text(browser.status).font(.caption).accessibilityIdentifier("browser.status")
                     .accessibilityValue(diagnostics)
@@ -43,17 +47,17 @@ struct BrowserView: View {
             HStack {
                 Button { browser.goBack() } label: { Image(systemName: "chevron.backward") }
                     .accessibilityLabel("上一頁").accessibilityIdentifier("browser.back")
-                    .disabled(!browser.canGoBack || browser.isRunning || browser.isInteracting)
+                    .disabled(!browser.canGoBack || browser.isRunning || browser.isInteracting || workspace.isClearingWebsiteData)
                 Button { browser.goForward() } label: { Image(systemName: "chevron.forward") }
                     .accessibilityLabel("下一頁").accessibilityIdentifier("browser.forward")
-                    .disabled(!browser.canGoForward || browser.isRunning || browser.isInteracting)
+                    .disabled(!browser.canGoForward || browser.isRunning || browser.isInteracting || workspace.isClearingWebsiteData)
                 Button { browser.reloadPage() } label: { Image(systemName: "arrow.clockwise") }
                     .accessibilityLabel("重新整理").accessibilityIdentifier("browser.reload")
-                    .disabled(browser.loadedURL == nil || browser.isRunning || browser.isInteracting)
+                    .disabled(browser.loadedURL == nil || browser.isRunning || browser.isInteracting || workspace.isClearingWebsiteData)
                 Button("研究此網站") { addressFocused = false; showResearch = true }
-                    .disabled(browser.current == nil || browser.isInteracting).accessibilityIdentifier("browser.research")
+                    .disabled(browser.current == nil || browser.isInteracting || workspace.isClearingWebsiteData).accessibilityIdentifier("browser.research")
                 Button("操作") { addressFocused = false; showInteractions = true }
-                    .disabled(browser.current == nil || browser.isRunning).accessibilityIdentifier("browser.interactions")
+                    .disabled(browser.current == nil || browser.isRunning || workspace.isClearingWebsiteData).accessibilityIdentifier("browser.interactions")
                 Button { addressFocused = false; browser.webView.endEditing(true); showLibrary = true } label: { Image(systemName: "square.on.square") }
                     .accessibilityLabel("分頁、書籤與歷史").accessibilityIdentifier("browser.library")
                 if browser.isRunning {

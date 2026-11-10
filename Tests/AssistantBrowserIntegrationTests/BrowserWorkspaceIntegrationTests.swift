@@ -11,6 +11,22 @@ import AssistantBrowser
 /// Installing a synthetic cookie does NOT cover form login, OAuth, MFA, or an
 /// authenticated HTTP request. Reopening a store is not an App-relaunch test.
 final class BrowserWorkspaceIntegrationTests: XCTestCase {
+    @MainActor func testRetiredUnmaterializedSessionRejectsManualNavigation() async throws {
+        let session = BrowserSession(dataStore: .nonPersistent())
+        let target = try XCTUnwrap(URL(string: "https://research.example.invalid/retirement"))
+        var calls = 0
+        session.manualNavigation(to: target) { calls += 1; return nil }
+        XCTAssertEqual(calls, 1, "The same public-HTTPS manual operation is accepted before retirement")
+        let first = await session.discardPageForDataRemoval()
+        XCTAssertTrue(first)
+        session.manualNavigation(to: target) { calls += 1; return nil }
+        XCTAssertEqual(calls, 1, "Retirement must apply even before a WKWebView was materialized")
+        let second = await session.discardPageForDataRemoval()
+        XCTAssertTrue(second)
+        session.manualNavigation(to: target) { calls += 1; return nil }
+        XCTAssertEqual(calls, 1, "A repeated discard cannot revive the session")
+    }
+
     @MainActor func testPersistentCookiesAreSharedAndRemovingOneRecordPreservesOtherSites() async throws {
         let host = try Host()
         addTeardownBlock { await host.close() }
@@ -157,6 +173,21 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
             XCTAssertEqual(oldView.url?.absoluteString, "about:blank")
             let oldDocument = try await javascript("document.getElementById('note') === null ? 'cleared' : 'still-live'", in: oldView)
             XCTAssertEqual(oldDocument, "cleared")
+        }
+        // A retained old session cannot reopen the site after its navigation
+        // delegates have been detached, even through the shared manual seam.
+        for oldSession in [first, second] {
+            var navigationInvoked = false
+            oldSession.manualNavigation(to: URL(string: "https://research.example.invalid/revive")!) {
+                navigationInvoked = true
+                return nil
+            }
+            XCTAssertFalse(navigationInvoked, "A retired session must not execute another navigation")
+            XCTAssertNil(oldSession.current)
+            XCTAssertNil(oldSession.loadedURL)
+            XCTAssertFalse(oldSession.canGoBack)
+            XCTAssertFalse(oldSession.canGoForward)
+            XCTAssertEqual(oldSession.webView.url?.absoluteString, "about:blank")
         }
         let remaining = await cookies(in: host.store)
         XCTAssertFalse(remaining.contains { $0.name == shared.name }, "The selected site's cookie must actually be removed")
