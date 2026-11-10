@@ -110,7 +110,7 @@ Local direct Swift execution passed five groups / 51 checks (26 ordinary conditi
 and 25 expected-error checks), using actual AES-GCM files with an in-memory key
 provider. Those map to five native XCTest methods, not 51 test cases. Four new UI
 cases cover create/relaunch, refusal/relaunch, read/update/relaunch, and invalid-tool
-rejection; they still require native CI execution.
+rejection; [authoring 42765232695](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42765232695) on `ff15861` is queued for native execution.
 
 ### Earlier increment evidence
 

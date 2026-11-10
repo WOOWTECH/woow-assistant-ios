@@ -166,6 +166,7 @@ jobs:
             build/ios17/*.log
             build/ios17/*.xcresult
             build/ios17/screenshots/
+            build/ios17/boot-diagnostics/
           if-no-files-found: warn
           retention-days: 14
       - name: 清理此次驗證的建置資料

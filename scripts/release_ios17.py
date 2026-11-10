@@ -10,6 +10,7 @@ import json
 import os
 import platform
 from pathlib import Path
+import re
 import subprocess
 import sys
 import time
@@ -75,6 +76,88 @@ def ensure_runtime(output, requested, download, progress=None):
         raise ReleaseError("指定 iOS 17 runtime 下載／安裝後仍不可用。請保留 runtime-download.log 與前後清單，改用已預裝該版本的 woow-ios17 自管 runner。") from None
 
 
+def boot_simulator(output, simulator, report):
+    """Keep the process exit code separate from bootstatus's terminal result."""
+    log_path = output / "simulator-boot.log"
+    report["boot_exit_code"] = None
+    try:
+        with log_path.open("wb") as log:
+            completed = subprocess.run(["xcrun", "simctl", "bootstatus", simulator, "-b"],
+                stdout=log, stderr=subprocess.STDOUT, timeout=900)
+        report["boot_exit_code"] = completed.returncode
+    except subprocess.TimeoutExpired:
+        report["boot_timed_out"] = True
+        raise ReleaseError("啟動指定 iOS 17 Simulator：工具執行逾時。") from None
+    except OSError:
+        raise ReleaseError("啟動指定 iOS 17 Simulator：無法執行工具或保存啟動紀錄。") from None
+    finally:
+        try:
+            terminal = re.findall(r"Status=(\d+), isTerminal=YES[^\n]*\n[ \t]*([^\n]+)",
+                                  log_path.read_text(errors="replace"))
+            if terminal:
+                status, description = terminal[-1]
+                report["boot_terminal_status"] = int(status)
+                # Observed in run 42758764668: terminal YES is not success.
+                report["boot_data_migration_failed"] = description.strip() == "Data Migration Failed"
+        except OSError:
+            report["boot_terminal_log_unavailable"] = True
+    if completed.returncode:
+        raise ReleaseError("啟動指定 iOS 17 Simulator：失敗（退出碼 %d）。" % completed.returncode)
+    if report.get("boot_data_migration_failed"):
+        raise ReleaseError("iOS 17 Simulator 資料移轉失敗（Data Migration Failed）；未執行測試。")
+
+
+def collect_boot_diagnostics(output, simulator):
+    """Best-effort evidence from this fresh hosted device, never a personal Mac.
+
+    Apple's Simulator guidance recommends diagnose immediately after failure.
+    Query the installed tool's help rather than assuming Xcode-specific flags.
+    Help and collection share one 90-second budget; no boot or diagnostic retry.
+    """
+    result = {"attempted": False, "budget_seconds": 90}
+    if not (os.environ.get("GITHUB_ACTIONS") == "true"
+            and os.environ.get("RUNNER_ENVIRONMENT") == "github-hosted"
+            and os.environ.get("RUNNER_OS") == "macOS"):
+        return dict(result, status="skipped_not_ephemeral_hosted_macos")
+    started = time.monotonic()
+    stage = "help"
+    try:
+        uuid.UUID(simulator)
+        help_log = output / "simctl-diagnose-help.log"
+        with help_log.open("wb") as log:
+            help_result = subprocess.run(["xcrun", "simctl", "help", "diagnose"],
+                stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, timeout=10)
+        result["help_exit_code"] = help_result.returncode
+        if help_result.returncode:
+            return dict(result, status="help_failed")
+        help_text = help_log.read_text(errors="replace")
+        flags = set(re.findall(r"(?<![\w-])(--[a-z][a-z-]*|-[a-zA-Z])(?=[\s=,<\[\])]|$)", help_text))
+        # --udid scopes devices, -l suppresses the privacy prompt, and -q
+        # prevents opening Finder. Never fall back to an unscoped diagnose.
+        if not {"--udid", "--output", "-l", "-q"}.issubset(flags):
+            return dict(result, status="skipped_required_flags_unavailable")
+        remaining = 90 - (time.monotonic() - started)
+        if remaining <= 0:
+            return dict(result, status="skipped_budget_exhausted")
+        destination = output / "boot-diagnostics"
+        destination.mkdir()
+        stage = "collection"
+        with (output / "simctl-diagnose.log").open("wb") as log:
+            result.update(attempted=True, timeout_seconds=remaining)
+            completed = subprocess.run(["xcrun", "simctl", "diagnose", "-l", "-q",
+                "--udid=" + simulator, "--output=" + str(destination.resolve())],
+                stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT, timeout=remaining)
+        result.update(status="completed" if completed.returncode == 0 else "failed",
+                      exit_code=completed.returncode)
+    except subprocess.TimeoutExpired:
+        result.update(status=stage + "_timed_out")
+    except (OSError, ValueError, subprocess.SubprocessError):
+        # Keep fixed status fields; raw diagnostic details stay in the hosted
+        # artifact and must not be echoed into a primary boot exception.
+        result.update(status=stage + "_unavailable")
+    return result
+
+
 def execute(output, requested, download, test_scope="all"):
     if version(requested)[0] != 17:
         raise ReleaseError("只接受 iOS 17.x。")
@@ -130,12 +213,20 @@ def execute(output, requested, download, test_scope="all"):
         # Newly installed runtimes can spend several minutes preparing their
         # shared caches. Keep bounded boot output rather than hiding the cause.
         try:
-            run(["xcrun", "simctl", "bootstatus", simulator, "-b"], "啟動指定 iOS 17 Simulator",
-                timeout=900, diagnostic_log=output / "simulator-boot.log")
+            boot_simulator(output, simulator, report)
             report["boot_succeeded"] = True
         except ReleaseError as error:
             report["boot_succeeded"] = False
             report["boot_error"] = str(error)
+            try:
+                # Persist the primary failure before optional work. Collect
+                # before even the inventory query, which can itself hang.
+                save_report()
+                report["boot_diagnostics"] = collect_boot_diagnostics(output, simulator)
+            except Exception:
+                # Optional evidence (including filesystem/parser failures)
+                # must never replace the original boot error or skip cleanup.
+                report["boot_diagnostics"] = {"status": "unexpected_diagnostic_error"}
             raise
         finally:
             # Inventory is diagnostic only. In run 42758809838 bootstatus

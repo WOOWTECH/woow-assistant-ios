@@ -83,7 +83,7 @@ Bundle ID、App Store 匯出方法及完全相同的 IPA SHA-256；不接受 uns
 後續處理並確認測試人員可用，才能提供下載。沒有自動邀請測試者、提交 App
 Store 審核或設定公開 TestFlight 連結。[Apple 上傳說明](https://developer.apple.com/help/app-store-connect/manage-builds/upload-builds/)
 
-目前 32 項發行腳本測試包含合成 IPA 的雜湊與匯出類型拒絕、金鑰位置／權限／
+目前 36 項發行腳本測試包含合成 IPA 的雜湊與匯出類型拒絕、金鑰位置／權限／
 環境隔離、成功／失敗／逾時後清理與重送阻擋、建置編號及實際 plist 不符拒絕。
 這些替代命令測試沒有連線 Apple，不證明真實簽章、上傳或 TestFlight 已完成。
 
@@ -136,7 +136,7 @@ minimum-ios17:
 
 ## 測試與待補輸入
 
-本機已通過 32 個 Python tests，包含真實子程序的 secrets 環境隔離、錯誤輸出隔離、缺少 secrets 的 CLI 失敗，以及 profile／身分匹配、簽章清理、framework 設定隔離、最低版本、隱私 manifest 與 runtime 選擇；另驗證 ad-hoc seal 與不同 leaf certificate 不能通過 distribution 驗證。ATS 測試以真實 XML／binary plist 驗證拒絕 Debug loopback 設定、全域例外、空字典與錯誤型別，並驗證 unsigned／signed 無 ATS 的通過回報。簽章匯入清理、Mach-O 及產物憑證測試使用合成資料與替代命令；不代表真實 iOS 編譯或簽章已成功。實際本機 CLI 的缺少 Xcode 失敗路徑另確認退出 1、即時 preflight 訊息與 `runtime_tested: false` 的完整報告，沒有遺留半寫入的暫存報告。shell 語法、YAML 解析及 actionlint 1.7.12 已通過。
+本機已通過 36 個 Python tests，包含真實子程序的 secrets 環境隔離、錯誤輸出隔離、缺少 secrets 的 CLI 失敗，以及 profile／身分匹配、簽章清理、framework 設定隔離、最低版本、隱私 manifest 與 runtime 選擇；另驗證 ad-hoc seal 與不同 leaf certificate 不能通過 distribution 驗證。ATS 測試以真實 XML／binary plist 驗證拒絕 Debug loopback 設定、全域例外、空字典與錯誤型別，並驗證 unsigned／signed 無 ATS 的通過回報。簽章匯入清理、Mach-O 及產物憑證測試使用合成資料與替代命令；不代表真實 iOS 編譯或簽章已成功。實際本機 CLI 的缺少 Xcode 失敗路徑另確認退出 1、即時 preflight 訊息與 `runtime_tested: false` 的完整報告，沒有遺留半寫入的暫存報告。shell 語法、YAML 解析及 actionlint 1.7.12 已通過。
 
 已實際下載並核對固定 XcodeGen 2.44.1 的 SHA-256，在本機暫存目錄產生真實專案，套用合成簽章設定後以 `plutil -lint` 驗證，確認 App 有 profile、其他 target 沒有 App profile。首次產生因 session 缺少 `USER` 失敗；只在驗證子程序補入 OS 帳號名稱後成功，未修改系統設定。此為專案產生／設定驗證，不是 Xcode 編譯。
 
@@ -172,3 +172,5 @@ Both runs exposed the same invalid-port normalization and browser/PDF UI failure
 `42744261931` installed iOS 17.0.1 (21A342) successfully through the Apple installer, then timed out booting the disposable simulator after 300 seconds; no XCTest ran. The follow-up captures boot output with a 900-second bound.
 
 The iOS AppIcon is rendered from the unchanged WOOW Android vector recorded in Configuration/Brand/SOURCE.json, with its original geometry and colors, into an opaque 1024-pixel asset. `swift scripts/render_app_icon.swift` reproduces it; no new logo is designed.
+
+啟動失敗診斷增量：`release_ios17.py` 分開保存 boot 程序退出碼與終止狀態；即使程序退出 0，明確的 `Data Migration Failed` 也不會啟動 XCTest。只有乾淨 GitHub-hosted macOS、且實際 help 支援指定裝置旗標時，才在刪除本次 simulator 前蒐集其診斷，help 與蒐集共用 90 秒上限。沒有重試 boot、替換 OS 或清除其他裝置。模擬診斷失敗／逾時／cleanup 失敗的測試通過；真實診斷蒐集仍待 hosted 執行。

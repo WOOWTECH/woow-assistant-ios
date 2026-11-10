@@ -312,6 +312,11 @@ class BuildTests(unittest.TestCase):
 
 
 class RuntimeTests(unittest.TestCase):
+    DIAGNOSE_HELP = b"Usage: simctl diagnose [-l] [-q] [--udid=<udid>] [--output=<path>]\n"
+    HOSTED_ENV = {"GITHUB_ACTIONS": "true", "RUNNER_ENVIRONMENT": "github-hosted", "RUNNER_OS": "macOS"}
+    # Actual terminal record from run 42758764668 (iOS 17.0.1 / 21A342).
+    MIGRATION_FAILURE = b"[2026-11-10 05:05:25 +0000] Status=3, isTerminal=YES, Elapsed=05:02.\n\tData Migration Failed\n\n"
+
     def payload(self):
         return {"runtimes": [{"identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0", "version": "17.0.1", "isAvailable": True, "buildversion": "21A342"}]}
 
@@ -357,6 +362,8 @@ class RuntimeTests(unittest.TestCase):
                         return subprocess.CompletedProcess(args, exit_code)
                     return subprocess.CompletedProcess(args, 0)
                 with patch.object(ios17, "run", side_effect=command) as runner, \
+                     patch.object(ios17, "boot_simulator"), \
+                     patch.object(ios17, "collect_boot_diagnostics") as diagnostic, \
                      patch.object(ios17, "ensure_runtime", return_value=self.payload()["runtimes"][0]), \
                      patch.object(ios17, "generate_project", return_value=output / "Project.xcodeproj"), \
                      patch.object(ios17, "verify_settings"), \
@@ -366,6 +373,7 @@ class RuntimeTests(unittest.TestCase):
                         with self.assertRaises(release.ReleaseError): ios17.execute(output, "17.0.1", False, scope)
                     else:
                         ios17.execute(output, "17.0.1", False, scope)
+                    diagnostic.assert_not_called()
                 report = json.loads((output / "report.json").read_text())
                 succeeded = not timed_out and exit_code == 0
                 self.assertEqual(report["test_scope"], scope)
@@ -407,6 +415,7 @@ class RuntimeTests(unittest.TestCase):
                         raise subprocess.TimeoutExpired(args, kwargs["timeout"])
                     return subprocess.CompletedProcess(args, 0)
                 with patch.object(ios17, "run", side_effect=command) as runner, \
+                     patch.object(ios17, "boot_simulator", side_effect=release.ReleaseError("primary boot migration failure") if boot_failed else None), \
                      patch.object(ios17, "ensure_runtime", return_value=self.payload()["runtimes"][0]), \
                      patch.object(ios17, "generate_project", return_value=output / "Project.xcodeproj"), \
                      patch.object(ios17, "verify_settings"), \
@@ -427,6 +436,160 @@ class RuntimeTests(unittest.TestCase):
                 if test_exit: self.assertEqual(report["test_exit_code"], test_exit)
                 self.assertFalse(report["runtime_tested"])
                 self.assertTrue(any(call.args[0] == ["xcrun", "simctl", "delete", simulator] for call in runner.call_args_list))
+
+    def test_boot_terminal_failure_is_not_process_success(self):
+        finished = b"[2026-11-10 05:16:08 +0000] Status=4294967295, isTerminal=YES, Elapsed=03:42.\n\tFinished\n"
+        cases = [(self.MIGRATION_FAILURE, 0, True), (self.MIGRATION_FAILURE, 70, True),
+                 (self.MIGRATION_FAILURE, "timeout", True), (finished, 0, False),
+                 (finished, 70, True), (b"Device already booted\n", 0, False)]
+        simulator = "12345678-1234-1234-1234-123456789ABC"
+        for log, outcome, failed in cases:
+            with self.subTest(outcome=outcome, log=log), tempfile.TemporaryDirectory() as folder:
+                report = {}
+                def child(args, **kwargs):
+                    self.assertEqual(args, ["xcrun", "simctl", "bootstatus", simulator, "-b"])
+                    self.assertEqual(kwargs["timeout"], 900)
+                    kwargs["stdout"].write(log)
+                    if outcome == "timeout": raise subprocess.TimeoutExpired(args, 900)
+                    return subprocess.CompletedProcess(args, outcome)
+                with patch.object(ios17.subprocess, "run", side_effect=child) as tool:
+                    if failed:
+                        expected = "逾時" if outcome == "timeout" else "退出碼 70" if outcome == 70 else "Data Migration Failed"
+                        with self.assertRaisesRegex(release.ReleaseError, expected):
+                            ios17.boot_simulator(Path(folder), simulator, report)
+                    else:
+                        ios17.boot_simulator(Path(folder), simulator, report)
+                self.assertEqual(tool.call_count, 1)
+                self.assertEqual(report["boot_exit_code"], None if outcome == "timeout" else outcome)
+                self.assertEqual((Path(folder) / "simulator-boot.log").read_bytes(), log)
+                if log == self.MIGRATION_FAILURE:
+                    self.assertEqual(report["boot_terminal_status"], 3)
+                    self.assertTrue(report["boot_data_migration_failed"])
+                elif log == finished:
+                    self.assertEqual(report["boot_terminal_status"], 4294967295)
+                    self.assertFalse(report["boot_data_migration_failed"])
+
+    def test_boot_diagnostics_require_hosted_scope_and_confirmed_flags(self):
+        simulator = "12345678-1234-1234-1234-123456789ABC"
+        for env in [{}, dict(self.HOSTED_ENV, RUNNER_ENVIRONMENT="self-hosted"),
+                    dict(self.HOSTED_ENV, RUNNER_OS="Linux")]:
+            with self.subTest(env=env), patch.dict(os.environ, env, clear=True), \
+                 patch.object(ios17.subprocess, "run") as child:
+                result = ios17.collect_boot_diagnostics(Path("unused"), simulator)
+                self.assertEqual(result["status"], "skipped_not_ephemeral_hosted_macos")
+                self.assertFalse(result["attempted"])
+                child.assert_not_called()
+        cases = [(self.DIAGNOSE_HELP.replace(flag, b"unsupported"), 0, False, "skipped_required_flags_unavailable")
+                 for flag in [b"--udid", b"--output", b"-l", b"-q"]]
+        cases += [(self.DIAGNOSE_HELP, 1, False, "help_failed"),
+                  (self.DIAGNOSE_HELP, 0, True, "help_timed_out")]
+        for help_text, exit_code, timed_out, expected in cases:
+            with self.subTest(expected=expected, help_text=help_text), tempfile.TemporaryDirectory() as folder:
+                def child(args, **kwargs):
+                    self.assertEqual(args, ["xcrun", "simctl", "help", "diagnose"])
+                    self.assertEqual(kwargs["timeout"], 10)
+                    self.assertEqual(kwargs["stdin"], subprocess.DEVNULL)
+                    kwargs["stdout"].write(help_text)
+                    if timed_out: raise subprocess.TimeoutExpired(args, 10)
+                    return subprocess.CompletedProcess(args, exit_code)
+                with patch.dict(os.environ, self.HOSTED_ENV, clear=True), \
+                     patch.object(ios17.subprocess, "run", side_effect=child) as tool:
+                    result = ios17.collect_boot_diagnostics(Path(folder), simulator)
+                self.assertEqual(result["status"], expected)
+                self.assertFalse(result["attempted"])
+                self.assertEqual(tool.call_count, 1)
+                self.assertFalse((Path(folder) / "boot-diagnostics").exists())
+
+    def test_boot_diagnostics_budget_includes_help_and_never_retries(self):
+        simulator = "12345678-1234-1234-1234-123456789ABC"
+        for elapsed in [7, 91]:
+            with self.subTest(elapsed=elapsed), tempfile.TemporaryDirectory() as folder:
+                output = Path(folder)
+                def child(args, **kwargs):
+                    if "help" in args:
+                        kwargs["stdout"].write(self.DIAGNOSE_HELP)
+                        return subprocess.CompletedProcess(args, 0)
+                    self.assertEqual(args, ["xcrun", "simctl", "diagnose", "-l", "-q",
+                        "--udid=" + simulator, "--output=" + str((output / "boot-diagnostics").resolve())])
+                    self.assertEqual(kwargs["timeout"], 83)
+                    self.assertEqual(kwargs["stdin"], subprocess.DEVNULL)
+                    kwargs["stdout"].write(b"synthetic partial diagnosis\n")
+                    raise subprocess.TimeoutExpired(args, kwargs["timeout"])
+                with patch.dict(os.environ, self.HOSTED_ENV, clear=True), \
+                     patch.object(ios17.time, "monotonic", side_effect=[100, 100 + elapsed]), \
+                     patch.object(ios17.subprocess, "run", side_effect=child) as tool:
+                    result = ios17.collect_boot_diagnostics(output, simulator)
+                self.assertEqual(result["status"], "collection_timed_out" if elapsed == 7 else "skipped_budget_exhausted")
+                self.assertEqual(result["attempted"], elapsed == 7)
+                self.assertEqual(tool.call_count, 2 if elapsed == 7 else 1)
+                if elapsed == 7:
+                    self.assertEqual((output / "simctl-diagnose.log").read_bytes(), b"synthetic partial diagnosis\n")
+
+    def test_diagnostics_before_cleanup_never_replace_primary_boot_failure(self):
+        simulator = "12345678-1234-1234-1234-123456789ABC"
+        primary = "iOS 17 Simulator 資料移轉失敗（Data Migration Failed）；未執行測試。"
+        for outcome in [0, 70, "timeout", "io_error", "unexpected"]:
+            with self.subTest(outcome=outcome), tempfile.TemporaryDirectory() as folder:
+                output = Path(folder) / "result"
+                events = []
+                def command(args, *unused, **kwargs):
+                    if "-version" in args: return b"Xcode 16.4"
+                    if "-showBuildSettings" in args: return b"[]"
+                    if "create" in args: return simulator.encode()
+                    if "devices" in args:
+                        events.append("inventory")
+                        raise release.ReleaseError("secondary inventory failure")
+                    if "delete" in args:
+                        self.assertEqual(args[-1], simulator)
+                        events.append("delete")
+                        raise release.ReleaseError("secondary delete failure")
+                    return b""
+                def child(args, **kwargs):
+                    if "bootstatus" in args:
+                        events.append("boot")
+                        kwargs["stdout"].write(self.MIGRATION_FAILURE)
+                        return subprocess.CompletedProcess(args, 0)
+                    if "help" in args:
+                        events.append("help")
+                        persisted = json.loads((output / "report.json").read_text())
+                        self.assertEqual(persisted["boot_error"], primary)
+                        self.assertEqual(persisted["boot_exit_code"], 0)
+                        self.assertEqual(persisted["boot_terminal_status"], 3)
+                        self.assertFalse(persisted["boot_succeeded"])
+                        kwargs["stdout"].write(self.DIAGNOSE_HELP)
+                        return subprocess.CompletedProcess(args, 0)
+                    if "diagnose" in args:
+                        events.append("diagnose")
+                        self.assertIn("--udid=" + simulator, args)
+                        self.assertLessEqual(kwargs["timeout"], 90)
+                        if outcome == "timeout": raise subprocess.TimeoutExpired(args, kwargs["timeout"])
+                        if outcome == "io_error": raise OSError("secondary diagnostic failure")
+                        if outcome == "unexpected": raise RuntimeError("secondary unexpected failure")
+                        return subprocess.CompletedProcess(args, outcome)
+                    self.assertEqual(args, ["xcrun", "simctl", "shutdown", simulator])
+                    events.append("shutdown")
+                    raise subprocess.TimeoutExpired(args, kwargs["timeout"])
+                with patch.dict(os.environ, self.HOSTED_ENV, clear=True), \
+                     patch.object(ios17, "run", side_effect=command), \
+                     patch.object(ios17, "ensure_runtime", return_value=self.payload()["runtimes"][0]), \
+                     patch.object(ios17, "generate_project", return_value=output / "Project.xcodeproj"), \
+                     patch.object(ios17, "verify_settings"), \
+                     patch.object(ios17.subprocess, "run", side_effect=child), patch("builtins.print"):
+                    with self.assertRaisesRegex(release.ReleaseError, "Data Migration Failed"):
+                        ios17.execute(output, "17.0.1", False)
+                self.assertEqual(events, ["boot", "help", "diagnose", "inventory", "shutdown", "delete"])
+                report = json.loads((output / "report.json").read_text())
+                expected = {0: "completed", 70: "failed", "timeout": "collection_timed_out",
+                            "io_error": "collection_unavailable", "unexpected": "unexpected_diagnostic_error"}
+                self.assertEqual(report["boot_diagnostics"]["status"], expected[outcome])
+                self.assertEqual(report["boot_error"], primary)
+                self.assertEqual(report["boot_exit_code"], 0)
+                self.assertTrue(report["boot_data_migration_failed"])
+                self.assertEqual(report["phase"], "booting")
+                self.assertFalse(report["runtime_tested"])
+                self.assertTrue(report["simulator_state_unavailable"])
+                self.assertTrue(report["simulator_shutdown_incomplete"])
+                self.assertFalse(report["simulator_deleted"])
 
 
 if __name__ == "__main__":
