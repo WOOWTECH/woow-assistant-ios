@@ -235,15 +235,23 @@ final class BrowserWorkspace: ObservableObject {
                 #endif
             }
             guard let self else { return }
-            self.sessions.removeAll()
-            self.selected = self.makeSession(id: self.library.selectedID)
             #if DEBUG
-            trace("sessionsReplaced", ["ready": ready ? 1 : 0])
+            trace("pagesDiscarded", ["ready": ready ? 1 : 0])
             #endif
             guard ready else {
                 self.error = "網頁尚未完全停止，網站資料未清除；請重試。"
-                self.isClearingWebsiteData = false; return
+                self.isClearingWebsiteData = false
+                self.sessions.removeAll()
+                self.selected = self.makeSession(id: self.library.selectedID)
+                #if DEBUG
+                trace("sessionsReplaced", ["ready": 0])
+                #endif
+                return
             }
+            // Keep the stopped sessions and their blank views alive until
+            // WebKit finishes removal. Publishing a replacement here makes
+            // BrowserView create a new WKWebView on the same store while the
+            // Networking process is still deleting its data.
             #if DEBUG
             trace("removeRequested")
             #endif
@@ -258,6 +266,11 @@ final class BrowserWorkspace: ObservableObject {
                 }
                 #endif
                 self.isClearingWebsiteData = false
+                self.sessions.removeAll()
+                self.selected = self.makeSession(id: self.library.selectedID)
+                #if DEBUG
+                trace("sessionsReplaced", ["ready": 1])
+                #endif
                 #if DEBUG
                 self.websiteDataStore.fetchDataRecords(ofTypes: WKWebsiteDataStore.allWebsiteDataTypes()) { [weak self] remaining in
                     self?.websiteRecords = remaining.sorted { $0.displayName < $1.displayName }

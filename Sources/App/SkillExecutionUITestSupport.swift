@@ -17,7 +17,7 @@ enum SkillExecutionUITestSupport {
         let url: URL
         var filename: String { url.lastPathComponent }
     }
-    enum Failure: Error { case invalidNamespace, cannotCreatePDF, existingFile }
+    enum Failure: Error { case invalidNamespace, cannotCreatePDF, existingFile, invalidWriteMode, coordinationFailed }
 
     static func seedIfRequested(arguments: [String] = ProcessInfo.processInfo.arguments,
                                 documentsDirectory: () throws -> URL = {
@@ -32,6 +32,7 @@ enum SkillExecutionUITestSupport {
               !arguments.contains(where: { $0.hasPrefix("-Live") }),
               let index = arguments.firstIndex(of: "-UITestNamespace"), arguments.indices.contains(index + 1),
               let namespace = UUID(uuidString: arguments[index + 1]) else { throw Failure.invalidNamespace }
+        let writeMode = try fixtureWriteMode(arguments)
         // Do not even resolve/create Documents until all fixture gates pass.
         let root = try documentsDirectory()
         let url = root.appendingPathComponent("SkillExecution-\(namespace.uuidString).pdf")
@@ -45,6 +46,7 @@ enum SkillExecutionUITestSupport {
                 throw Failure.existingFile
             }
             recordBaseline(fixture, phase: "existing")
+            recordWriteMode(fixture, mode: writeMode, phase: "existing")
             return fixture // Re-entering the view never overwrites another file.
         }
         let buffer = NSMutableData()
@@ -70,8 +72,24 @@ enum SkillExecutionUITestSupport {
                                        PDFDocumentAttribute.authorAttribute: "Synthetic UI fixture"]
         guard let bytes = document.dataRepresentation(), bytes.count <= 128 * 1024 else { throw Failure.cannotCreatePDF }
         try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
-        try bytes.write(to: url, options: .withoutOverwriting)
+        recordWriteMode(fixture, mode: writeMode, phase: "willCreate")
+        switch writeMode {
+        case .direct:
+            try bytes.write(to: url, options: .withoutOverwriting)
+        case .coordinated:
+            var coordinationError: NSError?
+            var written: Result<Void, Error> = .failure(Failure.coordinationFailed)
+            NSFileCoordinator().coordinate(writingItemAt: url, options: [], error: &coordinationError) { destination in
+                // A moved/redirected test target is not permission to create a
+                // different file. Use the accessor URL only after this check.
+                guard destination.standardizedFileURL == url.standardizedFileURL else { return }
+                written = Result { try bytes.write(to: destination, options: .withoutOverwriting) }
+            }
+            if let coordinationError { throw coordinationError }
+            try written.get() // No direct-write fallback when coordination fails.
+        }
         recordBaseline(fixture, phase: "created")
+        recordWriteMode(fixture, mode: writeMode, phase: "created")
         return fixture
         #else
         return nil
@@ -79,6 +97,24 @@ enum SkillExecutionUITestSupport {
     }
 
     #if DEBUG
+    // Controlled experiment only. The existing direct path remains the control;
+    // neither this switch nor the fixture is available to production launches.
+    private enum WriteMode: String { case direct, coordinated }
+
+    private static func fixtureWriteMode(_ arguments: [String]) throws -> WriteMode {
+        let flag = "-UITestSkillFixtureWriteMode"
+        guard arguments.contains(flag) else { return .direct }
+        guard arguments.filter({ $0 == flag }).count == 1,
+              let index = arguments.firstIndex(of: flag), arguments.indices.contains(index + 1),
+              let mode = WriteMode(rawValue: arguments[index + 1]) else { throw Failure.invalidWriteMode }
+        return mode
+    }
+
+    private static func recordWriteMode(_ fixture: Fixture, mode: WriteMode, phase: String) {
+        print("SKILL_PDF_FIXTURE_WRITE namespace=\(fixture.namespace.uuidString) mode=\(mode.rawValue) phase=\(phase) sampledAt=\(Date().timeIntervalSince1970)")
+        fflush(stdout)
+    }
+
     /// Diagnostic only: one exact synthetic basename, no directory enumeration,
     /// links, unbounded reads, runtime selection or extraction authorization.
     struct FixtureEvidence: Codable {

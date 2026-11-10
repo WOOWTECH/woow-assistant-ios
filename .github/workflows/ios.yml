@@ -21,7 +21,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, interaction, parity, workspace, login, files, file-picker, pdf-export, authoring, memory-ui, memory-rollback, learning, browser, core, startup]
+        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, pdf-export, authoring, memory-ui, memory-rollback, learning, browser, core, startup]
         default: all
 
 permissions:
@@ -132,6 +132,12 @@ jobs:
               ;;
             file-picker)
               test_filters=(-only-testing:AssistantSkillsTests/SkillExecutionTests -only-testing:WoowAssistantUITests/BrowserUploadUITests -only-testing:WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText)
+              ;;
+            picker-direct)
+              test_filters=(-only-testing:WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText)
+              ;;
+            picker-coordinated)
+              test_filters=(-only-testing:WoowAssistantUITests/SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText)
               ;;
             pdf-export)
               test_filters=(-only-testing:WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder -only-testing:WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry)

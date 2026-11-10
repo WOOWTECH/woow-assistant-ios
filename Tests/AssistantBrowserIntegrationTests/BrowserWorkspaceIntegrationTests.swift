@@ -1,5 +1,6 @@
 #if os(iOS) && canImport(XCTest)
 import XCTest
+import Combine
 import UIKit
 import WebKit
 import AssistantBrowser
@@ -55,6 +56,17 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
         let records = workspace.websiteRecords.filter { $0.displayName.contains("example.invalid") }
         XCTAssertFalse(records.isEmpty)
         XCTAssertTrue(records.allSatisfy { !$0.displayName.contains("example.org") })
+        // BrowserView requests/mounts the new WKWebView as soon as selected
+        // changes. Waiting until after removal to attach it missed the real
+        // UI's overlap between new-process startup and data-store deletion.
+        var replacementCount = 0
+        let selection = workspace.$selected.dropFirst().sink { session in
+            replacementCount += 1
+            XCTAssertFalse(workspace.isClearingWebsiteData,
+                           "Do not create a replacement WebKit view while website-data removal is pending")
+            host.attach(session)
+        }
+        defer { selection.cancel() }
         workspace.removeWebsiteData(records)
         XCTAssertTrue(workspace.isClearingWebsiteData)
         do {
@@ -74,6 +86,7 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
             throw error
         }
         XCTAssertNil(workspace.error, "Quiescence failure must not be mistaken for completed record removal")
+        XCTAssertEqual(replacementCount, 1, "Mount exactly one replacement after the actual removeData callback")
         XCTAssertNil(second.interactionProposal)
         XCTAssertNil(second.controlSnapshot)
         // Keep the old views alive: removing Swift session references alone
@@ -377,7 +390,10 @@ final class BrowserWorkspaceIntegrationTests: XCTestCase {
         }
 
         @discardableResult func attachSelected() -> BrowserSession {
-            let session = workspace!.selected
+            attach(workspace!.selected)
+        }
+
+        @discardableResult func attach(_ session: BrowserSession) -> BrowserSession {
             if !sessions.contains(where: { $0 === session }) { sessions.append(session) }
             controller.view = session.webView
             return session

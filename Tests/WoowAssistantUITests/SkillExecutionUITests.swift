@@ -193,7 +193,15 @@ final class SkillExecutionUITests: XCTestCase {
     }
 
     func testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText() {
-        launchFixture(fromCatalog: true)
+        assertNativePDFRead(fixtureWriteMode: nil)
+    }
+
+    func testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText() {
+        assertNativePDFRead(fixtureWriteMode: "coordinated")
+    }
+
+    private func assertNativePDFRead(fixtureWriteMode: String?) {
+        launchFixture(fromCatalog: true, fixtureWriteMode: fixtureWriteMode)
         chooseSyntheticPDF()
         assertAudit(selections: 1, reads: 0, extractionAttempts: 0, results: 0)
         XCTAssertFalse(app.staticTexts["skillExecution.fingerprint"].exists,
@@ -388,9 +396,10 @@ final class SkillExecutionUITests: XCTestCase {
         XCTAssertFalse(nativeCancel.exists)
     }
 
-    private func launchFixture(fromCatalog: Bool) {
+    private func launchFixture(fromCatalog: Bool, fixtureWriteMode: String? = nil) {
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW",
             "-UITestMode", "-UITestNamespace", namespace, "-UITestResetStorage", "-UITestSkillExecution"]
+        if let fixtureWriteMode { app.launchArguments += ["-UITestSkillFixtureWriteMode", fixtureWriteMode] }
         app.launchEnvironment = [:]
         app.launch()
         tap("navigation.memory")
