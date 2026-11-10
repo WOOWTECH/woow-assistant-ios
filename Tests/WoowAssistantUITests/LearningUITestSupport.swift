@@ -14,23 +14,35 @@ enum LearningElementVisibility {
 func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
                            visibility: LearningElementVisibility = .fullyVisible,
                            file: StaticString = #filePath, line: UInt = #line) {
-    // Scrolling does not replace the containing Form/List. Resolve it once per
-    // invocation, but refresh geometry after each swipe (keyboard/layout may
-    // change). Never enumerate the AX tree twice for a single gesture.
+    // Navigation/keyboard transitions can replace the containing Form/List.
+    // Cache its AX identity, not its position in a changing query result, and
+    // validate it before reusing its geometry for the next gesture.
     var container: XCUIElement?
     let navigation = app.buttons["navigation.chat"]
     let keyboard = app.keyboards.firstMatch
-    func viewport() -> (bounds: CGRect, scrollTarget: XCUIElement) {
+    func viewport() -> (bounds: CGRect, scrollTarget: XCUIElement, scrollFrame: CGRect) {
         let appFrame = app.frame
         var contentFrame = appFrame
-        if let container { contentFrame = container.frame }
-        else {
-            let candidates = app.collectionViews.allElementsBoundByIndex + app.scrollViews.allElementsBoundByIndex
-            for candidate in candidates where candidate.isHittable {
-                let frame = candidate.frame
-                if !frame.intersection(appFrame).isEmpty {
-                    container = candidate; contentFrame = frame; break
-                }
+        func visibleFrame(of candidate: XCUIElement) -> CGRect? {
+            guard candidate.exists, candidate.isHittable,
+                  let snapshot = try? candidate.snapshot() else { return nil }
+            let frame = snapshot.frame
+            guard !frame.isNull, !frame.isInfinite, !frame.isEmpty,
+                  !frame.intersection(appFrame).isEmpty else { return nil }
+            return frame
+        }
+        if let cached = container, let frame = visibleFrame(of: cached) {
+            contentFrame = frame
+        } else {
+            container = nil
+            // 1b0f3d8: two CollectionViews became one during presentation. An
+            // index-1 element then failed on frame despite the Form still being
+            // present. Accessibility bindings survive changes to result order.
+            let candidates = app.collectionViews.allElementsBoundByAccessibilityElement
+                + app.scrollViews.allElementsBoundByAccessibilityElement
+            for candidate in candidates {
+                guard let frame = visibleFrame(of: candidate) else { continue }
+                container = candidate; contentFrame = frame; break
             }
         }
         var bounds = contentFrame.intersection(appFrame)
@@ -42,7 +54,7 @@ func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
             let frame = keyboard.frame
             if !frame.isEmpty, frame.minY > bounds.minY { bounds.size.height = min(bounds.maxY, frame.minY) - bounds.minY }
         }
-        return (bounds.insetBy(dx: 0, dy: 4), container ?? app)
+        return (bounds.insetBy(dx: 0, dy: 4), container ?? app, contentFrame)
     }
     var previousTargetWasPresent = false
     var hasSeenTarget = false
@@ -52,7 +64,7 @@ func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
     var previousContent: LearningScrollContent?
     var reversedAtBoundary = false
     for attempt in 0...8 {
-        let (bounds, scrollTarget) = viewport()
+        let (bounds, scrollTarget, scrollFrame) = viewport()
         let exists = element.exists
         // A virtualized Form row has no snapshot until scrolling materializes
         // it. Querying elementType before exists fails before any scroll occurs.
@@ -94,7 +106,6 @@ func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
             reversedAtBoundary = true
         }
         previousContent = content
-        let scrollFrame = scrollTarget.frame
         guard let drag = LearningScrollDrag.make(
             listFrame: scrollFrame, viewport: bounds,
             targetFrame: targetIsPresent ? frame : nil,
