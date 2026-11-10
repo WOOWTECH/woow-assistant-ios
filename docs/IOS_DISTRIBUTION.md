@@ -1,6 +1,6 @@
 # iOS 簽章與最低版本驗證
 
-查核日期：2026-11-10。整合提交 `d160a24` 已通過 Release 裝置編譯；17.0.1／17.5 模擬器均已啟動並實際執行 App 與 XCTest，但驗收尚未全數通過。`1153d5a` 修正已重現的原始網址連接埠檢查，其原生與 hosted 回歸案例已在三種 iOS 18.5／26.2 模擬器通過；iOS 17 重測仍在進行。目前尚無真機驗收、distribution 簽章成功或可安裝發行包。
+查核日期：2026-11-10。整合提交 `d160a24` 已通過 Release 裝置編譯；17.0.1／17.5 模擬器均已啟動並實際執行 App 與 XCTest，但驗收尚未全數通過。`1153d5a` 修正已重現的原始網址連接埠檢查，其原生與 hosted 回歸案例已在三種 iOS 18.5／26.2 模擬器，以及 iOS 17.0.1 通過。最新 `1b0f3d8` 的 iOS 17.0.1 核心／hosted 驗證為 114/114、零略過；沒有選入 UI，完整介面重測仍在進行。目前尚無真機驗收、distribution 簽章成功或可安裝發行包。
 
 ## 已確認的環境與缺口
 
@@ -178,3 +178,5 @@ The iOS AppIcon is rendered from the unchanged WOOW Android vector recorded in C
 實際上傳工具驗證：[transporter-check 42764461574](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42764461574)（`024aba9`）在 GitHub-hosted Intel macOS 成功驗證官方套件、安裝至 `/usr/local/itms`，並啟動回報 `iTMSTransporter, version 4.3.0`。未提供帳號、API Key 或 IPA，沒有執行上傳。
 
 最新 App `c8ff84a` 的 [unsigned Release 42765470430](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42765470430) 通過：實際產物 build 14、九個二進位檔、最低 iOS 17.0、Release ATS 與隱私 manifest 檢查均符合。包含手動技能寫作的新 App 程式；仍為 unsigned、不可安裝、未上傳，不代替真機或 UI 驗證。
+
+`1b0f3d8` [iOS 17.0.1 core 42769127673](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769127673) 實際通過 114/114 原生／hosted 案例，零失敗／略過／預期失敗。runtime inventory 為 17.0.1（21A342），iPhone 15 x86_64 simulator；host macOS 15.7.9、Xcode 16.4（16F6）。七個 target 的案例數為 48／6／15／5／25／4／11。三層原始網址驗證、五項技能寫作 bridge 與 WebKit 實際下載／Cookie 清除均通過。報告 `test_scope=core`、`selected_tests_succeeded=true`、`runtime_tested=false`；UI 未選入，不是完整 App 或真機驗收。啟動成功；optional inventory unavailable 與 shutdown incomplete 已保留，專用 simulator 刪除成功。07:13 UTC 唯讀重查 repository secret 名稱，仍只有模型與 HA 兩項，尚無 Apple 簽章／ASC 資料。

@@ -63,7 +63,7 @@ cases. Both actually executed App code, and neither is a full pass.
 `1153d5a`/`0092fc8` fix Foundation discarding malformed ports by checking the
 original address before normalization; 1,034 local direct Swift checks passed.
 The new native and hosted raw-address regression cases passed all three files
-variants on `776f5f9`; the corresponding iOS 17 rerun remains pending.
+variants on `776f5f9` and in the successful iOS 17.0.1 core run on `1b0f3d8`.
 
 Full reruns on `0092fc8` stopped before App tests:
 [17.0.1 42758764668](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42758764668)
@@ -138,7 +138,21 @@ installer was actually downloaded and its SHA-256 and Apple installer certificat
 verified locally without installation. The separate hosted Transporter check then installed and launched the actual tool successfully. Account authentication, real distribution
 signing, Apple upload, processing and tester availability remain unverified.
 
-[iOS 17.0.1 core 42769127673](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769127673) on `1b0f3d8` replaces `c8ff84a` run 42765526169, cancelled to avoid the known test-target compilation error. It retains bounded boot-failure diagnostics. Its scope is native/hosted core only, not full UI acceptance.
+[iOS 17.0.1 core 42769127673](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769127673)
+on `1b0f3d8` **passed 114/114 selected native/hosted cases**, zero failures,
+skips or expected failures. Actual runtime inventory is iOS 17.0.1 / 21A342,
+iPhone 15 x86_64 simulator on macOS 15.7.9 / Xcode 16.4 (16F6), deployment target
+17.0. Counts are Domain 48, Models 6, MCP 15, Memory 5, Skills 25, Persistence 4
+and BrowserIntegration 11. All three raw-address validation layers and all five
+new authoring bridge methods passed, including actual encrypted-file readback.
+The 11 hosted cases include actual WebKit DOM, download, per-site cookie removal,
+independent tabs and deferred navigation restrictions. UI was not selected:
+`selected_tests_succeeded=true`, `runtime_tested=false` intentionally records
+scoped success, not full App acceptance. The bridge test key store is an in-memory
+test backend; this is not manual authoring UI/relaunch evidence. Boot succeeded;
+optional inventory and shutdown diagnostics were incomplete, while deletion of
+the dedicated simulator succeeded. This replaces `c8ff84a` run 42765526169,
+cancelled because of the known test-target compilation error.
 
 ### Original-script container acceptance
 
