@@ -1,5 +1,7 @@
 # iOS 簽章與最低版本驗證
 
+`08ebb8f` [iOS 17.5 full 42762808616](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762808616) 實際啟動 17.5／21F79，測試於 80 分鐘期限中止。已完成日誌為原生 98 通過、介面 40 通過／3 失敗／10 即時服務略過；hosted 未執行，兩項基本介面案例只有開始紀錄。失敗包含書籤改名後標籤斷言，以及兩項 PDF 匯出的 App teardown 終止失敗。摘要為空，不能算完整驗收；報告 `test_timed_out=true`、`selected_tests_succeeded=false`、`runtime_tested=false`。07:19 UTC 已保存原始 artifact；runner cleanup 卡住超過 30 分鐘後於 07:52 請求取消，最終 cancellation 標籤不改變測試逾時。後續 [17.0.1 startup 42777363564](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42777363564)（`8f89d9e`）只驗證基本介面 class，待結果。摘要與附件匯出改為獨立 `always()` 步驟，讓摘要失敗時仍嘗試保存原生畫面，兩者失敗均保留。
+
 查核日期：2026-11-10。整合提交 `d160a24` 已通過 Release 裝置編譯；17.0.1／17.5 模擬器均已啟動並實際執行 App 與 XCTest，但驗收尚未全數通過。`1153d5a` 修正已重現的原始網址連接埠檢查，其原生與 hosted 回歸案例已在三種 iOS 18.5／26.2 模擬器，以及 iOS 17.0.1 通過。最新 `1b0f3d8` 的 iOS 17.0.1 核心／hosted 驗證為 114/114、零略過；沒有選入 UI，完整介面重測仍在進行。目前尚無真機驗收、distribution 簽章成功或可安裝發行包。
 
 ## 已確認的環境與缺口

@@ -149,11 +149,18 @@ jobs:
           args=()
           if [ "$VALIDATION_MODE" = ios17-hosted ]; then args+=(--download); fi
           python3 scripts/release_ios17.py --os "$IOS17_VERSION" --test-scope "$IOS17_TEST_SCOPE" "${args[@]}" --output build/ios17
-      - name: 匯出 iOS 17 測試摘要與原生介面證據
+      - name: 匯出 iOS 17 測試摘要
         if: always()
         run: |
           if [ -d build/ios17/Tests.xcresult ]; then
             xcrun xcresulttool get test-results summary --path build/ios17/Tests.xcresult > build/ios17/test-summary.json
+          fi
+      # A timed-out XCTest may leave an incomplete summary. Still attempt
+      # attachment export independently, preserving both step failures.
+      - name: 匯出 iOS 17 原生介面證據
+        if: always()
+        run: |
+          if [ -d build/ios17/Tests.xcresult ]; then
             xcrun xcresulttool export attachments --path build/ios17/Tests.xcresult --output-path build/ios17/screenshots
           fi
       - name: 保留實際 runtime 與測試證據

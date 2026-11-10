@@ -7,12 +7,13 @@ Latest completed simulator evidence (passed test cases / selected cases, not ass
 | Workflow / source | iPhone SE, 18.5 | iPhone 16 Pro Max, 18.5 | iPhone 17, 26.2 |
 | --- | --- | --- | --- |
 | [Workspace 42763765491](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42763765491), `1747c20` | Native/hosted 26/26; UI 3/5 | Native/hosted 25/26; UI 3/5 | Native/hosted 26/26; UI 3/5 |
+| [Workspace 42769973948](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769973948), `0df511b` | Native/hosted 26/26; UI 4/5 | Native/hosted 26/26; UI 5/5 | Native/hosted 26/26; UI 5/5 |
 | [Files 42762605111](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762605111), `776f5f9` | Native/hosted 40/40; UI 5/8 | Native/hosted 40/40; UI 8/8 | Native/hosted 40/40; UI 6/8 |
-| [Files 42769116674](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769116674), `1b0f3d8` | Native/hosted 44/45; UI 7/8 | Native/hosted 45/45; UI 8/8 | Pending |
+| [Files 42769116674](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769116674), `1b0f3d8` | Native/hosted 44/45; UI 7/8 | Native/hosted 45/45; UI 8/8 | Native/hosted 45/45; UI 6/8 |
 | [Parity 42762628864](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762628864), `776f5f9` | Native/hosted 94/94; UI 18/21 | Native/hosted 94/94; UI 21/21 | Native/hosted 94/94; UI 21/21 |
 
 The `776f5f9` and `1747c20` variants passed 98 portable cases. The completed
-`1b0f3d8` files SE/large variants passed 103, including the five new authoring
+`1b0f3d8` files variants passed 103, including the five new authoring
 bridge cases, plus all 12 original-worker cases with real Swift HTTP integration. Each files variant also passed the 12 original-script
 worker cases, including the real Swift HTTP client. No selected test was skipped in these three scoped matrices. A timed-out
 case is a failure even when XCTest restarts and later prints a passing suite:
@@ -21,14 +22,14 @@ allowance in the older parity SE (`e1024aa`) and files large (`4dbbddb`) runs.
 The older parity failure remains in the historical records below; the replacement files run
 `776f5f9` passed cancellation on all three native simulators.
 
-- Files: all selected native/hosted cases passed, including actual viewport
+- Files `776f5f9`: all selected native/hosted cases passed, including actual viewport
   scrolling, raw-address rejection and persistent per-site cookie removal.
   Large passed all eight UI cases. SE failed three PDF status-row searches after
   the bounded-scroll helper exhausted its short drags. Current passed both native
   export cases but failed the longer PDF status search and an interrupted AX
   lookup during upload cancellation. Actual extraction/result evidence is retained;
   those failed UI cases are not counted as passes.
-- Workspace: tabs, bookmark/history/relaunch and manual query/dialog UI now
+- Workspace `1747c20`: tabs, bookmark/history/relaunch and manual query/dialog UI now
   passed on all three variants. The two login/clear-site UI cases still failed:
   keyboard tutorial geometry, XCTest idle-wait timeout and locating the native
   clear confirmation remain under investigation. Large also exceeded the hosted
@@ -126,10 +127,23 @@ reruns; large success does not retroactively pass SE. Targeted SE
 on `e2b7de9` includes both repairs. CI concurrency now separates effective device
 variants, allowing this targeted run without cancelling the older full matrix.
 
+The `1b0f3d8` current files variant finished 51/53, zero skips: native/hosted
+45/45 and UI 6/8. Actual upload and both export cases passed. Upload cancellation
+failed the bounded native-picker readiness check. Full PDF selection tapped the
+correct enabled thumbnail, but the system logged `NSFileProviderErrorDomain -1005`
+(file does not exist), could not resolve its bookmark, and returned an empty
+selection before App import/extraction. This is not evidence of an ignored tap;
+the artifact cannot prove the fixture's filesystem state after the error. No
+production fix is claimed. `e7a0f70` removes redundant source-menu accessibility
+queries during the same 45-second upload-picker wait; [current file-picker
+42775938595](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42775938595)
+compares both upload cases and the unchanged full-PDF flow. It is pending; a later
+pass does not erase the original provider failure.
+
 Current follow-up runs are separate source checkpoints:
-- `0df511b` [workspace 42769973948](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769973948): pending native rerun with exact keyboard tutorial and sheet confirmation lookup, separate bounded deletion/refresh waits, and only the relevant hosted removal wait increased from 15 to 30 seconds. Workspace/all now honor the login case's existing 420-second declaration; other scopes remain capped at 300. The four unexplained 60-second XCTest idle waits in the prior SE case remain an open intermittent issue, not a proven product fix.
+- `0df511b` [workspace 42769973948](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42769973948): large/current passed 31/31 selected native/hosted/UI cases, including login, protected HTTP, per-site removal and relaunch. SE passed 30/31: login passed, but removal completed at 30.719 seconds with zero synthetic cookies, after the first 30-second wait failed; subsequent HTTP/relaunch assertions did not execute. All three hosted targets passed 11/11, including actual WKDownload, zero skips. `e941709` shares the existing total 60-second allowance across removal and record refresh, keeping empty-list, HTTP and relaunch assertions. Targeted [SE workspace 42778341962](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42778341962) is pending. Workspace/all honor the login case's existing 420-second declaration; other scopes remain capped at 300. The four unexplained 60-second XCTest idle waits in the prior SE case remain open, not a proven product fix.
 - `1747c20` [workspace 42763765491](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42763765491): completed with the failures and timings above. The bounded persistent website-removal phases and failure cleanup evidence do not themselves fix cookie removal.
-- `08ebb8f` [iOS 17.5 42762808616](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762808616): full scheme after separating boot results from optional inventory failures; running.
+- `08ebb8f` [iOS 17.5 42762808616](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42762808616): booted 17.5/21F79 and reached the 80-minute test deadline. Completed log records show 98 native passed; UI 40 passed, three failed and ten explicit live-service skips. Hosted cases were not reached. Bookmark rename failed its label assertion after Save; two PDF export cases failed App termination in teardown. Two basic UI cases started without a final result and are not counted. The result summary was empty/incomplete. Report/log/bundle artifact was saved at 07:19 UTC; cancellation was requested at 07:52 after runner cleanup remained stuck for over 30 minutes. This remains a timed-out, incomplete acceptance run regardless of its eventual cancellation label. Targeted [17.0.1 startup 42777363564](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42777363564) on `8f89d9e` selects the basic UI class to cover unfinished settings/chat/MCP cases; pending.
 - `024aba9` [Transporter 42764461574](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42764461574) and [unsigned Release 42764485075](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42764485075): the unsigned run was cancelled while queued and replaced with [42765470430](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42765470430) on `c8ff84a` to include the new authoring App code. Transporter installation/startup passed; the replacement unsigned run passed, including actual build number 14, nine device binaries and minimum OS 17.0. It remains unsigned/not installable. No signing/upload mode was dispatched.
 
 The optional TestFlight delivery path has 32 passing local Python tests using
