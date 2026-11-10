@@ -1,0 +1,157 @@
+{
+  "source_revision": "6d480d8361a6b34e2568a616478bbfc5c12559b1",
+  "os": "iOS 17.0.1 (21A342), iPhone 15 ARM Simulator, Xcode 16.4",
+  "retrieval": "Bounded ZIP ranges: report/logs/index/summary plus only selected synthetic AX/screenshots and one QuickPath movie; no whole artifact ZIP.",
+  "workspace": {
+    "run": 42797724525,
+    "artifact": 13756465809,
+    "executed": 5,
+    "passed": 2,
+    "failed": 3,
+    "skipped": 0,
+    "failures": [
+      {
+        "case": "testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+        "line_at_6d": 443,
+        "seconds": 70.343,
+        "classification": "Native keyboard readiness / harness unresolved",
+        "evidence": "QuickPath Continue visible in movie at 54 and 63 seconds. No credentials typed. Explanation/button/enabled/hittable remote queries consume the 10-second predicate waiter. Final button find retried twice. Debug attachment contains query chain only. Visibility does not prove AX hittability; underlying AX latency cause unproven.",
+        "files": [
+          "quickpath-54.png",
+          "quickpath-63.png",
+          "F3B68E3A-5816-4AFE-B8B8-514CDB5800A3.txt"
+        ]
+      },
+      {
+        "case": "testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+        "line_at_6d": 365,
+        "seconds": 60.059,
+        "classification": "Confirmed selector mismatch",
+        "evidence": "Exact destructive button exists under exact-titled Other, not Sheet. Real form login already succeeded. Confirmation never tapped; removal never initiated.",
+        "files": [
+          "153A5AEA-513E-4878-85F2-8ED5A6BE3243.txt"
+        ],
+        "repair": "BrowserLoginUITests.swift matches Sheet/Other + exact title + exact identifier/label; Latin fix, HTTP receipts, relaunch and 60-second deletion budget preserved."
+      },
+      {
+        "case": "testBookmarkRenameHistoryClearAndRelaunch",
+        "line_at_6d": 76,
+        "seconds": 30.938,
+        "classification": "Confirmed selector mismatch",
+        "evidence": "Exact destructive history action under exact-titled Other. Renamed bookmark assertion already passed; no history deletion initiated.",
+        "files": [
+          "CC342A0D-FACA-42C2-AE22-B9B09C90FAFF.txt",
+          "1817FC0F-754F-4AE8-928D-DAC5C68572B1.png"
+        ],
+        "repair": "BrowserWorkspaceUITests.swift matches Sheet/Other + exact title + exact identifier/label; persistence/relaunch assertions preserved."
+      }
+    ]
+  },
+  "browser": {
+    "run": 42797747470,
+    "artifact": 13757380722,
+    "executed": 5,
+    "passed": 3,
+    "failed": 2,
+    "skipped": 0,
+    "passed_cases": [
+      "testApprovedTypeSelectAndClickExecuteRealForm",
+      "testNativeFileChooserCancellationDoesNotUpload",
+      "testNativeFilesSelectionSubmitsExactSyntheticBytesToHTTPServer"
+    ],
+    "failures": [
+      {
+        "case": "testRefusalAndClosingReviewDoNotTypeOrSubmit",
+        "line_at_6d": 71,
+        "seconds": 68.671,
+        "classification": "Confirmed label selector mismatch",
+        "evidence": "Public note is a sibling StaticText; input TextField has no label and value initial. Screenshot and AX show NOT SAVED. Existing label-prefix query yields zero.",
+        "files": [
+          "AF6FCB22-932D-4EBE-8DF9-C0C43F443F66.txt",
+          "AD4ED8C6-8D97-4F88-8F69-32C8CFF06A79.png"
+        ]
+      },
+      {
+        "case": "testReloadInvalidatesPendingIdentityAndRequiresNewApproval",
+        "line_at_6d": 95,
+        "seconds": 49.275,
+        "classification": "Confirmed label selector mismatch",
+        "evidence": "Same unlabelled native input + adjacent Public note StaticText. initial and NOT SAVED remain after reload. Assertions stop before new approval, so entire case is not proven.",
+        "files": [
+          "0ABE5E10-03F9-4D12-AFE1-E6317AFC4746.txt",
+          "5FD9F695-FA83-421F-B68B-978EFD1A6261.png"
+        ]
+      }
+    ],
+    "repair_candidate": "Implemented in BrowserInteractionUITests.swift: exact native browser.webView identifier plus Interaction fixture marker; require unique non-password input and known Public note label before reading exact initial value. No value-based selection; no address/review-editor fallback. NOT SAVED and new approval assertions untouched.",
+    "repair_validation": [
+      "Debug/Release iOS17-target Swift parse PASS",
+      "git diff --check PASS",
+      "Both captured failing AX trees verify fixture container, unique TextField, label, initial and NOT SAVED",
+      "Native rerun pending"
+    ]
+  },
+  "startup": {
+    "run": 42797738681,
+    "artifact": 13755652494,
+    "executed": 0,
+    "boot_succeeded": true,
+    "reported_runner_errors": 1,
+    "classification": "XCTest runner bootstrap failure",
+    "evidence": "Runner PID 17573 reports Running tests at 10:37:58.727Z; xcodebuild ends 10:41:25Z. No Test Case started. Summary: Early unexpected exit, operation never finished bootstrapping; signal kill before test execution.",
+    "unknown": "Sender/cause of SIGKILL not established. Diagnostics present inside xcresult Data; reading only referenced Session/testmanagerd metadata with bounded ZIP ranges. No App test method started.",
+    "diagnostic_scope": ".github/workflows/release-ios.yml currently exports summary and attachments but not xcresult diagnostics; separate bounded export of runner diagnostics needs parent coordination.",
+    "session_log": "Session-WoowAssistantUITests-2026-11-10_103450-eNRmez.log",
+    "additional_evidence": [
+      {
+        "line": 57,
+        "at": "10:37:01.260Z",
+        "event": "Crash-report collection control-session initialization with test daemon timed out after 120 seconds; test launch continued."
+      },
+      {
+        "line": 104,
+        "at": "10:37:26.203Z",
+        "event": "Runner launched, PID 17573."
+      },
+      {
+        "line": 112,
+        "at": "10:39:58.772Z",
+        "event": "Runner death notice with signal 9."
+      }
+    ]
+  },
+  "memory": {
+    "run": 42797762597,
+    "job": 129767213299,
+    "artifact": 13756456969,
+    "executed": 0,
+    "classification": "Simulator runtime inventory command timeout before runtime selection or boot",
+    "evidence": "checking_runtime 10:42:25.219Z; 取得 Simulator runtime 清單：工具執行逾時。 10:44:25.319Z; exit1.",
+    "command": [
+      "xcrun",
+      "simctl",
+      "list",
+      "runtimes",
+      "--json"
+    ],
+    "timeout_seconds": 120,
+    "source": "scripts/release_ios17.py:152 -> scripts/release_ios.py:36 default timeout",
+    "unknown": "CoreSimulator service cause not captured; no Memory UI assertion executed.",
+    "diagnostic_scope": "scripts/release_ios17.py inventory() timeout diagnostics and .github/workflows/release-ios.yml artifact collection are parent scope. No timeout increase/retry or Memory product patch proposed."
+  },
+  "patch_checkpoint": {
+    "base": "08fec36",
+    "files": [
+      "Tests/WoowAssistantUITests/BrowserLoginUITests.swift",
+      "Tests/WoowAssistantUITests/BrowserWorkspaceUITests.swift"
+    ],
+    "validation": [
+      "Debug arm64 iOS17 simulator-target Swift parse PASS",
+      "Release arm64 iOS17 simulator-target Swift parse PASS",
+      "git diff --check PASS",
+      "Saved AX structure audit PASS: iOS17 site/history Other, iOS26 history Sheet with nested duplicate Buttons"
+    ],
+    "native_test_status": "Pending; local host has no Xcode/iOS SDK. Parse emits expected MacOS sysroot/iPhone target warning.",
+    "no_commit_dispatch": true
+  }
+}

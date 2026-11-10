@@ -36,7 +36,9 @@
 - [x] Capability dependency inventory, per-step PDF grants, native PDFKit and pinned original PDF-worker protocol/tests.
 - [x] Manual skill-authoring bridge with original-request/read-version/review binding and atomic encrypted persistence; native UI acceptance tracked per revision.
 - [x] Build and execute the pinned original PDF worker in actual isolated GitHub Ubuntu containers; verify effective restrictions and exact results. No endpoint deployed.
-- [ ] Model-autonomous skill search/read/save integration.
+- [x] Model-autonomous skill search/read and reviewed-save integration; real-model App flow passed at `6d480d8` (VERIFICATION).
+- [x] Configurable App appearance with model list/set and independent default-off permission; native/live acceptance pending by revision.
+- [x] Original content-transcribe guidance over approved text/subtitle files and browser text snapshots; core HTTP checks pass, native/live acceptance pending by revision.
 - [ ] Full original-skill tool registry and deployed authenticated remote compute environment.
 
 ## M3 — Browser parity and notifications

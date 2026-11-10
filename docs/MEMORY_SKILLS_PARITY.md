@@ -62,8 +62,9 @@ complete locations rather than treating shortened table paths as filesystem path
   constrained DOM interaction are separate increments; catalog evidence below
   does not establish their acceptance or full browser parity.
   Drafting/promotion must be accepted with separate core, App UI and live evidence.
-- Model-controlled memory/skill mutation tools and profile consolidation remain
-  unimplemented. The complete pinned bundled-source archive and separately labeled
+- Model-controlled memory mutation and profile consolidation remain unimplemented.
+  Skill search/read and reviewed-save now have actual-model App acceptance at
+  `6d480d8`; this does not grant automatic approval or general mutation authority. The complete pinned bundled-source archive and separately labeled
   iOS text adaptations are implemented below; this is not original-skill execution
   parity. Event-driven browser draft production and website
   lifecycle have passing fixture App tests on all three simulators. Real-model
@@ -76,6 +77,17 @@ actions. It is not full Mika browser parity. Outcome assessment adds exact obser
 citations, and deduplicates executed actions before the five-action drafting gate.
 Website quotes are references, not user memory; approval remains separate. Tests
 must distinguish real models over synthetic traces from actual browser execution.
+
+### Original-skill integration follow-up — 2026-11-10
+
+The historical text-adaptation table below describes the catalog's first stage.
+Later native integrations include reviewed model skill authoring (actual-model UI
+passed), appearance `settings_list`/`settings_set`, dedicated authenticated PDF
+worker configuration, and approved text/subtitle/browser snapshot transcription.
+The latter integrations still require their revision-specific native and live
+results; implemented entry points alone do not establish full tool parity. See
+[content transcription](CONTENT_TRANSCRIBE.md), [model authoring](SKILL_MODEL_AUTHORING.md)
+and [verification](VERIFICATION.md). The original immutable catalog is unchanged.
 
 ### Selected PDF execution increment - 2026-11-10
 

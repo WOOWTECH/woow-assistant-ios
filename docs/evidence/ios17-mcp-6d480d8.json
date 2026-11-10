@@ -1,0 +1,143 @@
+{
+  "schema_version": 1,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42797777474",
+  "artifact_id": 13756788926,
+  "report_sha256": "30efca6a1a6217994335e115a2f0e8abf63c8c42f98929d144284df148c15c11",
+  "report": {
+    "requested_runtime": "17.0.1",
+    "runtime_tested": false,
+    "deployment_target": "17.0",
+    "physical_devices_used": false,
+    "host_architecture": "arm64",
+    "host_macos": "15.8.2",
+    "expected_host_architecture": "arm64",
+    "phase_history": [
+      {
+        "phase": "preflight",
+        "requested_runtime": "17.0.1",
+        "at": "2026-11-10T10:45:02.941704+00:00",
+        "elapsed_seconds": 0.0
+      },
+      {
+        "phase": "checking_runtime",
+        "requested_runtime": "17.0.1",
+        "at": "2026-11-10T10:45:03.134257+00:00",
+        "elapsed_seconds": 0.2
+      },
+      {
+        "phase": "downloading_runtime",
+        "requested_runtime": "17.0.1",
+        "at": "2026-11-10T10:45:48.699695+00:00",
+        "elapsed_seconds": 45.8
+      },
+      {
+        "phase": "checking_installed_runtime",
+        "requested_runtime": "17.0.1",
+        "at": "2026-11-10T10:47:36.555260+00:00",
+        "elapsed_seconds": 153.6
+      },
+      {
+        "phase": "generating_project",
+        "requested_runtime": "17.0.1",
+        "at": "2026-11-10T10:47:38.120138+00:00",
+        "elapsed_seconds": 155.2
+      },
+      {
+        "phase": "checking_build_settings",
+        "requested_runtime": "17.0.1",
+        "at": "2026-11-10T10:47:38.258750+00:00",
+        "elapsed_seconds": 155.3
+      },
+      {
+        "phase": "creating_simulator",
+        "requested_runtime": "17.0.1",
+        "at": "2026-11-10T10:47:42.960364+00:00",
+        "elapsed_seconds": 160.0
+      },
+      {
+        "phase": "booting",
+        "requested_runtime": "17.0.1",
+        "at": "2026-11-10T10:47:44.045079+00:00",
+        "elapsed_seconds": 161.1
+      },
+      {
+        "phase": "testing",
+        "requested_runtime": "17.0.1",
+        "at": "2026-11-10T10:52:23.979471+00:00",
+        "elapsed_seconds": 441.1
+      },
+      {
+        "phase": "verifying_test_completion",
+        "requested_runtime": "17.0.1",
+        "at": "2026-11-10T11:02:41.085727+00:00",
+        "elapsed_seconds": 1058.2
+      },
+      {
+        "phase": "passed",
+        "requested_runtime": "17.0.1",
+        "at": "2026-11-10T11:02:49.042973+00:00",
+        "elapsed_seconds": 1066.1
+      }
+    ],
+    "test_scope": "ui-mcp",
+    "selected_tests_succeeded": true,
+    "full_acceptance_succeeded": false,
+    "coverage_kind": "ui-shard",
+    "source_revision": "6d480d8361a6b34e2568a616478bbfc5c12559b1",
+    "phase": "passed",
+    "ui_inventory_sha256": "e1718181d214860354cda308f03bd1087f1b878ee72ef91f277dbe98ec18d5b7",
+    "expected_ui_tests": [
+      "WoowAssistantUITests/MCPConversationUITests/testBackgroundRevokesPendingApprovalAndRetainsDraft",
+      "WoowAssistantUITests/MCPConversationUITests/testModelSelectedToolRequiresExactApprovalAndReturnsResult",
+      "WoowAssistantUITests/MCPConversationUITests/testRefusalPreservesDraftAndMakesNoServerCall",
+      "WoowAssistantUITests/MCPConversationUITests/testSelectedResourceRequiresApprovalAndResultIsReviewable",
+      "WoowAssistantUITests/MCPConversationUITests/testToolErrorPreservesDraftAndActualErrorResult"
+    ],
+    "live_ui_selected": false,
+    "live_ui_not_selected": [
+      "WoowAssistantUITests/LiveMCPConversationUITests/testRealModelChoosesTwoReadOnlyToolsAndUsesTheirResults",
+      "WoowAssistantUITests/LiveMCPConversationUITests/testRealModelToolRefusalKeepsDraft",
+      "WoowAssistantUITests/LiveMCPUITests/testRealDiscoveryDisconnectAndReconnect",
+      "WoowAssistantUITests/LiveModelUITests/testLiveCancellationKeepsDraft",
+      "WoowAssistantUITests/LiveModelUITests/testRealAutomaticMemorySurvivesRelaunchAndMasterSwitchBlocksRecall",
+      "WoowAssistantUITests/LiveModelUITests/testRealHTTPTransportFailureKeepsDraft",
+      "WoowAssistantUITests/LiveModelUITests/testRealModelProposesObservedDOMLinkAndApprovedClickNavigates",
+      "WoowAssistantUITests/LiveModelUITests/testRealModelReadsOriginalSkillAndReviewedSaveSurvivesRelaunch",
+      "WoowAssistantUITests/LiveModelUITests/testRealMultiPageResearchLearnsPendingSkillAndApprovalSurvivesRelaunch",
+      "WoowAssistantUITests/LiveModelUITests/testRealReplyMultiTurnContextAndDraftTabPreservation",
+      "WoowAssistantUITests/LiveModelUITests/testRealWebKitResearchUsesPublicWebsiteAndJudgesOutcome"
+    ],
+    "xcode": "Xcode 16.4\nBuild version 16F6",
+    "selected_runtime": {
+      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+      "version": "17.0.1",
+      "buildversion": "21A342"
+    },
+    "boot_exit_code": 0,
+    "boot_terminal_status": 4294967295,
+    "boot_data_migration_failed": false,
+    "boot_succeeded": true,
+    "simulator_state_unavailable": true,
+    "maximum_case_seconds": 300,
+    "build_test_timeout_seconds": 1800,
+    "test_exit_code": 0,
+    "test_completion": {
+      "verified": true,
+      "counts": {
+        "totalTestCount": 5,
+        "passedTests": 5,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "result": "Passed",
+      "expected_ui_count": 5,
+      "completed_ui_count": 5,
+      "missing_ui_tests": [],
+      "unexpected_ui_tests": [],
+      "nonpassing_or_repeated_ui_tests": []
+    },
+    "simulator_deleted": true
+  },
+  "limitation": "Fixture App MCP conversation UI only. Not live HA execution, complete iOS 17 or physical-device acceptance."
+}

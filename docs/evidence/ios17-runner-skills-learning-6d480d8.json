@@ -1,0 +1,93 @@
+{
+  "groups": [
+    {
+      "scope": "ui-skills",
+      "run": 42797769776,
+      "artifact": 13757232389,
+      "job": 129767227810,
+      "source": "6d480d8361a6b34e2568a616478bbfc5c12559b1",
+      "methodStarts": 0,
+      "expectedMethodCount": 7,
+      "summary": {
+        "result": "Failed",
+        "totalTestCount": 1,
+        "passedTests": 0,
+        "failedTests": 1,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "failure": "Early unexpected exit, operation never finished bootstrapping - no restart will be attempted. (Underlying Error: Test crashed with signal kill before starting test execution.)",
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "xcode": "Xcode 16.4\nBuild version 16F6",
+      "bootSucceeded": true,
+      "exitCode": 65,
+      "runnerStdout": [
+        {
+          "line": 4028,
+          "text": "2026-11-10 10:52:40.902860+0000 WoowAssistantUITests-Runner[17435:54326] [Default] Running tests..."
+        }
+      ],
+      "separateDiagnosticEntryCount": 0,
+      "attachmentManifestBytes": 4,
+      "preservedXCResultBytes": 75354524,
+      "sourceHashes": {
+        "report.json": "c37557b6c7fd2ceb6544ed9a14b725b4a4819e10183c6edd6fc53473061c1e31",
+        "test-summary.json": "02aa28513db3e89f36cec5f5e7bc941650d795c395dbfedd8993eb69607c637a",
+        "tests.log": "4af213ad5033436c4e4e47ce0b93e10454c834947e0262443106eff8c3cc5e0b"
+      },
+      "classification": "Runner stopped before any selected test method. No functional coverage and no evidence supporting a UI control/product/test assertion edit.",
+      "unknown": "Exact termination reason (watchdog, resource pressure, or another cause) is not established by the exported summary/stdout. Do not transfer the known 26 attempt1 initialization-timeout cause to these runs.",
+      "remainingEvidence": "Full xcresult is preserved in each artifact but diagnostics were not exported as standalone entries. Xcode xcresulttool diagnostics export is needed to inspect the runner session; host has CLT only. Simulator/system logs would be required to distinguish the termination cause if absent from xcresult."
+    },
+    {
+      "scope": "ui-learning",
+      "run": 42797754152,
+      "artifact": 13756957525,
+      "job": 129767174180,
+      "source": "6d480d8361a6b34e2568a616478bbfc5c12559b1",
+      "methodStarts": 0,
+      "expectedMethodCount": 3,
+      "summary": {
+        "result": "Failed",
+        "totalTestCount": 1,
+        "passedTests": 0,
+        "failedTests": 1,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "failure": "Early unexpected exit, operation never finished bootstrapping - no restart will be attempted. (Underlying Error: Test crashed with signal kill before starting test execution.)",
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "xcode": "Xcode 16.4\nBuild version 16F6",
+      "bootSucceeded": true,
+      "exitCode": 65,
+      "runnerStdout": [
+        {
+          "line": 4030,
+          "text": "2026-11-10 10:49:30.371172+0000 WoowAssistantUITests-Runner[15833:48579] [Default] Running tests..."
+        }
+      ],
+      "separateDiagnosticEntryCount": 0,
+      "attachmentManifestBytes": 4,
+      "preservedXCResultBytes": 66726110,
+      "sourceHashes": {
+        "report.json": "d8279b64dede7472562083ae4b4f0d9967944496447d4adc23d1f07173fe52b0",
+        "test-summary.json": "ecf799591059afbbab119af41d5bbd204e260ebf819d8ef51ec6edf408ed1c24",
+        "tests.log": "925a8008c1fa1899283bb269a2094c347099fbc3f06cf3d17b9a2643032fe0ee"
+      },
+      "classification": "Runner stopped before any selected test method. No functional coverage and no evidence supporting a UI control/product/test assertion edit.",
+      "unknown": "Exact termination reason (watchdog, resource pressure, or another cause) is not established by the exported summary/stdout. Do not transfer the known 26 attempt1 initialization-timeout cause to these runs.",
+      "remainingEvidence": "Full xcresult is preserved in each artifact but diagnostics were not exported as standalone entries. Xcode xcresulttool diagnostics export is needed to inspect the runner session; host has CLT only. Simulator/system logs would be required to distinguish the termination cause if absent from xcresult."
+    }
+  ],
+  "repoFilesEdited": [],
+  "dispatches": 0,
+  "testsWeakened": false
+}

@@ -140,13 +140,27 @@ final class BrowserInteractionUITests: XCTestCase {
         return multiline.exists ? multiline : app.textFields["browser.interaction.text"]
     }
     private func assertInitialNote(file: StaticString = #filePath, line: UInt = #line) {
-        // iOS 17 exposes this DOM input as "Public note initial". Locate by
-        // its label prefix, independently of the value under test. Its WebView
-        // ancestors also have inconsistent legacy/modern AX types on iOS 17.
-        let matches = app.textFields.matching(NSPredicate(
-            format: "label == %@ OR label BEGINSWITH %@", "Public note", "Public note "))
-        XCTAssertEqual(matches.count, 1, "Expected the unique fixture input.", file: file, line: line)
-        XCTAssertEqual(matches.firstMatch.value as? String, "initial", file: file, line: line)
+        // 6d480d8 iOS 17 AX exposes Public note as a sibling StaticText;
+        // the input itself has no label. Identify the fixture's native WebView
+        // by its app identifier (legacy/modern AX types can differ), then its
+        // sole non-password input. Never select by the value being asserted
+        // or fall back to the browser address/native review editor.
+        let web = app.descendants(matching: .any).matching(NSPredicate(
+            format: "identifier == %@", "browser.webView")).firstMatch
+        XCTAssertTrue(web.exists, "Expected the fixture's native browser container.", file: file, line: line)
+        XCTAssertTrue(web.descendants(matching: .any).matching(NSPredicate(
+            format: "label == %@", "Interaction fixture")).firstMatch.exists,
+                      "The local interaction fixture must be visible after closing review.", file: file, line: line)
+        let matches = web.textFields
+        let count = matches.count
+        XCTAssertEqual(count, 1, "Expected the unique fixture input.", file: file, line: line)
+        guard count == 1 else { return }
+        let input = matches.firstMatch
+        let label = input.label
+        XCTAssertTrue(label == "Public note" || label.hasPrefix("Public note ") ||
+                      web.staticTexts.matching(NSPredicate(format: "label == %@", "Public note")).firstMatch.exists,
+                      "The unique fixture input must retain its Public note label.", file: file, line: line)
+        XCTAssertEqual(input.value as? String, "initial", file: file, line: line)
     }
     private func control(_ label: String) -> XCUIElement {
         controls(matching: label).firstMatch

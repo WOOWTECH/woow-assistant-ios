@@ -1,0 +1,261 @@
+{
+  "schema_version": 1,
+  "host": "local macOS 13.7.8 WKWebView",
+  "runtime": "real local WebKit over synthetic DOM, not iOS hosted UI",
+  "passed": 28,
+  "failed": 0,
+  "cases": [
+    {
+      "name": "full-tail-native-fields",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "[large synthetic source omitted]",
+      "title": "Audit",
+      "utf8Bytes": 9014
+    },
+    {
+      "name": "exact-65536-ascii",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "[large synthetic source omitted]",
+      "title": "Audit",
+      "utf8Bytes": 65536
+    },
+    {
+      "name": "over-65537-ascii",
+      "omittedRegions": 0,
+      "oversized": true,
+      "passed": true,
+      "text": "",
+      "title": "Audit",
+      "utf8Bytes": 0
+    },
+    {
+      "name": "exact-separator-boundary",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "[large synthetic source omitted]",
+      "title": "Audit",
+      "utf8Bytes": 65536
+    },
+    {
+      "name": "utf8-65535",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "[large synthetic source omitted]",
+      "title": "Audit",
+      "utf8Bytes": 65535
+    },
+    {
+      "name": "utf8-65538",
+      "omittedRegions": 0,
+      "oversized": true,
+      "passed": true,
+      "text": "",
+      "title": "Audit",
+      "utf8Bytes": 0
+    },
+    {
+      "name": "opacity-direct-and-ancestor",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "hidden-sensitive-roles",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "display-contents",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC\nVISIBLE_CONTENTS",
+      "title": "Audit",
+      "utf8Bytes": 23
+    },
+    {
+      "name": "shadow-visible",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC\nVISIBLE_SHADOW",
+      "title": "Audit",
+      "utf8Bytes": 21
+    },
+    {
+      "name": "shadow-slots-nested",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC\nBEFORE\nSLOTTED\nFALLBACK\nNESTED_SHADOW\nAFTER",
+      "title": "Audit",
+      "utf8Bytes": 50
+    },
+    {
+      "name": "shadow-sensitive-host",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "shadow-hidden-host",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "iframe-srcdoc",
+      "omittedRegions": 1,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "iframe-sandbox",
+      "omittedRegions": 1,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "hidden-iframe",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "closed-custom-element",
+      "omittedRegions": 1,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "opaque-custom-element",
+      "omittedRegions": 1,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "open-custom-element",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC\nOPEN_TEXT",
+      "title": "Audit",
+      "utf8Bytes": 16
+    },
+    {
+      "name": "utf8-exact-65536",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "[large synthetic source omitted]",
+      "title": "Audit",
+      "utf8Bytes": 65536
+    },
+    {
+      "name": "nested-slot-hidden-boundary",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC\nVISIBLE",
+      "title": "Audit",
+      "utf8Bytes": 14
+    },
+    {
+      "name": "opaque-light-dom",
+      "omittedRegions": 1,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC\nREADABLE_LIGHT",
+      "title": "Audit",
+      "utf8Bytes": 21
+    },
+    {
+      "name": "opaque-display-contents",
+      "omittedRegions": 1,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC\nREADABLE_CONTENTS",
+      "title": "Audit",
+      "utf8Bytes": 24
+    },
+    {
+      "name": "zero-size-frame",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "hidden-custom",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "actual-populated-frame",
+      "omittedRegions": 1,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC",
+      "title": "Audit",
+      "utf8Bytes": 6
+    },
+    {
+      "name": "combined-omissions",
+      "omittedRegions": 5,
+      "oversized": false,
+      "passed": true,
+      "text": "PUBLIC\nREADABLE_LIGHT\nREADABLE_CONTENTS",
+      "title": "Audit",
+      "utf8Bytes": 39
+    },
+    {
+      "name": "html-hidden-ancestor",
+      "omittedRegions": 0,
+      "oversized": false,
+      "passed": true,
+      "text": "",
+      "title": "Audit",
+      "utf8Bytes": 0
+    }
+  ]
+}

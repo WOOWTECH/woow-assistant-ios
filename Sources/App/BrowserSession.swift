@@ -264,9 +264,9 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         return result
     }
 
-    /// A separately approved, complete visible-text capture. Research keeps its
-    /// existing 8,000-character excerpt; transcript capture rejects oversized
-    /// pages instead of presenting a silently truncated article as complete.
+    /// A separately approved accessible-DOM snapshot. Research keeps its
+    /// existing 8,000-character excerpt; this capture rejects oversized text
+    /// and reports known regions outside the snapshot without inserting prose.
     func textForTranscript() async throws -> BrowserTranscriptText {
         try Task.checkCancellation()
         let generation = pageGeneration
@@ -281,7 +281,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         }
         guard !page.oversized, page.text.utf8.count <= 64 * 1024 else { throw TranscriptError.tooLarge }
         guard !page.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { throw TranscriptError.emptySource }
-        return BrowserTranscriptText(url: url, title: page.title, text: page.text, capturedAt: Date())
+        return BrowserTranscriptText(url: url, title: page.title, text: page.text,
+                                     capturedAt: Date(), omittedRegions: page.omittedRegions)
     }
 
     private func evaluateDocumentScript(_ script: String) async throws -> String {
@@ -1038,24 +1039,60 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         let title: String
         let text: String
         let oversized: Bool
+        let omittedRegions: Int
     }
     private static let transcriptScript = #"""
     (() => {
-      const out=[]; let size=0, nodes=0;
+      const out=[], stack=[document.documentElement], encoder=new TextEncoder(); let size=0, nodes=0, omittedRegions=0;
       const title=document.title.slice(0,200);
-      const tooLarge=()=>JSON.stringify({title,text:'',oversized:true});
-      const walk=document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
-      while(walk.nextNode()) {
+      const tooLarge=()=>JSON.stringify({title,text:'',oversized:true,omittedRegions});
+      const excluded=new Set(['SCRIPT','STYLE','NOSCRIPT','TEMPLATE','INPUT','TEXTAREA','SELECT','OPTION','DATALIST']);
+      // Walk the rendered, accessible tree rather than only light-DOM text.
+      // A closed root on an ordinary element cannot be detected from page JS;
+      // this capture must be presented as accessible DOM, never the whole page.
+      if(!document.body) throw new Error('Transcript document is unavailable');
+      while(stack.length) {
         if(++nodes>50000) return tooLarge();
-        const n=walk.currentNode,p=n.parentElement;
-        if(!p || p.closest('script,style,noscript,input,textarea,[contenteditable]') || !p.getClientRects().length) continue;
-        const s=getComputedStyle(p); if(s.visibility==='hidden'||s.display==='none') continue;
-        const t=n.textContent.trim();
-        if(t) {size+=t.length+1;if(size>65536) return tooLarge();out.push(t);}
+        const n=stack.pop();
+        if(n.nodeType===Node.TEXT_NODE) {
+          const range=document.createRange(); range.selectNodeContents(n);
+          if(!Array.from(range.getClientRects()).some(r=>r.width>0&&r.height>0)) continue;
+          const t=n.textContent.trim();
+          if(t) {
+            if(t.length+(out.length?1:0)>65536-size) return tooLarge();
+            size+=encoder.encode(t).byteLength+(out.length?1:0);
+            if(size>65536) return tooLarge();
+            out.push(t);
+          }
+          continue;
+        }
+        if(n.nodeType!==Node.ELEMENT_NODE) continue;
+        const role=(n.getAttribute('role')||'').toLowerCase().split(/\s+/);
+        if(excluded.has(n.tagName)||n.hasAttribute('contenteditable')||n.hasAttribute('hidden')||
+           n.getAttribute('aria-hidden')==='true'||role.includes('textbox')||role.includes('searchbox')||role.includes('combobox')) continue;
+        const s=getComputedStyle(n);
+        // Pruning here also excludes descendants of a hidden/sensitive ancestor,
+        // including content reached through an open shadow root or assigned slot.
+        if(s.display==='none'||s.visibility==='hidden'||s.visibility==='collapse'||Number(s.opacity)===0||s.contentVisibility==='hidden') continue;
+        if(['IFRAME','FRAME','OBJECT','EMBED'].includes(n.tagName)) {
+          if(Array.from(n.getClientRects()).some(r=>r.width>0&&r.height>0)) omittedRegions++;
+          continue;
+        }
+        // An opaque custom element may encapsulate a closed root: report the
+        // possible omission while retaining any actually rendered light DOM.
+        if(n.localName.includes('-')&&!n.shadowRoot) omittedRegions++;
+        let children;
+        if(n.shadowRoot) children=n.shadowRoot.childNodes;
+        else if(n.localName==='slot'&&typeof n.assignedNodes==='function') {
+          // Recurse through intermediate slots ourselves so their hidden or
+          // sensitive boundaries are checked rather than flattened away.
+          const assigned=n.assignedNodes({flatten:false});
+          children=assigned.length?assigned:n.childNodes;
+        } else children=n.childNodes;
+        if(nodes+stack.length+children.length>50000) return tooLarge();
+        for(let i=children.length-1;i>=0;i--) stack.push(children[i]);
       }
-      const text=out.join('\n');
-      if(new TextEncoder().encode(text).byteLength>65536) return tooLarge();
-      return JSON.stringify({title,text,oversized:false});
+      return JSON.stringify({title,text:out.join('\n'),oversized:false,omittedRegions});
     })()
     """#
     private struct DOMObservation: Decodable {
@@ -1084,4 +1121,7 @@ struct BrowserTranscriptText: Equatable, Sendable {
     let title: String
     let text: String
     let capturedAt: Date
+    /// Visible embedded documents and opaque custom elements potentially
+    /// outside the accessible snapshot. Undetectable closed roots are not counted.
+    let omittedRegions: Int
 }

@@ -1,5 +1,30 @@
 # Verification — 2026-11-10
 
+## Exact iOS 17.0.1 first full shard attempt (`6d480d8`)
+
+All 51 non-Live UI methods were assigned; the actual run outcomes are below.
+Zero-method runner failures are **unexecuted**, not functional passes or skips.
+
+| Group | Passed | Failed methods | Not executed | Evidence |
+|---|---:|---:|---:|---|
+| core | 121 | 0 | 0 | [42797718070](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42797718070) |
+| ui-documents | 7 | 0 | 0 | [42797731238](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42797731238) |
+| ui-mcp | 5 | 0 | 0 | [42797777474](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42797777474), fixture conversation UI, not live HA |
+| ui-workspace | 2 | 3 | 0 | Two native confirmation selector mismatches; QuickPath readiness remains unresolved |
+| ui-browser | 3 | 2 | 0 | Native upload/cancel and approved form interaction passed; two unchanged-input checks used a missing iOS 17 field label |
+| ui-startup | 0 | 0 | 12 | Runner killed before any method began |
+| ui-memory | 0 | 0 | 7 | Runtime inventory timed out before simulator boot |
+| ui-skills | 0 | 0 | 7 | Runner killed before any method began |
+| ui-learning | 0 | 0 | 3 | Runner killed before any method began |
+
+[First four diagnoses](evidence/ios17-first-shards-6d480d8.json), [skills/learning runner evidence](evidence/ios17-runner-skills-learning-6d480d8.json), and [MCP completion report](evidence/ios17-mcp-6d480d8.json) preserve the distinction. Three failed runner bundles are being inspected separately without rerunning their tests; new runs export diagnostics directly. Subsequent UI inventory includes new settings/transcript cases and must be validated against its own revision.
+
+
+## 2026-11-10: real-model appearance flow
+
+Source `2055c30`, [live run 42800157677](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42800157677), passed **1/1 App UI, zero skips**, 104.585 seconds on iPhone 16 Pro Max / iOS 18.5. The actual configured model listed settings, changed appearance to dark after explicit permission, and the test checked SwiftUI's actual color scheme, persistence after relaunch, and permission revocation. The seven separate native live transport/memory/skill-learning requests also passed; learning there uses explicitly synthetic executor evidence. [Bounded evidence](evidence/live-appearance-2055c30.json). This does not establish complete original settings-tool or physical-device parity.
+
+
 ## 2026-11-10: device build and iOS 17 confirmation selectors
 
 Source `08fec36` [unsigned-device run 42802907455](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42802907455) passed on Xcode 26.2 / iPhoneOS SDK 26.2, build 31. All nine device binaries retain minimum iOS 17.0; native Documents configuration, absent ATS exceptions and required-reason manifest were verified. This includes the initial transcript integration but not later DOM fixes. It is an unsigned, **noninstallable** build, not a signed release or physical-device result. [Report](evidence/unsigned-device-08fec36.json).

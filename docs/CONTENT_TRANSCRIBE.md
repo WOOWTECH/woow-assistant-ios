@@ -8,8 +8,10 @@ and creates an immutable snapshot. The configured model destination is shown
 and must be confirmed before a separate Start action sends any source text.
 
 The browser toolbar offers the same workflow for its current page. An explicit
-read extracts complete rendered text, excluding editable fields and hidden
-elements. Oversized text is rejected instead of silently truncated to the
+read extracts a rendered-text snapshot, excluding editable fields and hidden
+elements. It does not capture images, media or embedded pages; the UI and model
+must not equate reading all snapshot bytes with reading the entire website.
+Oversized text is rejected instead of silently truncated to the
 research feature's 8,000-character excerpt. The user reviews the captured source
 and URL before approving it for the text workflow. This entry does not grant the
 model arbitrary URL access or browser navigation.

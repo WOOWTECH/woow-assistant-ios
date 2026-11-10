@@ -175,6 +175,7 @@ public enum TranscriptOutcome: Sendable {
     summary：原內容語言、五到十句、不加評論，依序保留主要論點及結論。chapters：短標題及兩三句摘要。article：標題、說明文字來源的開頭、小標及結語。
     transcript：依序整理全文，去除重複但不補寫；字幕缺字或錯字仍標記疑義。沒有音訊或影片解碼能力，不能聲稱聽過音訊、看過畫面或核實字幕與影音相符。
     不足以完成時回 {"action":"refuse","reason":"缺少什麼文字證據"}。本流程不寫入記憶、技能或任何檔案。
+    若 source_kind 是 user_approved_web_page_text_only，來源只是一份使用者核准的網頁文字快照，不包含圖片、影音或內嵌頁面；即使讀完全部位元組，也不能聲稱已讀完整個網頁、網站或核對未擷取的內容。
     """
 }
 #endif

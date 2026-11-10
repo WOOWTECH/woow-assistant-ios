@@ -19,6 +19,7 @@ final class BrowserSessionNavigationTests: XCTestCase {
         XCTAssertEqual(page.url, host.url)
         XCTAssertEqual(page.text, String(repeating: "A", count: 9000) + "\nCOMPLETE_TAIL")
         XCTAssertFalse(page.text.contains("PRIVATE_"))
+        XCTAssertEqual(page.omittedRegions, 0)
         XCTAssertEqual(host.browser.current?.text, excerpt.text, "Full capture must not replace the research excerpt or navigation state")
     }
 
@@ -31,6 +32,99 @@ final class BrowserSessionNavigationTests: XCTestCase {
         do { _ = try await host.browser.textForTranscript(); XCTFail("90,000 UTF-8 bytes cannot become a truncated success") }
         catch let error as TranscriptError { XCTAssertEqual(error, .tooLarge) }
         XCTAssertNotNil(host.browser.current)
+    }
+
+    @MainActor func testTranscriptAcceptsExactUTF8LimitIncludingOnlyActualSeparators() async throws {
+        let host = try Host(); defer { host.close() }
+        _ = try await host.load(marker: "BYTE BOUNDARY")
+        for (script, expected) in [
+            ("document.body.innerHTML='<p>'+('A'.repeat(65536))+'</p>'; true", String(repeating: "A", count: 65536)),
+            ("document.body.innerHTML='<p>'+('字'.repeat(21845))+'</p><p></p>'; true", String(repeating: "字", count: 21845)),
+            ("document.body.innerHTML='<p>'+('字'.repeat(21845))+'A</p>'; true", String(repeating: "字", count: 21845) + "A"),
+            ("document.body.innerHTML='<p>'+('A'.repeat(65534))+'</p><p>B</p>'; true", String(repeating: "A", count: 65534) + "\nB")
+        ] {
+            _ = try await host.browser.webView.evaluateJavaScript(script)
+            let page = try await host.browser.textForTranscript()
+            XCTAssertEqual(page.text, expected)
+            XCTAssertLessThanOrEqual(page.text.utf8.count, 65536)
+        }
+        for script in [
+            "document.body.innerHTML='<p>'+('A'.repeat(65537))+'</p>'; true",
+            "document.body.innerHTML='<p>'+('字'.repeat(21846))+'</p>'; true"
+        ] {
+            _ = try await host.browser.webView.evaluateJavaScript(script)
+            do { _ = try await host.browser.textForTranscript(); XCTFail("An over-limit source must not be truncated") }
+            catch let error as TranscriptError { XCTAssertEqual(error, .tooLarge) }
+        }
+    }
+
+    @MainActor func testTranscriptExcludesHiddenAncestorsAndSensitiveRolesButReadsDisplayContents() async throws {
+        let host = try Host(); defer { host.close() }
+        _ = try await host.load(marker: "VISIBLE SOURCE")
+        _ = try await host.browser.webView.evaluateJavaScript(#"""
+        document.body.innerHTML='<p>PUBLIC</p><div style="display:contents">VISIBLE_CONTENTS</div>'+
+          '<p style="opacity:0">PRIVATE_OPACITY</p><div style="opacity:0"><p>PRIVATE_ANCESTOR</p></div>'+
+          '<div style="visibility:hidden"><p>PRIVATE_VISIBILITY</p></div><div hidden>PRIVATE_HIDDEN</div>'+
+          '<div aria-hidden="true">PRIVATE_ARIA</div><div role="textbox"><span>PRIVATE_TEXTBOX</span></div>'+
+          '<div role="searchbox">PRIVATE_SEARCHBOX</div><div contenteditable="true">PRIVATE_EDITABLE</div>'+
+          '<input type="hidden" value="PRIVATE_INPUT"><textarea>PRIVATE_TEXTAREA</textarea>'+
+          '<select><option selected>PRIVATE_SELECTION</option></select>'; true
+        """#)
+        let page = try await host.browser.textForTranscript()
+        XCTAssertEqual(page.text, "PUBLIC\nVISIBLE_CONTENTS")
+        XCTAssertFalse(page.text.contains("PRIVATE_"))
+        _ = try await host.browser.webView.evaluateJavaScript("document.documentElement.style.opacity='0'; true")
+        defer { host.browser.webView.evaluateJavaScript("document.documentElement.style.opacity=''", completionHandler: nil) }
+        do { _ = try await host.browser.textForTranscript(); XCTFail("A hidden document ancestor must exclude its descendants") }
+        catch let error as TranscriptError { XCTAssertEqual(error, .emptySource) }
+    }
+
+    @MainActor func testTranscriptFlattensOpenShadowRootsAndAssignedSlotsWithoutLightDOMDuplicates() async throws {
+        let host = try Host(); defer { host.close() }
+        _ = try await host.load(marker: "SHADOW SOURCE")
+        _ = try await host.browser.webView.evaluateJavaScript(#"""
+        document.body.innerHTML='<p>PUBLIC</p><div id="shadow-host"><span slot="chosen">SLOTTED</span>'+
+          '<span>PRIVATE_UNASSIGNED</span><span slot="secret">PRIVATE_HIDDEN_SLOT</span></div>';
+        const root=document.getElementById('shadow-host').attachShadow({mode:'open'});
+        root.innerHTML='<p>BEFORE</p><slot name="chosen">PRIVATE_UNUSED_FALLBACK</slot>'+
+          '<slot name="missing">FALLBACK</slot><slot name="outer"><slot name="inner" style="opacity:0">PRIVATE_NESTED_SLOT</slot></slot><div id="nested"></div>'+
+          '<div style="opacity:0"><slot name="secret"></slot></div><p>AFTER</p>';
+        root.getElementById('nested').attachShadow({mode:'open'}).innerHTML='<p>NESTED_SHADOW</p>';
+        true
+        """#)
+        let page = try await host.browser.textForTranscript()
+        XCTAssertEqual(page.text, "PUBLIC\nBEFORE\nSLOTTED\nFALLBACK\nNESTED_SHADOW\nAFTER")
+        XCTAssertFalse(page.text.contains("PRIVATE_"))
+        XCTAssertEqual(page.omittedRegions, 0)
+    }
+
+    @MainActor func testTranscriptReportsOmittedRegionsAndPreservesReadableLightDOMWithoutPlaceholders() async throws {
+        let host = try Host(); defer { host.close() }
+        _ = try await host.load(marker: "READABLE SNAPSHOT")
+        // A same-origin initial frame and sandbox srcdoc use no external request.
+        // Both same-origin and
+        // opaque-origin documents remain outside this snapshot, with counts.
+        let frameBody = try await host.browser.webView.evaluateJavaScript(#"""
+        document.body.innerHTML=`<p>PUBLIC</p><iframe id="local-frame"></iframe>
+          <iframe sandbox srcdoc="<p>PRIVATE_SANDBOX</p>"></iframe>
+          <closed-example></closed-example><light-example>READABLE_LIGHT</light-example>
+          <contents-example style="display:contents">READABLE_CONTENTS</contents-example>
+          <div hidden><iframe srcdoc="PRIVATE_HIDDEN_FRAME"></iframe><hidden-example>PRIVATE_HIDDEN_CUSTOM</hidden-example></div>`;
+        document.querySelector('closed-example').attachShadow({mode:'closed'}).innerHTML='<p>PRIVATE_CLOSED_TEXT</p>';
+        document.getElementById('local-frame').contentDocument.body.textContent='PRIVATE_FRAME';
+        document.getElementById('local-frame').contentDocument.body.textContent
+        """#)
+        XCTAssertEqual(frameBody as? String, "PRIVATE_FRAME", "An actual populated frame must exist before checking its exclusion")
+        let page = try await host.browser.textForTranscript()
+        XCTAssertEqual(page.text, "PUBLIC\nREADABLE_LIGHT\nREADABLE_CONTENTS")
+        XCTAssertEqual(page.omittedRegions, 5, "Two embedded documents and three possibly opaque custom elements")
+        XCTAssertFalse(page.text.contains("PRIVATE_"))
+        // Omissions are metadata only; the approved source text remains exactly
+        // what was accessible, without model-facing placeholder instructions.
+        _ = try await host.browser.webView.evaluateJavaScript("document.body.innerHTML='<p>PUBLIC</p><div hidden><iframe srcdoc=HIDDEN></iframe></div><iframe style=\"width:0;height:0;border:0\" srcdoc=ZERO></iframe>'; true")
+        let hidden = try await host.browser.textForTranscript()
+        XCTAssertEqual(hidden.text, "PUBLIC")
+        XCTAssertEqual(hidden.omittedRegions, 0)
     }
 
     @MainActor func testMalformedAddressDoesNotStartANormalizedNavigation() {

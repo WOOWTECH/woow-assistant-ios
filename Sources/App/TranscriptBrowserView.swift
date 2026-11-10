@@ -18,7 +18,9 @@ import SwiftUI
         NavigationStack {
             Form {
                 Section("讀取此頁文字") {
-                    Text("讀取目前可見的頁面文字，排除表單輸入與隱藏內容。最多 64 KiB，超過時會停止；這一步不會傳送給模型。")
+                    Text("建立目前網頁可讀取的文字快照，排除表單輸入與隱藏內容。最多 64 KiB，超過時會停止；這一步不會傳送給模型。")
+                    Text("文字快照不包含圖片、影音或內嵌頁面的內容。請核對擷取結果；模型只能整理這份快照，不能據此宣稱已讀完整個網站。")
+                        .font(.footnote)
                     Button(preparing ? "正在讀取…" : "讀取目前頁面文字") { capture() }
                         .disabled(preparing).accessibilityIdentifier("transcript.browser.capture")
                     if let error { Text(verbatim: error).foregroundStyle(.red).accessibilityIdentifier("transcript.browser.error") }
@@ -28,6 +30,10 @@ import SwiftUI
                         Text(verbatim: page.title).accessibilityIdentifier("transcript.browser.title")
                         Text(verbatim: page.url.absoluteString).textSelection(.enabled).accessibilityIdentifier("transcript.browser.url")
                         Text("\(page.text.utf8.count) 位元組 · 擷取於 \(page.capturedAt.formatted())")
+                        if page.omittedRegions > 0 {
+                            Text("此頁有 \(page.omittedRegions) 個內嵌或封裝區域未完整擷取；下方只包含可讀取的文字。")
+                                .accessibilityIdentifier("transcript.browser.omittedRegions")
+                        }
                         DisclosureGroup("查看讀取的全文") {
                             Text(verbatim: page.text).textSelection(.enabled).accessibilityIdentifier("transcript.browser.source")
                         }
@@ -70,7 +76,7 @@ import SwiftUI
                 guard operationID == id, !Task.isCancelled else { return }
                 preparing = false; task = nil
                 self.error = (error as? TranscriptError)?.errorDescription
-                    ?? "無法讀取完整的目前頁面文字；頁面可能尚未載入、已變更，或不符合此功能的網址限制。"
+                    ?? "無法建立目前網頁的文字快照；頁面可能尚未載入、已變更，或不符合此功能的網址限制。"
             }
         }
     }
