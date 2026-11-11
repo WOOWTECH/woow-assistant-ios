@@ -1,5 +1,16 @@
 # Verification — 2026-11-11
 
+## Unsigned iPhoneOS build after MCP results correction
+
+At `fe66ab2`, [run 42961148082](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961148082)
+completed an **unsigned iPhoneOS build** with Xcode 26.2, minimum iOS 17.0
+and nine verified binaries. The full two-member artifact ZIP passed SHA-256
+and CRC checks; its build log has one `BUILD SUCCEEDED` and no build error.
+It is not signed or installable. This source predates the later website media
+permissions and archived PDF accessibility corrections. A newer unsigned
+build [42966148674](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966148674)
+is queued. [Artifact and report evidence](evidence/unsigned-device-fe66ab2.json).
+
 ## Live HA MCP on SE/iOS 18.5 and exact iOS 17: model stage fails
 
 At `fe66ab2`, [run 42961307238](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961307238)
