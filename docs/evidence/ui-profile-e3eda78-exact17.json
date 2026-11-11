@@ -1,0 +1,55 @@
+{
+  "schema": "woow-ui-profile-exact17-e3eda78-v1",
+  "run_id": 42967061906,
+  "source_revision": "e3eda7805d8441687ae00916ac3eaa972402d3fd",
+  "scope": "ui-profile",
+  "runtime": "17.0.1",
+  "device_model": "iPhone 15",
+  "artifact": {
+    "id": 13834123359,
+    "bytes": 132793716,
+    "sha256": "d87d847dbaea91807b50caeeeca06c6b1fd117f01763d2263f32973d7ab2ccd8",
+    "zip_members": 444,
+    "all_crc_pass": true
+  },
+  "native_counts": {
+    "totalTestCount": 9,
+    "passedTests": 0,
+    "failedTests": 9,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "method_completion": {
+    "expected": 9,
+    "started": 9,
+    "passed": 0,
+    "failed": 9,
+    "skipped": 0,
+    "all_expected_completed_once": true
+  },
+  "methods": [
+    "WoowAssistantUITests/UserProfileToolUITests/testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+    "WoowAssistantUITests/UserProfileToolUITests/testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+    "WoowAssistantUITests/UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+    "WoowAssistantUITests/UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+    "WoowAssistantUITests/UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch",
+    "WoowAssistantUITests/UserProfileUITests/testDuplicateAndCancelledTextNeverPublish",
+    "WoowAssistantUITests/UserProfileUITests/testMasterSwitchAndTwiceConfirmedClearPersist",
+    "WoowAssistantUITests/UserProfileUITests/testMultipleSentencesNeverPublish",
+    "WoowAssistantUITests/UserProfileUITests/testSensitiveTextNeverPublishes"
+  ],
+  "shared_failure": {
+    "stage": "native keyboard selection before profile data/action assertions",
+    "user_profile_test_file_line": 262,
+    "user_profile_tool_test_file_line": 351,
+    "original_selector": "app.buttons[\"Next keyboard\"]",
+    "ax_visible_label": "下一個鍵盤",
+    "ax_snapshot_count": 18,
+    "candidate": "Select either observed English or Traditional Chinese native keyboard switch label; retain existing tests."
+  },
+  "candidate_native_validation": "pending",
+  "limits": [
+    "All nine methods failed before profile business assertions; their behavior remains untested at this source.",
+    "Focused exact17 simulator shard only."
+  ]
+}

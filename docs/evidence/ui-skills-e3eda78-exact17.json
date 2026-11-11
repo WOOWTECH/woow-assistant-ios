@@ -1,0 +1,45 @@
+{
+  "schema": "woow-ui-skills-exact17-e3eda78-v1",
+  "run_id": 42967066402,
+  "source_revision": "e3eda7805d8441687ae00916ac3eaa972402d3fd",
+  "scope": "ui-skills",
+  "runtime": "17.0.1",
+  "device_model": "iPhone 15",
+  "artifact": {
+    "id": 13835126577,
+    "bytes": 37620504,
+    "sha256": "17f6454c3a4807f13610a0edc1dec24a8164a54a27245d52bdbe607ce3a26b45",
+    "zip_members": 69,
+    "all_crc_pass": true
+  },
+  "native_counts": {
+    "totalTestCount": 10,
+    "passedTests": 10,
+    "failedTests": 0,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "method_completion": {
+    "expected": 10,
+    "started": 10,
+    "passed": 10,
+    "failed": 0,
+    "skipped": 0,
+    "all_expected_completed_once": true
+  },
+  "methods": [
+    "WoowAssistantUITests/SkillAuthoringUITests/testCancelledReviewLeavesNoSkillOrPendingDraft",
+    "WoowAssistantUITests/SkillAuthoringUITests/testInvalidToolDraftCannotApproveOrPublishSuccess",
+    "WoowAssistantUITests/SkillAuthoringUITests/testPersonalReadAndReviewedUpdatePersistAfterRelaunch",
+    "WoowAssistantUITests/SkillAuthoringUITests/testReviewedCreatePersistsAfterRelaunch",
+    "WoowAssistantUITests/SkillCatalogUITests/testAllPinnedSkillsSearchFullOriginalAssetsAndLicense",
+    "WoowAssistantUITests/SkillCatalogUITests/testEmptySearchAndRejectedAdaptationStayDisabled",
+    "WoowAssistantUITests/SkillCatalogUITests/testTextAdaptationRequiresApprovalAndPersistsOnlyAsTrial",
+    "WoowAssistantUITests/TranscriptUITests/testApprovedNativeTextWithoutModelCannotSendAndKeepsChatDraft",
+    "WoowAssistantUITests/TranscriptUITests/testNativePickerCancellationDoesNotSelectOrRead",
+    "WoowAssistantUITests/TranscriptUITests/testNativeSelectedTextReadRefusalDoesNotReadOrSend"
+  ],
+  "limits": [
+    "Ten selected skills UI methods passed on exact17; this does not accept the original Mika runtime, live model service, other shards, or a physical device."
+  ]
+}

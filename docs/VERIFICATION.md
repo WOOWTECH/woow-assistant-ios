@@ -1,5 +1,23 @@
 # Verification — 2026-11-11
 
+## Exact17 skills UI passed; profile UI stopped at keyboard setup
+
+At `e3eda78`, [exact17 skills run 42967066402](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967066402)
+passed its selected `ui-skills` shard **10/10, zero skipped**. Each expected
+method completed once; the full 69-member ZIP matched its GitHub SHA-256 and
+passed all CRC checks. This covers the selected skills, authoring and
+transcript UI cases, not the original Mika tool runtime or live model service.
+[Method and artifact evidence](evidence/ui-skills-e3eda78-exact17.json).
+
+The same source's [exact17 profile run 42967061906](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967061906)
+finished **0/9 passed, nine failed, zero skipped**. All five profile methods
+and four profile-tool methods stopped at their setup keyboard switch; the
+tests queried `Next keyboard`, while 18 native AX snapshots exposed the
+visible button label `下一個鍵盤`. No profile data or approval assertion was
+reached. Both test drivers now accept the two observed native labels and
+retain the original data, review and relaunch assertions. This candidate
+needs a new exact17 native run. [Failure, AX and artifact evidence](evidence/ui-profile-e3eda78-exact17.json).
+
 ## New live-model gate preserves the provider failure
 
 At `0a99e5f`, [SE/iOS 18.5 run 42969482818](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42969482818)
