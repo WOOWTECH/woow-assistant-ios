@@ -103,8 +103,8 @@ jobs:
         id: transport_probe
         timeout-minutes: 4
         env:
-          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
-          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ secrets.WOOW_MODEL_TEST_BASE_URL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ secrets.WOOW_MODEL_TEST_MODEL }}
           SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: |
           test -n "$SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY" || { echo 'Missing model test secret'; exit 1; }
@@ -112,23 +112,23 @@ jobs:
       - name: Real memory and approved skill behavior inside iOS Simulator
         timeout-minutes: 6
         env:
-          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
-          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ secrets.WOOW_MODEL_TEST_BASE_URL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ secrets.WOOW_MODEL_TEST_MODEL }}
           SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveLearningSmoke"
       - name: Real outcome judge and pending skill generation
         timeout-minutes: 6
         env:
-          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
-          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ secrets.WOOW_MODEL_TEST_BASE_URL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ secrets.WOOW_MODEL_TEST_MODEL }}
           SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveSkillLearningSmoke"
       - name: Real model completes all five transcript formats over fixed text
         if: ${{ !cancelled() && steps.native-build.outcome == 'success' && steps.transport_probe.outcome == 'success' && contains(fromJSON('["all","transcript-formats","transcript-files","browser-transcript"]'), inputs.ui_scope || 'all') }}
         timeout-minutes: 12
         env:
-          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
-          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ secrets.WOOW_MODEL_TEST_BASE_URL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ secrets.WOOW_MODEL_TEST_MODEL }}
           SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: |
           xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveTranscriptSmoke" \
@@ -139,8 +139,8 @@ jobs:
         # focused scopes keep their previous 20-minute bound and case limits.
         timeout-minutes: ${{ (inputs.ui_scope || 'all') == 'all' && 40 || 20 }}
         env:
-          WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
-          WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          WOOW_MODEL_TEST_BASE_URL: ${{ secrets.WOOW_MODEL_TEST_BASE_URL }}
+          WOOW_MODEL_TEST_MODEL: ${{ secrets.WOOW_MODEL_TEST_MODEL }}
           WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: |
           test_runs=(build/LiveDerivedData/Build/Products/*.xctestrun)

@@ -83,8 +83,8 @@ jobs:
         id: model_transport_probe
         timeout-minutes: 4
         env:
-          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
-          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ secrets.WOOW_MODEL_TEST_BASE_URL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ secrets.WOOW_MODEL_TEST_MODEL }}
           SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: |
           test -n "$SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY" || { echo 'Missing model test secret'; exit 1; }
@@ -119,8 +119,8 @@ jobs:
         timeout-minutes: 20
         env:
           WOOW_HA_MCP_TEST_URL: ${{ secrets.WOOW_HA_MCP_TEST_URL }}
-          WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
-          WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          WOOW_MODEL_TEST_BASE_URL: ${{ secrets.WOOW_MODEL_TEST_BASE_URL }}
+          WOOW_MODEL_TEST_MODEL: ${{ secrets.WOOW_MODEL_TEST_MODEL }}
           WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: |
           test_runs=(build/LiveDerivedData/Build/Products/*.xctestrun)

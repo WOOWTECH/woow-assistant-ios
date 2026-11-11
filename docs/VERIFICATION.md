@@ -40,6 +40,17 @@ UI assertion causes remain separate. [Sanitized SE evidence](evidence/live-model
 One new-source, bounded [SE full live-model rerun](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42968311920)
 is queued alone; its gate will stop dependent steps if the native probe fails.
 
+A bounded review of those two public failed-step logs found the model service
+host printed three times in each, because GitHub Actions configuration
+variables are not masked by default; it found no credential-shaped model or
+GitHub token in either downloaded log. The existing service URL and model ID
+were copied to repository Actions secrets without printing their values, and
+future live-model/live-HA workflows now read those secrets. The older logs are
+unchanged. A subsequent run must confirm actual redaction; GitHub notes that
+secret masking is not guaranteed for transformed values.
+[GitHub variables](https://docs.github.com/en/actions/concepts/workflows-and-actions/variables),
+[GitHub secrets](https://docs.github.com/en/actions/concepts/security/secrets).
+
 ## Staged dual-PDF FileProvider experiment in isolated branch
 
 Current and SE logs correlate missed native picker callbacks with FileProvider
