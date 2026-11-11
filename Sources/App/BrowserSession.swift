@@ -1282,7 +1282,6 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
                  defaultText: String?, initiatedByFrame frame: WKFrameInfo, completionHandler: @escaping (String?) -> Void) {
         presentDialog(kind: .prompt, message: prompt, initial: defaultText ?? "", frame: frame, completion: completionHandler)
     }
-    #if os(iOS)
     func webView(_ webView: WKWebView, requestMediaCapturePermissionFor origin: WKSecurityOrigin,
                  initiatedByFrame frame: WKFrameInfo, type: WKMediaCaptureType,
                  decisionHandler: @escaping (WKPermissionDecision) -> Void) {
@@ -1295,7 +1294,6 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             && webView.url.map(manualPermitted) == true
         decisionHandler(allowed ? .prompt : .deny)
     }
-    #endif
     private func presentDialog(kind: BrowserPageDialog.Kind, message: String, initial: String,
                                frame: WKFrameInfo, completion: @escaping (String?) -> Void) {
         guard canPresentUI(), !automationOwnsDocument, !isRunning, !isInteracting, pageDialog == nil else { completion(nil); return }
