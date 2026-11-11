@@ -33,9 +33,12 @@ resources; both plists passed `plutil -lint` and key-presence checks. At
 `1fb3aea`, the iOS WebKit media-capture delegate returns `.prompt` only for a
 visible, manually browsed page in the selected tab; it returns `.deny` for new
 requests from hidden tabs, model-owned documents, clearing sessions or a page
-dialog. It does not auto-grant access. The delegate source passed iOS syntax
-parsing, which is **not** native typechecking or a camera/microphone permission
-flow test. Current native compile/core run
+dialog. It does not auto-grant access. At `4a5e658`, the same delegate source
+compiled in the actual macOS App/WebKit harness in Debug and Release; controlled
+browser regression passed **172 assertions each**, plus iOS syntax parsing.
+This is **not** native iOS typechecking or a camera/microphone permission flow
+test. [Local source and check evidence](evidence/browser-media-macos-typecheck-4a5e658.json).
+Current native compile/core run
 [42962749795](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42962749795)
 is pending; physical capture, already-active streams and iOS 17 system prompts
 remain unverified. [Apple WebKit default prompt](https://developer.apple.com/documentation/webkit/wkuidelegate/webview%28_%3Arequestmediacapturepermissionfor%3Ainitiatedbyframe%3Atype%3Adecisionhandler%3A%29),

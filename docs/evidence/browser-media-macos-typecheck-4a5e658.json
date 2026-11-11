@@ -1,0 +1,96 @@
+{
+  "status": "PASS",
+  "source_commit": "4a5e658",
+  "browser_session_sha256": "820010e24d3f402c4e127880b2b066110546e8319df9bdf3b2895c3f5eb9d477",
+  "check_count": 12,
+  "checks": [
+    {
+      "name": "AssistantModels-build",
+      "exit_code": 0,
+      "seconds": 3.972
+    },
+    {
+      "name": "AssistantMemory-build",
+      "exit_code": 0,
+      "seconds": 6.452
+    },
+    {
+      "name": "AssistantPersistence-build",
+      "exit_code": 0,
+      "seconds": 1.973
+    },
+    {
+      "name": "AssistantMCP-build",
+      "exit_code": 0,
+      "seconds": 4.134
+    },
+    {
+      "name": "AssistantSkills-build",
+      "exit_code": 0,
+      "seconds": 23.395
+    },
+    {
+      "name": "AssistantBrowser-build",
+      "exit_code": 0,
+      "seconds": 23.47
+    },
+    {
+      "name": "Debug-iOS-syntax-only",
+      "exit_code": 0,
+      "seconds": 0.155
+    },
+    {
+      "name": "Debug-app-build",
+      "exit_code": 0,
+      "seconds": 27.115
+    },
+    {
+      "name": "Debug-webkit-run",
+      "exit_code": 0,
+      "seconds": 10.943
+    },
+    {
+      "name": "Release-iOS-syntax-only",
+      "exit_code": 0,
+      "seconds": 0.12
+    },
+    {
+      "name": "Release-app-build",
+      "exit_code": 0,
+      "seconds": 21.26
+    },
+    {
+      "name": "Release-webkit-run",
+      "exit_code": 0,
+      "seconds": 7.859
+    }
+  ],
+  "webkit": {
+    "Debug-webkit-run": {
+      "actual_default_and_selected_search_actions": 2,
+      "actual_webkit": true,
+      "assertions": 172,
+      "encrypted_restart_and_legacy_migration": true,
+      "engine_change_navigations": 0,
+      "existing_site_mode_regression_assertions": 118,
+      "external_network_or_personal_keychain": false,
+      "native_ui_execution": false
+    },
+    "Release-webkit-run": {
+      "actual_default_and_selected_search_actions": 2,
+      "actual_webkit": true,
+      "assertions": 172,
+      "encrypted_restart_and_legacy_migration": true,
+      "engine_change_navigations": 0,
+      "existing_site_mode_regression_assertions": 118,
+      "external_network_or_personal_keychain": false,
+      "native_ui_execution": false
+    }
+  },
+  "source_snapshot_still_current": true,
+  "report_sha256": "c42f574df10a579a2452299a388586c2a0beb42e916158a7bcbf8fe918fbd242",
+  "limits": [
+    "Actual macOS App/WebKit compilation and controlled local browsing only; this does not execute camera or microphone capture.",
+    "iOS source syntax parsing is not native iOS typechecking, UI or physical-device acceptance."
+  ]
+}
