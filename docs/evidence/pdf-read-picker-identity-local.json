@@ -1,0 +1,47 @@
+{
+  "version": 1,
+  "base_revision": "d9383c73800562dc102007bf36d42d958853e74f",
+  "isolated_worktree": "/tmp/woow-pdf-read-identity-d9383c7",
+  "patch": "/tmp/woow-pdf-read-identity-d9383c7.patch",
+  "patch_sha256": "c0238fe1f80583a20382e453676d65cf2fc9a36bcb1ec04343c2dca1b529a0dd",
+  "files": {
+    "Sources/App/PDFNativePicker.swift": "022dce11aadef4bb0fcfb01d31afb9eed32f343d936b0fb86b59a0bafc881572",
+    "Sources/App/SkillExecutionView.swift": "5391eece1a4d038cd2725163cecf652a7a944211fdc3dc9ba9ed27e578f2324c",
+    "Sources/App/SkillExecutionUITestSupport.swift": "1361e341125842d983bf0b66e3a038044bd22d03838979a8b22d5c9fe7531b89",
+    "scripts/check_pdf_read_identity_diagnostics.py": "cc4744066cf616e55e6d4da669dee3c0bdde00fc15d5d69218e4756fb5376936"
+  },
+  "local_validation": {
+    "new_real_PDFKit_POSIX_Debug_assertions": 36,
+    "new_Release_assertions": 2,
+    "new_check_warnings_as_errors": true,
+    "existing_fixture_diagnostic_check": "PASS including real seed, abrupt exit, overwrite/missing/link/metadata limits, strict schemas, Live isolation and 24 pair snapshots",
+    "swift_iOS17_syntax_parse": [
+      "Debug PASS",
+      "Release PASS"
+    ],
+    "git_diff_check": "PASS",
+    "native_iOS_typecheck_or_execution": false
+  },
+  "harness_failure_preserved": {
+    "initial": "Swift5.8 could not type-check the unannotated invalid-arguments array in reasonable time",
+    "repair": "Explicit [[String]] collection and sequential appends; same invalid cases retained",
+    "product_compile_failure": false
+  },
+  "retrieval": {
+    "stdout_markers": [
+      "SKILL_PDF_READ_PICKER_IDENTITY",
+      "SKILL_PDF_PICKER_IDENTITY"
+    ],
+    "existing_baseline_and_strict_parser": "unchanged",
+    "bounded_reader": "known seeded source only; O_NOFOLLOW, fixed basename/namespace, 128KiB, regular/single-link/fstat/name/parent checks",
+    "returned_URLs": "in-memory fixed relationship categories only; no reads, resolution, hashes or raw URL output"
+  },
+  "scope_limits": [
+    "Observation only; no fixture seeding change, file copy, directoryURL, provider bypass, delegate replacement, retap, retry, or deadline changes.",
+    "Only known local DEBUG fixture namespace; Live and Release emit no new diagnostics.",
+    "Source snapshots cover first three deliberate presentations; missing callbacks are not fabricated as selectionFailure.",
+    "SwiftUI internal callbacks are not hooked; probe holds weak picker/delegate references and samples at observed/stop boundaries. A killed App cannot report a final lifecycle event.",
+    "Requested UTType/asCopy is distinguished from public observed mode; SwiftUI does not expose an asCopy argument."
+  ],
+  "integration_note": "Apply narrow diff only. SkillExecutionView init/onAppear/prepare(url:) are untouched for the production download bridge owner."
+}

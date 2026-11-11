@@ -126,21 +126,36 @@ enum SkillExecutionUITestSupport {
             let sha256: String
             var filename: String { url.lastPathComponent }
         }
+        struct CreationProof {
+            let mode: String
+            let coordinationAttempts: Int
+            let accessorCalls: Int
+            let createdFiles: Int
+            let existingFiles: Int
+            var accessibilityValue: String {
+                "creation=\(mode) coordinationAttempts=\(coordinationAttempts) accessorCalls=\(accessorCalls) createdFiles=\(createdFiles) existingFiles=\(existingFiles)"
+            }
+        }
         let namespace: UUID
         let sources: [Source]
+        let creationProof: CreationProof
     }
 
     /// Creates two real PDFs only for the isolated, non-Live Assembly case.
     /// Creation never supplies picker URLs, read grants or a runtime result.
     static func seedAssemblyPairIfRequested(arguments: [String] = ProcessInfo.processInfo.arguments,
+                                           directoryCoordinator: NSFileCoordinator? = nil,
                                            documentsDirectory: () throws -> URL = {
         try FileManager.default.url(for: .documentDirectory, in: .userDomainMask,
                                     appropriateFor: nil, create: true)
     }) throws -> AssemblyPairFixture? {
         let flag = "-UITestSkillAssemblyPair"
+        let experiment = "-UITestSkillAssemblyPairDirectoryCoordinatedCreation"
         guard arguments.contains(where: { $0.hasPrefix(flag) }) else { return nil }
+        let coordinated = arguments.contains(experiment)
         guard arguments.filter({ $0 == flag }).count == 1,
-              arguments.filter({ $0.hasPrefix(flag) }).count == 1,
+              arguments.filter({ $0 == experiment }).count <= 1,
+              !arguments.contains(where: { $0.hasPrefix(flag) && $0 != flag && $0 != experiment }),
               arguments.filter({ $0 == "-UITestMode" }).count == 1,
               arguments.filter({ $0 == "-UITestSkillExecution" }).count == 1,
               arguments.filter({ $0 == "-UITestNamespace" }).count == 1,
@@ -152,50 +167,147 @@ enum SkillExecutionUITestSupport {
               namespace.uuidString == arguments[position + 1] else { throw Failure.invalidNamespace }
         let directory = try documentsDirectory()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        if coordinated {
+            return try seedDirectoryCoordinatedAssemblyPair(in: directory, namespace: namespace,
+                                                            coordinator: directoryCoordinator ?? NSFileCoordinator())
+        }
         var sources: [AssemblyPairFixture.Source] = []
+        var createdFiles = 0
         for role in ["A", "B"] {
-            let filename = "SkillAssembly-\(role)-\(namespace.uuidString).pdf"
-            let url = directory.appendingPathComponent(filename)
-            let title = "WOOW_ASSEMBLY_\(role)_\(namespace.uuidString)"
+            let url = directory.appendingPathComponent("SkillAssembly-\(role)-\(namespace.uuidString).pdf")
             let existed = FileManager.default.fileExists(atPath: url.path)
             if !existed {
-                let buffer = NSMutableData()
-                var bounds = CGRect(x: 0, y: 0, width: 612, height: 792)
-                guard let consumer = CGDataConsumer(data: buffer),
-                      let context = CGContext(consumer: consumer, mediaBox: &bounds, nil) else { throw Failure.cannotCreatePDF }
-                let font = CTFontCreateWithName("Helvetica" as CFString, 18, nil)
-                let attributes = [NSAttributedString.Key(kCTFontAttributeName as String): font]
-                for page in 1...2 {
-                    context.beginPDFPage(nil); context.textMatrix = .identity
-                    context.textPosition = CGPoint(x: 40, y: 700)
-                    CTLineDraw(CTLineCreateWithAttributedString(NSAttributedString(
-                        string: "WOOW_ASSEMBLY_\(role)_PAGE_\(page)", attributes: attributes)), context)
-                    context.textPosition = CGPoint(x: 40, y: 660)
-                    CTLineDraw(CTLineCreateWithAttributedString(NSAttributedString(
-                        string: namespace.uuidString, attributes: attributes)), context)
-                    context.endPDFPage()
-                }
-                context.closePDF()
-                guard let pdf = PDFDocument(data: buffer as Data) else { throw Failure.cannotCreatePDF }
-                pdf.documentAttributes = [PDFDocumentAttribute.titleAttribute: title,
-                                          PDFDocumentAttribute.authorAttribute: "Synthetic UI fixture"]
-                guard let data = pdf.dataRepresentation(), data.count <= 128 * 1024 else { throw Failure.cannotCreatePDF }
+                let data = try assemblyPairPDFBytes(role: role, namespace: namespace)
                 try data.write(to: url, options: .withoutOverwriting)
+                createdFiles += 1
             }
-            let bytes = try assemblyPairBytes(url)
-            guard bytes.starts(with: Data("%PDF-".utf8)),
-                  let pdf = PDFDocument(data: bytes), pdf.pageCount == 2,
-                  pdf.documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String == title,
-                  pdf.documentAttributes?[PDFDocumentAttribute.authorAttribute] as? String == "Synthetic UI fixture",
-                  (1...2).allSatisfy({ assemblyPairPage(pdf.page(at: $0 - 1), matches: role, number: $0, namespace: namespace) }) else {
-                throw Failure.existingFile
-            }
+            let bytes = try validatedAssemblyPairBytes(url, role: role, namespace: namespace)
             sources.append(.init(role: role, url: url, sha256: pairDigest(bytes)))
             recordPairSnapshot(in: directory, namespace: namespace, role: role,
                                phase: existed ? "existing" : "created", ordinal: 0)
         }
         guard Set(sources.map(\.sha256)).count == 2 else { throw Failure.existingFile }
-        return AssemblyPairFixture(namespace: namespace, sources: sources)
+        return AssemblyPairFixture(namespace: namespace, sources: sources, creationProof: .init(
+            mode: "direct", coordinationAttempts: 0, accessorCalls: 0,
+            createdFiles: createdFiles, existingFiles: 2 - createdFiles))
+    }
+
+    private static func assemblyPairPDFBytes(role: String, namespace: UUID) throws -> Data {
+        let title = "WOOW_ASSEMBLY_\(role)_\(namespace.uuidString)"
+        let buffer = NSMutableData()
+        var bounds = CGRect(x: 0, y: 0, width: 612, height: 792)
+        guard let consumer = CGDataConsumer(data: buffer),
+              let context = CGContext(consumer: consumer, mediaBox: &bounds, nil) else { throw Failure.cannotCreatePDF }
+        let font = CTFontCreateWithName("Helvetica" as CFString, 18, nil)
+        let attributes = [NSAttributedString.Key(kCTFontAttributeName as String): font]
+        for page in 1...2 {
+            context.beginPDFPage(nil); context.textMatrix = .identity
+            context.textPosition = CGPoint(x: 40, y: 700)
+            CTLineDraw(CTLineCreateWithAttributedString(NSAttributedString(
+                string: "WOOW_ASSEMBLY_\(role)_PAGE_\(page)", attributes: attributes)), context)
+            context.textPosition = CGPoint(x: 40, y: 660)
+            CTLineDraw(CTLineCreateWithAttributedString(NSAttributedString(
+                string: namespace.uuidString, attributes: attributes)), context)
+            context.endPDFPage()
+        }
+        context.closePDF()
+        guard let pdf = PDFDocument(data: buffer as Data) else { throw Failure.cannotCreatePDF }
+        pdf.documentAttributes = [PDFDocumentAttribute.titleAttribute: title,
+                                  PDFDocumentAttribute.authorAttribute: "Synthetic UI fixture"]
+        guard let data = pdf.dataRepresentation(), data.count <= 128 * 1024 else { throw Failure.cannotCreatePDF }
+        return data
+    }
+
+    private static func validatedAssemblyPairBytes(_ url: URL, role: String, namespace: UUID) throws -> Data {
+        let title = "WOOW_ASSEMBLY_\(role)_\(namespace.uuidString)"
+        let bytes = try assemblyPairBytes(url)
+        guard bytes.starts(with: Data("%PDF-".utf8)),
+              let pdf = PDFDocument(data: bytes), pdf.pageCount == 2,
+              pdf.documentAttributes?[PDFDocumentAttribute.titleAttribute] as? String == title,
+              pdf.documentAttributes?[PDFDocumentAttribute.authorAttribute] as? String == "Synthetic UI fixture",
+              (1...2).allSatisfy({ assemblyPairPage(pdf.page(at: $0 - 1), matches: role, number: $0, namespace: namespace) }) else {
+            throw Failure.existingFile
+        }
+        return bytes
+    }
+
+    /// Single directory-content write experiment. Prepared immutable PDF bytes,
+    /// exact source names, picker behavior and read consent are unchanged.
+    /// No retries, alternate URL, per-file coordination or direct fallback.
+    private static func seedDirectoryCoordinatedAssemblyPair(in directory: URL, namespace: UUID,
+                                                              coordinator: NSFileCoordinator) throws -> AssemblyPairFixture {
+        let identity = try assemblyPairDirectoryIdentity(directory)
+        var prepared: [(role: String, url: URL, bytes: Data, existed: Bool)] = []
+        for role in ["A", "B"] {
+            let url = directory.appendingPathComponent("SkillAssembly-\(role)-\(namespace.uuidString).pdf")
+            let existed = FileManager.default.fileExists(atPath: url.path)
+            let bytes = try existed ? validatedAssemblyPairBytes(url, role: role, namespace: namespace)
+                                    : assemblyPairPDFBytes(role: role, namespace: namespace)
+            prepared.append((role, url, bytes, existed))
+        }
+        let existingFiles = prepared.filter(\.existed).count
+        var createdFiles = 0, accessorCalls = 0
+        var completed = false
+        func record(_ phase: String) {
+            print("SKILL_PDF_PAIR_CREATION namespace=\(namespace.uuidString) mode=directoryCoordinated phase=\(phase) coordinationAttempts=1 accessorCalls=\(accessorCalls) createdFiles=\(createdFiles) existingFiles=\(existingFiles)")
+            fflush(stdout)
+        }
+        record("willCoordinate")
+        defer { if !completed { record("failed") } }
+        var coordinationError: NSError?
+        var written: Result<Void, Error> = .failure(Failure.coordinationFailed)
+        coordinator.coordinate(writingItemAt: directory, options: [], error: &coordinationError) { destination in
+            accessorCalls += 1
+            written = Result {
+                guard accessorCalls == 1 else { throw Failure.coordinationFailed }
+                try validateAssemblyPairDirectory(destination, expected: directory, identity: identity)
+                for item in prepared {
+                    if !item.existed {
+                        try item.bytes.write(to: item.url, options: .withoutOverwriting)
+                        createdFiles += 1
+                    }
+                    // Compare the actual persisted payload to the immutable
+                    // pre-coordination bytes, including existing-file races.
+                    guard try validatedAssemblyPairBytes(item.url, role: item.role, namespace: namespace) == item.bytes else {
+                        throw Failure.existingFile
+                    }
+                }
+                try validateAssemblyPairDirectory(destination, expected: directory, identity: identity)
+            }
+        }
+        if coordinationError != nil { throw Failure.coordinationFailed }
+        try written.get()
+        try validateAssemblyPairDirectory(directory, expected: directory, identity: identity)
+        var sources: [AssemblyPairFixture.Source] = []
+        for item in prepared {
+            let bytes = try validatedAssemblyPairBytes(item.url, role: item.role, namespace: namespace)
+            guard bytes == item.bytes else { throw Failure.existingFile }
+            sources.append(.init(role: item.role, url: item.url, sha256: pairDigest(bytes)))
+            recordPairSnapshot(in: directory, namespace: namespace, role: item.role,
+                               phase: item.existed ? "existing" : "created", ordinal: 0)
+        }
+        guard Set(sources.map(\.sha256)).count == 2 else { throw Failure.existingFile }
+        completed = true
+        record("completed")
+        return AssemblyPairFixture(namespace: namespace, sources: sources, creationProof: .init(
+            mode: "directoryCoordinated", coordinationAttempts: 1, accessorCalls: accessorCalls,
+            createdFiles: createdFiles, existingFiles: existingFiles))
+    }
+
+    static func assemblyPairDirectoryIdentity(_ directory: URL) throws -> (device: Int32, inode: UInt64) {
+        guard directory.isFileURL else { throw Failure.coordinationFailed }
+        let descriptor = open(directory.path, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC)
+        guard descriptor >= 0 else { throw Failure.coordinationFailed }
+        defer { close(descriptor) }
+        var info = stat()
+        guard fstat(descriptor, &info) == 0, info.st_mode & S_IFMT == S_IFDIR else { throw Failure.coordinationFailed }
+        return (info.st_dev, UInt64(info.st_ino))
+    }
+
+    static func validateAssemblyPairDirectory(_ destination: URL, expected: URL,
+                                              identity: (device: Int32, inode: UInt64)) throws {
+        guard destination.isFileURL, destination.standardizedFileURL == expected.standardizedFileURL,
+              try assemblyPairDirectoryIdentity(destination) == identity else { throw Failure.coordinationFailed }
     }
 
     /// Reads only the two exact fixture paths created above, with a small bound.
@@ -418,6 +530,58 @@ enum SkillExecutionUITestSupport {
             inode: UInt64(after.st_ino), modifiedSeconds: Int64(after.st_mtimespec.tv_sec),
             modifiedNanoseconds: Int64(after.st_mtimespec.tv_nsec),
             sha256: SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined())
+    }
+
+    struct ReadPickerSnapshot: Encodable {
+        let version = 1
+        let namespace: String
+        let phase: String
+        let ordinal: Int
+        let evidence: FixtureEvidence
+        let location: FixtureLocation
+        let returnedURLRelation: String
+    }
+
+    /// Observe only the seeded source. Returned user URLs are compared in memory,
+    /// never opened, resolved, hashed or printed by this diagnostic.
+    static func readPickerSnapshot(_ fixture: Fixture, phase: String, ordinal: Int,
+                                   returnedURLs: [URL]? = nil,
+                                   arguments: [String] = ProcessInfo.processInfo.arguments) -> ReadPickerSnapshot? {
+        guard arguments.filter({ $0 == "-UITestMode" }).count == 1,
+              arguments.filter({ $0 == "-UITestSkillExecution" }).count == 1,
+              arguments.filter({ $0 == "-UITestNamespace" }).count == 1,
+              !arguments.contains(where: { $0.hasPrefix("-Live") || $0.hasPrefix("-UITestSkillAssemblyPair") }),
+              let index = arguments.firstIndex(of: "-UITestNamespace"), arguments.indices.contains(index + 1),
+              arguments[index + 1] == fixture.namespace.uuidString,
+              fixture.url.isFileURL,
+              fixture.filename == "SkillExecution-\(fixture.namespace.uuidString).pdf",
+              ["prePicker", "selectionReturned", "selectionFailure", "cancelled"].contains(phase),
+              (1...3).contains(ordinal) else { return nil }
+        let source = fixture.url.standardizedFileURL
+        var parent: stat?
+        let evidence = fixtureEvidence(in: source.deletingLastPathComponent(), namespace: fixture.namespace,
+                                       role: nil, parentIdentity: &parent)
+        let location = FixtureLocation(urlSHA256: pairDigest(Data(source.path.utf8)),
+                                       parentDevice: parent?.st_dev, parentInode: parent.map { UInt64($0.st_ino) })
+        let relation: String
+        if let urls = returnedURLs {
+            if urls.count != 1 { relation = urls.isEmpty ? "empty" : "multiple" }
+            else if !urls[0].isFileURL { relation = "nonFile" }
+            else if urls[0].standardizedFileURL == source { relation = "exactSource" }
+            else if urls[0].lastPathComponent == fixture.filename { relation = "sameBasenameOtherLocation" }
+            else { relation = "other" }
+        } else { relation = "notReturned" }
+        return ReadPickerSnapshot(namespace: fixture.namespace.uuidString, phase: phase, ordinal: ordinal,
+                                  evidence: evidence, location: location, returnedURLRelation: relation)
+    }
+
+    static func recordReadPickerSnapshot(_ fixture: Fixture, phase: String, ordinal: Int,
+                                         returnedURLs: [URL]? = nil) {
+        guard let sample = readPickerSnapshot(fixture, phase: phase, ordinal: ordinal, returnedURLs: returnedURLs),
+              let bytes = try? JSONEncoder().encode(sample), let json = String(data: bytes, encoding: .utf8) else { return }
+        // Separate schema; the existing baseline/post-test inventory is unchanged.
+        print("SKILL_PDF_READ_PICKER_IDENTITY " + json)
+        fflush(stdout)
     }
 
     private static func recordBaseline(_ fixture: Fixture, phase: String) {

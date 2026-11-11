@@ -194,7 +194,11 @@ private struct DocumentQueryPresentation: Identifiable {
         .accessibilityIdentifier("skillExecution.form")
         .navigationTitle("執行 PDF 技能")
         .modifier(PDFImportPresentation(isPresented: $choosingFile, choice: importChoice, experiment: pickerExperiment,
-                                       onCompletion: receivePDFSelection, onObservation: { value in
+                                       onCompletion: receivePDFSelection, onCancellation: {
+            #if DEBUG
+            model.recordPickerCancellation()
+            #endif
+        }, onObservation: { value in
             #if DEBUG
             pickerObservation = value
             #endif
@@ -241,6 +245,9 @@ private struct DocumentQueryPresentation: Identifiable {
         // cannot change the behavior of the original selection button.
         guard !choosingFile, model.plan == nil else { return }
         importChoice = choice
+        #if DEBUG
+        model.recordPickerPresentation()
+        #endif
         choosingFile = true
     }
 
@@ -295,6 +302,8 @@ private final class SkillExecutionViewModel: ObservableObject {
     #if DEBUG
     @Published private(set) var uiTestFixture: SkillExecutionUITestSupport.Fixture?
     @Published private(set) var uiTestAudit: SkillExecutionUITestAudit?
+    private var pickerDiagnosticOrdinal = 0
+    private var pickerDiagnosticPending = false
     #endif
 
     func seedUITestIfRequested() {
@@ -308,10 +317,33 @@ private final class SkillExecutionViewModel: ObservableObject {
     }
 
     #if DEBUG
+    func recordPickerPresentation() {
+        pickerDiagnosticOrdinal = min(pickerDiagnosticOrdinal + 1, 4)
+        pickerDiagnosticPending = true
+        guard let fixture = uiTestFixture else { return }
+        SkillExecutionUITestSupport.recordReadPickerSnapshot(fixture, phase: "prePicker", ordinal: pickerDiagnosticOrdinal)
+    }
+
+    func recordPickerCancellation() {
+        guard pickerDiagnosticPending, let fixture = uiTestFixture else { return }
+        pickerDiagnosticPending = false
+        SkillExecutionUITestSupport.recordReadPickerSnapshot(fixture, phase: "cancelled", ordinal: pickerDiagnosticOrdinal)
+    }
+
     func recordImporterCallback(_ outcome: Result<[URL], Error>) {
         // This fixture exists only after the seeder's strict DEBUG test gates
         // pass. Report delivery/counts only, never URLs or error descriptions.
         guard let fixture = uiTestFixture else { return }
+        if pickerDiagnosticPending {
+            pickerDiagnosticPending = false
+            switch outcome {
+            case .success(let urls):
+                SkillExecutionUITestSupport.recordReadPickerSnapshot(fixture, phase: "selectionReturned",
+                    ordinal: pickerDiagnosticOrdinal, returnedURLs: urls)
+            case .failure:
+                SkillExecutionUITestSupport.recordReadPickerSnapshot(fixture, phase: "selectionFailure", ordinal: pickerDiagnosticOrdinal)
+            }
+        }
         let outcomeName: String
         let count: String
         switch outcome {

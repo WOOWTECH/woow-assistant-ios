@@ -1,0 +1,273 @@
+{
+  "schema_version": 1,
+  "status": "verified_pass",
+  "scope": "ui-memory",
+  "run_id": 42925699093,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42925699093",
+  "head_sha": "7609dc60ee312dc1fcb369dc6e2302f89a53ba4b",
+  "run_attempt": 1,
+  "observed_at_utc": "2026-11-11T00:34:26.073519+00:00",
+  "validation_job_id": 130211493155,
+  "workflow_conclusion": "success",
+  "actual_runtime": {
+    "xcresult_devices": [
+      {
+        "architecture": "arm64",
+        "deviceId": "7D9AA20F-65E5-4978-9F32-01B3FE9929E7",
+        "deviceName": "Woow-iOS17-0b597b50415940b3bbdc4a82242c6182",
+        "modelName": "iPhone 15",
+        "osBuildNumber": "21A342",
+        "osVersion": "17.0.1",
+        "platform": "iOS Simulator"
+      }
+    ],
+    "selected_runtime": {
+      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+      "version": "17.0.1",
+      "buildversion": "21A342"
+    }
+  },
+  "actual_methods": [
+    {
+      "identifier": "WoowAssistantUITests/MemoryRaceUITests/testClearWhileReplyPendingDoesNotRepopulateAndNewChatHidesOldNotes",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 19
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 414,
+          "duration_seconds": 90.034
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/MemoryUITests/testMemoryEditPinSearchAndDeletePersist",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 418
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 884,
+          "duration_seconds": 157.681
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/MemoryUITests/testOversizedMemoryIsRejectedAndCorrectedTextPersists",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 885
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 1237,
+          "duration_seconds": 130.178
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/MemoryUITests/testProceduresRequireApprovalAndCanBeRejected",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 1238
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 1564,
+          "duration_seconds": 78.257
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/MemoryUITests/testSegmentsAndPreferencePersistence",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 1565
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 1865,
+          "duration_seconds": 59.751
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/MemoryUITests/testSkillImportFailureReviewAndEnablementPersist",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 1866
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 2254,
+          "duration_seconds": 107.761
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/MemoryUITests/testSkillUpdateRejectionAndRollback",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 2255
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 2793,
+          "duration_seconds": 134.718
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/MemoryUITests/testTwoStepClearCancellationAndModelSettingsIsolation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 2794
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 3424,
+          "duration_seconds": 130.859
+        }
+      ]
+    }
+  ],
+  "xcresult": {
+    "summary_source": "test-summary.json exported by CI xcresulttool",
+    "local_xcresulttool_decode": false,
+    "result": "Passed",
+    "counts": {
+      "totalTestCount": 8,
+      "passedTests": 8,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "failures": [],
+    "start_time_epoch": 1794355721.979,
+    "finish_time_epoch": 1794356798.848,
+    "bundle_member_count": 46
+  },
+  "artifact_count_observed": 1,
+  "artifacts": [
+    {
+      "id": 13815309778,
+      "name": "ios17-17.0.1-42925699093",
+      "size_in_bytes": 30545104,
+      "digest": "sha256:c9517eb2c410ca090728dd4faee1b894940fbe8c9d5d6ca82ef53289c7dfcff3",
+      "expired": false,
+      "url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13815309778"
+    }
+  ],
+  "artifact_verification": {
+    "zip_sha256": "c9517eb2c410ca090728dd4faee1b894940fbe8c9d5d6ca82ef53289c7dfcff3",
+    "verified_full_zip_digest": true,
+    "members": [
+      {
+        "file": "report.json",
+        "bytes": 9513,
+        "sha256": "decb99aecd6bc000d65c672275304cc1adf0016656e750020230eaa3a06159c1"
+      },
+      {
+        "file": "test-summary.json",
+        "bytes": 1007,
+        "sha256": "f238fd1ea7c977cb0d32dca35aac48476630135669a0b91a77760c19cac6211d"
+      },
+      {
+        "file": "tests.log",
+        "bytes": 243495,
+        "sha256": "1c30f86242be0f34dc8756dec1f67b74639a8eb970724bb55889d50d41cb6b9a"
+      }
+    ]
+  },
+  "independent_log_crosscheck": {
+    "all_expected_methods_started_and_completed_once": true,
+    "counts_match_xcresult_export": true
+  },
+  "source_candidate": {
+    "file": "Tests/WoowAssistantUITests/MemoryUITests.swift",
+    "sha256": "ba5e252efb01233e2dff082de297c1d6171db7cdfd29b1518519f55ed676e551",
+    "matches_frozen_candidate": true,
+    "patch_scope": "One original 5-second overall readiness deadline for selected keyword and enabled Save; no skip, exception suppression, timeout expansion or product changes."
+  },
+  "original_failure": {
+    "run_id": 42911467177,
+    "head_sha": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+    "passed": 7,
+    "failed": 1,
+    "skipped": 0,
+    "evidence": "exact17-8c-remaining-shards.json",
+    "unchanged": true
+  },
+  "source_report": {
+    "phase": "passed",
+    "prebuild_exit_code": 0,
+    "boot_succeeded": true,
+    "test_exit_code": 0,
+    "selected_tests_succeeded": true,
+    "full_acceptance_succeeded": false,
+    "runtime_tested": false,
+    "test_completion": {
+      "verified": true,
+      "counts": {
+        "totalTestCount": 8,
+        "passedTests": 8,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "result": "Passed",
+      "expected_ui_count": 8,
+      "completed_ui_count": 8,
+      "missing_ui_tests": [],
+      "unexpected_ui_tests": [],
+      "nonpassing_or_repeated_ui_tests": []
+    }
+  },
+  "limits": [
+    "Selected eight-method native UI shard only; no cross-run totals or live model acceptance.",
+    "Original 8c failure preserved. CI-exported xcresult summary crosschecked against actual tests.log and full ZIP digest; no local xcresulttool.",
+    "No dispatch, rerun, cancellation, model request or product change during evidence collection."
+  ]
+}

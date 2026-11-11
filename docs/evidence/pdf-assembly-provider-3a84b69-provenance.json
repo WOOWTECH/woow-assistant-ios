@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "source_revision": "3a84b694515a7d0adee16e31357301117f16a747",
+  "runs": [
+    42920217869,
+    42920224583
+  ],
+  "observations": [
+    {
+      "run_id": 42920224583,
+      "timestamp_utc": "2026-11-10T23:50:09.697Z",
+      "role": "A",
+      "provider_item_id": "did=4",
+      "parent_item_id": "#io.woowtech.assistant",
+      "inode": 3585975,
+      "later_native_delivery": "success"
+    },
+    {
+      "run_id": 42920224583,
+      "timestamp_utc": "2026-11-10T23:50:09.699Z",
+      "role": "B",
+      "provider_item_id": "did=3",
+      "parent_item_id": "#io.woowtech.assistant",
+      "inode": 3585976,
+      "later_native_delivery": "nil URL / -1005 before App delegate"
+    }
+  ],
+  "interpretation": {
+    "proved": "Both item IDs and matching fixture inodes were already visible before the first A selection at 23:50:25.048Z. B did=3 was not first introduced by the second picker. The logs attribute did=3 to the selected PDF FPItem and show its parent separately.",
+    "not_proved": [
+      "The provider internal database/root registration semantics of did=3.",
+      "A stale container or complete container-wide mapping failure; A from the same parent succeeded.",
+      "That did=3 is intrinsically invalid on this runtime.",
+      "The reason the correct inode and known source failed provider URL resolution."
+    ]
+  },
+  "local_evidence": {
+    "file": "/tmp/woow-pdf-add-3a-se-provider-provenance.log",
+    "sha256": "3fb773ced0e7a0085c96953dbf510dc069ad0ce89ba7b75eced1f9cf5b264ec7",
+    "bounded_window_utc": [
+      "2026-11-10T23:49:50Z",
+      "2026-11-10T23:50:48Z"
+    ],
+    "filter": "FileProvider did=3/did=4 or this app identifier; exact synthetic namespace across other messages",
+    "lines": 33,
+    "whole_artifact_downloaded": false
+  },
+  "single_next_controlled_experiment": {
+    "hypothesis": "Initial pair creation without directory-level coordination races with publication/enumeration of new directory entries. This is a fixture-publication candidate, not a confirmed production or OS defect.",
+    "changed_variable": "Only the strict DEBUG synthetic pair seeder initial creation: one NSFileCoordinator write covering the known Documents directory while writing A/B with withoutOverwriting. Precompute both PDF buffers before the block; require returned directory standardized URL equals the original directory and fail closed otherwise.",
+    "control": "Existing direct creation at the same reviewed source, same native single-file copy picker and unchanged full acceptance body.",
+    "candidate_gate": "New explicit local synthetic-only flag; no default behavior change, no Live path, no fixture reuse overwrite, and no fallback after coordination error.",
+    "acceptance_unchanged": [
+      "two explicit native selections and two actual delegate callbacks",
+      "two distinct source identities/digests",
+      "both existing read grants",
+      "explicit A2/B1/A1 page order and separate assembly approval",
+      "actual output bytes and cancelled export retains result",
+      "existing 15-second delivery wait and 300-second case cap"
+    ],
+    "falsification": "If the coordinated-directory arm still yields correct inode with did=3/-1005, stop this candidate. If it passes while direct fails, record evidence for fixture publication only; do not claim the OS or all open/copy modes fixed.",
+    "why_not_repeat_old_single_file_coordination": "Apple documents that coordinating a single file normally does not wait for operations on its parent directory. The prior read fixture coordinated the file, not the parent directory publication.",
+    "apple_primary_source": "https://developer.apple.com/documentation/foundation/nsfilecoordinator/coordinate%28writingitemat%3Aoptions%3Aerror%3Abyaccessor%3A%29",
+    "implementation_status": "proposal only; not implemented or dispatched"
+  },
+  "read_open_diagnostic_patch": {
+    "path": "/tmp/woow-pdf-read-identity-d9383c7.patch",
+    "sha256": "c0238fe1f80583a20382e453676d65cf2fc9a36bcb1ec04343c2dca1b529a0dd",
+    "local_proof": "/tmp/woow-pdf-read-identity-d9383c7-local-proof.json",
+    "isolated_only": true,
+    "new_local_assertions": {
+      "Debug": 36,
+      "Release": 2
+    },
+    "actual_iOS_validation": "pending"
+  }
+}

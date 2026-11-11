@@ -1,0 +1,99 @@
+{
+  "base_commit": "2758966f51134fd9684549d537d9e08d15cb9d3e",
+  "isolated_worktree": "/tmp/woow-pdf-pair-directory-2758966",
+  "status": "frozen_local_checks_pass_native_pending",
+  "patch": "/tmp/woow-pdf-pair-directory-2758966.patch",
+  "patch_sha256": "06881178a97a89c43f3f55cd034ceebaba20871962fc1311464492a5c2cf919f",
+  "files_sha256": {
+    "Sources/App/SkillExecutionUITestSupport.swift": "6343791ef7e1289c25edc9c0b5ac56019933e321d083dcf75e73c090f5a1669a",
+    "Sources/App/SkillPDFAssemblyView.swift": "755ee6307eb7d48dbcfbc57480c31792c9f197adccfc7127cfdd7eebfa6d0607",
+    "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift": "6fad04e2e7db34e7acffce29814459ce616e792b3c9c1d83c5d455cd13fdea06",
+    "scripts/check_pdf_pair_directory_creation.py": "aaaaebceff8f0efcab7aa0a84827065c4c9d2fd5924f537b589b6cf49b9ffdaa"
+  },
+  "scope": "pdf-pair-coordinated",
+  "candidate_selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testDirectoryCoordinatedFixtureCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
+  "baseline_selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
+  "candidate_flag": "-UITestSkillAssemblyPairDirectoryCoordinatedCreation",
+  "experiment": {
+    "debug_only": true,
+    "strict_local_synthetic_pair_only": true,
+    "live_rejected_before_filesystem_access": true,
+    "baseline_default": "direct",
+    "candidate_write": "one NSFileCoordinator directory accessor for initial A/B creation",
+    "paths_and_pdf_generation": "unchanged exact role/UUID paths and original PDF drawing/serialization statements",
+    "immutable_prepared_payload_equals_actual_persisted_bytes": true,
+    "directory_URL_and_device_inode_checked_before_inside_after": true,
+    "no_overwrite_fallback_retry_or_changed_picker": true,
+    "proof_prefix": "SKILL_PDF_PAIR_CREATION",
+    "fresh_candidate_required_proof": "creation=directoryCoordinated coordinationAttempts=1 accessorCalls=1 createdFiles=2 existingFiles=0",
+    "AX_proof": "existing pdfAssembly.uitest.pair value before first callback only; no new visible row/layout",
+    "native_assertions": "two deliberate native picks/callbacks; two distinct sources/digests; separate actual read grants; A2/B1/A1 real PDF bytes; originals unchanged; export cancellation retains result",
+    "unchanged_case_seconds": 300,
+    "unchanged_callback_seconds": 15,
+    "unchanged_picker_readiness_seconds": 45
+  },
+  "local_validation": {
+    "candidate_debug_assertions": 132,
+    "candidate_release_assertions": 38,
+    "candidate_groups": {
+      "actual_creation": 32,
+      "cancelled_coordination": 2,
+      "directory_identity": 5,
+      "gates": 72,
+      "idempotence": 5,
+      "unsafe_existing_files": 16
+    },
+    "real_macOS_NSFileCoordinator_success_and_cancelled_no_accessor_no_write": true,
+    "baseline_debug_assertions": 48,
+    "baseline_release_assertions": 24,
+    "actual_App_logic_typecheck_debug_release": true,
+    "ios17_syntax_parse_debug_release": true,
+    "iOS_SwiftUI_body_typecheck": false,
+    "iOS_native_picker_exporter_executed": false,
+    "existing_fixture_checker": "PASS all 3 groups including real seed/POSIX, live gates and 24 pair snapshots",
+    "diff_check": true,
+    "python_compile": true,
+    "original_UI_body_and_all_native_helpers_preserved": {
+      "baseline_full_UI_body_preserved_except_candidate_flag_and_added_proof_assertion": true,
+      "baseline_UI_body_sha256": "ea8c223da4cacd3d34d662c4ed8daff1e658418d857f0cc93c45736e1d789a27",
+      "normalized_shared_UI_body_sha256": "ea8c223da4cacd3d34d662c4ed8daff1e658418d857f0cc93c45736e1d789a27",
+      "all_native_picker_navigation_and_selection_helpers_unchanged": true,
+      "native_helpers_sha256": "610199b1fc9cb8ddcee80f12dd0a49b25986878e5997f49d1be1b7daae48bff0",
+      "PDF_drawing_and_serialization_statements_unchanged": true,
+      "PDF_generator_statements_sha256": "76ecedc5a2c96330172b6b82acb32b9d7de1ae0d2e31980f1b3e28f6725b8c6c",
+      "case_budget_seconds": 300,
+      "callback_budget_seconds": 15,
+      "picker_readiness_seconds": 45,
+      "candidate_native_selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testDirectoryCoordinatedFixtureCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
+      "baseline_native_selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages"
+    },
+    "intermediate_failure": "Initial optional coordinator factory closure triggered Swift5.8 backward-trailing-closure warning under warnings-as-errors. Replaced with optional NSFileCoordinator instance; unchanged baseline calls then passed48/24."
+  },
+  "validation_files": {
+    "/tmp/woow-pdf-pair-directory-2758966-creation-check.json": "1fcf77b5cb20c4cc2fecbb760eb7f0e0e747d01697a45c6e34534e9c84045c15",
+    "/tmp/woow-pdf-pair-directory-2758966-baseline-check.json": "bb3eef8e5e0eb4486b98dda646e68bf14df4b85065bc05a649b93b2a878d126d",
+    "/tmp/woow-pdf-pair-directory-2758966-preservation.json": "2acc2a7f1204cad11d11990fb377bfcb196e52fcd2c2c2ffe86db7fba0fc9c3c",
+    "/tmp/woow-pdf-pair-directory-2758966-fixture-check.log": "a64c9e52be55a61e89e2b7a083641510a7ee20d9bc1814bb44bafaa39611fa3e"
+  },
+  "old_read_identity_patch": {
+    "path": "/tmp/woow-pdf-read-identity-d9383c7.patch",
+    "sha256": "c0238fe1f80583a20382e453676d65cf2fc9a36bcb1ec04343c2dca1b529a0dd",
+    "unchanged": true,
+    "candidate_apply_check_on_parent_tree_already_containing_read_identity": true,
+    "read_identity_apply_check_on_candidate_tree": true,
+    "native_scope": "separate read identity diagnostic"
+  },
+  "native_acceptance": {
+    "status": "pending_parent_dispatch",
+    "planned": "one candidate method on current26, SE18 and exact17 each once",
+    "old_baseline_failures_remain_failures": true,
+    "falsifier": "If directory coordination actually completed once with unchanged source identities but the same did3/-1005 nil URL recurs, this experiment did not resolve the observed failure; do not repeat unchanged inputs.",
+    "no_FileProvider_rootcause_or_OS_fix_claim": true
+  },
+  "limitations": [
+    "Host has macOS13 Intel CLT Swift5.8, no Xcode/iOS SDK.",
+    "Public coordination validates fixture publication only; it does not promise FileProvider registration repair.",
+    "NSFileCoordinator can wait on presenters; existing native test deadlines remain unchanged.",
+    "No workflow, scope inventory, project registration, commit, push or dispatch performed by this patch."
+  ]
+}

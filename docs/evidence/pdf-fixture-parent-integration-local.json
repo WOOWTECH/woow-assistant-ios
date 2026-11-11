@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "base_commit": "ccfd4b0149bde9d3276970e4d69dc9ea69563b42",
+  "status": "LOCAL_PASS_NATIVE_PENDING",
+  "scope": "Strict synthetic directory-coordinated pair creation and read-picker identity observations; no production picker repair claim",
+  "checks": {
+    "directory_creation_Debug": 132,
+    "directory_creation_Release": 38,
+    "read_picker_identity_Debug": 36,
+    "read_picker_identity_Release": 2,
+    "existing_fixture_regression_passed": true,
+    "python_tests": 286,
+    "python_passed": true,
+    "syntax_iOS17_Debug_Release": true,
+    "xcodegen": true,
+    "actionlint": true,
+    "ui_launch_assignments": 40,
+    "native_ios_typecheck": false,
+    "native_ui_execution": false
+  },
+  "source_sha256": {
+    ".github/workflows/ios.yml": "7be33b8b87d28ac6818a6356c6926ecdb1350ca3a3d2941f3b61a7a8dce7bcd1",
+    ".github/workflows/release-ios.yml": "6146b135c8b899224064969956da94f4b1ce6b334189174a519f632fde262e9a",
+    "Sources/App/PDFNativePicker.swift": "022dce11aadef4bb0fcfb01d31afb9eed32f343d936b0fb86b59a0bafc881572",
+    "Sources/App/SkillExecutionUITestSupport.swift": "8ad114534d08be5980ac2ae8017da3e97e63cb4d0335dfeeff48c9d452f45cc0",
+    "Sources/App/SkillExecutionView.swift": "5391eece1a4d038cd2725163cecf652a7a944211fdc3dc9ba9ed27e578f2324c",
+    "Sources/App/SkillPDFAssemblyView.swift": "755ee6307eb7d48dbcfbc57480c31792c9f197adccfc7127cfdd7eebfa6d0607",
+    "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift": "6fad04e2e7db34e7acffce29814459ce616e792b3c9c1d83c5d455cd13fdea06",
+    "scripts/check_pdf_pair_directory_creation.py": "aaaaebceff8f0efcab7aa0a84827065c4c9d2fd5924f537b589b6cf49b9ffdaa",
+    "scripts/check_pdf_read_identity_diagnostics.py": "cc4744066cf616e55e6d4da669dee3c0bdde00fc15d5d69218e4756fb5376936",
+    "scripts/release_ios17.py": "37f6827b9af07b809b0c1fed1872391b376c067d7ea439cb158bb805591807b5",
+    "scripts/test_release_ios17_document_scopes.py": "63d1acaeee035f433a629e75ef5e7455015b3307a7be363eb93e3765a315ba36",
+    "scripts/test_release_ios17_prebuild.py": "88720d951e8611044f04a93660b6ef35e44f95ee925029db02054c08185a4ec3"
+  },
+  "logs_sha256": {
+    "pair": "c05cdc6a6c44dc711b447de29735020d34d51e3cf35b6b2586e22fd2e9d73dd7",
+    "identity": "6613d248b9a401de9dcbc7172eda39e98589ff04e0d0a68b8dff26eccccd1647",
+    "regression": "a64c9e52be55a61e89e2b7a083641510a7ee20d9bc1814bb44bafaa39611fa3e",
+    "python": "e8ce9241dbe740564a5cb1d212410a2bbd3231731bff1d24da72301395c59f48"
+  },
+  "candidate_selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testDirectoryCoordinatedFixtureCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
+  "scope_name": "pdf-pair-coordinated",
+  "bounds": {
+    "case_seconds": 300,
+    "exact17_build_and_test_seconds": 4800,
+    "current_se_test_step_minutes": 20
+  },
+  "limits": [
+    "Original baseline case and failed outcomes are preserved.",
+    "Directory creation is only an opt-in synthetic fixture experiment, not a FileProvider root-cause finding.",
+    "No fallback, retap, alternate selected path, permission bypass or deadline increase.",
+    "macOS NSFileCoordinator/PDFKit observations are not iOS picker acceptance."
+  ]
+}

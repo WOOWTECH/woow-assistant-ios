@@ -77,10 +77,11 @@ struct SkillPDFAssemblyView: View {
                         .font(.caption).accessibilityIdentifier("pdfAssembly.uitest.fixture")
                         .accessibilityValue(pickerObservation + " callbacks=\(importerCallbacks)")
                 }
-                if model.uiTestPair != nil {
+                if let pair = model.uiTestPair {
                     Text("測試雙檔已建立")
                         .font(.caption).accessibilityIdentifier("pdfAssembly.uitest.pair")
-                        .accessibilityValue("callbacks=\(totalImporterCallbacks) sources=\(model.sources.count)")
+                        .accessibilityValue("callbacks=\(totalImporterCallbacks) sources=\(model.sources.count)" +
+                            (totalImporterCallbacks == 0 && model.sources.isEmpty ? " " + pair.creationProof.accessibilityValue : ""))
                 }
                 #endif
             }

@@ -113,12 +113,17 @@ import Darwin
                     PDFPickerModeProbe(namespace: namespace,
                                        source: choice == .importCopy ? "user-copy" : (experiment?.source ?? "swiftui"),
                                        isPresented: isPresented,
-                                       onObservation: onObservation)
+                                       onObservation: onObservation, onIdentity: recordIdentity)
                         .frame(width: 0, height: 0).allowsHitTesting(false).accessibilityHidden(true)
                 }
             }
             .onChange(of: isPresented) { _, presented in
-                if presented { presentationCount += 1; callbackCount = 0 }
+                if presented {
+                    presentationCount += 1; callbackCount = 0
+                    let mode = choice.mode(experiment: experiment)
+                    let copy = mode.usesUIKit ? String(mode.asCopy) : "notExposed"
+                    recordIdentity("event=requested ordinal=\(presentationCount) adapter=\(mode.usesUIKit ? "uikit" : "swiftui") requestedUTType=\(UTType.pdf.identifier) requestedAsCopy=\(copy) allowsMultipleSelection=\(allowsMultipleSelection)")
+                }
                 recordLifecycle("event=bindingChanged ordinal=\(presentationCount) presented=\(presented) callbacks=\(callbackCount)")
             }
             #endif
@@ -136,7 +141,7 @@ import Darwin
         if mode.usesUIKit {
             content.sheet(isPresented: $isPresented) {
                 PDFNativePicker(asCopy: mode.asCopy, allowsMultipleSelection: allowsMultipleSelection,
-                                onLifecycle: recordLifecycle) { outcome in
+                                onLifecycle: recordLifecycle, onIdentity: recordIdentity) { outcome in
                     isPresented = false
                     // Cancellation matches fileImporter: dismiss without a
                     // success/empty callback or a prepared execution plan.
@@ -164,6 +169,17 @@ import Darwin
         onCompletion(outcome)
     }
 
+    private func recordIdentity(_ value: String) {
+        #if DEBUG
+        guard presentationCount <= 3,
+              let namespace = experiment?.namespace ?? observationNamespace,
+              PDFNativePickerExperiment.configuration(arguments: ProcessInfo.processInfo.arguments,
+                                                       fixtureNamespace: namespace) != nil else { return }
+        print("SKILL_PDF_PICKER_IDENTITY namespace=\(namespace.uuidString) \(value) sampledAt=\(Date().timeIntervalSince1970)")
+        fflush(stdout)
+        #endif
+    }
+
     private func recordLifecycle(_ value: String) {
         #if DEBUG
         guard let namespace = experiment?.namespace ?? observationNamespace else { return }
@@ -180,9 +196,10 @@ import Darwin
     let asCopy: Bool
     let allowsMultipleSelection: Bool
     let onLifecycle: (String) -> Void
+    let onIdentity: (String) -> Void
     let onCompletion: (Result<[URL], Error>?) -> Void
 
-    func makeCoordinator() -> Coordinator { Coordinator(onCompletion: onCompletion, onLifecycle: onLifecycle) }
+    func makeCoordinator() -> Coordinator { Coordinator(onCompletion: onCompletion, onLifecycle: onLifecycle, onIdentity: onIdentity) }
 
     func makeUIViewController(context: Context) -> UIDocumentPickerViewController {
         let picker = UIDocumentPickerViewController(forOpeningContentTypes: [.pdf], asCopy: asCopy)
@@ -208,14 +225,16 @@ import Darwin
     @MainActor final class Coordinator: NSObject, UIDocumentPickerDelegate {
         let onCompletion: (Result<[URL], Error>?) -> Void
         let onLifecycle: (String) -> Void
+        let onIdentity: (String) -> Void
         private var completed = false
         #if DEBUG
         private var callbacks = 0
         private weak var createdPicker: UIDocumentPickerViewController?
         #endif
 
-        init(onCompletion: @escaping (Result<[URL], Error>?) -> Void, onLifecycle: @escaping (String) -> Void) {
-            self.onCompletion = onCompletion; self.onLifecycle = onLifecycle
+        init(onCompletion: @escaping (Result<[URL], Error>?) -> Void, onLifecycle: @escaping (String) -> Void,
+             onIdentity: @escaping (String) -> Void) {
+            self.onCompletion = onCompletion; self.onLifecycle = onLifecycle; self.onIdentity = onIdentity
         }
 
         func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
@@ -242,6 +261,7 @@ import Darwin
         func record(_ event: String, _ controller: UIDocumentPickerViewController) {
             if event == "nativeCreated" { createdPicker = controller }
             guard callbacks < 16 else { return }
+            onIdentity("event=\(event) pickerMatchesCreated=\(createdPicker === controller) delegateIsCoordinator=\(controller.delegate === self) callbacks=\(callbacks)")
             let snapshot = PDFPickerModeProbe.snapshot(controller)
             onLifecycle("event=\(event) \(snapshot) identitySame=\(createdPicker === controller) callbacks=\(callbacks)")
         }
@@ -257,11 +277,12 @@ import Darwin
     let source: String
     let isPresented: Bool
     let onObservation: (String) -> Void
+    let onIdentity: (String) -> Void
 
     func makeUIViewController(context: Context) -> ProbeController { ProbeController() }
     func updateUIViewController(_ controller: ProbeController, context: Context) {
         controller.update(namespace: namespace, source: source,
-                          isPresented: isPresented, onObservation: onObservation)
+                          isPresented: isPresented, onObservation: onObservation, onIdentity: onIdentity)
     }
     static func dismantleUIViewController(_ controller: ProbeController, coordinator: ()) { controller.stop() }
 
@@ -283,15 +304,19 @@ import Darwin
         private var reported = false
         private var activeNamespace: UUID?
         private var activeSource: String?
+        private weak var firstPicker: UIDocumentPickerViewController?
+        private weak var firstDelegate: AnyObject?
+        private var identityObservation: ((String) -> Void)?
 
         func update(namespace: UUID, source: String, isPresented: Bool,
-                    onObservation: @escaping (String) -> Void) {
+                    onObservation: @escaping (String) -> Void, onIdentity: @escaping (String) -> Void) {
             guard isPresented else { stop(); return }
             guard !presenting else { return }
             presenting = true
             reported = false
             activeNamespace = namespace
             activeSource = source
+            identityObservation = onIdentity
             observation = Task { @MainActor [weak self] in
                 // Defer until the SwiftUI presentation transaction completes.
                 await Task.yield()
@@ -311,6 +336,9 @@ import Darwin
                         }
                         let value = "source=\(source) mode=\(mode) allowsMultipleSelection=\(picker.allowsMultipleSelection)"
                         self.reported = true
+                        self.firstPicker = picker
+                        self.firstDelegate = picker.delegate
+                        onIdentity("event=probeObserved source=\(source) delegatePresent=\(picker.delegate != nil)")
                         Self.record(namespace: namespace, value: value)
                         Self.record(namespace: namespace, value: "source=\(source) event=observed " + PDFPickerModeProbe.snapshot(picker), lifecycle: true)
                         onObservation(value)
@@ -325,6 +353,11 @@ import Darwin
         }
 
         func stop() {
+            if presenting, reported, let source = activeSource {
+                let delegateSame = firstDelegate != nil && firstPicker?.delegate === firstDelegate
+                identityObservation?("event=probeStopped source=\(source) pickerAlive=\(firstPicker != nil) initialDelegateAlive=\(firstDelegate != nil) delegateUnchanged=\(delegateSame)")
+            }
+            firstPicker = nil; firstDelegate = nil; identityObservation = nil
             if presenting, !reported, let namespace = activeNamespace, let source = activeSource {
                 Self.record(namespace: namespace, value: "source=\(source) mode=unobserved")
             }
