@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "status": "FAIL_PRESERVED",
+  "source_commit": "a663fbd1a523027511b9ac7d85208aaf301ae154",
+  "run_id": 42947625589,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42947625589",
+  "artifact": {
+    "id": 13825305663,
+    "bytes": 90557224,
+    "sha256": "dac497e266950492f040444ffc621da868dea22d7684a05639283077097688fa",
+    "zip_crc_checked": true
+  },
+  "actual_device": {
+    "architecture": "arm64",
+    "deviceId": "5921556E-F180-49D3-A585-FF317EB1EB44",
+    "deviceName": "Woow-iOS17-d753a16d98964e3bb9f3f659ca487b7a",
+    "modelName": "iPhone 15",
+    "osBuildNumber": "21A342",
+    "osVersion": "17.0.1",
+    "platform": "iOS Simulator"
+  },
+  "counts": {
+    "started": 15,
+    "passed": 14,
+    "failed": 1,
+    "skipped": 0,
+    "expectedFailures": 0
+  },
+  "failed_method": "ChatStreamingUITests/testPartialBecomesCompletedReplyAndDurableArchive",
+  "failure_phase": "After actual partial reply and notification-attempt check, while identifying the completed selectable assistant Text; before archive relaunch assertions.",
+  "xctest_diagnostic": "Element with the chat.message.1.assistant identifier was queried as StaticText; iOS 17 reports a computed Other type for the underlying selectable UILabel.",
+  "candidate": "Query the same exact identifier across AX types, retain exact label, notification and archive assertions, and avoid evaluating the label before the element exists. Native rerun required.",
+  "evidence_hashes": {
+    "report.json": "002e36caab04a07bc845e1cf1f4c40d9a6c99dcbd06035f39feb075c5d5528d7",
+    "test-summary.json": "713f9b2f2a5fd96c81b4b0e9323956a71ff58a81d1a8185b8163233798866d0d",
+    "tests.log": "4521356e8af24f74fda49e2c6039454171288ffa36a5ad98204c8883fd962194"
+  },
+  "limits": [
+    "One exact iOS 17 simulator shard; 14/15 is a failure, not full acceptance.",
+    "The diagnostic does not prove archive reopen or current/SE behavior.",
+    "No physical-device, signing or audible notification acceptance."
+  ]
+}

@@ -1,5 +1,15 @@
 # Verification — 2026-11-11
 
+## iOS 17 streaming UI failure and scoped selector correction
+
+At `a663fbd`, the iOS 17.0.1 startup UI shard completed **14/15**, zero skips.
+The completed-stream case reached the partial reply, then failed looking up its
+selectable assistant text as `StaticText`; XCTest reported the same identified
+UILabel with computed AX type `Other`. The test now queries that exact identifier
+across AX types, preserves its exact answer/notification/archive assertions and
+the existing time limit. Native proof of this correction is still pending.
+[Original failure and artifact digest](evidence/ui-startup-a663fbd-exact17-failure.json).
+
 ## Current native core at `50e2b74` — 2026-11-11
 
 The iPhone 17 / iOS 26.2 native and hosted integration run

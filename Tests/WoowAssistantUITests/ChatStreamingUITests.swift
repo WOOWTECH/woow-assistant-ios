@@ -14,10 +14,10 @@ final class ChatStreamingUITests: XCTestCase {
         compose("[fixture:stream-complete]"); tap("chat.send")
         assertLabel(app.staticTexts["chat.partialReply"].firstMatch, "串流測試：第一段")
         assertLabel(app.staticTexts["chat.partialStatus"].firstMatch, "回覆產生中・尚未完成，未保存")
-        XCTAssertFalse(app.staticTexts["chat.message.1.assistant"].firstMatch.exists)
+        XCTAssertFalse(identifiedText("chat.message.1.assistant").exists)
         XCTAssertFalse(app.buttons["chat.archive"].firstMatch.isEnabled)
         assertNotificationAttempts(0)
-        let completed = app.staticTexts["chat.message.1.assistant"].firstMatch
+        let completed = identifiedText("chat.message.1.assistant")
         wait(NSPredicate(format: "label == %@", "串流測試：第一段；完整回覆。"), on: completed, seconds: 35)
         XCTAssertEqual(completed.label, "串流測試：第一段；完整回覆。")
         XCTAssertFalse(app.staticTexts["chat.partialReply"].firstMatch.exists)
@@ -28,7 +28,7 @@ final class ChatStreamingUITests: XCTestCase {
         assertNotificationAttempts(1)
         launch(reset: false); tap("chat.archive")
         let saved = row("[fixture:stream-complete]"); ready(saved); saved.tap()
-        assertLabel(app.staticTexts["archive.turn.0.assistant"].firstMatch, "串流測試：第一段；完整回覆。")
+        assertLabel(identifiedText("archive.turn.0.assistant"), "串流測試：第一段；完整回覆。")
         print("CHAT_STREAM_UI partialObserved=1 completedPair=1 archiveRelaunch=1 completionNotificationAttempts=1")
     }
 
@@ -42,8 +42,8 @@ final class ChatStreamingUITests: XCTestCase {
         assertLabel(app.staticTexts["chat.partialStatus"].firstMatch, "已取消・部分回覆未保存")
         assertLabel(app.staticTexts["chat.partialReply"].firstMatch, "串流測試：第一段")
         XCTAssertEqual(app.textFields["chat.draft"].firstMatch.value as? String, "[fixture:stream-cancel]")
-        XCTAssertFalse(app.staticTexts["chat.message.0.user"].firstMatch.exists)
-        XCTAssertFalse(app.staticTexts["chat.message.1.assistant"].firstMatch.exists)
+        XCTAssertFalse(identifiedText("chat.message.0.user").exists)
+        XCTAssertFalse(identifiedText("chat.message.1.assistant").exists)
         assertNotificationAttempts(0)
         tap("chat.archive")
         XCTAssertTrue(app.staticTexts["archive.empty"].firstMatch.waitForExistence(timeout: 10))
@@ -51,7 +51,7 @@ final class ChatStreamingUITests: XCTestCase {
         assertNotificationAttempts(0)
         launch(reset: false)
         XCTAssertFalse(app.staticTexts["chat.partialReply"].firstMatch.exists, "Partials are not claimed durable")
-        XCTAssertFalse(app.staticTexts["chat.message.1.assistant"].firstMatch.exists)
+        XCTAssertFalse(identifiedText("chat.message.1.assistant").exists)
         tap("chat.archive")
         XCTAssertTrue(app.staticTexts["archive.empty"].firstMatch.waitForExistence(timeout: 10))
         print("CHAT_STREAM_UI partialObserved=1 cancelled=1 draftRetained=1 archiveAbsentAfterRelaunch=1 completionNotificationAttempts=0")
@@ -108,7 +108,7 @@ final class ChatStreamingUITests: XCTestCase {
         XCTAssertEqual(observation.value as? String, String(expected), "Actual OS adapter add attempts, not transient banner absence")
     }
     private func wait(_ predicate: NSPredicate, on element: XCUIElement, seconds: TimeInterval = 10) {
-        if !predicate.evaluate(with: element) {
+        if !element.exists || !predicate.evaluate(with: element) {
             XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: predicate, object: element)], timeout: seconds), .completed)
         }
         XCTAssertTrue(element.exists)
@@ -145,12 +145,17 @@ final class ChatStreamingUITests: XCTestCase {
     }
     private func send(_ text: String) {
         compose(text); tap("chat.send")
-        assertLabel(app.staticTexts["chat.message.1.assistant"].firstMatch, "測試回覆：" + text)
+        assertLabel(identifiedText("chat.message.1.assistant"), "測試回覆：" + text)
         XCTAssertFalse(app.staticTexts["chat.error"].firstMatch.exists)
         XCTAssertFalse(app.staticTexts["chat.archiveNotice"].firstMatch.exists)
     }
     private func row(_ title: String) -> XCUIElement {
         app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@ AND label == %@", "archive.row.", title)).firstMatch
+    }
+    private func identifiedText(_ identifier: String) -> XCUIElement {
+        // Selectable SwiftUI Text can be an AX Other on iOS 17 and StaticText
+        // on newer runtimes. Keep the exact identifier and label assertions.
+        app.descendants(matching: .any).matching(identifier: identifier).firstMatch
     }
     private func navigate(_ section: String) {
         let button = app.buttons["navigation." + section].firstMatch
