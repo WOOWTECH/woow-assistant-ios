@@ -1,5 +1,22 @@
 # Verification — 2026-11-11
 
+## Language UI: current and SE pass, exact17 one timeout
+
+At `ae7a1e2`, native `ui-language` passed **5/5, zero skipped** on
+[iOS 26.2](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42964296156)
+and [SE/iOS 18.5](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42964303127).
+The [exact17 run](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42964308326)
+passed **4/5, zero skipped**. Its English Browser/Library/Search/Catalog case
+reached the `catalog.empty` check at its 240-second case limit; the final chat
+draft assertion was not reached. The same run passed the English
+MCP/Notifications case, including native back navigation and draft readback.
+No English text assertion failed before the timeout. AX logs show the
+`settings.language` control is a Button on all three runtimes; using that role
+directly removes a costly global Any query in the test driver. The full ZIP
+digests and member CRCs were checked for all three runs. An exact17 native
+rerun is required before the changed driver or complete language shard can be
+accepted. [Three-platform method and artifact evidence](evidence/ui-language-ae7a1e2-three-platforms.json).
+
 ## Exact17 memory UI preflight interrupted by Simulator inventory
 
 [Run 42967057485](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967057485)

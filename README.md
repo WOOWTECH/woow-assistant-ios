@@ -12,7 +12,7 @@
 
 `fe66ab2` 的 MCP 原生介面在 current、SE 與精確 iOS 17 各 **8/8、零略過**，涵蓋逐次核准、結果檢視、撤銷與重開後狀態；這使用合成 MCP 測試服務，不代表真實 HA 模型對話已通過。[逐方法與附件證據](docs/evidence/ui-mcp-fe66ab2-three-platforms.json)。
 
-`fe66ab2` 的瀏覽器工作區介面在 iOS 26.2、SE／iOS 18.5 及精確 iOS 17.0.1 各 **9/9、零略過**，涵蓋登入與登出、分頁與書籤、搜尋設定、網站資料清除、手動 GET 模式及原生頁內尋找。這是指定介面分片，尚不代表 Mika 瀏覽器全部能力或真人網站登入都已驗收。[逐方法及附件證據](docs/evidence/ui-workspace-fe66ab2-three-platforms.json)。語言介面的修正重測仍待結果。
+`fe66ab2` 的瀏覽器工作區介面在 iOS 26.2、SE／iOS 18.5 及精確 iOS 17.0.1 各 **9/9、零略過**，涵蓋登入與登出、分頁與書籤、搜尋設定、網站資料清除、手動 GET 模式及原生頁內尋找。這是指定介面分片，尚不代表 Mika 瀏覽器全部能力或真人網站登入都已驗收。[逐方法及附件證據](docs/evidence/ui-workspace-fe66ab2-three-platforms.json)。語言介面在 current 與 SE 各 **5/5**，精確 iOS 17 為 **4/5**，剩下一項逾時已修正測試查詢並待重測；[三平台證據](docs/evidence/ui-language-ae7a1e2-three-platforms.json)。
 
 精確 iOS 17.0.1 的保存 PDF 聊天介面在 `23b4e6a` **3/3、零略過**；引用、頁面擷取、重開與刪除後重啟的斷言均完成。[逐方法與 AX 證據](docs/evidence/documents-chat-23b4e6a-exact17.json)。
 

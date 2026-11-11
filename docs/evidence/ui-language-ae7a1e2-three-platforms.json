@@ -1,0 +1,237 @@
+{
+  "schema": 1,
+  "source_commit": "ae7a1e2061ff0115ad61497aed127117d607a30f",
+  "test_source": "Tests/WoowAssistantUITests/AppLanguagePhase2UITests.swift",
+  "test_source_sha256": "778148101962c6888f6437b666c1aa45b2966750442617e79bf9405236195632",
+  "platforms": {
+    "current": {
+      "run_id": 42964296156,
+      "source_commit": "ae7a1e2061ff0115ad61497aed127117d607a30f",
+      "workflow_result": "success",
+      "runtime": {
+        "version": "26.2",
+        "build": "23C54",
+        "model": "iPhone 17"
+      },
+      "artifact_id": 13833729729,
+      "artifact_integrity": {
+        "size_bytes": 187056428,
+        "archive_sha256": "ccf8e99cf9cd957b72399e3689648e54a8dfdb9c9889c0ddf0c77500c610102a",
+        "archive_crc32": "786cbd0e",
+        "github_digest_matches": true,
+        "zip_entry_count": 1364,
+        "zip_member_crc_verified": true
+      },
+      "xcresult_counts": {
+        "started": 5,
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0
+      },
+      "methods": {
+        "AppLanguagePhase2UITests.testEnglishBrowserLibrarySearchAndSkillCatalogKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 143.541
+        },
+        "AppLanguagePhase2UITests.testEnglishMCPAndNotificationsKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 76.081
+        },
+        "AppLanguageUITests.testExplicitEnglishPersistsAndPreservesAppearancePermissionAndDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 111.497
+        },
+        "AppLanguageUITests.testSimplifiedChineseAndSystemFollowActualPreferredLanguages": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 58.306
+        },
+        "AppLanguageUITests.testUnsupportedSystemLanguageUsesTraditionalChineseFallback": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 15.423
+        }
+      },
+      "final_draft_checks": {
+        "testEnglishMCPAndNotificationsKeepUnsentChatDraft": {
+          "passed": true,
+          "final_chat_draft_query_reached": true
+        },
+        "testEnglishBrowserLibrarySearchAndSkillCatalogKeepUnsentChatDraft": {
+          "passed": true,
+          "final_chat_draft_query_reached": true
+        }
+      },
+      "test_log_path": "ios-tests.log",
+      "test_log_sha256": "818f7c7368b1375ea95c04a9d60b2d04f6fce269b43374eb808d7ae5e4b7b56c",
+      "test_summary_path": "test-summary.json"
+    },
+    "se": {
+      "run_id": 42964303127,
+      "source_commit": "ae7a1e2061ff0115ad61497aed127117d607a30f",
+      "workflow_result": "success",
+      "runtime": {
+        "version": "18.5",
+        "build": "22F77",
+        "model": "iPhone SE (3rd generation)"
+      },
+      "artifact_id": 13835055139,
+      "artifact_integrity": {
+        "size_bytes": 10664077,
+        "archive_sha256": "cbb0c6045e164171ee63cf011f97aa46938a579899f69cfdd3fbc31ddc509d83",
+        "archive_crc32": "91e58a6e",
+        "github_digest_matches": true,
+        "zip_entry_count": 58,
+        "zip_member_crc_verified": true
+      },
+      "xcresult_counts": {
+        "started": 5,
+        "passed": 5,
+        "failed": 0,
+        "skipped": 0
+      },
+      "methods": {
+        "AppLanguagePhase2UITests.testEnglishBrowserLibrarySearchAndSkillCatalogKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 111.942
+        },
+        "AppLanguagePhase2UITests.testEnglishMCPAndNotificationsKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 62.594
+        },
+        "AppLanguageUITests.testExplicitEnglishPersistsAndPreservesAppearancePermissionAndDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 87.751
+        },
+        "AppLanguageUITests.testSimplifiedChineseAndSystemFollowActualPreferredLanguages": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 44.464
+        },
+        "AppLanguageUITests.testUnsupportedSystemLanguageUsesTraditionalChineseFallback": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 13.312
+        }
+      },
+      "final_draft_checks": {
+        "testEnglishMCPAndNotificationsKeepUnsentChatDraft": {
+          "passed": true,
+          "final_chat_draft_query_reached": true
+        },
+        "testEnglishBrowserLibrarySearchAndSkillCatalogKeepUnsentChatDraft": {
+          "passed": true,
+          "final_chat_draft_query_reached": true
+        }
+      },
+      "test_log_path": "ios-tests.log",
+      "test_log_sha256": "d9297c35a63198bfca694b924ca7b1d2c0313e3943e9c591e5f4aca4f0288c57",
+      "test_summary_path": "test-summary.json"
+    },
+    "ios17": {
+      "run_id": 42964308326,
+      "source_commit": "ae7a1e2061ff0115ad61497aed127117d607a30f",
+      "workflow_result": "failure",
+      "runtime": {
+        "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+        "version": "17.0.1",
+        "buildversion": "21A342"
+      },
+      "artifact_id": 13833358800,
+      "artifact_integrity": {
+        "size_bytes": 9488608,
+        "archive_sha256": "6d39b75dd0684ba60e4cae9610bd1a2354439ed1ee7114f50e41c24e24dec3a2",
+        "archive_crc32": "7fb77d63",
+        "github_digest_matches": true,
+        "zip_entry_count": 161,
+        "zip_member_crc_verified": true
+      },
+      "xcresult_counts": {
+        "started": 5,
+        "passed": 4,
+        "failed": 1,
+        "skipped": 0
+      },
+      "methods": {
+        "AppLanguagePhase2UITests.testEnglishBrowserLibrarySearchAndSkillCatalogKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 0,
+          "failed_event": 0,
+          "xcresult_outcome": "timed_out_240s"
+        },
+        "AppLanguagePhase2UITests.testEnglishMCPAndNotificationsKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 117.521
+        },
+        "AppLanguageUITests.testExplicitEnglishPersistsAndPreservesAppearancePermissionAndDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 60.304
+        },
+        "AppLanguageUITests.testSimplifiedChineseAndSystemFollowActualPreferredLanguages": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 42.112
+        },
+        "AppLanguageUITests.testUnsupportedSystemLanguageUsesTraditionalChineseFallback": {
+          "started": 1,
+          "passed": 1,
+          "failed_event": 0,
+          "duration_seconds": 10.068
+        }
+      },
+      "final_draft_checks": {
+        "testEnglishMCPAndNotificationsKeepUnsentChatDraft": {
+          "passed": true,
+          "final_chat_draft_query_reached": true
+        },
+        "testEnglishBrowserLibrarySearchAndSkillCatalogKeepUnsentChatDraft": {
+          "passed": false,
+          "final_chat_draft_query_reached": false
+        }
+      },
+      "test_log_path": "tests.log",
+      "test_log_sha256": "6271541cd6ecdc7cde60327b1d9f0d91f29b5dffabbe747888794c22aabc708b",
+      "test_summary_path": "artifact-13833358800.zip::test-summary.json"
+    }
+  },
+  "ios17_cause_observed": {
+    "failed_method": "AppLanguagePhase2UITests.testEnglishBrowserLibrarySearchAndSkillCatalogKeepUnsentChatDraft",
+    "summary_failure": "Test exceeded execution time allowance of 4 minutes",
+    "settings_language_global_any_query_approx_seconds": 47,
+    "xctest_animation_idle_wait_seconds": 60,
+    "at_timeout": "catalog.empty existence check at t=240.19s; final chat draft recheck not reached",
+    "not_observed": "No failing English label/value assertion in this method before timeout."
+  },
+  "isolated_candidate": {
+    "patch": "woow-ae7-language-direct-button.patch",
+    "sha256": "59ffbd81a08f2a633fe618c9045790231a84fc28f6fa4ae774f460b36b383277",
+    "change": "Query observed Button role for settings.language instead of global Any tree.",
+    "basis": "Prior native AX logs on iOS 17.0.1, 18.5, 26.2 identify settings.language as Button.",
+    "swift_parse": "PASS",
+    "git_apply_check_current_main": "PASS",
+    "native_retest": false,
+    "shared_main_modified": false,
+    "limitation": "Cannot prevent an independent 60-second XCTest animation-idle wait; no guarantee of a future 5/5 result."
+  }
+}
