@@ -473,21 +473,20 @@ final class BrowserLoginUITests: XCTestCase {
         }
         if hasLatinKeys() { return true }
 
-        // d938 SE's video still shows the native globe after QuickPath closes.
-        // Its AX node in the same simulator is a Button with identifier
-        // "emoji" and label "Next keyboard". Bind the stable native ID under
-        // the active keyboard; an app-wide label lookup timed out after the
-        // tutorial even though the control remained visibly present.
-        let globe = keyboard.buttons["emoji"].firstMatch
+        // Native AX varies by runtime: SE places the switch in the keyboard
+        // with identifier "emoji"; iOS 17 places it just outside that AX node
+        // without an identifier. Both expose a dedicated keyboard-switch label.
+        let switchLabels = ["Next keyboard", "下一個鍵盤"]
+        let globe = app.buttons.matching(NSPredicate(format: "label IN %@", switchLabels)).firstMatch
         let globeReady = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: globe)
         guard XCTWaiter.wait(for: [globeReady], timeout: 10) == .completed else {
             XCTFail("The native keyboard switch must be available for the synthetic ASCII account.")
             return false
         }
-        guard globe.identifier == "emoji", globe.label == "Next keyboard",
-              keyboard.frame.contains(globe.frame) else {
-            XCTFail("The exact native keyboard switch must be visible within the active keyboard.")
+        guard switchLabels.contains(globe.label), app.frame.intersects(globe.frame),
+              keyboard.frame.intersects(globe.frame) else {
+            XCTFail("The native keyboard switch must be visible at the active keyboard edge.")
             return false
         }
         // Select English (US) from the real native language menu once; do not

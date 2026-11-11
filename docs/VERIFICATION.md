@@ -1,5 +1,18 @@
 # Verification — 2026-11-11
 
+## Three-platform browser workspace failures and scoped corrections
+
+At `83f4ddd`, the workspace UI shard completed **5/9** with zero skips on each
+of current iOS 26.2, SE/iOS 18.5 and exact iOS 17.0.1. The same four methods
+failed on each: two login/website-clear cases and custom search stopped at the
+native keyboard switch before their business assertions; the page-find case
+reported zero results but its native arrows did not expose a Disabled AX state.
+The login test now selects the observed native keyboard label. The find test
+checks the zero count, actually taps both arrows when safely hittable and requires
+the query, URL, count and original visible match to remain unchanged. These are
+**native test candidates**, with no pass claimed until rerun.
+[Method-level three-run evidence](evidence/ui-workspace-83f-three-failures.json).
+
 ## Dual-PDF per-file coordination experiment rejected
 
 The isolated `c59c134` per-file coordinated creation candidate failed its one

@@ -138,10 +138,48 @@ final class BrowserWorkspaceUITests: XCTestCase {
         XCTAssertNotEqual(fresh.value as? String, "WOOW_FIND_ORCHID")
         fresh.tap(); fresh.typeText("NOT_PRESENT_LITERAL")
         XCTAssertEqual(fresh.value as? String, "NOT_PRESENT_LITERAL")
-        waitForEnabled(next, false); waitForEnabled(previous, false)
+        let result = app.staticTexts["find.resultLabel"]
+        let noMatches = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == true AND label == %@", "0"), object: result)
+        guard XCTWaiter.wait(for: [noMatches], timeout: 10) == .completed else {
+            XCTFail("Native find must report zero results for the absent literal.")
+            return
+        }
+        let first = dom("WOOW_FIND_ORCHID first 茶香")
+        let address = app.textFields["browser.address"]
+        let expectedURL = "https://research.example.invalid/page-find"
+        func noMatchStateIsVisible() -> Bool {
+            let visible = viewport.frame.intersection(app.frame)
+            return result.exists && result.label == "0"
+                && (fresh.value as? String) == "NOT_PRESENT_LITERAL"
+                && (address.value as? String) == expectedURL
+                && !app.staticTexts["browser.error"].exists
+                && first.exists && !visible.isEmpty && visible.contains(first.frame) && first.isHittable
+        }
+        guard noMatchStateIsVisible() else {
+            XCTFail("Zero results must preserve the exact query, URL, and visible first document match.")
+            return
+        }
+        // All three native runtimes expose the arrows without a Disabled AX
+        // state at zero results. Tap the real controls only if they are safely
+        // visible and operable; never bypass a disabled control by coordinate.
+        let keyboard = app.keyboards.firstMatch
+        for arrow in [next, previous] {
+            guard arrow.exists, arrow.isEnabled, arrow.isHittable,
+                  app.frame.contains(arrow.frame),
+                  !keyboard.exists || arrow.frame.maxY <= keyboard.frame.minY else {
+                XCTFail("The native zero-result \(arrow.identifier) control is not safely tappable.")
+                return
+            }
+            arrow.tap()
+            guard noMatchStateIsVisible() else {
+                XCTFail("Tapping native \(arrow.identifier) with zero results changed the query, URL, count, or visible document.")
+                return
+            }
+        }
         closeNativeFind()
         XCTAssertFalse(app.staticTexts["browser.error"].exists)
-        XCTAssertEqual(app.textFields["browser.address"].value as? String, "https://research.example.invalid/page-find")
+        XCTAssertEqual(address.value as? String, expectedURL)
     }
 
     func testNativePageFindClearsOnReloadAndTabSwitch() {
