@@ -139,10 +139,10 @@ final class ChatPDFAttachmentUITests: XCTestCase {
                   viewport: nativeList.frame.intersection(app.frame), navigation: nativeNavigation.frame) else {
             XCTFail("Exact native PDF thumbnail must be fully visible"); throw Failure.nativeTarget
         }
-        // The exact native cell is already unique and visible. The iOS 26
-        // image-coordinate tap left Files open with no selection; use the
-        // cell's accessibility action for the single native selection.
-        file.tap()
+        // XCTest's 0.05-second tap reached the exact thumbnail hit point but
+        // Files sometimes ignored it. Use one short touch on the same cell;
+        // 0.15s is below UIKit's default long-press threshold, with no retry.
+        file.press(forDuration: 0.15)
         let selected = app.staticTexts["chat.pdf.filename"].firstMatch
         let open = nativeNavigation.buttons.matching(NSPredicate(format: "label IN %@", ["打開", "開啟", "Open", "完成", "Done"])).firstMatch
         let selectionReady = {

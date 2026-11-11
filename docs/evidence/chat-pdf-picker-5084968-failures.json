@@ -1,0 +1,163 @@
+{
+  "schema_version": 1,
+  "scope": "documents-chat",
+  "tested_source_head": "508496891422c3a5bdb2661bea8c28d8919757d7",
+  "tested_source_sha256": {
+    "Tests/WoowAssistantUITests/ChatPDFAttachmentUITests.swift": "1a0fc4396e70cfa973f3e1073e37c3de54ac6665bb0ea10d46070368eac1cc9c",
+    "Sources/App/ChatPDFAttachmentView.swift": "b341e02cd0fac1ce84e7fafb6071eeb2f9183ff908e6f1db2d25c23ca7fcc571"
+  },
+  "candidate_source_sha256": "169b71145c6c66bdb8a888c8fa2121615e5e4af0502cea049b70ad2e41ce3df9",
+  "runs": {
+    "current": {
+      "id": 42978619055,
+      "job": 130383491195,
+      "status": "completed",
+      "conclusion": "failure",
+      "device": "iPhone 17",
+      "runtime": {
+        "device_name": "iPhone 17",
+        "runtime_version": "26.2",
+        "runtime_build": "23C54",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2"
+      },
+      "artifact": {
+        "id": 13837937478,
+        "size_in_bytes": 44323857,
+        "digest": "sha256:0d8c5b65228bf4258478752a463c0f8f0384ba2811a5331fb5286cebc79b8ffa"
+      },
+      "test_step": {
+        "status": "failure",
+        "start": "2026-11-11T07:28:53Z",
+        "end": "2026-11-11T07:49:08Z"
+      },
+      "xcresult": "test-summary.json zero bytes; only staging bundle, no method totals/zero-skip evidence",
+      "observed_methods": {
+        "testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive": {
+          "starts": 1,
+          "failed": 1,
+          "line": 159,
+          "duration_seconds": 185.931,
+          "phase": "single exact PDF cell tap left native picker visible; navigation/list/sheet true, Open/selectionError false; no query/archive"
+        },
+        "testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete": {
+          "starts": 1,
+          "completed": 0,
+          "allowance_exceeded": 1,
+          "phase": "actual selection, read/extract grants, model answer, archive/citation/page/open/delete actions observed; distinct AX IDs; no final verdict"
+        },
+        "testReadApprovalThenRemoveNeverExtractsOrSubmitsAndRetainsDraft": {
+          "starts": 1,
+          "completed": 0,
+          "phase": "actual file selection and read-approval control observed; no verdict"
+        }
+      },
+      "ax_snapshots": {
+        "collapsed_identifiers": [
+          "archive.turn.0.pdf"
+        ],
+        "expanded_identifiers": [
+          "archive.turn.0.pdf",
+          "archive.turn.0.pdf.citation.0",
+          "archive.turn.0.pdf.pages"
+        ]
+      },
+      "acceptance": "failed; cannot claim 3/3 or 0 skip"
+    },
+    "se": {
+      "id": 42978618912,
+      "job": 130383491288,
+      "status": "completed",
+      "conclusion": "failure",
+      "device": "iPhone SE (3rd generation)",
+      "runtime": {
+        "device_name": "iPhone SE (3rd generation)",
+        "runtime_version": "18.5",
+        "runtime_build": "22F77",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-5"
+      },
+      "artifact": {
+        "id": 13838700507,
+        "size_in_bytes": 247764542,
+        "digest": "sha256:98a928791ef8168ccd2bf178490408a6eadc58fa50205ee654b818747cc3088f"
+      },
+      "test_step": {
+        "status": "failure",
+        "start": "2026-11-11T07:37:43Z",
+        "end": "2026-11-11T07:53:41Z"
+      },
+      "counts": {
+        "totalTestCount": 3,
+        "passedTests": 2,
+        "failedTests": 1,
+        "skippedTests": 0
+      },
+      "ui_shard": {
+        "verified": false,
+        "expected_ui_count": 3,
+        "completed_ui_count": 3
+      },
+      "methods": {
+        "testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete": {
+          "started": 1,
+          "completed": 1,
+          "outcome": "failed",
+          "seconds": 137.54,
+          "failure_lines": [
+            159
+          ],
+          "success_receipt": false
+        },
+        "testReadApprovalThenRemoveNeverExtractsOrSubmitsAndRetainsDraft": {
+          "started": 1,
+          "completed": 1,
+          "outcome": "passed",
+          "seconds": 141.651,
+          "failure_lines": [],
+          "success_receipt": true
+        },
+        "testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive": {
+          "started": 1,
+          "completed": 1,
+          "outcome": "passed",
+          "seconds": 237.828,
+          "failure_lines": [],
+          "success_receipt": true
+        }
+      },
+      "failure_phase": "full method line 159: single exact PDF cell tap left Files open; navigation/list/sheet true, selectionError/Open false; no read/query/archive reached",
+      "native_touch_evidence": {
+        "cell_frame_points": [
+          131,
+          158,
+          113,
+          189.5
+        ],
+        "hit_point_points": [
+          187.5,
+          204
+        ],
+        "touch_down_up_seconds": 0.05,
+        "event_completed_seconds": 0.28,
+        "video_after_touch": "same Files grid with two synthetic PDFs; no selection highlight, Open or importer callback"
+      },
+      "acceptance": "failed; 2/3, 0 skip"
+    }
+  },
+  "diagnosis": {
+    "se": "Complete xcresult 3 methods: remove and cancel pass; full E2E failed before importer callback. XCTest hit the exact verified file cell at point (187.5,204) within frame (131,158,113,189.5), synthesized a single 0.05s touch, and the native Files grid stayed open; no Open control or app selection error.",
+    "current": "Test step failed at 20-minute scope cap with zero-byte summary. Cancel failed at native Files selection; full E2E selected a real PDF and reached citations/pages/archive operations but exceeded 240s case allowance; remove started without verdict. No 3-method/zero-skip claim.",
+    "product_boundary": "No evidence of PDF query, citation, archive or app importer failure in the SE failed full method; the native picker never dismissed. Current complete flow did not finish, so no full E2E pass."
+  },
+  "candidate": {
+    "change": "One 0.15s press on the same exact, unique, visible native file cell instead of XCTest tap, preserving one action, all assertions and deadlines.",
+    "basis": "SE private session log shows 0.05s tap synthesized at the correct cell point and completed without native selection; public Apple XCTest API supports duration-controlled press, and UIKit default long-press threshold is 0.5s. Longer single touch is a hypothesis, not a proven fix.",
+    "native_validation": "not run; both documented CI runs used file.tap()",
+    "no_retry": true,
+    "no_product_change": true
+  },
+  "public_api_sources": [
+    "https://developer.apple.com/documentation/xcuiautomation/xcuielement/press%28forduration%3A%29",
+    "https://developer.apple.com/documentation/uikit/uilongpressgesturerecognizer/minimumpressduration"
+  ],
+  "privacy": "No raw model reply, credentials, environment, AX tree, session log, video, or synthetic filename/UUID is included."
+}
