@@ -62,9 +62,19 @@ final class ChatStreamingUITests: XCTestCase {
         let toggle = app.switches["memory.toggle.useMemory"].firstMatch
         revealLearningElement(toggle, in: app); ready(toggle)
         XCTAssertEqual(toggle.value as? String, "1")
-        toggle.tap()
+        // SwiftUI can expose the labelled row as an outer Switch. Target the
+        // actual native child when present, as the existing Memory drivers do.
+        let native = toggle.switches.firstMatch
+        let target = native.exists ? native : toggle
+        ready(target)
+        XCTAssertTrue(app.frame.contains(target.frame)); XCTAssertFalse(target.frame.isEmpty)
+        XCTAssertTrue(toggle.frame.contains(target.frame))
+        XCTAssertLessThanOrEqual(target.frame.maxY, app.buttons["navigation.chat"].firstMatch.frame.minY)
+        print("CHAT_STREAM_UI memorySwitchNativeChild=\(native.exists ? 1 : 0) initialValue=1")
+        target.tap()
         wait(NSPredicate(format: "value == %@", "0"), on: toggle)
         XCTAssertEqual(toggle.value as? String, "0")
+        XCTAssertFalse(app.staticTexts["memory.error"].firstMatch.exists)
         navigate("chat")
     }
     private func enableNotifications() {

@@ -1,0 +1,363 @@
+{
+  "source_revision": "76ee518900ad01fe0a2d95d2821348da54f3cca9",
+  "scope": "ui-startup",
+  "runs": [
+    {
+      "run": 42925378107,
+      "job": 130210411563,
+      "artifact": 13816096226,
+      "device": "current",
+      "methods": [
+        {
+          "class": "ChatStreamingUITests",
+          "method": "testCancelRetainsDraftAndPartialWithoutArchiveOrCompletionNotification",
+          "result": "failed",
+          "seconds": 166.562
+        },
+        {
+          "class": "ChatStreamingUITests",
+          "method": "testPartialBecomesCompletedReplyAndDurableArchive",
+          "result": "failed",
+          "seconds": 88.755
+        },
+        {
+          "class": "SelfConfigurationUITests",
+          "method": "testManualAppearanceChangesActualThemePersistsAndModelPermissionDefaultsOff",
+          "result": "passed",
+          "seconds": 71.147
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testBrowserReportsCurrentLimitationsAndToolsIsReachable",
+          "result": "passed",
+          "seconds": 18.092
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testCancellationPreservesDraftAndAllowsAnotherAttempt",
+          "result": "passed",
+          "seconds": 41.035
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testEverySectionIsReachableAndPhoneControlIsExcluded",
+          "result": "passed",
+          "seconds": 30.476
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testFailureRetainsDraftAndRetryProducesReply",
+          "result": "passed",
+          "seconds": 43.206
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testHTTPSValidationThenConfiguredChatWithoutAutomaticHistoryRestore",
+          "result": "passed",
+          "seconds": 58.867
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testKeychainWriteFailureDoesNotPublishConfiguration",
+          "result": "passed",
+          "seconds": 35.983
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testMCPEndpointValidationAndKeychainPersistenceWithoutNetworking",
+          "result": "passed",
+          "seconds": 54.876
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testMCPKeychainWriteFailureIsNotReportedAsSaved",
+          "result": "passed",
+          "seconds": 21.325
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testMCPRemovalClearsOnlyItsSavedEndpoint",
+          "result": "passed",
+          "seconds": 68.483
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testRemovingConfigurationKeepsDraftAndDisablesSending",
+          "result": "passed",
+          "seconds": 48.167
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testStoredKeyCanBeReusedButNotForDifferentHost",
+          "result": "passed",
+          "seconds": 51.318
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testUnconfiguredSendIsDisabledAndDraftSurvivesNavigation",
+          "result": "passed",
+          "seconds": 26.96
+        }
+      ],
+      "counts": {
+        "passed": 13,
+        "failed": 2,
+        "skipped": 0
+      },
+      "failure": {
+        "file": "Tests/WoowAssistantUITests/ChatStreamingUITests.swift",
+        "line": 102,
+        "phase": "disableMemory before notifications or stream submission",
+        "predicate": "value == \"0\"",
+        "element": "memory.toggle.useMemory",
+        "observed": "outer Switch tap followed by unchanged predicate until timeout",
+        "cause": "Native-child target mismatch is a candidate; original failure contains no proof of stream transport behavior"
+      },
+      "xcresult_summary": {
+        "passedTests": 13,
+        "failedTests": 2,
+        "skippedTests": 0,
+        "totalTestCount": 15
+      },
+      "runtime": {
+        "device_name": "iPhone 17",
+        "runtime_version": "26.2",
+        "runtime_build": "23C54",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2"
+      },
+      "completion": {
+        "verified": false
+      }
+    },
+    {
+      "run": 42925384041,
+      "job": 130210445807,
+      "artifact": 13814833695,
+      "device": "SE",
+      "methods": [
+        {
+          "class": "ChatStreamingUITests",
+          "method": "testCancelRetainsDraftAndPartialWithoutArchiveOrCompletionNotification",
+          "result": "failed",
+          "seconds": 104.898
+        },
+        {
+          "class": "ChatStreamingUITests",
+          "method": "testPartialBecomesCompletedReplyAndDurableArchive",
+          "result": "failed",
+          "seconds": 71.958
+        },
+        {
+          "class": "SelfConfigurationUITests",
+          "method": "testManualAppearanceChangesActualThemePersistsAndModelPermissionDefaultsOff",
+          "result": "passed",
+          "seconds": 114.183
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testBrowserReportsCurrentLimitationsAndToolsIsReachable",
+          "result": "passed",
+          "seconds": 17.992
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testCancellationPreservesDraftAndAllowsAnotherAttempt",
+          "result": "passed",
+          "seconds": 42.701
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testEverySectionIsReachableAndPhoneControlIsExcluded",
+          "result": "passed",
+          "seconds": 25.387
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testFailureRetainsDraftAndRetryProducesReply",
+          "result": "passed",
+          "seconds": 42.018
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testHTTPSValidationThenConfiguredChatWithoutAutomaticHistoryRestore",
+          "result": "passed",
+          "seconds": 69.601
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testKeychainWriteFailureDoesNotPublishConfiguration",
+          "result": "passed",
+          "seconds": 34.126
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testMCPEndpointValidationAndKeychainPersistenceWithoutNetworking",
+          "result": "passed",
+          "seconds": 47.706
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testMCPKeychainWriteFailureIsNotReportedAsSaved",
+          "result": "passed",
+          "seconds": 20.873
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testMCPRemovalClearsOnlyItsSavedEndpoint",
+          "result": "passed",
+          "seconds": 55.969
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testRemovingConfigurationKeepsDraftAndDisablesSending",
+          "result": "passed",
+          "seconds": 45.659
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testStoredKeyCanBeReusedButNotForDifferentHost",
+          "result": "passed",
+          "seconds": 57.209
+        },
+        {
+          "class": "WoowAssistantUITests",
+          "method": "testUnconfiguredSendIsDisabledAndDraftSurvivesNavigation",
+          "result": "passed",
+          "seconds": 28.832
+        }
+      ],
+      "counts": {
+        "passed": 13,
+        "failed": 2,
+        "skipped": 0
+      },
+      "failure": {
+        "file": "Tests/WoowAssistantUITests/ChatStreamingUITests.swift",
+        "line": 102,
+        "phase": "disableMemory before notifications or stream submission",
+        "predicate": "value == \"0\"",
+        "element": "memory.toggle.useMemory",
+        "observed": "outer Switch tap followed by unchanged predicate until timeout",
+        "cause": "Native-child target mismatch is a candidate; original failure contains no proof of stream transport behavior"
+      },
+      "xcresult_summary": {
+        "passedTests": 13,
+        "failedTests": 2,
+        "skippedTests": 0,
+        "totalTestCount": 15
+      },
+      "runtime": {
+        "device_name": "iPhone SE (3rd generation)",
+        "runtime_version": "18.5",
+        "runtime_build": "22F77",
+        "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-5"
+      },
+      "completion": {
+        "verified": false
+      }
+    }
+  ],
+  "expected_methods": {
+    "WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 23,
+      "sha256": "d17dc682986d94412253283fb6dbed845cf3475ea680769c2e61857456afe537"
+    },
+    "WoowAssistantUITests/testUnconfiguredSendIsDisabledAndDraftSurvivesNavigation": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 35,
+      "sha256": "20fadb590c8cdf4e9f7fb3d9969d72d1b125c0ec0917e3cbb05e0a17936f8ace"
+    },
+    "WoowAssistantUITests/testBrowserReportsCurrentLimitationsAndToolsIsReachable": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 56,
+      "sha256": "133900be1ae6ac5962343196f7c40fb2b180346941a58c3269bd3105879bacab"
+    },
+    "WoowAssistantUITests/testHTTPSValidationThenConfiguredChatWithoutAutomaticHistoryRestore": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 77,
+      "sha256": "6aeb9a191da638da302e6ae2fa8ddd5058de3ea7f3460341c6245c7d6295eaa0"
+    },
+    "WoowAssistantUITests/testStoredKeyCanBeReusedButNotForDifferentHost": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 101,
+      "sha256": "50c857f5bebecd1979808aea6b2bd1329d66237a7b8003f48ad2f754af34842d"
+    },
+    "WoowAssistantUITests/testCancellationPreservesDraftAndAllowsAnotherAttempt": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 118,
+      "sha256": "192aace1ca737ae481a2120825cc2ce039d800145dd67723b191ac7695f374df"
+    },
+    "WoowAssistantUITests/testFailureRetainsDraftAndRetryProducesReply": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 135,
+      "sha256": "e88e515dc6c0ca6421c2a0a0cc68b422a1023e1e47145a4218188c15292fbcc2"
+    },
+    "WoowAssistantUITests/testKeychainWriteFailureDoesNotPublishConfiguration": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 150,
+      "sha256": "f955618ca8eaa7677d1bf0f32b629a545d3f5a22b37c8091fda8d9a9382985a4"
+    },
+    "WoowAssistantUITests/testRemovingConfigurationKeepsDraftAndDisablesSending": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 162,
+      "sha256": "a150406eced5e355f04a61667ed4948dc5c5c84fcf8cf22fb2f1f46c9e65eda4"
+    },
+    "WoowAssistantUITests/testMCPEndpointValidationAndKeychainPersistenceWithoutNetworking": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 178,
+      "sha256": "cf11d058cce80edda5e8b72e5571530084e148cd2705d33640d86a0dcf7aa1e9"
+    },
+    "WoowAssistantUITests/testMCPKeychainWriteFailureIsNotReportedAsSaved": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 206,
+      "sha256": "22bb18873a492307ba743a673ddbfcf7e903d7f551fec687456654cae91c60d2"
+    },
+    "WoowAssistantUITests/testMCPRemovalClearsOnlyItsSavedEndpoint": {
+      "source": "Tests/WoowAssistantUITests/WoowAssistantUITests.swift",
+      "line": 219,
+      "sha256": "92d78a0efa6a8bce4c9520118e8e2de8a4d2595364cdb61ec9f3bc4d4e915a42"
+    },
+    "SelfConfigurationUITests/testManualAppearanceChangesActualThemePersistsAndModelPermissionDefaultsOff": {
+      "source": "Tests/WoowAssistantUITests/SelfConfigurationUITests.swift",
+      "line": 9,
+      "sha256": "9baee159e3eb49422d0c443b764d1f54041bb4841614d076dfaf172183898559"
+    },
+    "ChatStreamingUITests/testPartialBecomesCompletedReplyAndDurableArchive": {
+      "source": "Tests/WoowAssistantUITests/ChatStreamingUITests.swift",
+      "line": 11,
+      "sha256": "2a9a85221176f9359c68f838adb19e7d4a7e7141c595c6b2fc984caf9f984628"
+    },
+    "ChatStreamingUITests/testCancelRetainsDraftAndPartialWithoutArchiveOrCompletionNotification": {
+      "source": "Tests/WoowAssistantUITests/ChatStreamingUITests.swift",
+      "line": 35,
+      "sha256": "d7213a838fd1ab83c655a2bf9b0b3fb1613b6881e9c72264195b3e47516eebda"
+    }
+  },
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/WoowAssistantUITests.swift": "1e738199e75b9632faadf58631eeb91c1a19fd8f9767729f9daeb9b76382d48b",
+    "Tests/WoowAssistantUITests/SelfConfigurationUITests.swift": "702a5bdaa6f0d4315e233a206b6ee86ad2ea0e28753892de9a62c2c404e3c849",
+    "Tests/WoowAssistantUITests/ChatStreamingUITests.swift": "5ba2b7dae6a3081a114da020628fcb839ff4da83e08cd024a56c828b6a7f1ed6",
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+    "Sources/App/ChatSession.swift": "3c2ce7d21f9f967e905acdc8f14e4a9726bc4777112e7e40db5260fd906bc2db",
+    "Sources/App/ContentView.swift": "22e3d21513ee468e3d9fec12534788f830f1b0d42d3485e69948ffb4e0134a8d",
+    "Sources/App/UITestModelFixture.swift": "7321c5cea0b57bb0c8b4bf0f40eac1b90e66cd353d65346e77a21b3c6f261d3f",
+    "Sources/App/TaskNotificationStore.swift": "c58717e1474d510cf6062b9134ab721fa689f00fbeb0cd34c08fc1bd8019c602",
+    "Sources/App/TaskNotificationCenterAdapter.swift": "26f6ed09c26c971064ecc6ea5840a7c11dc8af700d652958bbe9217eb465201b",
+    "Sources/AssistantModels/ModelConfiguration.swift": "1c678f6faafa99fbdd30097d5c93b14d5808ea1b8a4448726d9bff02f665c481",
+    "Sources/AssistantModels/HTTPChatModelClient.swift": "510ae58e926b974737910f8aad9bdceedeccc708f0cb0be33fccc5c500caa925",
+    "scripts/release_ios17.py": "9449d5bbeb82772c8c43a2c80011111e52915eb9025e17b12868f2d5859c2010",
+    ".github/workflows/ios.yml": "b63180012f0d8058f0ae5127a491bb3724c1dcdcb7a02252817d4cea5f6f8a8d"
+  },
+  "exact17_run": {
+    "id": 42925389941,
+    "status_at_capture": "in_progress",
+    "no_method_completion_claim": true
+  },
+  "candidate_change": "one tap on native child Switch when present; original ten-second predicate and value assertions retained; adds geometry and persistence-error assertions",
+  "not_claimed": [
+    "root cause proven",
+    "stream model request reached",
+    "patched native pass"
+  ]
+}
