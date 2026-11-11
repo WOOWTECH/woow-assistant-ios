@@ -1,5 +1,17 @@
 # Verification — 2026-11-11
 
+## Dual-PDF per-file coordination experiment rejected
+
+The isolated `c59c134` per-file coordinated creation candidate failed its one
+focused native method on **current iOS 26.2, SE/iOS 18.5 and exact iOS 17.0.1**:
+0/1 passed and zero skips on each. Current failed on the first selection; SE
+received A then failed on B; exact17 failed on the first selection. Current and
+SE system logs identify FileProvider `-1005` and no URL returned; the exact17
+artifact proves no callback but lacks that provider log. Creation and post-test
+hashes do not establish the file's state at tap time. The candidate remains on
+its isolated branch and is **not accepted as a product fix**.
+[Three-run artifact and method evidence](evidence/pdf-pair-filecoord-c59-three-failures.json).
+
 ## Unsigned iPhoneOS device build
 
 At `eebb019`, [run 42950596606](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42950596606)
