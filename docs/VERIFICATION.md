@@ -1,5 +1,17 @@
 # Verification — 2026-11-11
 
+## New live-model gate preserves the provider failure
+
+At `0a99e5f`, [SE/iOS 18.5 run 42969482818](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42969482818)
+built the App successfully, then its native model request stopped with the
+fixed `rate_limited` category. The five-format transcript and App UI steps
+were correctly **skipped**, while private runner cleanup and simulator
+deletion succeeded. This run supplies no successful real model conversation
+or UI acceptance. A scan of its public log found zero occurrences of the
+configured service host family, service domain, common API-key pattern or
+GitHub token pattern; this is a bounded log check, not a claim about all
+possible secret transformations. [Safe step and log-hash evidence](evidence/live-model-0a99e5f-gated-rate-limit.json).
+
 ## Language UI: current and SE pass, exact17 one timeout
 
 At `ae7a1e2`, native `ui-language` passed **5/5, zero skipped** on

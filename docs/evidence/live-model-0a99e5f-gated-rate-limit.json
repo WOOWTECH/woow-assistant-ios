@@ -1,0 +1,32 @@
+{
+  "schema": "woow-live-model-gated-0a99e5f-v1",
+  "run_id": 42969482818,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42969482818",
+  "source_revision": "0a99e5fb5a2dab4ccad3ff406b2ba2d861df587d",
+  "job_id": 130354358146,
+  "status": "failure",
+  "native_transport_category": "rate_limited",
+  "steps": {
+    "Prepare App UI test build": "success",
+    "Make two bounded live requests inside iOS Simulator": "failure",
+    "Real model completes all five transcript formats over fixed text": "skipped",
+    "Real model App UI tests": "skipped",
+    "Clear private runner configuration": "success",
+    "Delete only this run's simulator": "success"
+  },
+  "public_log": {
+    "bytes": 1584142,
+    "sha256": "1e36d27ad597125c54b03f69eb9b27b3dbb759cce4a38d9b8ac22f1317180bf1",
+    "private_value_pattern_counts": {
+      "model_service_host_prefix_occurrences": 0,
+      "service_domain_occurrences": 0,
+      "api_key_pattern_occurrences": 0,
+      "github_token_pattern_occurrences": 0
+    }
+  },
+  "limits": [
+    "Native transport stopped before a successful model reply; no downstream transcript or App UI result was produced.",
+    "A fixed rate_limited category is observed. The report cannot infer provider quota policy or retry timing.",
+    "Log pattern scan covers the configured host family and common key formats; it is not a proof of every possible transformed secret."
+  ]
+}
