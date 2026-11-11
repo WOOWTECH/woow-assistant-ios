@@ -5,6 +5,28 @@ import CoreText
 import CryptoKit
 import Darwin
 import PDFKit
+#if os(iOS)
+import UIKit
+
+/// Only the guarded synthetic pair uses UIDocument's own coordinated writer.
+/// The prepared flat-file contents cannot throw, so UIKit can complete save.
+private final class AssemblyPairUIDocument: UIDocument {
+    private let prepared: NSData
+
+    init(fileURL: URL, bytes: Data) {
+        prepared = bytes as NSData
+        super.init(fileURL: fileURL)
+    }
+
+    override func contents(forType typeName: String) throws -> Any { prepared }
+
+    override func load(fromContents contents: Any, ofType typeName: String?) throws {
+        guard let loaded = contents as? Data, loaded == prepared as Data else {
+            throw CocoaError(.fileReadCorruptFile)
+        }
+    }
+}
+#endif
 #endif
 
 /// No startup hook is required: SkillExecutionView calls seedIfRequested on appear.
@@ -132,8 +154,11 @@ enum SkillExecutionUITestSupport {
             let accessorCalls: Int
             let createdFiles: Int
             let existingFiles: Int
+            var saveCallbacks = 0
+            var closeCallbacks = 0
             var accessibilityValue: String {
-                "creation=\(mode) coordinationAttempts=\(coordinationAttempts) accessorCalls=\(accessorCalls) createdFiles=\(createdFiles) existingFiles=\(existingFiles)"
+                let base = "creation=\(mode) coordinationAttempts=\(coordinationAttempts) accessorCalls=\(accessorCalls) createdFiles=\(createdFiles) existingFiles=\(existingFiles)"
+                return mode == "uiDocument" ? base + " saveCallbacks=\(saveCallbacks) closeCallbacks=\(closeCallbacks)" : base
             }
         }
         let namespace: UUID
@@ -191,6 +216,94 @@ enum SkillExecutionUITestSupport {
             mode: "direct", coordinationAttempts: 0, accessorCalls: 0,
             createdFiles: createdFiles, existingFiles: 2 - createdFiles))
     }
+
+    /// Parse the new experiment before any Documents lookup. The sync direct
+    /// and directory-coordinated seeders retain their exact existing routes.
+    static func uidocumentPairNamespace(arguments: [String] = ProcessInfo.processInfo.arguments) throws -> UUID? {
+        let flag = "-UITestSkillAssemblyPair"
+        let experiment = "-UITestSkillAssemblyPairUIDocumentCreation"
+        guard arguments.contains(where: { $0.hasPrefix(experiment) }) else { return nil }
+        guard arguments.filter({ $0 == flag }).count == 1,
+              arguments.filter({ $0 == experiment }).count == 1,
+              !arguments.contains(where: { $0.hasPrefix(flag) && $0 != flag && $0 != experiment }),
+              arguments.filter({ $0 == "-UITestMode" }).count == 1,
+              arguments.filter({ $0 == "-UITestSkillExecution" }).count == 1,
+              arguments.filter({ $0 == "-UITestNamespace" }).count == 1,
+              !arguments.contains(where: {
+                  $0.hasPrefix("-Live") || $0.hasPrefix("-UITestPDF") || $0.hasPrefix("-UITestSkillFixtureWriteMode")
+              }),
+              let position = arguments.firstIndex(of: "-UITestNamespace"), arguments.indices.contains(position + 1),
+              let namespace = UUID(uuidString: arguments[position + 1]),
+              namespace.uuidString == arguments[position + 1] else { throw Failure.invalidNamespace }
+        return namespace
+    }
+
+    #if os(iOS)
+    /// One variable differs from the control: UIDocument performs each first
+    /// save. No direct/NSFileCoordinator fallback and no picker URL injection.
+    @MainActor static func seedUIDocumentAssemblyPairIfRequested(
+        arguments: [String] = ProcessInfo.processInfo.arguments,
+        documentsDirectory: () throws -> URL = {
+            try FileManager.default.url(for: .documentDirectory, in: .userDomainMask,
+                                        appropriateFor: nil, create: true)
+        }) async throws -> AssemblyPairFixture? {
+        guard let namespace = try uidocumentPairNamespace(arguments: arguments) else { return nil }
+        let directory = try documentsDirectory()
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let identity = try assemblyPairDirectoryIdentity(directory)
+        let prepared = try ["A", "B"].map { role -> (role: String, url: URL, bytes: Data) in
+            let url = directory.appendingPathComponent("SkillAssembly-\(role)-\(namespace.uuidString).pdf")
+            var file = stat()
+            // Refuse every existing entry, including a dangling symlink. This
+            // experiment never overwrites a previously selected/user file.
+            if lstat(url.path, &file) == 0 || errno != ENOENT { throw Failure.existingFile }
+            return (role, url, try assemblyPairPDFBytes(role: role, namespace: namespace))
+        }
+        var sources: [AssemblyPairFixture.Source] = []
+        var saveCallbacks = 0, closeCallbacks = 0
+        func record(_ phase: String, role: String) {
+            print("SKILL_PDF_PAIR_CREATION namespace=\(namespace.uuidString) mode=uiDocument role=\(role) phase=\(phase) saveCallbacks=\(saveCallbacks) closeCallbacks=\(closeCallbacks)")
+            fflush(stdout)
+        }
+        for item in prepared {
+            try validateAssemblyPairDirectory(directory, expected: directory, identity: identity)
+            var file = stat()
+            if lstat(item.url.path, &file) == 0 || errno != ENOENT { throw Failure.existingFile }
+            let document = AssemblyPairUIDocument(fileURL: item.url, bytes: item.bytes)
+            record("willSave", role: item.role)
+            let saved = await withCheckedContinuation { continuation in
+                document.save(to: item.url, for: .forCreating) { continuation.resume(returning: $0) }
+            }
+            saveCallbacks += 1
+            record(saved ? "saveCompleted" : "saveFailed", role: item.role)
+            guard saved else { throw Failure.cannotCreatePDF }
+            let closed = await withCheckedContinuation { continuation in
+                document.close { continuation.resume(returning: $0) }
+            }
+            closeCallbacks += 1
+            record(closed ? "closeCompleted" : "closeFailed", role: item.role)
+            guard closed else { throw Failure.cannotCreatePDF }
+            try validateAssemblyPairDirectory(directory, expected: directory, identity: identity)
+            let bytes = try validatedAssemblyPairBytes(item.url, role: item.role, namespace: namespace)
+            guard bytes == item.bytes else { throw Failure.existingFile }
+            sources.append(.init(role: item.role, url: item.url, sha256: pairDigest(bytes)))
+            recordPairSnapshot(in: directory, namespace: namespace, role: item.role, phase: "created", ordinal: 0)
+        }
+        guard sources.count == 2, Set(sources.map(\.sha256)).count == 2,
+              saveCallbacks == 2, closeCallbacks == 2 else { throw Failure.cannotCreatePDF }
+        for item in prepared {
+            guard try validatedAssemblyPairBytes(item.url, role: item.role, namespace: namespace) == item.bytes else {
+                throw Failure.existingFile
+            }
+        }
+        record("completed", role: "pair")
+        var proof = AssemblyPairFixture.CreationProof(
+            mode: "uiDocument", coordinationAttempts: 0, accessorCalls: 0,
+            createdFiles: 2, existingFiles: 0)
+        proof.saveCallbacks = saveCallbacks; proof.closeCallbacks = closeCallbacks
+        return AssemblyPairFixture(namespace: namespace, sources: sources, creationProof: proof)
+    }
+    #endif
 
     private static func assemblyPairPDFBytes(role: String, namespace: UUID) throws -> Data {
         let title = "WOOW_ASSEMBLY_\(role)_\(namespace.uuidString)"

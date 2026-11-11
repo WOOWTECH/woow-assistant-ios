@@ -19,11 +19,12 @@ import AssistantSkills
     static func main() async throws {
         let id = UUID()
         let flag = "-UITestSkillAssemblyPair"
+        let uiDocumentFlag = "-UITestSkillAssemblyPairUIDocumentCreation"
         let args = ["-UITestMode", "-UITestSkillExecution", "-UITestNamespace", id.uuidString, flag]
         let directory = FileManager.default.temporaryDirectory.appendingPathComponent("assembly-pair-" + id.uuidString)
         defer { try? FileManager.default.removeItem(at: directory) }
         var touched = false
-        let invalid: [[String]] = [args, args + [flag], args + ["-LiveModelUITest"], args + ["-LiveMCPUITest"],
+        let invalid: [[String]] = [args, args + [flag], args + [uiDocumentFlag], args + ["-LiveModelUITest"], args + ["-LiveMCPUITest"],
                        args + ["-UITestPDFAssemblyUIKitOpen"], args + ["-UITestSkillFixtureWriteMode", "coordinated"],
                        args + ["-UITestNamespace", id.uuidString], args + [flag + "=1"],
                        args.filter { $0 != "-UITestMode" }, args.filter { $0 != "-UITestSkillExecution" },
@@ -45,6 +46,25 @@ import AssistantSkills
             try require(!touched, "single_seeder_no_pair_io")
         }
         #if DEBUG
+        try require(try SkillExecutionUITestSupport.uidocumentPairNamespace(arguments: args + [uiDocumentFlag]) == id,
+                    "uidocument_exact_gate")
+        try require(try SkillExecutionUITestSupport.uidocumentPairNamespace(arguments: args) == nil,
+                    "uidocument_inactive_gate")
+        let invalidUIDocument: [[String]] = [
+            args + [uiDocumentFlag, uiDocumentFlag], args + [uiDocumentFlag + "=1"],
+            args + [uiDocumentFlag, "-UITestSkillAssemblyPairDirectoryCoordinatedCreation"],
+            args + [uiDocumentFlag, "-LiveModelUITest"], args + [uiDocumentFlag, "-UITestPDFAssemblyUIKitOpen"],
+            args + [uiDocumentFlag, "-UITestSkillFixtureWriteMode", "coordinated"],
+            args.filter { $0 != "-UITestMode" } + [uiDocumentFlag],
+            args.filter { $0 != flag } + [uiDocumentFlag],
+            args.map { $0 == id.uuidString ? id.uuidString.lowercased() : $0 } + [uiDocumentFlag]
+        ]
+        for argument in invalidUIDocument {
+            do {
+                _ = try SkillExecutionUITestSupport.uidocumentPairNamespace(arguments: argument)
+                throw Failure(code: "invalid_uidocument_gate_accepted")
+            } catch SkillExecutionUITestSupport.Failure.invalidNamespace { count += 1 }
+        }
         for argument in invalid.dropFirst() {
             touched = false
             do {
@@ -158,11 +178,18 @@ import CoreGraphics
         runTwoDistinctPDFAssembly(directoryCoordinated: true)
     }
 
-    private func runTwoDistinctPDFAssembly(directoryCoordinated: Bool) {
+    func testUIDocumentFixtureCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages() {
+        runTwoDistinctPDFAssembly(directoryCoordinated: false, uiDocument: true)
+    }
+
+    private func runTwoDistinctPDFAssembly(directoryCoordinated: Bool, uiDocument: Bool = false) {
+        XCTAssertFalse(directoryCoordinated && uiDocument)
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW", "-UITestMode",
             "-UITestNamespace", namespace, "-UITestResetStorage", "-UITestSkillExecution", "-UITestSkillAssemblyPair"]
         if directoryCoordinated {
             app.launchArguments.append("-UITestSkillAssemblyPairDirectoryCoordinatedCreation")
+        } else if uiDocument {
+            app.launchArguments.append("-UITestSkillAssemblyPairUIDocumentCreation")
         }
         app.launchEnvironment = [:]; app.launch()
         tapFixed("navigation.memory")
@@ -177,11 +204,14 @@ import CoreGraphics
         for id in ["catalog.entry.documents", "catalog.documents.assemble"] {
             let button = app.buttons[id]; revealLearningElement(button, in: app); ready(button); button.tap()
         }
+        if uiDocument { XCTAssertTrue(form.staticTexts["pdfAssembly.uitest.pair"].waitForExistence(timeout: 15)) }
         reveal(form.staticTexts["pdfAssembly.uitest.pair"], reading: true)
         XCTAssertEqual(form.staticTexts["pdfAssembly.uitest.pair"].label, "測試雙檔已建立")
-        let creation = directoryCoordinated
-            ? "creation=directoryCoordinated coordinationAttempts=1 accessorCalls=1 createdFiles=2 existingFiles=0"
-            : "creation=direct coordinationAttempts=0 accessorCalls=0 createdFiles=2 existingFiles=0"
+        let creation = uiDocument
+            ? "creation=uiDocument coordinationAttempts=0 accessorCalls=0 createdFiles=2 existingFiles=0 saveCallbacks=2 closeCallbacks=2"
+            : directoryCoordinated
+                ? "creation=directoryCoordinated coordinationAttempts=1 accessorCalls=1 createdFiles=2 existingFiles=0"
+                : "creation=direct coordinationAttempts=0 accessorCalls=0 createdFiles=2 existingFiles=0"
         XCTAssertEqual(form.staticTexts["pdfAssembly.uitest.pair"].value as? String, "callbacks=0 sources=0 " + creation)
         XCTAssertFalse(form.staticTexts["pdfAssembly.result"].exists)
         let notice = form.staticTexts["pdfAssembly.importCopy.notice"]

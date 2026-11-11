@@ -22,7 +22,7 @@ class DocumentFocusedScopesTests(unittest.TestCase):
         self.assertEqual(read | output | chat, expected)
         self.assertEqual(len(chat), 3)
         self.assertEqual(len(read), 6)
-        self.assertEqual(len(output), 10)
+        self.assertEqual(len(output), 11)
         self.assertEqual(catalog["document_focused_scopes"], groups)
         self.assertEqual(ios17.UI_SHARDS["ui-documents"],
                          ["SkillExecutionUITests", "SkillWorkerSettingsUITests", "SkillPDFAssemblyMultiFileUITests", "ChatPDFAttachmentUITests"])
@@ -102,7 +102,7 @@ class DocumentFocusedScopesTests(unittest.TestCase):
         catalog = ios17.ui_inventory(ROOT)
         workflow = (ROOT / ".github/workflows/ios.yml").read_text()
         selected = []
-        for scope in ("pdf-assembly", "pdf-assembly-uikit", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated"):
+        for scope in ("pdf-assembly", "pdf-assembly-uikit", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated", "pdf-pair-uidocument"):
             expected = ios17.selected_ui_tests(catalog, scope)
             self.assertEqual(len(expected), 1)
             self.assertIn(expected[0], catalog["document_focused_scopes"]["documents-output"])
@@ -117,7 +117,7 @@ class DocumentFocusedScopesTests(unittest.TestCase):
             timeout = next(line for line in workflow.splitlines() if "timeout-minutes:" in line and '"pdf-assembly"' in line)
             self.assertIn('"' + scope + '"', timeout)
             self.assertIn("&& 20 || 55", timeout)
-        self.assertEqual(len(set(selected)), 5)
+        self.assertEqual(len(set(selected)), 6)
 
     def test_pair_focus_requires_its_actual_source_method_not_another_passing_assembly(self):
         catalog = ios17.ui_inventory(ROOT)
@@ -147,6 +147,21 @@ class DocumentFocusedScopesTests(unittest.TestCase):
                 path.write_text("".join("Test Case '-[WoowAssistantUITests.%s %s]' passed (1.0 seconds).\n" %
                                         tuple(method.split("/")[1:]) for method in methods))
                 self.assertEqual(ios17.test_completion(summary, path, expected, True)["verified"], accepted)
+
+    def test_uidocument_candidate_requires_its_own_method_not_another_pair(self):
+        catalog = ios17.ui_inventory(ROOT)
+        expected = ["WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUIDocumentFixtureCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages"]
+        self.assertEqual(ios17.selected_ui_tests(catalog, "pdf-pair-uidocument"), expected)
+        self.assertIn(expected[0], catalog["document_focused_scopes"]["documents-output"])
+        summary = {"result": "Passed", "totalTestCount": 1, "passedTests": 1,
+                   "failedTests": 0, "skippedTests": 0, "expectedFailures": 0}
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / "tests.log"
+            for other_scope in ("pdf-assembly-multi", "pdf-pair-coordinated"):
+                for selected, accepted in ((expected, True), (ios17.selected_ui_tests(catalog, other_scope), False)):
+                    path.write_text("".join("Test Case '-[WoowAssistantUITests.%s %s]' passed (1.0 seconds).\n" %
+                                            tuple(method.split("/")[1:]) for method in selected))
+                    self.assertEqual(ios17.test_completion(summary, path, expected, True)["verified"], accepted)
 
 
 if __name__ == "__main__":

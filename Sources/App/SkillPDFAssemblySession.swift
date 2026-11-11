@@ -18,6 +18,9 @@ final class SkillPDFAssemblySession: ObservableObject {
     @Published private(set) var uiTestPair: SkillExecutionUITestSupport.AssemblyPairFixture?
     @Published private(set) var uiTestPairOutput = "pair=none"
     private var uiTestPairPickerOrdinal = 0
+    #if os(iOS)
+    private var uiTestUIDocumentSeed: Task<Void, Never>?
+    #endif
     private func recordUITestPair(_ phase: String) {
         guard let pair = uiTestPair else { return }
         SkillExecutionUITestSupport.recordPairSnapshot(pair, phase: phase, ordinal: uiTestPairPickerOrdinal)
@@ -31,6 +34,24 @@ final class SkillPDFAssemblySession: ObservableObject {
     }
     func seedUITestIfRequested() {
         guard uiTestFixture == nil, uiTestPair == nil else { return }
+        #if os(iOS)
+        if ProcessInfo.processInfo.arguments.contains(where: { $0.hasPrefix("-UITestSkillAssemblyPairUIDocumentCreation") }) {
+            guard uiTestUIDocumentSeed == nil else { return }
+            let token = generation
+            uiTestUIDocumentSeed = Task { [weak self] in
+                defer { self?.uiTestUIDocumentSeed = nil }
+                do {
+                    let pair = try await SkillExecutionUITestSupport.seedUIDocumentAssemblyPairIfRequested()
+                    guard let self, self.generation == token, !Task.isCancelled else { return }
+                    self.uiTestPair = pair
+                } catch {
+                    guard let self, self.generation == token, !Task.isCancelled else { return }
+                    self.status = "測試 PDF 無法建立；請檢查測試命名空間與檔案設定。"
+                }
+            }
+            return
+        }
+        #endif
         do {
             if let pair = try SkillExecutionUITestSupport.seedAssemblyPairIfRequested() { uiTestPair = pair }
             else { uiTestFixture = try SkillExecutionUITestSupport.seedIfRequested() }
@@ -205,6 +226,9 @@ final class SkillPDFAssemblySession: ObservableObject {
         selectedFiles = []; pendingPicker = nil
         orderText = ""; status = nil; running = false
         #if DEBUG
+        #if os(iOS)
+        uiTestUIDocumentSeed?.cancel(); uiTestUIDocumentSeed = nil
+        #endif
         uiTestPairOutput = "pair=none"
         #endif
     }

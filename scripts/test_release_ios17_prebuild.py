@@ -28,7 +28,7 @@ class PrebuildTests(unittest.TestCase):
         valid = {"VALIDATION_MODE": "ios17-hosted", "IOS17_TEST_SCOPE": "pdf-assembly-multi",
                  "IOS17_SAMPLE_BOOTSTRAP": "true", "IOS17_PRELAUNCH": "true"}
         cases = [(dict(valid, IOS17_TEST_SCOPE=scope), 0) for scope in
-                 ("startup-smoke", "pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated",
+                 ("startup-smoke", "pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated", "pdf-pair-uidocument",
                   "documents-read", "documents-output", "documents-chat", *ios17.UI_SHARDS)]
         cases += [(dict(valid, **changed), 1) for changed in
                   ({"VALIDATION_MODE": "ios17-self-hosted"}, {"IOS17_SAMPLE_BOOTSTRAP": "false"},
@@ -186,7 +186,7 @@ class PrebuildTests(unittest.TestCase):
             self.assertEqual(report["prebuild_exit_code"], 0)
 
     def test_fixture_ui_shards_and_pdf_followups_keep_selection_budget_and_result_gates(self):
-        for scope in ("pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated", "documents-read", "documents-output", "documents-chat", *ios17.UI_SHARDS):
+        for scope in ("pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated", "pdf-pair-uidocument", "documents-read", "documents-output", "documents-chat", *ios17.UI_SHARDS):
             with self.subTest(scope=scope):
                 events, commands, report = self.exercise(scope=scope)
                 self.assertLess(events.index("build"), events.index("boot"))
@@ -255,11 +255,36 @@ class PrebuildTests(unittest.TestCase):
             gate.assert_not_called()
             command.assert_not_called()
 
+    def test_uidocument_candidate_keeps_exact_method_and_original_budgets(self):
+        scope = "pdf-pair-uidocument"
+        expected = "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUIDocumentFixtureCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages"
+        for enabled in (False, True):
+            with self.subTest(prebuild=enabled):
+                events, commands, report = self.exercise(scope=scope, enabled=enabled)
+                test, budget = next(row for row in commands if "test-without-building" in row[0] or "test" in row[0])
+                self.assertEqual([arg for arg in test if arg.startswith("-only-testing:")], ["-only-testing:" + expected])
+                self.assertEqual(report["expected_ui_tests"], [expected])
+                self.assertEqual(report["maximum_case_seconds"], 300)
+                self.assertEqual(report["build_test_timeout_seconds"], 4800)
+                self.assertAlmostEqual(budget + report.get("prebuild_elapsed_seconds", 0), 4800, places=2)
+                self.assertEqual(events.count("test"), 1)
+                self.assertEqual(events.count("build"), int(enabled))
+        with tempfile.TemporaryDirectory() as folder, patch.object(watchdog, "validate_gate") as gate, \
+                patch.object(ios17, "run") as command:
+            output = Path(folder) / "result"
+            for prelaunch, sample in ((False, False), (True, False), (False, True)):
+                with self.subTest(prelaunch=prelaunch, sample=sample), self.assertRaises(ReleaseError):
+                    ios17.execute(output, "17.0.1", False, scope, prelaunch_daemon=prelaunch,
+                                  sample_bootstrap=sample, build_before_boot=True)
+                self.assertFalse(output.exists())
+            gate.assert_not_called()
+            command.assert_not_called()
+
     def test_opt_in_is_hosted_sampled_fixture_only_and_no_invalid_setup_is_created(self):
         with tempfile.TemporaryDirectory() as folder, patch.dict(ios17.os.environ, {}, clear=True):
             output = Path(folder) / "result"
             for scope, sample in [("all", True), ("ui-documents", True), ("startup-smoke", False), ("startup-smoke", True),
-                                  ("pdf-assembly", True), ("pdf-assembly-copy", True), ("pdf-assembly-multi", True), ("pdf-pair-coordinated", True),
+                                  ("pdf-assembly", True), ("pdf-assembly-copy", True), ("pdf-assembly-multi", True), ("pdf-pair-coordinated", True), ("pdf-pair-uidocument", True),
                                   ("documents-read", True), ("documents-output", True), ("documents-chat", True), ("core", True),
                                   *((scope, True) for scope in ios17.UI_SHARDS)]:
                 with self.subTest(scope=scope, sample=sample), self.assertRaises(ReleaseError):
