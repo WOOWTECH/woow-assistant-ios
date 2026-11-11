@@ -1,5 +1,17 @@
 # Verification — 2026-11-11
 
+## Exact17 archive UI failed at native keyboard selection
+
+At `e3eda78`, [exact17 run 42967052289](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967052289)
+executed four `ui-archive` methods: **0 passed, 4 failed, zero skipped**.
+All four stopped during setup at the same `ready()` assertion, before any
+archive behavior. The test sought the English `Next keyboard` button, while
+the native iOS 17 AX snapshots show its visible label as `下一個鍵盤`. The
+test selector now accepts both observed labels and still requires an actual
+hittable native switch, exact typed text, and the original archive assertions.
+This is an unvalidated candidate until a new native run completes.
+[Full ZIP digest, counts and failure evidence](evidence/ui-archive-e3eda78-exact17-keyboard.json).
+
 ## Live public source discovery isolated from model quota
 
 At `fe66ab2`, the exact17 live-model [run 42961323643](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961323643)

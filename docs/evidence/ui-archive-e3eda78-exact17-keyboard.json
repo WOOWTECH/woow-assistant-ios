@@ -1,0 +1,42 @@
+{
+  "schema": "woow-ui-archive-exact17-first-failure-v1",
+  "run_id": 42967052289,
+  "source_revision": "e3eda7805d8441687ae00916ac3eaa972402d3fd",
+  "scope": "ui-archive",
+  "runtime": "17.0.1",
+  "device_model": "iPhone 15",
+  "artifact": {
+    "id": 13833830422,
+    "bytes": 54228956,
+    "sha256": "9a5fabfae5678aa07f4e3010f084e6974921805e1d9e127a8521d48028f268f4",
+    "zip_members": 226,
+    "all_crc_pass": true
+  },
+  "native_counts": {
+    "totalTestCount": 4,
+    "passedTests": 0,
+    "failedTests": 4,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "failed_methods": [
+    "ConversationArchiveUITests/testCancelledRunAndUnsentDraftAreNotClaimedAsSaved()",
+    "ConversationArchiveUITests/testChangedModelAllowsViewingButDisablesContinuation()",
+    "ConversationArchiveUITests/testDeletionRemainsAbsentAfterRelaunch()",
+    "ConversationArchiveUITests/testTwoCompletedConversationsSurviveRelaunchAndOpenExplicitly()"
+  ],
+  "shared_failure": {
+    "file": "Tests/WoowAssistantUITests/ConversationArchiveUITests.swift",
+    "line": 172,
+    "stage": "prepareKeyboard ready(Next keyboard), before archive assertions",
+    "native_ax_visible_label": "下一個鍵盤",
+    "native_ax_snapshot_count": 4,
+    "original_selector": "app.buttons[\"Next keyboard\"]",
+    "candidate": "Select either observed English or Traditional Chinese native keyboard switch label; retain exact text and archive assertions."
+  },
+  "candidate_native_validation": "pending",
+  "limits": [
+    "No archive behavior was reached in the four failed tests.",
+    "Only selected ui-archive shard was run."
+  ]
+}
