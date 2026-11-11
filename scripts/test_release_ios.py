@@ -824,7 +824,7 @@ class RuntimeFailureDiagnosticsTests(unittest.TestCase):
                 seen.append(args)
                 if args == ["xcodebuild", "-version"]:
                     return subprocess.CompletedProcess(args, 0, b"Xcode 16.4", b"")
-                self.assertEqual(args, self.INVENTORY)  # No other command or retry is permitted.
+                self.assertEqual(args, self.INVENTORY)  # Only the bounded inventory retry is permitted.
                 self.assertEqual(kwargs["timeout"], 120)
                 self.assertTrue(kwargs["capture_output"])
                 if category == "timeout":
@@ -847,7 +847,8 @@ class RuntimeFailureDiagnosticsTests(unittest.TestCase):
                  redirect_stdout(captured), redirect_stderr(captured):
                 self.assertEqual(ios17.main(), 1)
                 generate.assert_not_called(); boot.assert_not_called(); prelaunch.assert_not_called()
-            self.assertEqual(seen, [["xcodebuild", "-version"], self.INVENTORY])
+            self.assertEqual(seen, [["xcodebuild", "-version"]] +
+                             [self.INVENTORY] * (2 if category == "timeout" else 1))
             if category == "timeout": self.assertEqual(marker.read_text(), "started")
             report_text = (output / "report.json").read_text()
             report = json.loads(report_text)
@@ -857,15 +858,17 @@ class RuntimeFailureDiagnosticsTests(unittest.TestCase):
             self.assertFalse(report["runtime_tested"])
             self.assertFalse(report["selected_tests_succeeded"])
             self.assertFalse(report["full_acceptance_succeeded"])
-            self.assertEqual(set(report["failure"]), {"category", "operation", "elapsed_seconds", "timeout_seconds"})
+            self.assertEqual(set(report["failure"]), {"category", "operation", "elapsed_seconds", "timeout_seconds", "attempts", "max_attempts"})
             self.assertEqual(report["failure"]["category"], category)
             self.assertEqual(report["failure"]["operation"], "simulator_runtime_inventory")
             self.assertEqual(report["failure"]["timeout_seconds"], 120)
+            self.assertEqual(report["failure"]["attempts"], 2 if category == "timeout" else 1)
+            self.assertEqual(report["failure"]["max_attempts"], 2)
             self.assertGreaterEqual(report["failure"]["elapsed_seconds"], 1 if category == "timeout" else 0)
             self.assertLess(report["failure"]["elapsed_seconds"], 10)
             self.assertEqual({p.name for p in output.iterdir()}, {"report.json", "ui-test-inventory.json"})
 
-    def test_actual_timeout_persists_safe_report_and_exit_one_without_test_or_retry(self):
+    def test_two_actual_timeouts_persist_safe_report_and_exit_one_without_test(self):
         self.exercise_report_failure("timeout")
 
     def test_launch_and_exit_failures_keep_distinct_categories_without_test_or_retry(self):
@@ -887,6 +890,24 @@ class RuntimeFailureDiagnosticsTests(unittest.TestCase):
             self.assertNotIn(self.SENTINEL, recorded)
             self.assertEqual(json.loads(recorded)["runtimes"][0]["version"], "17.0.1")
             self.assertEqual({p.name for p in output.iterdir()}, {"runtimes-before.json"})
+
+    def test_inventory_recovers_after_one_timeout_without_publishing_child_output(self):
+        payload = RuntimeTests().payload()
+        with tempfile.TemporaryDirectory(prefix="woow-private-inventory-retry-") as directory:
+            output = Path(directory)
+            calls = []
+            def child(args, **kwargs):
+                calls.append((args, kwargs["timeout"]))
+                if len(calls) == 1:
+                    raise subprocess.TimeoutExpired(args, kwargs["timeout"],
+                                                    output=self.SENTINEL.encode(), stderr=self.SENTINEL.encode())
+                return subprocess.CompletedProcess(args, 0, json.dumps(payload).encode(), b"")
+            with patch.object(release.subprocess, "run", side_effect=child):
+                self.assertEqual(ios17.inventory(output, "runtimes-before.json"), payload)
+            self.assertEqual(calls, [(self.INVENTORY, 120), (self.INVENTORY, 120)])
+            recorded = (output / "runtimes-before.json").read_text()
+            self.assertNotIn(self.SENTINEL, recorded)
+            self.assertEqual(json.loads(recorded)["runtimes"][0]["version"], "17.0.1")
 
 
 if __name__ == "__main__":

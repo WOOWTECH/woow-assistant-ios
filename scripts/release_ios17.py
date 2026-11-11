@@ -21,17 +21,20 @@ import uuid
 from release_ios import ReleaseError, ReleaseToolError, generate_project, run, version, verify_settings
 
 RUNTIME_INVENTORY_TIMEOUT_SECONDS = 120
+RUNTIME_INVENTORY_MAX_ATTEMPTS = 2
 
 
 class RuntimeInventoryError(ReleaseError):
     """Only fixed, public diagnostics for the bounded runtime inventory call."""
-    def __init__(self, error, elapsed):
+    def __init__(self, error, elapsed, attempts):
         super().__init__(str(error))
         self.diagnostic = {
             "category": error.category,
             "operation": "simulator_runtime_inventory",
             "elapsed_seconds": round(max(0.0, elapsed), 3),
             "timeout_seconds": RUNTIME_INVENTORY_TIMEOUT_SECONDS,
+            "attempts": attempts,
+            "max_attempts": RUNTIME_INVENTORY_MAX_ATTEMPTS,
         }
 
 # This partition, unlike the legacy focused scopes below, owns every non-Live
@@ -235,11 +238,15 @@ def select_runtime(payload, requested):
 
 def inventory(output, name):
     started = time.monotonic()
-    try:
-        data = run(["xcrun", "simctl", "list", "runtimes", "--json"], "取得 Simulator runtime 清單",
-                   timeout=RUNTIME_INVENTORY_TIMEOUT_SECONDS)
-    except ReleaseToolError as error:
-        raise RuntimeInventoryError(error, time.monotonic() - started) from None
+    for attempt in range(1, RUNTIME_INVENTORY_MAX_ATTEMPTS + 1):
+        try:
+            data = run(["xcrun", "simctl", "list", "runtimes", "--json"], "取得 Simulator runtime 清單",
+                       timeout=RUNTIME_INVENTORY_TIMEOUT_SECONDS)
+            break
+        except ReleaseToolError as error:
+            if error.category == "timeout" and attempt < RUNTIME_INVENTORY_MAX_ATTEMPTS:
+                continue
+            raise RuntimeInventoryError(error, time.monotonic() - started, attempt) from None
     payload = json.loads(data)
     # Public OS/install-path metadata, not personal device names or UDIDs.
     metadata = {"runtimes": [{key: r.get(key) for key in
@@ -723,7 +730,7 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
         checkpoint("passed")
     except RuntimeInventoryError as error:
         # The original exception still reaches main() and exits 1. Persist only
-        # the fixed failure receipt; no extra command, retry or timeout change.
+        # the fixed failure receipt, including the bounded inventory attempts.
         report["failure"] = error.diagnostic
         raise
     finally:

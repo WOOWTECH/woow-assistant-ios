@@ -9,6 +9,15 @@ memory behavior can be judged from that run. A fresh [exact17 rerun
 42972333125](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42972333125)
 is queued. [Fixed-category preflight and artifact evidence](evidence/ui-memory-e3eda78-exact17-runtime-timeout.json).
 
+After this second observed runtime inventory timeout, `release_ios17.py` now
+retries that one `simctl list runtimes --json` call **once only after a timeout**.
+Each attempt remains bounded at 120 seconds; launch and nonzero-exit failures
+still stop immediately, the requested iOS version is still matched exactly,
+and exhausted retries keep a failed run with fixed category and attempt count.
+The local release-script tests passed **43/43**, including real child timeouts,
+recovery after one timeout and private-output checks; another 59/59 exact17
+tooling tests passed. Native hosted validation remains pending.
+
 ## Exact iOS 17 saved-PDF chat UI completed at `23b4e6a`
 
 [Run 42965803863](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42965803863)
