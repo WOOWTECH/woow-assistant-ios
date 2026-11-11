@@ -21,11 +21,21 @@ public struct MultiSourceResearchRunner: Sendable {
     private let client: any ChatModelClient
     private let maximumCalls: Int
     private let timeoutNanoseconds: UInt64
+    private let deadlineWait: @Sendable (UInt64) async throws -> Void
 
-    /// Smaller bounds support deterministic deadline tests; callers cannot
-    /// expand the production 12-call/180-second budget.
+    /// Callers cannot expand the production 12-call/180-second budget.
     public init(client: any ChatModelClient, maximumCalls: Int = 12, timeoutNanoseconds: UInt64 = 180_000_000_000) {
+        self.init(client: client, maximumCalls: maximumCalls, timeoutNanoseconds: timeoutNanoseconds,
+                  deadlineWait: { try await Task.sleep(nanoseconds: $0) })
+    }
+
+    /// Internal clock seam: tests expire the one task deadline at an observed
+    /// phase, without assuming a wall-clock slice can schedule preceding work.
+    /// App callers always use the real Task.sleep timer above.
+    init(client: any ChatModelClient, maximumCalls: Int = 12, timeoutNanoseconds: UInt64 = 180_000_000_000,
+         deadlineWait: @escaping @Sendable (UInt64) async throws -> Void) {
         self.client = client
+        self.deadlineWait = deadlineWait
         self.maximumCalls = max(1, min(12, maximumCalls))
         self.timeoutNanoseconds = max(1, min(180_000_000_000, timeoutNanoseconds))
     }
@@ -41,7 +51,7 @@ public struct MultiSourceResearchRunner: Sendable {
                                   references: references, validateContext: validateContext, onEvent: onEvent)
             }
             group.addTask {
-                try await Task.sleep(nanoseconds: timeoutNanoseconds)
+                try await deadlineWait(timeoutNanoseconds)
                 throw MultiSourceResearchError.deadline
             }
             defer { group.cancelAll() }

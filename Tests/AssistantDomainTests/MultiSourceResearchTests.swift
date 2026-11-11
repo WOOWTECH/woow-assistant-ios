@@ -1,4 +1,4 @@
-import AssistantBrowser
+@testable import AssistantBrowser
 import AssistantModels
 import Foundation
 import Network
@@ -196,12 +196,22 @@ private enum MultiSourceChecks {
         task.cancel(); await late.release(finish)
         do { _ = try await task.value; throw Failure(message: "cancelled repair published result") }
         catch is CancellationError { try c.expect(true, "cancelled correction remains cancelled") }
-        let delayed = MultiSourceSlowRepairModel()
+        // This test observes the corrective call before expiring the original
+        // deadline. A 30ms wall-clock timer cannot guarantee that two root reads,
+        // JSON encoding and the first model reply have already been scheduled.
+        // bounds() separately exercises the real timer while reading roots.
+        let deadline = MultiSourceRepairDeadline()
+        let delayed = MultiSourceSlowRepairModel(deadline: deadline)
         do {
-            _ = try await MultiSourceResearchRunner(client: delayed, timeoutNanoseconds: 30_000_000).run(plan: plan(), browser: MultiSourceTestBrowser(), configuration: configuration, apiKey: "synthetic")
+            _ = try await MultiSourceResearchRunner(client: delayed, timeoutNanoseconds: 30_000_000,
+                deadlineWait: { try await deadline.wait(nanoseconds: $0) }).run(
+                    plan: plan(), browser: MultiSourceTestBrowser(), configuration: configuration, apiKey: "synthetic")
             throw Failure(message: "corrective call reset deadline")
         } catch let error as MultiSourceResearchError { try c.expect(error == .deadline, "correction shares original deadline") }
         try c.expect(await delayed.calls == 2, "deadline occurred inside corrective call")
+        try c.expect(await deadline.durations == [30_000_000], "one original deadline, no correction timer reset")
+        try c.expect(await delayed.cancelled, "deadline cancels the actual suspended corrective call")
+        try c.expect(await delayed.returned == false, "timed-out correction did not deliver a late reply")
         return c.count
     }
 }
@@ -229,12 +239,48 @@ private actor MultiSourceLateModel: ChatModelClient {
     func release(_ reply: String) { continuation?.resume(returning: reply); continuation = nil }
 }
 
+/// Both orderings are valid: the timer task or the model task can run first.
+/// Expiration is delivered only when both have reached the selected phase.
+private actor MultiSourceRepairDeadline {
+    private(set) var durations: [UInt64] = []
+    private var continuation: CheckedContinuation<Void, Error>?
+    private var correctiveCallEntered = false
+    private var cancelled = false
+
+    func wait(nanoseconds: UInt64) async throws {
+        durations.append(nanoseconds)
+        try Task.checkCancellation()
+        try await withTaskCancellationHandler {
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+                if cancelled { continuation.resume(throwing: CancellationError()) }
+                else if correctiveCallEntered { continuation.resume() }
+                else { self.continuation = continuation }
+            }
+        } onCancel: { Task { await self.cancel() } }
+    }
+    func enterCorrectiveCall() {
+        correctiveCallEntered = true
+        continuation?.resume(); continuation = nil
+    }
+    private func cancel() {
+        cancelled = true
+        continuation?.resume(throwing: CancellationError()); continuation = nil
+    }
+}
+
 private actor MultiSourceSlowRepairModel: ChatModelClient {
+    let deadline: MultiSourceRepairDeadline
     private(set) var calls = 0
+    private(set) var cancelled = false
+    private(set) var returned = false
+    init(deadline: MultiSourceRepairDeadline) { self.deadline = deadline }
     func complete(messages: [ModelMessage], configuration: ModelConfiguration, apiKey: String) async throws -> String {
         calls += 1
         if calls == 1 { return "not-json" }
-        try await Task.sleep(nanoseconds: 5_000_000_000)
+        await deadline.enterCorrectiveCall()
+        do { try await Task.sleep(nanoseconds: 5_000_000_000) }
+        catch is CancellationError { cancelled = true; throw CancellationError() }
+        returned = true
         return MultiSourceChecks.finish
     }
 }

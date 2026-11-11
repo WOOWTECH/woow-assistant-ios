@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "local_pass_native_pending",
+  "base_sha": "fc5ebbc4406a4bd72020f3324eb22e94f3249d73",
+  "scope": "MultiSourceResearchRunner deadline test seam; public 12-call/180-second bounds unchanged",
+  "source_files": {
+    "Sources/AssistantBrowser/MultiSourceResearchRunner.swift": "5e40ca2280ca5d8a7572487b12b10a7998c7fd8add8cf22e9c8b88f60d9096fe",
+    "Tests/AssistantDomainTests/MultiSourceResearchTests.swift": "d568818905a0e32c0cf0499141ab031a645a232aa6095d5b56be359ea7083929"
+  },
+  "frozen_patch_sha256": "5a56ff5078841eedb5d44f2fdff19d5a9fad6d8e6097d42fe1edbbd503143eee",
+  "isolated_source_report_sha256": "96c079b703df1d7209464a8e14225ba67b95213cffbad1a197ab445512397852",
+  "checks": {
+    "AssistantModels-build": 0,
+    "AssistantMemory-build": 0,
+    "AssistantPersistence-build": 0,
+    "AssistantMCP-build": 0,
+    "AssistantSkills-build": 0,
+    "AssistantBrowser-build": 0,
+    "reference-core-syntax": 0,
+    "reference-core-build": 0,
+    "reference-core-run": 0,
+    "existing-core-syntax": 0,
+    "existing-core-build": 0,
+    "existing-core-run": 0,
+    "Debug-syntax": 0,
+    "Debug-build": 0,
+    "Debug-run": 0,
+    "Release-syntax": 0,
+    "Release-build": 0,
+    "Release-run": 0
+  },
+  "assertions": {
+    "existing_core": 77,
+    "reference_core": 36,
+    "app_debug": 197,
+    "app_release": 31
+  },
+  "limits": [
+    "Actual iOS simulator rerun is pending.",
+    "The original CI did not record model call count; a controlled delay reproduces the old assertion assumption, not the exact CI host cause."
+  ]
+}

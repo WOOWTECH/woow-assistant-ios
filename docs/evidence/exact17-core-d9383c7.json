@@ -1,0 +1,6089 @@
+{
+  "schema_version": 1,
+  "status": "verified_pass",
+  "scope": "core",
+  "run_id": 42929171318,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42929171318",
+  "head_sha": "d9383c73800562dc102007bf36d42d958853e74f",
+  "run_attempt": 1,
+  "observed_at_utc": "2026-11-11T00:55:02.444358+00:00",
+  "validation_job_id": 130223269111,
+  "workflow_conclusion": "success",
+  "actual_runtime": {
+    "xcresult_devices": [
+      {
+        "architecture": "arm64",
+        "deviceId": "19305160-F84B-48C5-BC2B-1AEE83952043",
+        "deviceName": "Woow-iOS17-5e87af87731e4885b7cccae70ac761b7",
+        "modelName": "iPhone 15",
+        "osBuildNumber": "21A342",
+        "osVersion": "17.0.1",
+        "platform": "iOS Simulator"
+      }
+    ]
+  },
+  "actual_methods": [
+    {
+      "identifier": "AssistantDomainTests/BrowserDownloadTests/testRealFilesPersistenceBoundsAndPolicies",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 4991
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 4992,
+          "duration_seconds": 0.21
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserInteractionTests/testApprovalValidationAndStrictModelBoundary",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 4996
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 4997,
+          "duration_seconds": 0.008
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserLibraryTests/testBookmarksDeduplicateFragmentsAndPreserveUserTitles",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5001
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5002,
+          "duration_seconds": 0.004
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserLibraryTests/testCallbackSecretsNotRetainedOrBookmarked",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5003
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5004,
+          "duration_seconds": 0.005
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserLibraryTests/testCorruptLibraryIsRejectedInsteadOfReset",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5005
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5006,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserLibraryTests/testHistoryCapacityOrderAndSeparateClear",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5007
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5008,
+          "duration_seconds": 0.064
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserLibraryTests/testManualAddressRejectsMalformedPortsWithoutChangingTheDestination",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5009
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5010,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserLibraryTests/testManualNavigationDoesNotRelaxResearchPolicy",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5011
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5012,
+          "duration_seconds": 0.012
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserLibraryTests/testTabsSelectionClosingAndRestore",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5013
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5014,
+          "duration_seconds": 0.003
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserNavigationIntentTests/testActionAndResponseKindsCannotConsumeEachOthersPermit",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5018
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5019,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserNavigationIntentTests/testCancelledOrSupersededNavigationCannotDownload",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5020
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5021,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserNavigationIntentTests/testDownloadRequiresManualInitiationAndSingleUsePermit",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5022
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5023,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserNavigationIntentTests/testMatchingIssuerWithExpiredOrMismatchedURLConsumesPermitWithoutAcceptingDownload",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5024
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5025,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserNavigationIntentTests/testPermitRetainsIssuerUntilInvalidatedOrConsumedToPreventAddressReuse",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5026
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5027,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserNavigationIntentTests/testRedirectMustBelongToManualNavigationAndRemainPublicHTTPS",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5028
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5029,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserNavigationIntentTests/testReplacedPolicyObjectInSameGenerationCannotConsumeNewPermit",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5030
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5031,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserNavigationIntentTests/testSameURLLateCallbackCannotStealOrConsumeNewActionOrResponsePermit",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5032
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5033,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testAllowsPublicNamesAndAddresses",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5037
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5038,
+          "duration_seconds": 0.003
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testDNSLabelLengthLimits",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5039
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5040,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testEvery172SecondOctetUsesOnlyThePrivateCIDR",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5041
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5042,
+          "duration_seconds": 0.028
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testIPv4AndMappedIPv6RangesHaveAccurateReasons",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5043
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5044,
+          "duration_seconds": 0.005
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testIPv6RangesAndBoundaries",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5045
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5046,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testLocalNamesAreCaseInsensitiveAndLabelBounded",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5047
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5048,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testMalformedRawInputsAreRejectedBeforeLossyFoundationParsing",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5049
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5050,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testRejectsCredentialsIncludingEmptyAndEncodedUserInfo",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5051
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5052,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testRejectsEscapedHostsAndScopedIPv6",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5053
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5054,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testRejectsNoncanonicalNumericHostsInsteadOfCallingThemPrivate",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5055
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5056,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testRejectsUnsupportedSchemesAndMissingHosts",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5057
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5058,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserPolicyTests/testRelativeURLsValidateTheResolvedDestination",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5059
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5060,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserSearchTests/testManualAddressEncodingEnginesAndLegacyLibrary",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5064
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5065,
+          "duration_seconds": 0.016
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/BrowserUserSiteModesTests/testNormalizationInheritanceBoundsAndLegacySchema",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5069
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5070,
+          "duration_seconds": 0.061
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/MultiSourceReferenceTests/testCombinedEnvelope",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5074
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5075,
+          "duration_seconds": 0.109
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/MultiSourceReferenceTests/testLateAndExistingBudgets",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5076
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5077,
+          "duration_seconds": 0.039
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/MultiSourceReferenceTests/testRoleAndCitationBoundary",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5078
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5079,
+          "duration_seconds": 0.186
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/MultiSourceReferenceTests/testTerminalRevocation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5080
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5081,
+          "duration_seconds": 0.013
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/MultiSourceResearchTests/testActualHTTPModelRequestCarriesBothSourcesAndReturnsCheckedCitations",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5085
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5087,
+          "duration_seconds": 0.2
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/MultiSourceResearchTests/testByteExactUnicodeAndSingleBoundedFormatCorrection",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5088
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5090,
+          "duration_seconds": 0.064
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/MultiSourceResearchTests/testConfirmedRootsAndActualCitationReceipts",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5091
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5092,
+          "duration_seconds": 0.018
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/MultiSourceResearchTests/testPartialResultsGlobalBudgetAndCancellation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5093
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5094,
+          "duration_seconds": 0.038
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/MultiSourceResearchTests/testUnsupportedCommandsStaleIDsAndInventedCitationsFailClosed",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5095
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5096,
+          "duration_seconds": 0.055
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/ResearchSourceDiscoveryTests/testCandidatePolicy",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5100
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5101,
+          "duration_seconds": 0.009
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/ResearchSourceDiscoveryTests/testHostileSnapshots",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5102
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5103,
+          "duration_seconds": 0.006
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/ResearchSourceDiscoveryTests/testQueriesAndNavigation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5104
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5105,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/ResearchSourceDiscoveryTests/testSelectionBinding",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5106
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5107,
+          "duration_seconds": 0.006
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testActiveStatesRejectSelfTransitionsAndRequeuing",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5111
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5112,
+          "duration_seconds": 0.003
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testCancellationWorksFromRunningAndEachWaitingState",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5113
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5114,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testConcurrentDuplicateStartsAcceptExactlyOne",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5115
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5116,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testConcurrentTerminalTransitionsAcceptExactlyOne",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5117
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5118,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testDuplicateStartCannotOverwriteAnyExistingRun",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5119
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5120,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testEveryTerminalStateRejectsEveryFurtherTransition",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5121
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5122,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testFailureWorksFromRunningAndEachWaitingState",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5123
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5124,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testLegacyEventWithoutStateMetadataStillDecodes",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5125
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5126,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testMissingRunRejectsTransitionsWithoutCreatingHistory",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5127
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5128,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testNewRunStartsAndCompletes",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5129
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5130,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testRunsKeepIndependentStateAndSequences",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5131
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5132,
+          "duration_seconds": 0.003
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testStateChangedEventCodableRoundTrip",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5133
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5134,
+          "duration_seconds": 0.018
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testWaitingMustResumeBeforeCompletingOrChangingWaitingReason",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5135
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5136,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/RunCoordinatorTests/testWaitingStatesResumeWithExplicitStateEventsAndMonotonicSequence",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5137
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5138,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/TaskNotificationTests/testBoundsRelaunchAndRevocation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5142
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5143,
+          "duration_seconds": 0.028
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/TaskNotificationTests/testDefaultOffAndPermission",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5144
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5145,
+          "duration_seconds": 0.003
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/TaskNotificationTests/testEnableRefreshOverlap",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5146
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5147,
+          "duration_seconds": 0.005
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/TaskNotificationTests/testInFlightAddCancellation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5148
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5149,
+          "duration_seconds": 0.016
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/TaskNotificationTests/testObserverLifecycle",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5150
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5151,
+          "duration_seconds": 0.004
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/TaskNotificationTests/testPermissionAndSettingsRaces",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5152
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5153,
+          "duration_seconds": 0.007
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/TaskNotificationTests/testTestButtonAndRoutes",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5154
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5155,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/TaskNotificationTests/testTransitionsAndExpiry",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5156
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5157,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/WebResearchRunnerTests/testActualExecutorResultsAndPriorEvidenceReachFinalAnswer",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5161
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5162,
+          "duration_seconds": 0.004
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/WebResearchRunnerTests/testExecutorFailureNeverBecomesCompletedAction",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5163
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5164,
+          "duration_seconds": 0.004
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/WebResearchRunnerTests/testInvalidActionCannotExecuteArbitraryCodeOrURL",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5165
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5166,
+          "duration_seconds": 0.01
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/WebResearchRunnerTests/testRepeatedCallsStopWithoutCountingFabricatedProgress",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5167
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5168,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantDomainTests/WebsiteLearningTests/testNativeWebsiteKnowledgeAndReadOnlyRoutes",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5172
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5173,
+          "duration_seconds": 0.733
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/ChatContextWindowTests/testCurrentTurnBoundsRejectWithoutTruncation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5183
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5184,
+          "duration_seconds": 0.007
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/ChatContextWindowTests/testLongConversationRetainsCompleteRecentTurnsAndOriginalHistory",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5185
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5186,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/ChatContextWindowTests/testMalformedHistoryIsRejectedEvenWhenItWouldBeOmitted",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5187
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5188,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/ChatContextWindowTests/testOversizedPairStopsSelectionWithoutSkippingToOlderTurns",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5189
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5190,
+          "duration_seconds": 0.006
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/ChatContextWindowTests/testUTF8BudgetPreservesExactCurrentContextAndPrompt",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5191
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5192,
+          "duration_seconds": 0.006
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/HTTPChatModelClientTests/testBoundedPendingOutputAndRedirectRejection",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5196
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5197,
+          "duration_seconds": 0.04
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/HTTPChatModelClientTests/testCompletionTransportAndSanitizedErrorsWithoutRetries",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5198
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5202,
+          "duration_seconds": 0.302
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/HTTPChatModelClientTests/testRequestContractAndValidation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5203
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5204,
+          "duration_seconds": 0.003
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/HTTPChatModelClientTests/testStreamingTransportAndTruncation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5205
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5206,
+          "duration_seconds": 0.007
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/HTTPChatModelClientTests/testStrictIncrementalSSEParserAndBounds",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5207
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5208,
+          "duration_seconds": 0.465
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/HTTPChatModelClientTests/testTotalDeadlineAndCancellation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5209
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5210,
+          "duration_seconds": 0.304
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/RunReferenceContextTests/testDataBoundary",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5214
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5215,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/RunReferenceContextTests/testIdentitiesAndInvalidInputs",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5216
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5217,
+          "duration_seconds": 0.226
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/RunReferenceContextTests/testImmutableCombinedKinds",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5218
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5219,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantModelsTests/RunReferenceContextTests/testWholeEntryBudgets",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5220
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5221,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPClientTests/testCapabilitiesAndPaginationLimits",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5231
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5232,
+          "duration_seconds": 1.581
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPClientTests/testLargeSSECatalogAndExplicitToolAuthorization",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5233
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5234,
+          "duration_seconds": 0.075
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPClientTests/testNegotiationHeadersAndStatelessSessions",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5235
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5236,
+          "duration_seconds": 0.061
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPClientTests/testParserBoundsAndSanitizedFailures",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5237
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5241,
+          "duration_seconds": 0.521
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPClientTests/testTotalDeadlineAndCancellation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5242
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5246,
+          "duration_seconds": 0.339
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPConversationRunnerTests/testAuthorizedSingleCallTransportAndReadOnlyCompatibility",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5250
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5251,
+          "duration_seconds": 0.01
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPConversationRunnerTests/testCallBudgetsAndRepeatedOperationsStopWithoutRetry",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5252
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5253,
+          "duration_seconds": 0.027
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPConversationRunnerTests/testCancellationAndDeadlineFenceLateApprovalAndResults",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5254
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5255,
+          "duration_seconds": 0.192
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPConversationRunnerTests/testCommandCorrectionCancellationAndOriginalDeadline",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5256
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5257,
+          "duration_seconds": 0.211
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPConversationRunnerTests/testDenialAndChangedArgumentsNeverBorrowConsent",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5258
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5259,
+          "duration_seconds": 0.003
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPConversationRunnerTests/testFixedModelFailureClassificationWithoutRetryOrLostEvents",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5260
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5261,
+          "duration_seconds": 0.011
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPConversationRunnerTests/testSelectedCatalogAndExactApprovedExecution",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5262
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5263,
+          "duration_seconds": 0.005
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPConversationRunnerTests/testSingleBoundedCommandCorrectionPreservesSelectionApprovalAndResults",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5264
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5265,
+          "duration_seconds": 0.01
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPConversationRunnerTests/testStrictCommandsUnknownToolsAndSelectedResources",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5266
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5267,
+          "duration_seconds": 0.006
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPConversationRunnerTests/testToolErrorsTransportFailuresAndSizeBounds",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5268
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5269,
+          "duration_seconds": 0.011
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPLocalToolsTests/testCancellationDeadlineLateReviewAndLeaseLifetime",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5273
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5274,
+          "duration_seconds": 0.384
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPLocalToolsTests/testLocalAndSharedModelRemoteBudgets",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5275
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5276,
+          "duration_seconds": 0.016
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPLocalToolsTests/testLocalDenialAndPostcommitFailureRetention",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5277
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5278,
+          "duration_seconds": 0.002
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPLocalToolsTests/testLocalNamespaceAndMixedRemoteApproval",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5279
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5280,
+          "duration_seconds": 0.007
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPLocalToolsTests/testOutcomeTypesHostFailuresAndByteBounds",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5281
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5282,
+          "duration_seconds": 0.012
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMCPTests/MCPLocalToolsTests/testRawEnvelopeAndTypedHostErrors",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5283
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5284,
+          "duration_seconds": 0.012
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryCoreTests/testAutoAndRelevantRetrievalBudgets",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5294
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5295,
+          "duration_seconds": 0.141
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryCoreTests/testGroundingRevisionAndAtomicApplication",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5296
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5297,
+          "duration_seconds": 0.025
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryCoreTests/testMutationsUndoAndSerialization",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5298
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5299,
+          "duration_seconds": 0.005
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryCoreTests/testSensitiveExclusionAndNoAutomaticEviction",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5300
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5301,
+          "duration_seconds": 0.153
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryCoreTests/testSeparateModelCallGatesAndCancellation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5302
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5303,
+          "duration_seconds": 0.012
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryToolsTests/testLatestCandidateAndWholeMessageIntent",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5307
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5308,
+          "duration_seconds": 0.012
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryToolsTests/testOnlyCurrentUserProvenanceAndSpecifics",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5309
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5310,
+          "duration_seconds": 0.014
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryToolsTests/testReadOnlyUndoEligibilityAndDeleteAfterPreferences",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5311
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5312,
+          "duration_seconds": 0.24
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryToolsTests/testReviewedSaveAndReceipt",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5313
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5314,
+          "duration_seconds": 0.006
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryToolsTests/testSearchProofAndMasterGate",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5315
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5316,
+          "duration_seconds": 0.016
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryToolsTests/testStaleAndTransactionalSafety",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5317
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5318,
+          "duration_seconds": 0.178
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryToolsTests/testStrictArguments",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5319
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5320,
+          "duration_seconds": 0.004
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryToolsTests/testTraditionalChineseIntentAndNegation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5321
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5322,
+          "duration_seconds": 0.02
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryToolsTests/testUndoRetentionAndRelaunchBoundary",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5323
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5324,
+          "duration_seconds": 0.116
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/MemoryToolsTests/testUpdateDeleteProcedureAndUndo",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5325
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5326,
+          "duration_seconds": 0.005
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileChatFlowTests/testCancelledAndExpiredTurnsRejectLateResults",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5330
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5331,
+          "duration_seconds": 0.12
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileChatFlowTests/testMalformedCommandsCannotExecuteAndBudgetsAreCumulative",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5332
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5333,
+          "duration_seconds": 0.006
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileChatFlowTests/testMemoryOperationsAreBoundedAndNeverImplicitWrites",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5334
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5335,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileChatFlowTests/testMemorySearchThenReviewedEditSharesTheWholeTurnBudget",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5336
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5337,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileChatFlowTests/testReviewedSequenceRequiresCommittedReceipt",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5338
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5339,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileStateTests/testCapacityAndExactUniqueMatching",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5343
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5344,
+          "duration_seconds": 0.143
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileStateTests/testCRAndLFRejectedAcrossAddReplaceAndDecode",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5345
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5346,
+          "duration_seconds": 0.014
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileStateTests/testHistoryAndFrozenContext",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5347
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5348,
+          "duration_seconds": 0.043
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileStateTests/testMalformedCodableStateRejected",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5349
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5350,
+          "duration_seconds": 0.124
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileStateTests/testSafetyAndTransactionalMutations",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5351
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5352,
+          "duration_seconds": 0.081
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileToolTests/testOnlyCurrentUserProvenance",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5356
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5357,
+          "duration_seconds": 0.013
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileToolTests/testReviewedAddReplaceDeleteAndReceipt",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5358
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5359,
+          "duration_seconds": 0.03
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileToolTests/testSpecificValuesAndNormalization",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5360
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5361,
+          "duration_seconds": 0.026
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileToolTests/testStaleAndTransactionalApplication",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5362
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5363,
+          "duration_seconds": 0.021
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileToolTests/testStateRulesStillApply",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5364
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5365,
+          "duration_seconds": 0.132
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantMemoryTests/UserProfileToolTests/testStrictArguments",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5366
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5367,
+          "duration_seconds": 0.004
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryAppIntegrationTests/testActualModelSettingsChangeBeforeStart",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5377
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5378,
+          "duration_seconds": 0.333
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryAppIntegrationTests/testCancellationQuestionChangeAndLateOldResult",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5379
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5380,
+          "duration_seconds": 0.099
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryAppIntegrationTests/testConsentActualPDFQueryAuditAndFileDocumentExport",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5381
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5382,
+          "duration_seconds": 0.037
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryAppIntegrationTests/testCorrectionAuditAndQuestionReset",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5383
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5384,
+          "duration_seconds": 0.04
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryAppIntegrationTests/testFailureRefusalAndExplicitRetryRetainSource",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5385
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5386,
+          "duration_seconds": 0.064
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryAppIntegrationTests/testLateSettingsKeyRemovalAndPublisherChanges",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5387
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5388,
+          "duration_seconds": 0.191
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryAppIntegrationTests/testReferenceCaptureAndSwitches",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5389
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5390,
+          "duration_seconds": 0.216
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryAppIntegrationTests/testReferenceEditsStayFrozen",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5391
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5392,
+          "duration_seconds": 0.064
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryAppIntegrationTests/testReferenceRevocationStopsActualTask",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5393
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5394,
+          "duration_seconds": 0.728
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryTests/testActualModelRoundtrip",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5398
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5399,
+          "duration_seconds": 0.087
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryTests/testBudgets",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5400
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5401,
+          "duration_seconds": 0.251
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryTests/testCancellationAndDeadline",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5402
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5403,
+          "duration_seconds": 2.109
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryTests/testCitationRejections",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5404
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5405,
+          "duration_seconds": 0.041
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryTests/testHostileCommands",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5406
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5407,
+          "duration_seconds": 0.088
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryTests/testNativeSnapshot",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5408
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5409,
+          "duration_seconds": 0.089
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryTests/testReferenceBudgetsAndCorrection",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5410
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5411,
+          "duration_seconds": 0.188
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryTests/testReferenceContextAndEvidence",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5412
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5413,
+          "duration_seconds": 0.022
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryTests/testSourceBoundaries",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5414
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5415,
+          "duration_seconds": 0.349
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/DocumentQueryTests/testUTF8AndLedger",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5416
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5417,
+          "duration_seconds": 0.02
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/PDFAssemblyAddAppIntegrationTests/testCancelledInvalidAndLateAddPreserveReviewedResult",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5421
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5422,
+          "duration_seconds": 0.091
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/PDFAssemblyAddAppIntegrationTests/testClearFencesLatePickerAndActualReadCompletion",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5423
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5424,
+          "duration_seconds": 0.061
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/PDFAssemblyAddAppIntegrationTests/testSeparateReadGrantsInterleaveActualPagesAndEnforceSourceLimit",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5425
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5426,
+          "duration_seconds": 0.085
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/PDFAssemblyAddAppIntegrationTests/testSingleSelectionRequestsRequireReadApproval",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5427
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5428,
+          "duration_seconds": 0.033
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testActualUIFixtureEdits",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5432
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5433,
+          "duration_seconds": 0.145
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testActualUIFixtureMCPLearning",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5434
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5435,
+          "duration_seconds": 0.065
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testActualUIFixtureMemoryEdits",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5436
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5437,
+          "duration_seconds": 0.148
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testActualWriteFailureDoesNotPublishReceipt",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5438
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5439,
+          "duration_seconds": 0.07
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testApprovalAndDurableReceipt",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5440
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5441,
+          "duration_seconds": 0.133
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testEncryptedTransactionRevisionGenerationAndMasterSwitch",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5442
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5443,
+          "duration_seconds": 0.086
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testGroundingAndOrdinaryChat",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5444
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5445,
+          "duration_seconds": 0.574
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testLateProposalsCannotWrite",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5446
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5447,
+          "duration_seconds": 0.08
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testMCPLocalAuthorityAndSharedMutationLimit",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5448
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5449,
+          "duration_seconds": 0.146
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testMCPLocalSearchDeleteAndInvalidationFences",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5450
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5451,
+          "duration_seconds": 0.229
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testMCPMemoryAndRemoteApprovalsAreSeparate",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5452
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5453,
+          "duration_seconds": 0.04
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testMCPProfileReceiptSurvivesRemoteRefusal",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5454
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5455,
+          "duration_seconds": 0.064
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testMemoryPostCommitReceiptAndLateCancellation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5456
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5457,
+          "duration_seconds": 0.156
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testMemoryProcedureApprovalRejectionAndReapproval",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5458
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5459,
+          "duration_seconds": 0.126
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testMemoryRefusalCancellationRevisionAndMasterSwitch",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5460
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5461,
+          "duration_seconds": 0.152
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testMemorySaveSearchEditAndDurableUndo",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5462
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5463,
+          "duration_seconds": 0.117
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testMemorySearchAndCurrentUtteranceGrounding",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5464
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5465,
+          "duration_seconds": 0.106
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testMemoryToolNotesSurviveActualBackgroundExtraction",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5466
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5467,
+          "duration_seconds": 0.148
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testMemoryWriteFailureNeverPublishesReceipt",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5468
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5469,
+          "duration_seconds": 0.069
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testPostCommitFailureRetainsReceipt",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5470
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5471,
+          "duration_seconds": 0.11
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testPriorReceiptAndFailedNewWrite",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5472
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5473,
+          "duration_seconds": 0.073
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testRefusalCancellationAndCommitFences",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5474
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5475,
+          "duration_seconds": 0.149
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/ProfileChatAppIntegrationTests/testTwentyTurnContextWindowRejectsOversizedCurrentInput",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5476
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5477,
+          "duration_seconds": 0.049
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SelfConfigurationTests/testCancellationBetweenTools",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5481
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5483,
+          "duration_seconds": 0.02
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SelfConfigurationTests/testCancellationRevocationAndManualEditsRejectLateReplies",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5484
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5491,
+          "duration_seconds": 0.147
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SelfConfigurationTests/testClosedProtocolAndForbiddenSettings",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5492
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5494,
+          "duration_seconds": 0.032
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SelfConfigurationTests/testDefaultPermissionAndIsolatedPersistence",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5495
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5497,
+          "duration_seconds": 0.017
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SelfConfigurationTests/testListSetReadbackPublishesAppearance",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5498
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5500,
+          "duration_seconds": 0.016
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SelfConfigurationTests/testRealHTTPFailureHasNoWrite",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5501
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5505,
+          "duration_seconds": 0.224
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SelfConfigurationTests/testRealHTTPLateReplyAfterRevocation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5506
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5510,
+          "duration_seconds": 0.057
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SelfConfigurationTests/testRealHTTPListSetAndPersistentReadback",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5511
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5515,
+          "duration_seconds": 0.054
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillAuthoringBridgeTests/testActualVaultFailuresAndInstructionDataSafety",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5519
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5520,
+          "duration_seconds": 0.047
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillAuthoringBridgeTests/testDurableCreateAndVersionedUpdate",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5521
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5522,
+          "duration_seconds": 0.039
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillAuthoringBridgeTests/testHostOwnedAuthoringAndOrdinaryImportProvenance",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5523
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5524,
+          "duration_seconds": 0.042
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillAuthoringBridgeTests/testReadVersionsDisabledNamesAndPendingConflicts",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5525
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5526,
+          "duration_seconds": 0.079
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillAuthoringBridgeTests/testRefusalOriginalRequestAndForeignGrant",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5527
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5528,
+          "duration_seconds": 0.022
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillAuthoringBridgeTests/testReviewedDraftReplayExpiryAndRevokedTools",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5529
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5530,
+          "duration_seconds": 0.029
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillCatalogTests/testCompletePinnedArchiveAndApprovalLifecycle",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5534
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5535,
+          "duration_seconds": 0.288
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillExecutionTests/testCancellationAndUploadGating",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5539
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5540,
+          "duration_seconds": 0.042
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillExecutionTests/testCoordinatedSelectedFileRead",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5541
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5543,
+          "duration_seconds": 0.087
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillExecutionTests/testPinnedProvenanceAndDependencies",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5544
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5545,
+          "duration_seconds": 0.012
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillExecutionTests/testRealPDFKitExtraction",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5546
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5548,
+          "duration_seconds": 0.015
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillExecutionTests/testSelectedFileAndSingleUseAuthorization",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5549
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5550,
+          "duration_seconds": 0.186
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillLearningTests/testAtomicOutcomeAttributionAndDraftUpdates",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5554
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5555,
+          "duration_seconds": 0.261
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillLearningTests/testConflictingDuplicateReferencesAreAtomic",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5556
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5557,
+          "duration_seconds": 0.033
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillLearningTests/testExecutedTrajectoryAndPrivacy",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5558
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5559,
+          "duration_seconds": 2.579
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillLearningTests/testFailedVerifierKeepsMikaOutcomeSemantics",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5560
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5561,
+          "duration_seconds": 0.166
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillLearningTests/testInputBoundsPrecedeActionCounting",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5562
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5563,
+          "duration_seconds": 0.01
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillLearningTests/testMikaEligibilityAndDuplicateActions",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5564
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5565,
+          "duration_seconds": 0.14
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillLearningTests/testModelFailuresDeadlinesAndCancellation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5566
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5567,
+          "duration_seconds": 0.072
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillLearningTests/testUntrustedEvidenceAndInvalidModels",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5568
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5569,
+          "duration_seconds": 0.271
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillPDFAssemblyTests/testApprovalSnapshotAndActualCoordinatedStorageRead",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5573
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5574,
+          "duration_seconds": 0.07
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillPDFAssemblyTests/testBoundsAndUnsupportedDocuments",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5575
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5576,
+          "duration_seconds": 0.598
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillPDFAssemblyTests/testExpiryRevocationAndReadCancellation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5577
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5578,
+          "duration_seconds": 0.13
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillPDFAssemblyTests/testNativeAssemblyCancellationRacesAndOutputBound",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5579
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5580,
+          "duration_seconds": 0.275
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillPDFAssemblyTests/testNativeExtractReorderMergePreservesRasterTextAndGeometry",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5581
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5582,
+          "duration_seconds": 0.272
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillToolSessionTests/testActualHTTPToolsAndEncryptedRelaunch",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5586
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5587,
+          "duration_seconds": 0.071
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillToolSessionTests/testLateModelResponseAfterStoreOrCapabilityChange",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5588
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5589,
+          "duration_seconds": 0.019
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillToolSessionTests/testRealHTTPTransportCancellationTimeoutAndFailure",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5590
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5591,
+          "duration_seconds": 0.189
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillToolSessionTests/testRefusalStoreChangesAndActualPersistenceFailure",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5592
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5593,
+          "duration_seconds": 0.072
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillToolSessionTests/testStrictProtocolPinnedSourceAndBudgets",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5594
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5595,
+          "duration_seconds": 0.058
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillToolSessionTests/testUpdateRequiresReadVersionAndUnchangedCapabilities",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5596
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5597,
+          "duration_seconds": 0.047
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillsCoreTests/testCapabilityRevalidationAndResourceBounds",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5601
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5602,
+          "duration_seconds": 1.447
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillsCoreTests/testDocumentsAndValidation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5603
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5604,
+          "duration_seconds": 0.04
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillsCoreTests/testOutcomeLifecycle",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5605
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5606,
+          "duration_seconds": 0.01
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillsCoreTests/testRetrievalAndNonAuthorizingContext",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5607
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5608,
+          "duration_seconds": 0.046
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillsCoreTests/testReviewAndOptimisticRevisions",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5609
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5610,
+          "duration_seconds": 0.022
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/SkillsCoreTests/testTrustedJudgementAndLearningGates",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5611
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5612,
+          "duration_seconds": 0.005
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptCommandRecoveryTests/testActualHTTPFormatCorrectionAndSafeReasons",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5616
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5617,
+          "duration_seconds": 0.127
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptCommandRecoveryTests/testCorrectionRespectsBudgetsContextAndOtherSafetyFailures",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5618
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5619,
+          "duration_seconds": 0.052
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptCommandRecoveryTests/testHeldCorrectionHTTPCancellationContextChangeAndCumulativeDeadline",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5620
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5621,
+          "duration_seconds": 2.092
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptCommandRecoveryTests/testSecondInvalidCommandStopsEvenAfterSuccessfulRead",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5622
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5623,
+          "duration_seconds": 0.044
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptCommandRecoveryTests/testUnknownToolsAndPathsCannotExecuteDuringCorrection",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5624
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5625,
+          "duration_seconds": 0.034
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptReferenceAppIntegrationTests/testConsentCaptureAndCompletion",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5629
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5630,
+          "duration_seconds": 0.134
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptReferenceAppIntegrationTests/testFrozenEditsAndDestination",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5631
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5632,
+          "duration_seconds": 0.094
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptReferenceAppIntegrationTests/testOldRunCannotReplaceNewDelivery",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5633
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5634,
+          "duration_seconds": 0.08
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptReferenceAppIntegrationTests/testRevocationJoinsHeldActualTask",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5635
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5636,
+          "duration_seconds": 1.349
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptReferenceAppIntegrationTests/testSwitchesAndCapabilityBounds",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5637
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5638,
+          "duration_seconds": 0.094
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptReferenceTests/testActualTaskFinishesBeforeCancellationInsensitiveReply",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5642
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5643,
+          "duration_seconds": 0.133
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptReferenceTests/testImmutableUserRoleReferenceMessages",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5644
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5645,
+          "duration_seconds": 0.033
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptReferenceTests/testReferencesCannotSupplyEvidenceToolsOrExtraCalls",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5646
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5647,
+          "duration_seconds": 0.122
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptRuntimeTests/testActualHTTPFullCoverageAndFormats",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5651
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5652,
+          "duration_seconds": 0.069
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptRuntimeTests/testApprovedRealFileAndRefusal",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5653
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5654,
+          "duration_seconds": 0.062
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptRuntimeTests/testExactEvidenceAndTimestamps",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5655
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5656,
+          "duration_seconds": 0.042
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptRuntimeTests/testHTTPRangesAndIncompleteCoverage",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5657
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5658,
+          "duration_seconds": 0.058
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptRuntimeTests/testHTTPRefusalBudgetsAndFailure",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5659
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5660,
+          "duration_seconds": 0.048
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptRuntimeTests/testHTTPTransportCancellationAndTimeout",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5661
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5662,
+          "duration_seconds": 0.208
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptRuntimeTests/testLateHTTPResponseAfterModelChange",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5663
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5664,
+          "duration_seconds": 0.04
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptRuntimeTests/testRealFileRejections",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5665
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5669,
+          "duration_seconds": 0.297
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/TranscriptRuntimeTests/testUserApprovedWebPageProvenanceCannotAuthorizeFilesOrNavigation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5670
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5671,
+          "duration_seconds": 0.028
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantSkillsTests/UserProfilePersistenceTests/testEncryptedStoreRollbackRelaunchSwitchMigrationAndClear",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5675
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5676,
+          "duration_seconds": 0.184
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantPersistenceTests/ConversationArchiveTests/testBoundedTransactions",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5686
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5687,
+          "duration_seconds": 0.056
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantPersistenceTests/ConversationArchiveTests/testMalformedState",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5688
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5689,
+          "duration_seconds": 0.006
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantPersistenceTests/ConversationArchiveTests/testRoundTripAndIdentity",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5690
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5691,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantPersistenceTests/EncryptedLearningFileTests/testEncryptedRoundTripAndKeyRotation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5695
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5696,
+          "duration_seconds": 0.013
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantPersistenceTests/EncryptedLearningFileTests/testFailedKeyWriteKeepsOriginalBytesAndData",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5697
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5698,
+          "duration_seconds": 0.006
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantPersistenceTests/EncryptedLearningFileTests/testTamperAndSchemaFailuresNeverPublishEmptyData",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5699
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5700,
+          "duration_seconds": 0.005
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantPersistenceTests/EncryptedLearningFileTests/testUnreadableVaultCannotBeOverwrittenUntilExplicitClear",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5701
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5702,
+          "duration_seconds": 0.011
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserDOMWebKitTests/testActualDOMAndStaleIdentity",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5712
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5717,
+          "duration_seconds": 4.581
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserDownloadIntegrationTests/testRealWebKitSessionDownloadsRedirectsProgressAndCancellation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5721
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5755,
+          "duration_seconds": 3.555
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserPageFindIntegrationTests/testAutomationOwnershipAndRetiredDocument",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5760
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5871,
+          "duration_seconds": 7.438
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserPageFindIntegrationTests/testNativeQueryNextPreviousCloseAndNavigation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5872
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5896,
+          "duration_seconds": 4.57
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserPageFindIntegrationTests/testTabSelectionBackgroundAndCloseRevokeNativeFind",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5897
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5902,
+          "duration_seconds": 2.572
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSearchIntegrationTests/testManualSearchEncryptionAndRealWebKit",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5906
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5908,
+          "duration_seconds": 2.347
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSessionNavigationTests/testActualUnreadableDOMEndsLoadingAndCannotRestoreOldPage",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5912
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5914,
+          "duration_seconds": 1.53
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSessionNavigationTests/testLocalDocumentBecomesReadyAndMatchingFailuresStayTerminal",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5915
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5920,
+          "duration_seconds": 1.518
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSessionNavigationTests/testMalformedAddressDoesNotStartANormalizedNavigation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5921
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5922,
+          "duration_seconds": 0.004
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSessionNavigationTests/testSearchBeyondExcerptDoesNotClaimAbsenceFromWholePage",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5923
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5925,
+          "duration_seconds": 1.415
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSessionNavigationTests/testSyntheticProcessTerminationFencesQueuedAndLateFinish",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5926
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5929,
+          "duration_seconds": 1.503
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSessionNavigationTests/testTranscriptAcceptsExactUTF8LimitIncludingOnlyActualSeparators",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5930
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5932,
+          "duration_seconds": 1.712
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSessionNavigationTests/testTranscriptExcludesHiddenAncestorsAndSensitiveRolesButReadsDisplayContents",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5933
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5935,
+          "duration_seconds": 1.48
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSessionNavigationTests/testTranscriptFlattensOpenShadowRootsAndAssignedSlotsWithoutLightDOMDuplicates",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5936
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5941,
+          "duration_seconds": 1.323
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSessionNavigationTests/testTranscriptReadsBeyondResearchExcerptWithoutCapturingFormFields",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5942
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5946,
+          "duration_seconds": 10.15
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSessionNavigationTests/testTranscriptRejectsOversizedUTF8AndUnloadedPagesInsteadOfTruncating",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5947
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5949,
+          "duration_seconds": 2.079
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSessionNavigationTests/testTranscriptReportsOmittedRegionsAndPreservesReadableLightDOMWithoutPlaceholders",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5950
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5956,
+          "duration_seconds": 2.423
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSiteModesIntegrationTests/testActualWorkspaceEncryptionAndWebKitSiteModes",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5960
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5970,
+          "duration_seconds": 3.201
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserSiteModesIntegrationTests/testGETPOSTAndUnknownMethodReloadState",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5971
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5972,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserWorkspaceIntegrationTests/testDeferredApprovedInputStaysRestrictedUntilExplicitManualDocumentCommits",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5976
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5982,
+          "duration_seconds": 1.913
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserWorkspaceIntegrationTests/testManualCallbackPageLoadsButCannotBecomeAutomationEvidenceOrSavedURL",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5983
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 5988,
+          "duration_seconds": 1.786
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserWorkspaceIntegrationTests/testPersistentCookiesAreSharedAndRemovingOneRecordPreservesOtherSites",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 5989
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6013,
+          "duration_seconds": 4.262
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserWorkspaceIntegrationTests/testRetiredUnmaterializedSessionRejectsManualNavigation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6014
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6015,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/BrowserWorkspaceIntegrationTests/testTabsRetainDifferentDocumentsAndSwitchingOrClosingRevokesProposals",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6016
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6020,
+          "duration_seconds": 1.98
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ChatStreamingAppTests/testActualHTTPStream",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6024
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6025,
+          "duration_seconds": 0.087
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ChatStreamingAppTests/testBoundsFallbackAndSaveFailure",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6026
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6027,
+          "duration_seconds": 0.064
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ChatStreamingAppTests/testCancellationFailureAndGeneration",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6028
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6029,
+          "duration_seconds": 0.016
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ChatStreamingAppTests/testIncrementalCompletion",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6030
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6031,
+          "duration_seconds": 0.009
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ChatStreamingAppTests/testRestoreCancelsPreview",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6032
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6033,
+          "duration_seconds": 0.013
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ChatStreamingAppTests/testStructuredFlowsRemainReviewed",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6034
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6048,
+          "duration_seconds": 30.204
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ConversationArchiveAppTests/testCompletedPairsAndRestore",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6052
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6053,
+          "duration_seconds": 0.024
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ConversationArchiveAppTests/testDestinationIsolation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6054
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6055,
+          "duration_seconds": 0.034
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ConversationArchiveAppTests/testFailuresAndRetry",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6056
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6057,
+          "duration_seconds": 0.029
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ConversationArchiveAppTests/testLateCompletionAndDeletion",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6058
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6059,
+          "duration_seconds": 0.023
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ConversationArchiveAppTests/testNamespaceGates",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6060
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6061,
+          "duration_seconds": 0.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ConversationArchiveAppTests/testReviewDoesNotReplay",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6062
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6063,
+          "duration_seconds": 0.02
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/LearningRunAppIntegrationTests/testActualBrowserSessionReferences",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6067
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6074,
+          "duration_seconds": 9.35
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/LearningRunAppIntegrationTests/testActualRunnerAndLateCancellation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6075
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6076,
+          "duration_seconds": 0.035
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/LearningRunAppIntegrationTests/testCaptureAndNoWrites",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6077
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6078,
+          "duration_seconds": 0.052
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/LearningRunAppIntegrationTests/testDeletionAndMasterRevocation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6079
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6080,
+          "duration_seconds": 0.017
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/LearningRunAppIntegrationTests/testEditsAndUnrelatedGeneration",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6081
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6082,
+          "duration_seconds": 0.026
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/LearningRunAppIntegrationTests/testMaximumLegalCapture",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6083
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6084,
+          "duration_seconds": 0.52
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/LearningRunAppIntegrationTests/testProfileReplacementThenUnrelatedDelete",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6085
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6086,
+          "duration_seconds": 0.76
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/LearningRunAppIntegrationTests/testProfileUIAndToolDeletion",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6087
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6088,
+          "duration_seconds": 0.038
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/LearningRunAppIntegrationTests/testReloadClearAndFailedWrite",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6089
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6090,
+          "duration_seconds": 0.035
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/LearningRunAppIntegrationTests/testWebsiteEditDeleteAndFailure",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6091
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6092,
+          "duration_seconds": 0.057
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/MultiSourceReferenceAppIntegrationTests/testActualLateRevocations",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6096
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6177,
+          "duration_seconds": 26.001
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/MultiSourceReferenceAppIntegrationTests/testActualPrivateCitationRejected",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6178
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6182,
+          "duration_seconds": 2.119
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/MultiSourceReferenceAppIntegrationTests/testActualSourcesAndFrozenEdits",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6183
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6188,
+          "duration_seconds": 3.267
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/MultiSourceReferenceAppIntegrationTests/testApprovedWebsiteCapture",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6189
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6190,
+          "duration_seconds": 0.096
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/MultiSourceReferenceAppIntegrationTests/testPreflightAndNoNetwork",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6191
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6192,
+          "duration_seconds": 0.071
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/MultiSourceResearchIntegrationTests/testOtherApprovedOriginStillCannotRedirectOrRebindThisWebView",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6196
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6200,
+          "duration_seconds": 2.281
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/MultiSourceResearchIntegrationTests/testPersistentManualStoreCannotBeUsedForApprovedResearchRoots",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6201
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6202,
+          "duration_seconds": 0.01
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/MultiSourceResearchIntegrationTests/testTwoActualWebKitSourcesNavigateAndProduceExactReceipts",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6203
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6209,
+          "duration_seconds": 1.99
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ReplayReferenceAppIntegrationTests/testActualPageDivergenceStillDisablesRoute",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6213
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6226,
+          "duration_seconds": 2.266
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ReplayReferenceAppIntegrationTests/testCombinedBudgetAndNoTruncation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6227
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6232,
+          "duration_seconds": 2.533
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ReplayReferenceAppIntegrationTests/testFrozenReferencesAndCurrentGoal",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6233
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6238,
+          "duration_seconds": 2.892
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ReplayReferenceAppIntegrationTests/testLateJudgeAndCitationIsolation",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6239
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6244,
+          "duration_seconds": 1.586
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ReplayReferenceAppIntegrationTests/testRevocationsAndActualLateCompletion",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6245
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6250,
+          "duration_seconds": 3.769
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ReplayReferenceAppIntegrationTests/testSwitchesAndRouteHostFences",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6251
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6258,
+          "duration_seconds": 3.094
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ResearchSourceDiscoveryAppIntegrationTests/testCancelledLateSuccessCannotOverwriteRestart",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6262
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6263,
+          "duration_seconds": 0.048
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ResearchSourceDiscoveryAppIntegrationTests/testCompletedResultCannotApplyAfterLeaveOrBackground",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6264
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6265,
+          "duration_seconds": 0.035
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ResearchSourceDiscoveryAppIntegrationTests/testExplicitSearchAndInvalidQueriesMakeNoImplicitRequest",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6266
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6267,
+          "duration_seconds": 0.015
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ResearchSourceDiscoveryAppIntegrationTests/testFailureCancellationAndExplicitRetryPreserveQuery",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6268
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6269,
+          "duration_seconds": 0.043
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ResearchSourceDiscoveryAppIntegrationTests/testQueryChangesClearSelectionAndRejectLateFailure",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6270
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6271,
+          "duration_seconds": 0.05
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ResearchSourceDiscoveryAppIntegrationTests/testRunningBlocksDuplicateSearchSelectionAndApply",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6272
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6273,
+          "duration_seconds": 0.019
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/ResearchSourceDiscoveryAppIntegrationTests/testTwoToThreeDistinctOriginsAndApplyPreservesCandidates",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6274
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6275,
+          "duration_seconds": 0.02
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/TaskNotificationAppTests/testFactoryAndPreferences",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6279
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6280,
+          "duration_seconds": 0.026
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/TaskNotificationAppTests/testNativeUNContentAndScope",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6281
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6282,
+          "duration_seconds": 0.022
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/TaskNotificationAppTests/testRealChatCancelGeneration",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6283
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6284,
+          "duration_seconds": 0.046
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/TaskNotificationAppTests/testRealChatSuccessFailureClear",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6285
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6286,
+          "duration_seconds": 0.049
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/TaskNotificationAppTests/testRealMCPApprovalCompleteDecline",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6287
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6288,
+          "duration_seconds": 0.059
+        }
+      ]
+    },
+    {
+      "identifier": "AssistantBrowserIntegrationTests/TaskNotificationAppTests/testRealProfileMemoryApprovals",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 6289
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 6290,
+          "duration_seconds": 0.054
+        }
+      ]
+    }
+  ],
+  "xcresult": {
+    "summary_source": "test-summary.json exported by CI xcresulttool",
+    "local_xcresulttool_decode": false,
+    "result": "Passed",
+    "counts": {
+      "totalTestCount": 332,
+      "passedTests": 332,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "failures": [],
+    "start_time_epoch": 1794357250.443,
+    "finish_time_epoch": 1794357869.408,
+    "bundle_member_count": 758
+  },
+  "artifact_count_observed": 1,
+  "artifacts": [
+    {
+      "id": 13817071918,
+      "name": "ios17-17.0.1-42929171318",
+      "size_in_bytes": 1085042,
+      "digest": "sha256:8d318469334560025f16214d4536db17de668bed943dae70b3462f83424e988c",
+      "expired": false,
+      "url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13817071918"
+    }
+  ],
+  "artifact_verification": {
+    "zip_sha256": "8d318469334560025f16214d4536db17de668bed943dae70b3462f83424e988c",
+    "verified_full_zip_digest": true,
+    "members": [
+      {
+        "file": "report.json",
+        "bytes": 5875,
+        "sha256": "8a38112a9ff47ba4d1ea66a7eccd5c56371b6f64e87380755987742e0d085ef1"
+      },
+      {
+        "file": "test-summary.json",
+        "bytes": 1590,
+        "sha256": "6fab4c0e01174ffb69a60175c89949bb5392c50b33d01e4d27bbe763cf98657e"
+      },
+      {
+        "file": "tests.log",
+        "bytes": 1322288,
+        "sha256": "75c8506f1fdacd045ff766b46c07e6bf0be8c2e557975b5e3b1eb358f6836064"
+      }
+    ]
+  },
+  "independent_log_crosscheck": {
+    "332_unique_methods_started_and_completed_once": true,
+    "counts_match_xcresult_export": true
+  },
+  "source_report": {
+    "phase": "passed",
+    "prebuild_exit_code": null,
+    "boot_succeeded": true,
+    "test_exit_code": 0,
+    "selected_tests_succeeded": true,
+    "full_acceptance_succeeded": false,
+    "runtime_tested": false,
+    "test_completion": {
+      "verified": true,
+      "counts": {
+        "totalTestCount": 332,
+        "passedTests": 332,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "result": "Passed",
+      "expected_ui_count": 0,
+      "completed_ui_count": 0,
+      "missing_ui_tests": [],
+      "unexpected_ui_tests": [],
+      "nonpassing_or_repeated_ui_tests": []
+    },
+    "experimental_prelaunch_test_daemon": false,
+    "experimental_sample_bootstrap": false,
+    "experimental_build_before_boot": false
+  },
+  "limits": [
+    "Native core scope only, no UI or newly proposed download bridge acceptance. No cross-run count summation.",
+    "Original 8c core evidence remains separate; newer main does not replace the tested SHA.",
+    "Full ZIP digest verified and CI-exported xcresult summary crosschecked against actual tests.log. Local host has no xcresulttool.",
+    "No dispatch, rerun, cancellation, model request or product changes during evidence collection."
+  ]
+}
