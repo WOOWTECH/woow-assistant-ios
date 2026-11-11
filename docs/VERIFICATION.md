@@ -1,5 +1,20 @@
 # Verification — 2026-11-11
 
+## Staged two-PDF FileProvider branch remains isolated at 2/3
+
+The `d8b568e` isolated branch creates PDF B only after the first genuine
+native Files picker callback for PDF A. Its focused two-file assembly method
+passed **1/1, zero skipped** on [SE/iOS 18.5](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966422108)
+and [exact17](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966427095),
+but [current iOS 26.2](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966416710)
+failed **0/1** at the 300-second method limit after export Cancel, before the
+final retained-result check. All three runs recorded two native picker
+callbacks; current completed the page-order and assembly checks before its
+timeout. Full artifact ZIP digests and CRCs were verified. This does not
+establish the earlier FileProvider `-1005` root cause or a three-platform fix.
+The branch stays outside main while its current timeout is investigated.
+[Three-platform branch evidence](evidence/pdf-pair-d8b568e-staged-three-platforms.json).
+
 ## Exact17 skills UI passed; profile UI stopped at keyboard setup
 
 At `e3eda78`, [exact17 skills run 42967066402](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967066402)

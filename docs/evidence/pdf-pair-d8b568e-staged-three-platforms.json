@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "source_sha": "d8b568e98c341e36151e1e8b3d6d63d2040506f5",
+  "candidate": "DEBUG-only staged B synthetic PDF creation after first genuine A picker callback",
+  "run_urls": [
+    "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966416710",
+    "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966422108",
+    "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966427095"
+  ],
+  "verdict": "do_not_merge_as_cross_platform_fix_yet",
+  "reason": "SE and exact iOS17 focused native methods passed; current iOS26 method failed at the existing 300s limit after native export Cancel and before final retained-result assertions. All three platform methods must pass unchanged for cross-platform acceptance.",
+  "runs": [
+    {
+      "platform": "iOS 26.2 iPhone 17",
+      "run_id": 42966416710,
+      "method_counts": {
+        "total": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "expected_failures": 0
+      },
+      "native_picker_callbacks": 2,
+      "last_stage": "300s XCTest method timeout after exporter Cancel, before final retained-result assertions",
+      "full_zip_sha256": "6e87a5fcb2178198c7ff110c48fea704e58506cf8a1715ca2c5c12bb46ebc922",
+      "full_zip_bytes": 190140591,
+      "zip_crc": "ok"
+    },
+    {
+      "platform": "iOS 18.5 iPhone SE 3",
+      "run_id": 42966422108,
+      "method_counts": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "expected_failures": 0
+      },
+      "native_picker_callbacks": 2,
+      "last_stage": "complete: distinct grants, A2/B1/A1, originals unchanged, export cancelled/result retained",
+      "full_zip_sha256": "e973dbfadd41b7b663aee49727b88fe0addf4c8995286a71d5f3c6082e1eab19",
+      "full_zip_bytes": 11125419,
+      "zip_crc": "ok"
+    },
+    {
+      "platform": "exact iOS 17.0.1 (21A342) iPhone 15",
+      "run_id": 42966427095,
+      "method_counts": {
+        "total": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0,
+        "expected_failures": 0
+      },
+      "native_picker_callbacks": 2,
+      "last_stage": "complete: distinct grants, A2/B1/A1, originals unchanged, export cancelled/result retained",
+      "full_zip_sha256": "c096487b118c6276de44132f5258b75433b6bb8f474605db047e0d9de024aef3",
+      "full_zip_bytes": 11594953,
+      "zip_crc": "ok"
+    }
+  ],
+  "prior_comparison": {
+    "c59": "per-file coordinated creation failed 0/1 on current, SE, exact17 before final assembly; nativePicked callbacks 0/1/0",
+    "9600": "UIDocument creation failed 0/1 current and SE, passed 1/1 exact17; nativePicked callbacks 1/0/2",
+    "d8": "staged creation nativePicked callbacks 2/2/2; complete focused methods 0/1 current, 1/1 SE, 1/1 exact17"
+  },
+  "limitations": [
+    "The three runs do not prove why earlier FileProvider localstorage/did items returned -1005.",
+    "Current iOS26 test method is formally failed; the final cancellation result-retention assertion did not execute.",
+    "These are focused synthetic DEBUG UI fixture tests, not full-app acceptance or general FileProvider reliability."
+  ],
+  "main_edited": false,
+  "duplicate_runs_dispatched": false
+}

@@ -18,7 +18,7 @@
 
 精確 iOS 17.0.1 的技能介面在 `e3eda78` **10/10、零略過**；個人檔案介面同來源 **0/9**，九項都停在原生鍵盤切換鍵的語系選取，修正後仍待重測。[測試紀錄](docs/VERIFICATION.md)。
 
-非 Live 介面清單在 `8ab93d5` 為 **107 項／15 分組**。雙 PDF 選檔的 FileProvider 問題仍在隔離實驗；每檔協調建立的候選在三平台均失敗，另一個 UIDocument 候選只在精確 iOS 17 通過，SE 與 iOS 26.2 仍失敗，因此未合入正式來源。詳見[驗證紀錄](docs/VERIFICATION.md)及各版本的[測試證據](docs/evidence)。
+非 Live 介面清單在 `8ab93d5` 為 **107 項／15 分組**。雙 PDF 選檔仍在隔離實驗：新的分段建立候選在 SE 與精確 iOS 17 各 **1/1**，current iOS 26.2 於取消匯出後逾時，尚未三平台通過，因此未合入正式來源。[三平台證據](docs/evidence/pdf-pair-d8b568e-staged-three-platforms.json)及[驗證紀錄](docs/VERIFICATION.md)。
 
 目前已實作：
 
