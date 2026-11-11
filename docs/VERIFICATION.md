@@ -1,5 +1,15 @@
 # Verification — 2026-11-11
 
+## Exact iOS 17 startup interface after streaming selector correction
+
+At `cacd8f0`, [run 42952165858](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42952165858)
+passed **15/15 ui-startup methods**, zero failures and zero skips, on iPhone 15 /
+iOS 17.0.1. The complete artifact ZIP passed CRC verification; the summary,
+completion gate and 15 unique method start/pass events agree. The formerly
+failing completed-stream method now reached and passed its exact answer,
+notification and durable archive assertions. Current and SE correction reruns
+remain separate. [Full artifact and method evidence](evidence/ui-startup-cacd8f0-exact17-pass.json).
+
 ## Current and SE chat PDF interface failures
 
 The SE/iOS 18.5 `a663fbd` documents-chat shard completed **2/3** and the

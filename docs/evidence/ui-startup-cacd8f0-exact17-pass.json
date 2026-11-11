@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "PASS_NATIVE_UI_SHARD",
+  "source_commit": "cacd8f0aa780707150750bbaeaecca5f37a0beb6",
+  "run_id": 42952165858,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42952165858",
+  "scope": "ui-startup",
+  "device": "iPhone 15 / iOS 17.0.1 (21A342) / arm64 simulator",
+  "artifact": {
+    "id": 13828791811,
+    "bytes": 40034851,
+    "sha256": "5543cde4700889a2c8773119d1df20eb1a9de2f7b8fe782806b178c4cc49a839",
+    "zip_crc_checked": true,
+    "zip_members": 197,
+    "report_sha256": "7716a70fc818d482999edcea7b30d232dbed43f8e443825c75d7d149febb6697",
+    "test_summary_sha256": "55641899453054f3d21151d4689d52a47a0edbfc40f519e390683b6d6a0ba79a",
+    "test_log_sha256": "91d9bb2c45b2ec21a96ceb849a04b879938db662fe3aabfb9447de4c9f4368cf"
+  },
+  "verification": {
+    "summary": {"total": 15, "passed": 15, "failed": 0, "skipped": 0, "expected_failures": 0},
+    "unique_method_starts": 15,
+    "method_pass_events": 15,
+    "method_fail_events": 0,
+    "completion_gate_verified": true,
+    "missing_or_repeated_methods": 0,
+    "stream_completion_and_archive_method": "ChatStreamingUITests/testPartialBecomesCompletedReplyAndDurableArchive",
+    "stream_completion_and_archive_method_started_and_passed_once": true,
+    "stream_cancellation_method_started_and_passed_once": true,
+    "selected_tests_succeeded": true,
+    "full_acceptance_succeeded": false
+  },
+  "limits": "This is one source-bound startup UI shard. Current and SE reruns, other UI shards, real services, audible sound, signing and physical iPhone use are separate."
+}
