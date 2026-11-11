@@ -4,6 +4,10 @@
 <dict>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>允許目前開啟的網站在你同意後使用相機。</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>允許目前開啟的網站在你同意後使用麥克風。</string>
 	<key>UIFileSharingEnabled</key>
 	<true/>
 </dict>
