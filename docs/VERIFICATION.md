@@ -1,5 +1,26 @@
 # Verification — 2026-11-11
 
+## Exact iOS 17 live-model suite blocked at model service
+
+At `fe66ab2`, [run 42961323643](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961323643)
+finished **failed**. Its native iOS Simulator JSON/SSE smoke stopped before a
+successful reply with the fixed category `rate_limited`. A separate real HTTP
+probe attempted all five fixed-text transcript formats: **0/5 passed**, each
+with one model call, zero responses and the fixed `modelFailed` code. The App
+UI started 18 methods: **2 passed, 16 failed, zero skipped**. The two passes
+cover cancellation and an intentionally invalid transport; they do not accept
+successful model replies. The transcript and UI logs do not prove that every
+failure was a 429, nor whether concurrent jobs caused the provider limit.
+No private configuration, model output or raw log was published in the
+[sanitized evidence](evidence/live-model-exact17-fe66ab2-first-failure.json).
+
+Four additional latest-source, non-Live iOS 17 UI shards are queued:
+[archive](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967052289),
+[memory](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967057485),
+[profile](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967061906),
+and [skills](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967066402).
+Their dispatch does not constitute a pass.
+
 ## Staged dual-PDF FileProvider experiment in isolated branch
 
 Current and SE logs correlate missed native picker callbacks with FileProvider
