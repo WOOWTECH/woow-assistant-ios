@@ -158,11 +158,18 @@ import CoreGraphics
         runTwoDistinctPDFAssembly(directoryCoordinated: true)
     }
 
-    private func runTwoDistinctPDFAssembly(directoryCoordinated: Bool) {
+    func testFileCoordinatedFixtureCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages() {
+        runTwoDistinctPDFAssembly(directoryCoordinated: false, fileCoordinated: true)
+    }
+
+    private func runTwoDistinctPDFAssembly(directoryCoordinated: Bool, fileCoordinated: Bool = false) {
+        precondition(!(directoryCoordinated && fileCoordinated))
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW", "-UITestMode",
             "-UITestNamespace", namespace, "-UITestResetStorage", "-UITestSkillExecution", "-UITestSkillAssemblyPair"]
         if directoryCoordinated {
             app.launchArguments.append("-UITestSkillAssemblyPairDirectoryCoordinatedCreation")
+        } else if fileCoordinated {
+            app.launchArguments.append("-UITestSkillAssemblyPairFileCoordinatedCreation")
         }
         app.launchEnvironment = [:]; app.launch()
         tapFixed("navigation.memory")
@@ -181,7 +188,9 @@ import CoreGraphics
         XCTAssertEqual(form.staticTexts["pdfAssembly.uitest.pair"].label, "測試雙檔已建立")
         let creation = directoryCoordinated
             ? "creation=directoryCoordinated coordinationAttempts=1 accessorCalls=1 createdFiles=2 existingFiles=0"
-            : "creation=direct coordinationAttempts=0 accessorCalls=0 createdFiles=2 existingFiles=0"
+            : fileCoordinated
+                ? "creation=fileCoordinated coordinationAttempts=2 accessorCalls=2 createdFiles=2 existingFiles=0"
+                : "creation=direct coordinationAttempts=0 accessorCalls=0 createdFiles=2 existingFiles=0"
         XCTAssertEqual(form.staticTexts["pdfAssembly.uitest.pair"].value as? String, "callbacks=0 sources=0 " + creation)
         XCTAssertFalse(form.staticTexts["pdfAssembly.result"].exists)
         let notice = form.staticTexts["pdfAssembly.importCopy.notice"]

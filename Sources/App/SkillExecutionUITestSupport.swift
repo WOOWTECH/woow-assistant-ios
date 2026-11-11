@@ -145,17 +145,22 @@ enum SkillExecutionUITestSupport {
     /// Creation never supplies picker URLs, read grants or a runtime result.
     static func seedAssemblyPairIfRequested(arguments: [String] = ProcessInfo.processInfo.arguments,
                                            directoryCoordinator: NSFileCoordinator? = nil,
+                                           fileCoordinator: NSFileCoordinator? = nil,
                                            documentsDirectory: () throws -> URL = {
         try FileManager.default.url(for: .documentDirectory, in: .userDomainMask,
                                     appropriateFor: nil, create: true)
     }) throws -> AssemblyPairFixture? {
         let flag = "-UITestSkillAssemblyPair"
         let experiment = "-UITestSkillAssemblyPairDirectoryCoordinatedCreation"
+        let fileExperiment = "-UITestSkillAssemblyPairFileCoordinatedCreation"
         guard arguments.contains(where: { $0.hasPrefix(flag) }) else { return nil }
         let coordinated = arguments.contains(experiment)
+        let fileCoordinated = arguments.contains(fileExperiment)
         guard arguments.filter({ $0 == flag }).count == 1,
               arguments.filter({ $0 == experiment }).count <= 1,
-              !arguments.contains(where: { $0.hasPrefix(flag) && $0 != flag && $0 != experiment }),
+              arguments.filter({ $0 == fileExperiment }).count <= 1,
+              !(coordinated && fileCoordinated),
+              !arguments.contains(where: { $0.hasPrefix(flag) && $0 != flag && $0 != experiment && $0 != fileExperiment }),
               arguments.filter({ $0 == "-UITestMode" }).count == 1,
               arguments.filter({ $0 == "-UITestSkillExecution" }).count == 1,
               arguments.filter({ $0 == "-UITestNamespace" }).count == 1,
@@ -170,6 +175,10 @@ enum SkillExecutionUITestSupport {
         if coordinated {
             return try seedDirectoryCoordinatedAssemblyPair(in: directory, namespace: namespace,
                                                             coordinator: directoryCoordinator ?? NSFileCoordinator())
+        }
+        if fileCoordinated {
+            return try seedFileCoordinatedAssemblyPair(in: directory, namespace: namespace,
+                                                       coordinator: fileCoordinator)
         }
         var sources: [AssemblyPairFixture.Source] = []
         var createdFiles = 0
@@ -291,6 +300,71 @@ enum SkillExecutionUITestSupport {
         record("completed")
         return AssemblyPairFixture(namespace: namespace, sources: sources, creationProof: .init(
             mode: "directoryCoordinated", coordinationAttempts: 1, accessorCalls: accessorCalls,
+            createdFiles: createdFiles, existingFiles: existingFiles))
+    }
+
+    /// Strict synthetic comparison to directory coordination: claim each
+    /// concrete PDF URL when creating it. Apple's file coordinator does not
+    /// treat a directory write claim as a write claim for its descendants.
+    /// This is an experiment, not a workaround for a failed picker callback.
+    private static func seedFileCoordinatedAssemblyPair(in directory: URL, namespace: UUID,
+                                                         coordinator: NSFileCoordinator?) throws -> AssemblyPairFixture {
+        let identity = try assemblyPairDirectoryIdentity(directory)
+        var prepared: [(role: String, url: URL, bytes: Data, existed: Bool)] = []
+        for role in ["A", "B"] {
+            let url = directory.appendingPathComponent("SkillAssembly-\(role)-\(namespace.uuidString).pdf")
+            let existed = FileManager.default.fileExists(atPath: url.path)
+            let bytes = try existed ? validatedAssemblyPairBytes(url, role: role, namespace: namespace)
+                                    : assemblyPairPDFBytes(role: role, namespace: namespace)
+            prepared.append((role, url, bytes, existed))
+        }
+        let existingFiles = prepared.filter(\.existed).count
+        var attempts = 0, accessorCalls = 0, createdFiles = 0
+        var completed = false
+        func record(_ phase: String) {
+            print("SKILL_PDF_PAIR_CREATION namespace=\(namespace.uuidString) mode=fileCoordinated phase=\(phase) coordinationAttempts=\(attempts) accessorCalls=\(accessorCalls) createdFiles=\(createdFiles) existingFiles=\(existingFiles)")
+            fflush(stdout)
+        }
+        record("willCoordinate")
+        defer { if !completed { record("failed") } }
+        for item in prepared where !item.existed {
+            attempts += 1
+            var coordinationError: NSError?
+            var written: Result<Void, Error> = .failure(Failure.coordinationFailed)
+            (coordinator ?? NSFileCoordinator()).coordinate(writingItemAt: item.url, options: [],
+                                                            error: &coordinationError) { destination in
+                accessorCalls += 1
+                written = Result {
+                    guard destination.isFileURL,
+                          destination.standardizedFileURL == item.url.standardizedFileURL else {
+                        throw Failure.coordinationFailed
+                    }
+                    try validateAssemblyPairDirectory(destination.deletingLastPathComponent(),
+                                                      expected: directory, identity: identity)
+                    try item.bytes.write(to: destination, options: .withoutOverwriting)
+                    createdFiles += 1
+                    guard try validatedAssemblyPairBytes(item.url, role: item.role, namespace: namespace) == item.bytes else {
+                        throw Failure.existingFile
+                    }
+                }
+            }
+            if coordinationError != nil { throw Failure.coordinationFailed }
+            try written.get() // No direct write or second attempt after failure.
+        }
+        try validateAssemblyPairDirectory(directory, expected: directory, identity: identity)
+        var sources: [AssemblyPairFixture.Source] = []
+        for item in prepared {
+            let bytes = try validatedAssemblyPairBytes(item.url, role: item.role, namespace: namespace)
+            guard bytes == item.bytes else { throw Failure.existingFile }
+            sources.append(.init(role: item.role, url: item.url, sha256: pairDigest(bytes)))
+            recordPairSnapshot(in: directory, namespace: namespace, role: item.role,
+                               phase: item.existed ? "existing" : "created", ordinal: 0)
+        }
+        guard Set(sources.map(\.sha256)).count == 2 else { throw Failure.existingFile }
+        completed = true
+        record("completed")
+        return AssemblyPairFixture(namespace: namespace, sources: sources, creationProof: .init(
+            mode: "fileCoordinated", coordinationAttempts: attempts, accessorCalls: accessorCalls,
             createdFiles: createdFiles, existingFiles: existingFiles))
     }
 
