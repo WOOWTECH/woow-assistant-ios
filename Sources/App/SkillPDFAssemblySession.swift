@@ -100,6 +100,12 @@ final class SkillPDFAssemblySession: ObservableObject {
             // destroy the previous immutable result or its selected sources.
             let execution = try SkillPDFAssemblyRuntime(selectedFiles: files, catalog: BundledSkillCatalog.bundled())
             guard execution.available else { throw SkillExecutionError.unavailable }
+            #if DEBUG
+            if !request.adding, let pair = uiTestPair, pair.creationProof.mode == "staged" {
+                try SkillExecutionUITestSupport.materializeStagedB(
+                    afterFirstSelectedFilename: urls[0].lastPathComponent, fixture: pair)
+            }
+            #endif
             clear()
             runtime = execution; selectedFiles = files; sources = execution.sources
             // Reuse the original SelectedFile values so their UUIDs remain

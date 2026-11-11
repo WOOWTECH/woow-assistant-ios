@@ -139,9 +139,16 @@ enum SkillExecutionUITestSupport {
         let namespace: UUID
         let sources: [Source]
         let creationProof: CreationProof
+        // Only the staged DEBUG experiment needs to reject a replacement of
+        // the synthetic Documents directory between the two real picks.
+        var stagedParentIdentity: (device: Int32, inode: UInt64)? = nil
+        // PDFKit serialization is not byte-deterministic across invocations;
+        // retain the exact bounded bytes prepared before the first picker.
+        var stagedPreparedB: Data? = nil
     }
 
-    /// Creates two real PDFs only for the isolated, non-Live Assembly case.
+    /// Creates synthetic PDFs only for the isolated, non-Live Assembly case.
+    /// The staged arm keeps B absent until A returns from the native picker.
     /// Creation never supplies picker URLs, read grants or a runtime result.
     static func seedAssemblyPairIfRequested(arguments: [String] = ProcessInfo.processInfo.arguments,
                                            directoryCoordinator: NSFileCoordinator? = nil,
@@ -151,11 +158,15 @@ enum SkillExecutionUITestSupport {
     }) throws -> AssemblyPairFixture? {
         let flag = "-UITestSkillAssemblyPair"
         let experiment = "-UITestSkillAssemblyPairDirectoryCoordinatedCreation"
+        let stagedFlag = "-UITestSkillAssemblyPairStagedCreation"
         guard arguments.contains(where: { $0.hasPrefix(flag) }) else { return nil }
         let coordinated = arguments.contains(experiment)
+        let staged = arguments.contains(stagedFlag)
         guard arguments.filter({ $0 == flag }).count == 1,
               arguments.filter({ $0 == experiment }).count <= 1,
-              !arguments.contains(where: { $0.hasPrefix(flag) && $0 != flag && $0 != experiment }),
+              arguments.filter({ $0 == stagedFlag }).count <= 1,
+              !(coordinated && staged),
+              !arguments.contains(where: { $0.hasPrefix(flag) && $0 != flag && $0 != experiment && $0 != stagedFlag }),
               arguments.filter({ $0 == "-UITestMode" }).count == 1,
               arguments.filter({ $0 == "-UITestSkillExecution" }).count == 1,
               arguments.filter({ $0 == "-UITestNamespace" }).count == 1,
@@ -167,6 +178,7 @@ enum SkillExecutionUITestSupport {
               namespace.uuidString == arguments[position + 1] else { throw Failure.invalidNamespace }
         let directory = try documentsDirectory()
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        if staged { return try seedStagedAssemblyPair(in: directory, namespace: namespace) }
         if coordinated {
             return try seedDirectoryCoordinatedAssemblyPair(in: directory, namespace: namespace,
                                                             coordinator: directoryCoordinator ?? NSFileCoordinator())
@@ -190,6 +202,66 @@ enum SkillExecutionUITestSupport {
         return AssemblyPairFixture(namespace: namespace, sources: sources, creationProof: .init(
             mode: "direct", coordinationAttempts: 0, accessorCalls: 0,
             createdFiles: createdFiles, existingFiles: 2 - createdFiles))
+    }
+
+    /// Exposes only A at the first native picker. The B bytes and exact name
+    /// are prepared but B is not written until A's genuine picker callback.
+    /// No selected URL, approval or picker action is synthesized here.
+    private static func seedStagedAssemblyPair(in directory: URL, namespace: UUID) throws -> AssemblyPairFixture {
+        let identity = try assemblyPairDirectoryIdentity(directory)
+        let a = directory.appendingPathComponent("SkillAssembly-A-\(namespace.uuidString).pdf")
+        let b = directory.appendingPathComponent("SkillAssembly-B-\(namespace.uuidString).pdf")
+        for url in [a, b] {
+            var entry = stat()
+            guard lstat(url.path, &entry) != 0, errno == ENOENT else { throw Failure.existingFile }
+        }
+        let aBytes = try assemblyPairPDFBytes(role: "A", namespace: namespace)
+        let bBytes = try assemblyPairPDFBytes(role: "B", namespace: namespace)
+        try aBytes.write(to: a, options: .withoutOverwriting)
+        try validateAssemblyPairDirectory(directory, expected: directory, identity: identity)
+        guard try validatedAssemblyPairBytes(a, role: "A", namespace: namespace) == aBytes else {
+            throw Failure.existingFile
+        }
+        var absent = stat()
+        guard lstat(b.path, &absent) != 0, errno == ENOENT else { throw Failure.existingFile }
+        recordPairSnapshot(in: directory, namespace: namespace, role: "A", phase: "created", ordinal: 0)
+        var fixture = AssemblyPairFixture(namespace: namespace,
+            sources: [.init(role: "A", url: a, sha256: pairDigest(aBytes)),
+                      .init(role: "B", url: b, sha256: pairDigest(bBytes))],
+            creationProof: .init(mode: "staged", coordinationAttempts: 0, accessorCalls: 0,
+                                 createdFiles: 1, existingFiles: 0))
+        fixture.stagedParentIdentity = identity
+        fixture.stagedPreparedB = bBytes
+        return fixture
+    }
+
+    /// Called only after the first actual native picker returned the exact A
+    /// filename. It refuses a second write, changed A, symlinks and directory
+    /// replacement; the ordinary production selection path stays unchanged.
+    static func materializeStagedB(afterFirstSelectedFilename filename: String,
+                                   fixture: AssemblyPairFixture) throws {
+        guard fixture.creationProof.mode == "staged", fixture.sources.count == 2,
+              fixture.sources[0].role == "A", fixture.sources[1].role == "B",
+              let identity = fixture.stagedParentIdentity,
+              let bBytes = fixture.stagedPreparedB, bBytes.count <= 128 * 1024,
+              filename == fixture.sources[0].filename else { throw Failure.invalidNamespace }
+        let directory = fixture.sources[0].url.deletingLastPathComponent()
+        let a = directory.appendingPathComponent("SkillAssembly-A-\(fixture.namespace.uuidString).pdf")
+        let b = directory.appendingPathComponent("SkillAssembly-B-\(fixture.namespace.uuidString).pdf")
+        guard fixture.sources[0].url.standardizedFileURL == a.standardizedFileURL,
+              fixture.sources[1].url.standardizedFileURL == b.standardizedFileURL else { throw Failure.invalidNamespace }
+        try validateAssemblyPairDirectory(directory, expected: directory, identity: identity)
+        let aBytes = try validatedAssemblyPairBytes(a, role: "A", namespace: fixture.namespace)
+        guard pairDigest(aBytes) == fixture.sources[0].sha256 else { throw Failure.existingFile }
+        var entry = stat()
+        guard lstat(b.path, &entry) != 0, errno == ENOENT else { throw Failure.existingFile }
+        guard pairDigest(bBytes) == fixture.sources[1].sha256 else { throw Failure.existingFile }
+        try bBytes.write(to: b, options: .withoutOverwriting)
+        try validateAssemblyPairDirectory(directory, expected: directory, identity: identity)
+        guard try validatedAssemblyPairBytes(b, role: "B", namespace: fixture.namespace) == bBytes else {
+            throw Failure.existingFile
+        }
+        recordPairSnapshot(in: directory, namespace: fixture.namespace, role: "B", phase: "created", ordinal: 0)
     }
 
     private static func assemblyPairPDFBytes(role: String, namespace: UUID) throws -> Data {

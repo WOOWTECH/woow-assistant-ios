@@ -122,6 +122,49 @@ import AssistantSkills
         try FileManager.default.createSymbolicLink(at: pair.sources[0].url, withDestinationURL: target)
         try require(observe(output.data) == "pair=failed", "symlink_original_rejected")
         try require(try Data(contentsOf: target) == sentinel, "link_target_unchanged")
+
+        let stagedID = UUID()
+        let stagedFlag = "-UITestSkillAssemblyPairStagedCreation"
+        let stagedArgs = ["-UITestMode", "-UITestSkillExecution", "-UITestNamespace",
+                          stagedID.uuidString, flag, stagedFlag]
+        for bad in [stagedArgs + [stagedFlag],
+                    stagedArgs + ["-UITestSkillAssemblyPairDirectoryCoordinatedCreation"],
+                    stagedArgs + ["-LiveModelUITest"],
+                    stagedArgs.filter { $0 != flag }] {
+            touched = false
+            do {
+                _ = try SkillExecutionUITestSupport.seedAssemblyPairIfRequested(arguments: bad) {
+                    touched = true; throw Failure(code: "staged_gate_touched_documents")
+                }
+                throw Failure(code: "staged_invalid_gate_accepted")
+            } catch SkillExecutionUITestSupport.Failure.invalidNamespace { }
+            try require(!touched, "staged_gate_before_io")
+        }
+        let stagedDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("assembly-staged-" + stagedID.uuidString)
+        defer { try? FileManager.default.removeItem(at: stagedDirectory) }
+        guard let staged = try SkillExecutionUITestSupport.seedAssemblyPairIfRequested(
+            arguments: stagedArgs, documentsDirectory: { stagedDirectory }) else {
+            throw Failure(code: "missing_staged_pair")
+        }
+        try require(staged.creationProof.mode == "staged" && staged.sources.count == 2, "staged_fixture_identity")
+        try require(FileManager.default.fileExists(atPath: staged.sources[0].url.path), "staged_A_exists")
+        try require(!FileManager.default.fileExists(atPath: staged.sources[1].url.path), "staged_B_initially_absent")
+        do {
+            try SkillExecutionUITestSupport.materializeStagedB(
+                afterFirstSelectedFilename: staged.sources[1].filename, fixture: staged)
+            throw Failure(code: "wrong_first_callback_accepted")
+        } catch SkillExecutionUITestSupport.Failure.invalidNamespace { count += 1 }
+        try require(!FileManager.default.fileExists(atPath: staged.sources[1].url.path), "wrong_callback_does_not_create_B")
+        try SkillExecutionUITestSupport.materializeStagedB(
+            afterFirstSelectedFilename: staged.sources[0].filename, fixture: staged)
+        let stagedB = try Data(contentsOf: staged.sources[1].url)
+        try require(PDFDocument(data: stagedB)?.pageCount == 2, "staged_B_real_pdf")
+        do {
+            try SkillExecutionUITestSupport.materializeStagedB(
+                afterFirstSelectedFilename: staged.sources[0].filename, fixture: staged)
+            throw Failure(code: "second_staged_write_accepted")
+        } catch SkillExecutionUITestSupport.Failure.existingFile { count += 1 }
+        try require(try Data(contentsOf: staged.sources[1].url) == stagedB, "second_staged_write_preserves_B")
         #endif
         print("PAIR_CHECKS passed=\(count) nativePicker=false")
     }
@@ -158,12 +201,17 @@ import CoreGraphics
         runTwoDistinctPDFAssembly(directoryCoordinated: true)
     }
 
-    private func runTwoDistinctPDFAssembly(directoryCoordinated: Bool) {
+    func testStagedSecondPDFCreationAfterFirstNativeSelectionInterleavesApprovedPages() {
+        runTwoDistinctPDFAssembly(directoryCoordinated: false, staged: true)
+    }
+
+    private func runTwoDistinctPDFAssembly(directoryCoordinated: Bool, staged: Bool = false) {
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW", "-UITestMode",
             "-UITestNamespace", namespace, "-UITestResetStorage", "-UITestSkillExecution", "-UITestSkillAssemblyPair"]
         if directoryCoordinated {
             app.launchArguments.append("-UITestSkillAssemblyPairDirectoryCoordinatedCreation")
         }
+        if staged { app.launchArguments.append("-UITestSkillAssemblyPairStagedCreation") }
         app.launchEnvironment = [:]; app.launch()
         tapFixed("navigation.memory")
         XCTAssertTrue(app.staticTexts["memory.status"].waitForExistence(timeout: 15))
@@ -178,8 +226,11 @@ import CoreGraphics
             let button = app.buttons[id]; revealLearningElement(button, in: app); ready(button); button.tap()
         }
         reveal(form.staticTexts["pdfAssembly.uitest.pair"], reading: true)
-        XCTAssertEqual(form.staticTexts["pdfAssembly.uitest.pair"].label, "測試雙檔已建立")
-        let creation = directoryCoordinated
+        XCTAssertEqual(form.staticTexts["pdfAssembly.uitest.pair"].label, staged
+                       ? "測試第一份 PDF 已建立；第二份待選取後建立" : "測試雙檔已建立")
+        let creation = staged
+            ? "creation=staged coordinationAttempts=0 accessorCalls=0 createdFiles=1 existingFiles=0"
+            : directoryCoordinated
             ? "creation=directoryCoordinated coordinationAttempts=1 accessorCalls=1 createdFiles=2 existingFiles=0"
             : "creation=direct coordinationAttempts=0 accessorCalls=0 createdFiles=2 existingFiles=0"
         XCTAssertEqual(form.staticTexts["pdfAssembly.uitest.pair"].value as? String, "callbacks=0 sources=0 " + creation)
@@ -188,7 +239,7 @@ import CoreGraphics
         reveal(notice, reading: true); XCTAssertTrue(notice.label.contains("系統會在你選檔時建立副本"))
         tapForm("pdfAssembly.importCopy")
         ready(cancel, timeout: 45)
-        chooseOneNativeFile("A", index: 1)
+        chooseOneNativeFile("A", index: 1, assertBAbsent: staged)
         XCTAssertEqual(form.staticTexts["pdfAssembly.source.1"].label, "來源 1：" + filename("A"))
         XCTAssertFalse(form.staticTexts["pdfAssembly.receipt.1"].exists)
         XCTAssertFalse(form.staticTexts["pdfAssembly.source.2"].exists)
@@ -323,8 +374,12 @@ import CoreGraphics
         }
     }
 
-    private func chooseOneNativeFile(_ role: String, index: Int) {
+    private func chooseOneNativeFile(_ role: String, index: Int, assertBAbsent: Bool = false) {
         navigateToSyntheticFiles(role)
+        if assertBAbsent {
+            XCTAssertEqual(role, "A")
+            XCTAssertFalse(exactCell("B").exists, "The second fixture PDF must not be in Files before the first native selection.")
+        }
         let cell = exactCell(role), stem = String(filename(role).dropLast(4))
         XCTAssertEqual(filesList.cells.matching(NSPredicate(format: "identifier == %@", stem + ", pdf")).count, 1)
         XCTAssertEqual(cell.staticTexts.matching(NSPredicate(format: "label IN %@", [filename(role), stem])).count, 1)

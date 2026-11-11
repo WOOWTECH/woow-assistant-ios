@@ -78,7 +78,8 @@ struct SkillPDFAssemblyView: View {
                         .accessibilityValue(pickerObservation + " callbacks=\(importerCallbacks)")
                 }
                 if let pair = model.uiTestPair {
-                    Text("測試雙檔已建立")
+                    Text(pair.creationProof.mode == "staged"
+                         ? "測試第一份 PDF 已建立；第二份待選取後建立" : "測試雙檔已建立")
                         .font(.caption).accessibilityIdentifier("pdfAssembly.uitest.pair")
                         .accessibilityValue("callbacks=\(totalImporterCallbacks) sources=\(model.sources.count)" +
                             (totalImporterCallbacks == 0 && model.sources.isEmpty ? " " + pair.creationProof.accessibilityValue : ""))

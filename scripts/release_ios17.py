@@ -77,6 +77,7 @@ DOCUMENT_SCOPES = {
         "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
         "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
         "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testDirectoryCoordinatedFixtureCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
+        "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testStagedSecondPDFCreationAfterFirstNativeSelectionInterleavesApprovedPages",
         "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
     ],
     "documents-chat": [
@@ -100,6 +101,7 @@ TEST_SCOPES = {
     "pdf-assembly-copy": ["WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult"],
     "pdf-assembly-multi": ["WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages"],
     "pdf-pair-coordinated": ["WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testDirectoryCoordinatedFixtureCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages"],
+    "pdf-pair-staged": ["WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testStagedSecondPDFCreationAfterFirstNativeSelectionInterleavesApprovedPages"],
     "profile-tool": ["WoowAssistantUITests/UserProfileToolUITests"],
     "memory-tools": ["WoowAssistantUITests/MemoryToolUITests"],
     **DOCUMENT_SCOPES,
@@ -518,7 +520,7 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
         raise ReleaseError("未知的 iOS 17 測試範圍。")
     if expected_host_arch not in (None, "arm64", "x86_64"):
         raise ReleaseError("未知的主機架構。")
-    if build_before_boot and (test_scope not in ({"startup-smoke", "pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated", "documents-read", "documents-output", "documents-chat"} | UI_SHARDS.keys())
+    if build_before_boot and (test_scope not in ({"startup-smoke", "pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated", "pdf-pair-staged", "documents-read", "documents-output", "documents-chat"} | UI_SHARDS.keys())
                               or not sample_bootstrap or not prelaunch_daemon):
         raise ReleaseError("預編譯啟動比較只允許明確預啟動及取樣的 hosted 非 Live UI 分片或既有 smoke／PDF 文件分組；未執行測試。")
     if bounded_test_diagnostics and not sample_bootstrap:

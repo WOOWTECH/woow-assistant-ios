@@ -71,11 +71,17 @@ def main():
                     raise ValueError('unexpected_diagnostic_output')
                 observations.append(checked(json.loads(line[len(PAIR_MARKER):])))
             if name == 'debug':
-                if (len(observations) != 4 or len({o['namespace'] for o in observations}) != 1
-                        or {(o.get('role'), o['phase'], o.get('ordinal')) for o in observations}
-                        != {(role, phase, 0) for role in ('A', 'B') for phase in ('created', 'existing')}
+                groups = {}
+                for observation in observations:
+                    groups.setdefault(observation['namespace'], set()).add(
+                        (observation['role'], observation['phase'], observation['ordinal']))
+                direct = {(role, phase, 0) for role in ('A', 'B') for phase in ('created', 'existing')}
+                staged = {(role, 'created', 0) for role in ('A', 'B')}
+                if (len(observations) != 6 or len(groups) != 2
+                        or set(map(frozenset, groups.values())) != {frozenset(direct), frozenset(staged)}
                         or any(o['version'] != 2 or o['evidence']['status'] != 'valid' for o in observations)):
                     raise ValueError('invalid_pair_baseline_evidence')
+                result['staged_creation_verified'] = True
             match = re.fullmatch(r'PAIR_CHECKS passed=(\d+) nativePicker=false', lines[-1] if lines else '')
             if not match:
                 raise ValueError('unexpected_check_output')
