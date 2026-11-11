@@ -50,6 +50,7 @@ Apple 提供 `xcodebuild -downloadPlatform iOS -buildVersion <版本>` 安裝指
 | mode | 工具鏈 | 執行內容／產物 |
 | --- | --- | --- |
 | `unsigned-device`（預設） | `macos-15-intel`、Xcode 26.2 | Release `iphoneos` arm64 編譯；檢查實際 build settings、App Info.plist、App／framework／Swift dylib 的 Mach-O 最低版本；不產生 IPA |
+| `signing-preflight` | 同上；repository Actions secrets | 先驗證 Xcode／SDK 與既有 `.p12`、profile、Team ID、匯出模式的相符性；不編譯、不產生 IPA、不上傳。設定簽章後先用此模式取得快速回饋 |
 | `signed-export` | 同上；repository Actions secrets | 既有 distribution 憑證與 profile 預檢、手動簽章 archive、`destination=export` 本地 IPA 匯出；驗證簽章完整性及實際 leaf certificate |
 | `signed-testflight` | 同上；另需三項 App Store Connect secrets | 強制 App Store distribution 匯出、比對已驗證 IPA 雜湊，明確上傳至 Apple；不宣稱處理完成或已可下載 |
 | `ios17-hosted` | `macos-15-intel`、Xcode 16.4 | 指定 runtime 若缺少便下載；建立專用 iPhone 15 simulator，執行現有 `WoowAssistant` 完整 XCTest scheme，保存 `.xcresult`／測試 log |

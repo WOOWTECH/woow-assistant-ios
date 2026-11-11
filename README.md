@@ -6,7 +6,7 @@
 
 這是開發中的版本，尚未全面通過。已加入一般聊天串流、加密對話保存、瀏覽器搜尋與頁內尋找，以及前兩批語言設定；各項介面與實際服務驗收仍分別追蹤。
 
-最近核實的完整原生核心：`43ba9d0` 在 current／iOS 26.2 **345/345**，並有可攜核心 **217/217**，均零略過；[完整方法與附件證據](docs/evidence/native-current-full-43ba9d0.json)。SE／iOS 18.5 與精確 iOS 17.0.1 的前一來源 `dfd6eff` 各 **345/345**，新版重測仍待結果；見[SE](docs/evidence/native-se-dfd6eff.json)與[精確 iOS 17](docs/evidence/native-exact17-dfd6eff.json)證據。各平台核心結果不能代替獨立介面分片或真實服務驗收。
+最近核實的完整原生核心：`43ba9d0` 在 current／iOS 26.2 與 SE／iOS 18.5 各 **345/345**，可攜核心各 **217/217**，均零略過；見[current](docs/evidence/native-current-full-43ba9d0.json)與[SE](docs/evidence/native-se-full-43ba9d0.json)完整方法及附件證據。精確 iOS 17.0.1 的前一來源 `dfd6eff` 為 **345/345**，[證據](docs/evidence/native-exact17-dfd6eff.json)；新版重測仍待結果。各平台核心結果不能代替獨立介面分片或真實服務驗收。
 
 網站媒體權限來源加入後，current 的較窄核心先前也通過可攜測試 **217/217**、iOS XCTest **152/152**；後續完整七組原生核心結果如上。[先前選取範圍證據](docs/evidence/native-current-selected-core-1fb3aea.json)。
 

@@ -7,7 +7,7 @@ on:
       mode:
         description: 驗證或發行路徑（signed-testflight 會上傳至 Apple）
         type: choice
-        options: [unsigned-device, signed-export, signed-testflight, transporter-check, ios17-hosted, ios17-self-hosted]
+        options: [unsigned-device, signing-preflight, signed-export, signed-testflight, transporter-check, ios17-hosted, ios17-self-hosted]
         default: unsigned-device
         required: true
       export_method:
@@ -60,7 +60,7 @@ concurrency:
 
 jobs:
   device-build:
-    if: inputs.mode == 'unsigned-device' || inputs.mode == 'signed-export' || inputs.mode == 'signed-testflight'
+    if: inputs.mode == 'unsigned-device' || inputs.mode == 'signing-preflight' || inputs.mode == 'signed-export' || inputs.mode == 'signed-testflight'
     runs-on: macos-15-intel
     timeout-minutes: 100
     env:
@@ -72,7 +72,18 @@ jobs:
       - name: 測試發佈檢查程式
         run: python3 -m unittest discover -s scripts -p 'test_release_*.py' -v
       - name: 安裝固定版本 XcodeGen
+        if: inputs.mode != 'signing-preflight'
         run: bash scripts/release_install_xcodegen.sh
+      - name: 快速驗證 Apple 簽章資料
+        if: inputs.mode == 'signing-preflight'
+        env:
+          IOS_SIGNING_CERTIFICATE_BASE64: ${{ secrets.IOS_SIGNING_CERTIFICATE_BASE64 }}
+          IOS_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}
+          IOS_PROVISION_PROFILE_BASE64: ${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}
+          IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+          IOS_KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
+          EXPORT_METHOD: ${{ inputs.export_method }}
+        run: python3 scripts/release_ios.py preflight --signed --export-method "$EXPORT_METHOD"
       - name: 檢查上傳 secrets 格式（不連線）
         if: inputs.mode == 'signed-testflight'
         env:

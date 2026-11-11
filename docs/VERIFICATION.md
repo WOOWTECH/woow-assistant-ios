@@ -1,5 +1,17 @@
 # Verification — 2026-11-11
 
+## SE full native core completed at `43ba9d0`
+
+[Run 42971185488](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42971185488)
+passed **345/345 seven-target iOS XCTest core methods** on a fresh iPhone SE
+(3rd generation) / iOS 18.5 simulator, plus **217/217 portable macOS core
+methods**, with zero failed or skipped. The 819-member artifact ZIP matched
+GitHub's SHA-256 digest and passed CRC checks. Each method started and passed
+exactly once, and the native completion gate matched the summary. The method
+sets match the current/iOS 26.2 run at the same source revision. UI shards,
+live services, physical iPhone and the pending exact17 rerun remain separate.
+[Method lists and artifact evidence](evidence/native-se-full-43ba9d0.json).
+
 ## Current full native core completed at `43ba9d0`
 
 [Run 42971179669](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42971179669)
