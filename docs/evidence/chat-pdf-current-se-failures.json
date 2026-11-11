@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "status": "FAIL_PRESERVED_DIAGNOSTIC_ONLY",
+  "scope": "documents-chat",
+  "runs": [
+    {
+      "variant": "se",
+      "source_commit": "a663fbd1a523027511b9ac7d85208aaf301ae154",
+      "run_id": 42947600613,
+      "artifact_id": 13825437589,
+      "artifact_bytes": 321933768,
+      "artifact_sha256": "db841e934de5b753b3b03671c6ee8d229bac1d6cf1b0ab77f2b5ccb724d66c3f",
+      "device": "iPhone SE (3rd generation) / iOS 18.5",
+      "counts": {"passed": 2, "failed": 1, "skipped": 0},
+      "failure": "The full PDF answer selected a file, received two approvals and a model reply, then reopened Archive. The bounded reveal helper made no visible progress finding the saved citation after the PDF disclosure tap. Citation text, page readback, conversation reopen and delete were not reached."
+    },
+    {
+      "variant": "current",
+      "source_commit": "b4e8c702ab744a5f665f29b8ab31deaa15cf1dc4",
+      "run_id": 42948618984,
+      "artifact_id": 13827453836,
+      "artifact_bytes": 435461589,
+      "artifact_sha256": "5306eb37a1b2cd998ef339b62d6b3114db329fa276f6f8e7769fe0de61f64fb1",
+      "device": "iPhone 17 / iOS 26.2",
+      "counts": {"passed": 1, "failed": 2, "skipped": 0},
+      "failures": [
+        "The full PDF answer reached the saved citation after selection, approvals, reply and archive relaunch, then the bounded reveal helper made no visible progress.",
+        "The cancellation case tapped the native Files thumbnail but received neither a selected-file callback nor a usable Open control within 15 seconds; it never reached approvals, query or cancellation."
+      ]
+    }
+  ],
+  "diagnostic_candidate": {
+    "file": "Tests/WoowAssistantUITests/ChatPDFAttachmentUITests.swift",
+    "changes": [
+      "Record the existing bounded, redacted archive AX snapshot after the disclosure tap and before citation reveal.",
+      "On the unchanged 15-second Files wait failure, record fixed booleans for picker navigation, list, sheet, selection error and Open control."
+    ],
+    "local_checks": "Swift syntax parse and diff check passed; native retest required.",
+    "product_behavior_changed": false
+  },
+  "limits": "These observations do not yet establish whether the archive disclosure failed to expand, the citation failed to materialize, or Files failed to deliver a callback."
+}

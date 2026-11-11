@@ -47,6 +47,9 @@ final class ChatPDFAttachmentUITests: XCTestCase {
         assertLabel(app.staticTexts["archive.turn.0.assistant"].firstMatch, "PDF 問答已完成：WOOW_SKILL_PDF_PAGE_2")
         recordArchivedPDFAX()
         tap("archive.turn.0.pdf", scroll: true)
+        // Capture the actual expansion outcome before asking the shared scroll
+        // helper to reveal a citation. Both can fail at the same source line.
+        recordArchivedPDFAX()
         let citation = app.staticTexts["archive.turn.0.pdf.citation.0"].firstMatch
         revealLearningElement(citation, in: app, visibility: .readableText)
         XCTAssertEqual(citation.label, "WOOW_SKILL_PDF_PAGE_2")
@@ -139,8 +142,23 @@ final class ChatPDFAttachmentUITests: XCTestCase {
         thumbnail.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
         let selected = app.staticTexts["chat.pdf.filename"].firstMatch
         let open = nativeNavigation.buttons.matching(NSPredicate(format: "label IN %@", ["打開", "開啟", "Open", "完成", "Done"])).firstMatch
-        try wait("Native Files must deliver this selection or an explicit Open control", timeout: 15) {
+        let selectionReady = {
             selected.exists || (open.exists && open.isEnabled && open.isHittable)
+        }
+        if !selectionReady() {
+            let result = XCTWaiter.wait(for: [XCTNSPredicateExpectation(
+                predicate: NSPredicate { _, _ in selectionReady() }, object: nil)], timeout: 15)
+            guard result == .completed else {
+                // Only fixed booleans leave the runner. A dismissed picker with
+                // no importer callback differs from a visible native preview.
+                let sheetVisible = app.staticTexts["chat.pdf.scope"].firstMatch.exists
+                let selectionErrorVisible = app.staticTexts["chat.pdf.selectionError"].firstMatch.exists
+                XCTFail("Native Files selection unresolved: pickerNavigation=\(nativeNavigation.exists) "
+                    + "pickerList=\(nativeList.exists) sheet=\(sheetVisible) "
+                    + "selectionError=\(selectionErrorVisible) "
+                    + "openControl=\(open.exists && open.isEnabled && open.isHittable)")
+                throw Failure.readiness
+            }
         }
         if !selected.exists && open.exists && open.isEnabled && open.isHittable { open.tap() }
         try wait("Actual importer callback did not deliver this PDF", timeout: 15) { selected.exists }

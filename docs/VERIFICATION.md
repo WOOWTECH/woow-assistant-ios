@@ -1,5 +1,18 @@
 # Verification — 2026-11-11
 
+## Current and SE chat PDF interface failures
+
+The SE/iOS 18.5 `a663fbd` documents-chat shard completed **2/3** and the
+current/iOS 26.2 `b4e8c70` shard completed **1/3**, both with zero skips. Their
+full-answer cases selected a PDF, obtained two grants, received a model reply,
+saved and reopened the archive, then stopped while revealing a saved citation.
+The current cancellation case also stopped earlier: a native Files thumbnail tap
+delivered neither a selection callback nor an actionable Open control within the
+existing 15 seconds. A test-only diagnostic now records bounded, redacted AX
+state immediately after archive disclosure and fixed picker-state booleans on
+that wait failure. It does not change App behavior or accept either failed case.
+[Source-bound failure evidence](evidence/chat-pdf-current-se-failures.json).
+
 ## Three-platform language interface failures and scoped correction
 
 At `e37b641`, the language UI shard completed **3/5**, zero skips, on each of
