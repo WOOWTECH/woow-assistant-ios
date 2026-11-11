@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "status": "FAIL_PRESERVED",
+  "source_commit": "a663fbd1a523027511b9ac7d85208aaf301ae154",
+  "scope": "ui-startup",
+  "runs": [
+    {
+      "variant": "current",
+      "run_id": 42947613118,
+      "artifact_id": 13826273319,
+      "artifact_zip_bytes": 346374887,
+      "artifact_zip_sha256": "5d476bf3a7b54a3bc89a24c4a9a4acc2ae8343de2badd8a1ffe6bcb7be9ad617",
+      "device": "iPhone 17 / iOS 26.2 (23C54)",
+      "test_summary_sha256": "9cc488ef9d950d6d47d6a5d4094362f5dd6d9d58643d455c03bf551c5e45d210",
+      "test_log_sha256": "e6e1d5e851467c336f64345c568e7d33e9a510a07d705ba8000e13c85c9deaa0"
+    },
+    {
+      "variant": "se",
+      "run_id": 42947619302,
+      "artifact_id": 13826891782,
+      "artifact_zip_bytes": 279450338,
+      "artifact_zip_sha256": "9a24d0b34152bc74cb7806d28dc172b25a8fccdee53515f87449f69977a5223e",
+      "device": "iPhone SE (3rd generation) / iOS 18.5 (22F77)",
+      "test_summary_sha256": "bc3273437bbc3f51296a579e53237e64256d8aad4a63b7b3303db14de3fa80b4",
+      "test_log_sha256": "42cd972d52507ab460361242bc587bc7f5cb476d7f2e22e59e883c250d2dfbc8"
+    }
+  ],
+  "verification": {
+    "zip_crc_error": null,
+    "per_run_counts": {"started": 15, "passed": 14, "failed": 1, "skipped": 0, "expected_failures": 0},
+    "unique_starts_per_run": 15,
+    "completion_gate_verified": false,
+    "same_failed_method": "ChatStreamingUITests/testPartialBecomesCompletedReplyAndDurableArchive",
+    "same_failure": "The exact chat.message.1.assistant selectable UILabel is reported as AX type Other, while the old test queried StaticText. Both runs stop before the archive relaunch assertion."
+  },
+  "correction": "cacd8f0 queries the exact identifier across AX types, retaining answer, notification and archive assertions. Reruns 42956288760 (current) and 42956303279 (SE) await native results."
+}
