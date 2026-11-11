@@ -59,13 +59,20 @@ final class SkillWorkerSettingsRepository {
     @Published var endpointDraft = ""
     @Published var tokenDraft = ""
     @Published private(set) var worker: SkillExecutionHTTPWorker?
-    @Published private(set) var error: String?
-    @Published private(set) var notice: String?
+    @Published private(set) var errorText: AppText?
+    @Published private(set) var noticeText: AppText?
+    var error: String? { errorText.map { AppLocalizer(language: .traditionalChinese).text($0) } }
+    var notice: String? { noticeText.map { AppLocalizer(language: .traditionalChinese).text($0) } }
     private var repository: SkillWorkerSettingsRepository?
 
     init() {
         do { repository = try .makeDefault(); reload() }
-        catch { self.error = "腳本服務設定無法讀取，原資料保留。" }
+        catch { self.errorText = .workerLoadFailed }
+    }
+
+    init(repository: SkillWorkerSettingsRepository) {
+        self.repository = repository
+        reload()
     }
 
     func reload() {
@@ -73,8 +80,8 @@ final class SkillWorkerSettingsRepository {
             guard let repository else { return }
             let endpoint = try repository.endpoint()
             let loaded = try repository.worker()
-            endpointDraft = endpoint?.absoluteString ?? ""; worker = loaded; error = nil
-        } catch { worker = nil; self.error = "腳本服務設定或金鑰無法讀取，請重新設定或解鎖後再試。" }
+            endpointDraft = endpoint?.absoluteString ?? ""; worker = loaded; errorText = nil
+        } catch { worker = nil; self.errorText = .workerCredentialsFailed }
     }
 
     func save() {
@@ -83,19 +90,18 @@ final class SkillWorkerSettingsRepository {
             guard let repository else { throw SkillWorkerSettingsRepository.Failure.invalidRecord }
             let cleanupFailed = try repository.save(endpoint: endpointDraft, token: tokenDraft)
             reload()
-            if error == nil {
-                notice = cleanupFailed ? "設定已儲存，舊金鑰未能移除；請稍後重試移除設定。"
-                    : "設定已儲存；尚未連線或上傳文件。"
+            if errorText == nil {
+                noticeText = cleanupFailed ? .workerSavedCleanupFailed : .workerSaved
             }
-        } catch let failure as ModelSettingsError { error = failure.localizedDescription; notice = nil }
-        catch { self.error = "服務網址或金鑰無效，設定未變更。"; notice = nil }
+        } catch let failure as ModelSettingsError { errorText = AppLocalizer.modelSettingsError(failure); noticeText = nil }
+        catch { self.errorText = .workerInvalid; noticeText = nil }
     }
 
     func remove() {
         do {
             guard let repository else { throw SkillWorkerSettingsRepository.Failure.invalidRecord }
             try repository.remove(); worker = nil; endpointDraft = ""; tokenDraft = ""
-            error = nil; notice = "已移除腳本服務設定與金鑰。"
-        } catch { self.error = "無法移除腳本服務設定與金鑰，請解鎖後重試。"; notice = nil }
+            errorText = nil; noticeText = .workerRemoved
+        } catch { self.errorText = .workerRemoveFailed; noticeText = nil }
     }
 }

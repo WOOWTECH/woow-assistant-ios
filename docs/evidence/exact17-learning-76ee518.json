@@ -1,0 +1,222 @@
+{
+  "schema_version": 1,
+  "status": "verified_pass",
+  "scope": "ui-learning",
+  "run_id": 42925402583,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42925402583",
+  "head_sha": "76ee518900ad01fe0a2d95d2821348da54f3cca9",
+  "run_attempt": 1,
+  "observed_at_utc": "2026-11-11T00:13:37.600069+00:00",
+  "validation_job_id": 130210493770,
+  "workflow_conclusion": "success",
+  "actual_runtime": {
+    "xcresult_devices": [
+      {
+        "architecture": "arm64",
+        "deviceId": "3A30F2FC-FED9-4F47-B9C7-0E3F8D82DB2B",
+        "deviceName": "Woow-iOS17-0fc3f67c60bc4a0cac45538d7a393299",
+        "modelName": "iPhone 15",
+        "osBuildNumber": "21A342",
+        "osVersion": "17.0.1",
+        "platform": "iOS Simulator"
+      }
+    ],
+    "selected_runtime": {
+      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+      "version": "17.0.1",
+      "buildversion": "21A342"
+    }
+  },
+  "actual_methods": [
+    {
+      "identifier": "WoowAssistantUITests/BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 18
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 510,
+          "duration_seconds": 87.982
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 511
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 1049,
+          "duration_seconds": 90.937
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 1050
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 1887,
+          "duration_seconds": 130.063
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 1891
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 2375,
+          "duration_seconds": 82.201
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 2376
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 2575,
+          "duration_seconds": 36.39
+        }
+      ]
+    }
+  ],
+  "xcresult": {
+    "summary_source": "test-summary.json exported by CI xcresulttool",
+    "local_xcresulttool_decode": false,
+    "result": "Passed",
+    "counts": {
+      "totalTestCount": 5,
+      "passedTests": 5,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "failures": [],
+    "start_time_epoch": 1794355182.061,
+    "finish_time_epoch": 1794355862.121,
+    "bundle_member_count": 40
+  },
+  "artifact_count_observed": 1,
+  "artifacts": [
+    {
+      "id": 13815816446,
+      "name": "ios17-17.0.1-42925402583",
+      "size_in_bytes": 13645798,
+      "digest": "sha256:2f14f0ec4ba2e305e997400e9025c61189bb2d183742559f4bd7d4d1a64d81d1",
+      "expired": false,
+      "url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13815816446"
+    }
+  ],
+  "artifact_verification": {
+    "zip_sha256": "2f14f0ec4ba2e305e997400e9025c61189bb2d183742559f4bd7d4d1a64d81d1",
+    "verified_full_zip_digest": true,
+    "members": [
+      {
+        "file": "report.json",
+        "bytes": 9080,
+        "sha256": "808c77e9b8ef5440abcf14e3053ac07bb136fab69a134d0239993110ed603d04"
+      },
+      {
+        "file": "test-summary.json",
+        "bytes": 1007,
+        "sha256": "add452e5c3fa5ca53d6a1a75bd836aae9d2be3b4d8bb069532e421959b2b45d5"
+      },
+      {
+        "file": "tests.log",
+        "bytes": 182604,
+        "sha256": "8aad450a32dbef3321de124ce48801022b5e77a40aaa4ad4d2d0db2d7805d0a8"
+      }
+    ]
+  },
+  "independent_log_crosscheck": {
+    "all_expected_methods_started_and_completed_once": true,
+    "counts_match_xcresult_export": true,
+    "counts_match_report_actual_events": true
+  },
+  "source_candidate": {
+    "file": "Tests/WoowAssistantUITests/MultiSourceResearchUITests.swift",
+    "sha256": "8bc95845ed800b61e87d0ab281e875e4411fa571f72d0186558351bf1fa81a7c",
+    "matches_frozen_candidate": true,
+    "patch_scope": "TextView coordinate focus and keyboard confirmation; existing questions, result/citation/duplicate-source/isolation assertions retained."
+  },
+  "original_failure": {
+    "run_id": 42911462510,
+    "head_sha": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+    "passed": 3,
+    "failed": 2,
+    "skipped": 0,
+    "evidence": "exact17-8c-remaining-shards.json",
+    "unchanged": true
+  },
+  "source_report": {
+    "phase": "passed",
+    "prebuild_exit_code": 0,
+    "boot_succeeded": true,
+    "test_exit_code": 0,
+    "selected_tests_succeeded": true,
+    "full_acceptance_succeeded": false,
+    "runtime_tested": false,
+    "test_completion": {
+      "verified": true,
+      "counts": {
+        "totalTestCount": 5,
+        "passedTests": 5,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "result": "Passed",
+      "expected_ui_count": 5,
+      "completed_ui_count": 5,
+      "missing_ui_tests": [],
+      "unexpected_ui_tests": [],
+      "nonpassing_or_repeated_ui_tests": []
+    }
+  },
+  "limits": [
+    "This is the selected five-method native UI shard, not full product acceptance or a live model result.",
+    "Original 8c failures remain failures; no cross-run test totals are summed.",
+    "The host has no xcresulttool; CI-exported xcresult summary is crosschecked against actual tests.log and the full artifact ZIP digest.",
+    "Raw runtime_tested is a full-suite flag; actual 17.0.1/21A342 runtime is verified from xcresult device metadata.",
+    "No dispatch, retry, cancellation, model request or product edit was made by this evidence collection."
+  ]
+}

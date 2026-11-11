@@ -9,6 +9,7 @@ struct ContentView: View {
     @StateObject private var mcpSession = MCPSession()
     @StateObject private var browserWorkspace = BrowserWorkspace()
     @StateObject private var preferences = SelfConfigurationStore.applicationPreferences()
+    @StateObject private var languages = AppLanguageStore.applicationPreferences()
     @StateObject private var notifications = TaskNotificationStore.applicationStore()
     private var browser: BrowserSession { browserWorkspace.selected }
     @Environment(\.scenePhase) private var scenePhase
@@ -20,7 +21,7 @@ struct ContentView: View {
                 case .chat:
                     ChatView(session: session, mcp: mcpSession)
                 case .settings:
-                    ModelSettingsView(session: session, preferences: preferences, notifications: notifications)
+                    ModelSettingsView(session: session, preferences: preferences, notifications: notifications, languages: languages)
                 case .tools:
                     MCPToolsView(session: mcpSession)
                 case .memory:
@@ -44,6 +45,7 @@ struct ContentView: View {
                      ? "generation=\(notificationNavigationID.uuidString);destination=\(selection.rawValue)" : "")
         #endif
         .environmentObject(preferences)
+        .appLanguage(languages)
         .preferredColorScheme(preferences.preferredColorScheme)
         .taskNotifications(chat: session, store: notifications) { destination in
             switch destination {
@@ -398,6 +400,7 @@ private struct ModelSettingsView: View {
     @ObservedObject var session: ChatSession
     @ObservedObject var preferences: SelfConfigurationStore
     @ObservedObject var notifications: TaskNotificationStore
+    @ObservedObject var languages: AppLanguageStore
     @FocusState private var editingField: Field?
     private enum Field: Hashable { case baseURL, model, key }
 
@@ -461,7 +464,7 @@ private struct ModelSettingsView: View {
                 Text("更換服務、模型或金鑰會開始新的對話，草稿保留。移除設定會清除本次對話及此 App 的模型金鑰。")
                 Text("儲存只代表設定已保存；首次傳送才會連線至你設定的服務。")
                 NavigationLink {
-                    SelfConfigurationView(store: preferences, modelAccess: session.modelAccess)
+                    SelfConfigurationView(store: preferences, modelAccess: session.modelAccess, languages: languages)
                 } label: { Text("外觀與模型調整權限") }
                     .accessibilityIdentifier("settings.appearance")
                 NavigationLink {

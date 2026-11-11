@@ -190,9 +190,10 @@ final class BrowserWorkspaceUITests: XCTestCase {
     private var history: XCUIElementQuery { app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "browser.history.open.")) }
     private func launch(reset: Bool, nativeFindEnglish: Bool = false) {
         app.terminate()
-        app.launchArguments = ["-UITestMode", "-UITestNamespace", namespace]
+        app.launchArguments = ["-AppleLanguages", nativeFindEnglish ? "(en)" : "(zh-Hant)",
+                               "-AppleLocale", nativeFindEnglish ? "en_US" : "zh_TW",
+                               "-UITestMode", "-UITestNamespace", namespace]
         if reset { app.launchArguments.append("-UITestResetStorage") }
-        if nativeFindEnglish { app.launchArguments += ["-AppleLanguages", "(en)", "-AppleLocale", "en_US"] }
         app.launch()
         XCTAssertTrue(app.buttons["navigation.browser"].waitForExistence(timeout: 10)); app.buttons["navigation.browser"].tap()
     }

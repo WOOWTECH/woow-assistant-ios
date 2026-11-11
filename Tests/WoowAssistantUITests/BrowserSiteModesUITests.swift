@@ -107,7 +107,7 @@ final class BrowserSiteModesUITests: XCTestCase {
 
     private func launch(reset: Bool) {
         app.terminate()
-        app.launchArguments = ["-UITestMode", "-UITestNamespace", namespace]
+        app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW", "-UITestMode", "-UITestNamespace", namespace]
         if reset { app.launchArguments.append("-UITestResetStorage") }
         app.launch()
         XCTAssertTrue(app.buttons["navigation.browser"].waitForExistence(timeout: 10))

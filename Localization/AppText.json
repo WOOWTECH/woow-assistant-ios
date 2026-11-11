@@ -1,0 +1,804 @@
+{
+  "schema_version": 1,
+  "fallback": "zh-Hant",
+  "languages": [
+    "zh-Hant",
+    "zh-Hans",
+    "en"
+  ],
+  "entries": [
+    {
+      "case": "languageTitle",
+      "key": "language.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "介面語言",
+        "zh-Hans": "界面语言",
+        "en": "Interface language"
+      }
+    },
+    {
+      "case": "languageSystem",
+      "key": "language.system",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "跟隨系統",
+        "zh-Hans": "跟随系统",
+        "en": "Follow system"
+      }
+    },
+    {
+      "case": "languageTraditional",
+      "key": "language.traditional",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "繁體中文",
+        "zh-Hans": "繁體中文",
+        "en": "繁體中文"
+      }
+    },
+    {
+      "case": "languageSimplified",
+      "key": "language.simplified",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "简体中文",
+        "zh-Hans": "简体中文",
+        "en": "简体中文"
+      }
+    },
+    {
+      "case": "languageEnglish",
+      "key": "language.english",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "English",
+        "zh-Hans": "English",
+        "en": "English"
+      }
+    },
+    {
+      "case": "languageExplanation",
+      "key": "language.explanation",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "依裝置的語言偏好選擇支援的介面語言；未支援時使用繁體中文。不翻譯你的內容、模型回覆或原始技能。",
+        "zh-Hans": "根据设备的语言偏好选择支持的界面语言；不支持时使用繁体中文。不翻译你的内容、模型回复或原始技能。",
+        "en": "Uses your device’s preferred supported language, with Traditional Chinese as the fallback. Your content, model replies and original skills are not translated."
+      }
+    },
+    {
+      "case": "languagePartialNotice",
+      "key": "language.partialNotice",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "目前僅此設定頁完成三語翻譯；其他頁面仍可能顯示繁體中文。",
+        "zh-Hans": "目前仅此设置页完成三语翻译；其他页面仍可能显示繁体中文。",
+        "en": "Only this settings page has been translated into all three languages so far. Other pages may still appear in Traditional Chinese."
+      }
+    },
+    {
+      "case": "languageSaveFailed",
+      "key": "language.saveFailed",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "無法讀回語言設定，請重新選擇。",
+        "zh-Hans": "无法读回语言设置，请重新选择。",
+        "en": "Could not verify the saved language. Please select it again."
+      }
+    },
+    {
+      "case": "configurationTitle",
+      "key": "configuration.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "外觀與模型權限",
+        "zh-Hans": "外观与模型权限",
+        "en": "Appearance and model permissions"
+      }
+    },
+    {
+      "case": "appearanceTitle",
+      "key": "appearance.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "外觀",
+        "zh-Hans": "外观",
+        "en": "Appearance"
+      }
+    },
+    {
+      "case": "appearanceCurrent",
+      "key": "appearance.current",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "目前外觀",
+        "zh-Hans": "当前外观",
+        "en": "Current appearance"
+      }
+    },
+    {
+      "case": "appearanceSystem",
+      "key": "appearance.system",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "跟隨系統",
+        "zh-Hans": "跟随系统",
+        "en": "Follow system"
+      }
+    },
+    {
+      "case": "appearanceLight",
+      "key": "appearance.light",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "淺色",
+        "zh-Hans": "浅色",
+        "en": "Light"
+      }
+    },
+    {
+      "case": "appearanceDark",
+      "key": "appearance.dark",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "深色",
+        "zh-Hans": "深色",
+        "en": "Dark"
+      }
+    },
+    {
+      "case": "appearanceAppliedDark",
+      "key": "appearance.appliedDark",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "目前顯示：深色",
+        "zh-Hans": "当前显示：深色",
+        "en": "Currently displayed: Dark"
+      }
+    },
+    {
+      "case": "appearanceAppliedLight",
+      "key": "appearance.appliedLight",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "目前顯示：淺色",
+        "zh-Hans": "当前显示：浅色",
+        "en": "Currently displayed: Light"
+      }
+    },
+    {
+      "case": "appearanceExplanation",
+      "key": "appearance.explanation",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "選擇後立即生效；跟隨系統會使用裝置目前的外觀。",
+        "zh-Hans": "选择后立即生效；跟随系统会使用设备当前的外观。",
+        "en": "Changes take effect immediately. Follow system uses the device’s current appearance."
+      }
+    },
+    {
+      "case": "configurationPermissionTitle",
+      "key": "configuration.permissionTitle",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "模型權限",
+        "zh-Hans": "模型权限",
+        "en": "Model permissions"
+      }
+    },
+    {
+      "case": "configurationPermission",
+      "key": "configuration.permission",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "允許模型調整外觀",
+        "zh-Hans": "允许模型调整外观",
+        "en": "Allow the model to change appearance"
+      }
+    },
+    {
+      "case": "configurationPermissionExplanation",
+      "key": "configuration.permissionExplanation",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "預設關閉。開啟後，模型只可查詢及切換外觀；模型、金鑰、登入、刪除資料及網路設定均不提供給此工具。",
+        "zh-Hans": "默认关闭。开启后，模型只能查询及切换外观；模型、密钥、登录、删除数据及网络设置均不提供给此工具。",
+        "en": "Off by default. When enabled, the model can only inspect and change appearance. This tool cannot access model settings, keys, sign-in, data deletion or network settings."
+      }
+    },
+    {
+      "case": "configurationRequestTitle",
+      "key": "configuration.requestTitle",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請模型調整外觀",
+        "zh-Hans": "请模型调整外观",
+        "en": "Ask the model to change appearance"
+      }
+    },
+    {
+      "case": "configurationRequestExplanation",
+      "key": "configuration.requestExplanation",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "要求會傳送至你已設定的模型。請勿填入密碼或金鑰。",
+        "zh-Hans": "请求会发送至你已配置的模型。请勿填入密码或密钥。",
+        "en": "Your request is sent to your configured model. Do not include passwords or keys."
+      }
+    },
+    {
+      "case": "configurationRequestLabel",
+      "key": "configuration.requestLabel",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "外觀調整要求",
+        "zh-Hans": "外观调整请求",
+        "en": "Appearance change request"
+      }
+    },
+    {
+      "case": "configurationCancel",
+      "key": "configuration.cancel",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "停止調整",
+        "zh-Hans": "停止调整",
+        "en": "Stop changes"
+      }
+    },
+    {
+      "case": "configurationStart",
+      "key": "configuration.start",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "送出外觀要求",
+        "zh-Hans": "发送外观请求",
+        "en": "Send appearance request"
+      }
+    },
+    {
+      "case": "configurationResult",
+      "key": "configuration.result",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "結果",
+        "zh-Hans": "结果",
+        "en": "Result"
+      }
+    },
+    {
+      "case": "keyboardDone",
+      "key": "keyboard.done",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "完成輸入",
+        "zh-Hans": "完成输入",
+        "en": "Done"
+      }
+    },
+    {
+      "case": "configurationIdle",
+      "key": "configuration.idle",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "尚未提出外觀調整要求。",
+        "zh-Hans": "尚未提出外观调整请求。",
+        "en": "No appearance change has been requested."
+      }
+    },
+    {
+      "case": "configurationRunning",
+      "key": "configuration.running",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "正在查詢並調整外觀……",
+        "zh-Hans": "正在查询并调整外观……",
+        "en": "Checking and changing appearance…"
+      }
+    },
+    {
+      "case": "configurationClarification",
+      "key": "configuration.clarification",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "尚未變更外觀；請補充要求後重新送出。",
+        "zh-Hans": "尚未更改外观；请补充请求后重新发送。",
+        "en": "Appearance has not changed. Clarify your request and send it again."
+      }
+    },
+    {
+      "case": "configurationUnchanged",
+      "key": "configuration.unchanged",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "這次沒有變更外觀。",
+        "zh-Hans": "本次没有更改外观。",
+        "en": "No appearance change was made."
+      }
+    },
+    {
+      "case": "configurationStopped",
+      "key": "configuration.stopped",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "這次外觀調整已停止。",
+        "zh-Hans": "本次外观调整已停止。",
+        "en": "This appearance change has stopped."
+      }
+    },
+    {
+      "case": "configurationNotStarted",
+      "key": "configuration.notStarted",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "尚未開始外觀調整。",
+        "zh-Hans": "尚未开始外观调整。",
+        "en": "The appearance change has not started."
+      }
+    },
+    {
+      "case": "configurationCancelled",
+      "key": "configuration.cancelled",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已停止；之後抵達的模型回應不會套用。",
+        "zh-Hans": "已停止；之后到达的模型回复不会应用。",
+        "en": "Stopped. Any model reply arriving later will not be applied."
+      }
+    },
+    {
+      "case": "configurationNeedsModel",
+      "key": "configuration.needsModel",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請先在模型設定完成連線設定。",
+        "zh-Hans": "请先在模型设置完成连接配置。",
+        "en": "Configure the connection in model settings first."
+      }
+    },
+    {
+      "case": "configurationStepList",
+      "key": "configuration.stepList",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "settings_list：已讀取外觀及三個可選值",
+        "zh-Hans": "settings_list：已读取外观及三个可选值",
+        "en": "settings_list: Read appearance and its three available values"
+      }
+    },
+    {
+      "case": "configurationErrorPermission",
+      "key": "configuration.error.permission",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請先開啟「允許模型調整外觀」。",
+        "zh-Hans": "请先开启“允许模型调整外观”。",
+        "en": "Enable “Allow the model to change appearance” first."
+      }
+    },
+    {
+      "case": "configurationErrorAuthorization",
+      "key": "configuration.error.authorization",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "設定或權限已變更，已停止這次操作；請重新提出要求。",
+        "zh-Hans": "设置或权限已更改，已停止本次操作；请重新提出请求。",
+        "en": "Settings or permissions changed. This operation stopped; submit a new request."
+      }
+    },
+    {
+      "case": "configurationErrorCancelled",
+      "key": "configuration.error.cancelled",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已取消，之後抵達的模型回應不會套用。",
+        "zh-Hans": "已取消，之后到达的模型回复不会应用。",
+        "en": "Cancelled. Any model reply arriving later will not be applied."
+      }
+    },
+    {
+      "case": "configurationErrorRequest",
+      "key": "configuration.error.request",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請輸入外觀調整要求，長度不得超過 2,000 個 UTF-8 位元組。",
+        "zh-Hans": "请输入外观调整请求，长度不得超过 2,000 个 UTF-8 字节。",
+        "en": "Enter an appearance change request of at most 2,000 UTF-8 bytes."
+      }
+    },
+    {
+      "case": "configurationErrorCommand",
+      "key": "configuration.error.command",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "模型未回傳有效的設定指令，未套用變更。",
+        "zh-Hans": "模型未返回有效的设置指令，未应用更改。",
+        "en": "The model returned an invalid settings command. No change was applied."
+      }
+    },
+    {
+      "case": "configurationErrorList",
+      "key": "configuration.error.list",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "模型必須先查詢可調整的設定，未套用變更。",
+        "zh-Hans": "模型必须先查询可调整的设置，未应用更改。",
+        "en": "The model must list available settings first. No change was applied."
+      }
+    },
+    {
+      "case": "configurationErrorSetting",
+      "key": "configuration.error.setting",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "模型只能調整外觀，未套用其他設定。",
+        "zh-Hans": "模型只能调整外观，未应用其他设置。",
+        "en": "The model can only change appearance. No other setting was changed."
+      }
+    },
+    {
+      "case": "configurationErrorValue",
+      "key": "configuration.error.value",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "外觀只接受跟隨系統、淺色或深色，未套用變更。",
+        "zh-Hans": "外观只接受跟随系统、浅色或深色，未应用更改。",
+        "en": "Appearance must be Follow system, Light or Dark. No change was applied."
+      }
+    },
+    {
+      "case": "configurationErrorUsed",
+      "key": "configuration.error.used",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "這次設定操作已結束，請重新提出要求。",
+        "zh-Hans": "本次设置操作已结束，请重新提出请求。",
+        "en": "This settings operation has ended. Submit a new request."
+      }
+    },
+    {
+      "case": "configurationErrorTimeout",
+      "key": "configuration.error.timeout",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "模型回應逾時，未套用變更。",
+        "zh-Hans": "模型响应超时，未应用更改。",
+        "en": "The model response timed out. No change was applied."
+      }
+    },
+    {
+      "case": "configurationErrorModel",
+      "key": "configuration.error.model",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "模型連線或回應失敗，未套用變更。",
+        "zh-Hans": "模型连接或响应失败，未应用更改。",
+        "en": "The model connection or response failed. No change was applied."
+      }
+    },
+    {
+      "case": "configurationErrorPersistence",
+      "key": "configuration.error.persistence",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "無法讀回外觀設定，請檢查目前外觀。",
+        "zh-Hans": "无法读回外观设置，请检查当前外观。",
+        "en": "Could not read back the appearance setting. Check the current appearance."
+      }
+    },
+    {
+      "case": "languageResolved",
+      "key": "language.resolved",
+      "parameters": [
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "translations": {
+        "zh-Hant": "目前介面：%1$@",
+        "zh-Hans": "当前界面：%1$@",
+        "en": "Current interface: %1$@"
+      }
+    },
+    {
+      "case": "configurationChanged",
+      "key": "configuration.changed",
+      "parameters": [
+        {
+          "name": "appearance",
+          "type": "String"
+        }
+      ],
+      "translations": {
+        "zh-Hant": "已讀回外觀：%1$@。已立即套用。",
+        "zh-Hans": "已读回外观：%1$@。已立即应用。",
+        "en": "Read back appearance: %1$@. Applied immediately."
+      }
+    },
+    {
+      "case": "configurationStepSet",
+      "key": "configuration.stepSet",
+      "parameters": [
+        {
+          "name": "appearance",
+          "type": "String"
+        }
+      ],
+      "translations": {
+        "zh-Hant": "settings_set：已寫入並讀回「%1$@」",
+        "zh-Hans": "settings_set：已写入并读回“%1$@”",
+        "en": "settings_set: Saved and read back “%1$@”"
+      }
+    },
+    {
+      "case": "configurationStepCount",
+      "key": "configuration.stepCount",
+      "parameters": [
+        {
+          "name": "count",
+          "type": "Int"
+        }
+      ],
+      "plural": "count",
+      "translations": {
+        "zh-Hant": {
+          "other": "%lld 個步驟"
+        },
+        "zh-Hans": {
+          "other": "%lld 个步骤"
+        },
+        "en": {
+          "one": "%lld step",
+          "other": "%lld steps"
+        }
+      }
+    },
+    {
+      "case": "workerTitle",
+      "key": "worker.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "腳本服務設定",
+        "zh-Hans": "脚本服务设置",
+        "en": "Script service settings"
+      }
+    },
+    {
+      "case": "workerSection",
+      "key": "worker.section",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "原版 PDF 腳本服務",
+        "zh-Hans": "原版 PDF 脚本服务",
+        "en": "Original PDF script service"
+      }
+    },
+    {
+      "case": "workerExplanation",
+      "key": "worker.explanation",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "填入你部署的 Mika PDF 擷取服務完整 HTTPS 網址與專用存取金鑰。設定不會上傳文件。",
+        "zh-Hans": "填入你部署的 Mika PDF 提取服务的完整 HTTPS 网址与专用访问密钥。设置不会上传文件。",
+        "en": "Enter the full HTTPS URL and dedicated access key for your deployed Mika PDF extraction service. Saving settings does not upload documents."
+      }
+    },
+    {
+      "case": "workerEndpoint",
+      "key": "worker.endpoint",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "https://服務主機/v1/extract-pdf",
+        "zh-Hans": "https://服务主机/v1/extract-pdf",
+        "en": "https://service-host/v1/extract-pdf"
+      }
+    },
+    {
+      "case": "workerToken",
+      "key": "worker.token",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "Bearer 存取金鑰；同一服務可留空沿用",
+        "zh-Hans": "Bearer 访问密钥；同一服务可留空沿用",
+        "en": "Bearer access key; leave blank to reuse for the same service"
+      }
+    },
+    {
+      "case": "workerSave",
+      "key": "worker.save",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "儲存服務設定",
+        "zh-Hans": "保存服务设置",
+        "en": "Save service settings"
+      }
+    },
+    {
+      "case": "workerRemove",
+      "key": "worker.remove",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "移除服務設定與金鑰",
+        "zh-Hans": "移除服务设置与密钥",
+        "en": "Remove service settings and key"
+      }
+    },
+    {
+      "case": "workerLocal",
+      "key": "worker.local",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "目前使用裝置上的 PDFKit。",
+        "zh-Hans": "目前使用设备上的 PDFKit。",
+        "en": "Currently using PDFKit on this device."
+      }
+    },
+    {
+      "case": "workerConfigured",
+      "key": "worker.configured",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "服務已設定；每次仍須選擇使用服務，並核准讀檔與上傳。",
+        "zh-Hans": "服务已设置；每次仍须选择使用服务，并批准读取文件与上传。",
+        "en": "The service is configured. Each use still requires selecting the service and approving file reading and upload."
+      }
+    },
+    {
+      "case": "workerPrivacy",
+      "key": "worker.privacy",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "文件、選頁與 PDF 密碼會在你核准上傳後傳給這個服務。存取金鑰獨立儲存在裝置 Keychain；不會沿用模型的 API Key。",
+        "zh-Hans": "文件、所选页面与 PDF 密码会在你批准上传后发送给此服务。访问密钥单独保存在设备 Keychain；不会沿用模型的 API Key。",
+        "en": "The document, selected pages and PDF password are sent to this service only after you approve the upload. Its access key is stored separately in the device Keychain and never reuses the model API key."
+      }
+    },
+    {
+      "case": "workerLoadFailed",
+      "key": "worker.loadFailed",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "腳本服務設定無法讀取，原資料保留。",
+        "zh-Hans": "无法读取脚本服务设置，原数据保留。",
+        "en": "Could not read script service settings. Existing data was preserved."
+      }
+    },
+    {
+      "case": "workerCredentialsFailed",
+      "key": "worker.credentialsFailed",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "腳本服務設定或金鑰無法讀取，請重新設定或解鎖後再試。",
+        "zh-Hans": "无法读取脚本服务设置或密钥，请重新设置或解锁后再试。",
+        "en": "Could not read script service settings or its key. Configure it again or unlock the device and retry."
+      }
+    },
+    {
+      "case": "workerSavedCleanupFailed",
+      "key": "worker.savedCleanupFailed",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "設定已儲存，舊金鑰未能移除；請稍後重試移除設定。",
+        "zh-Hans": "设置已保存，未能移除旧密钥；请稍后重试移除设置。",
+        "en": "Settings were saved, but the old key could not be removed. Try removing the settings later."
+      }
+    },
+    {
+      "case": "workerSaved",
+      "key": "worker.saved",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "設定已儲存；尚未連線或上傳文件。",
+        "zh-Hans": "设置已保存；尚未连接或上传文件。",
+        "en": "Settings saved. No connection or document upload has been made."
+      }
+    },
+    {
+      "case": "workerInvalid",
+      "key": "worker.invalid",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "服務網址或金鑰無效，設定未變更。",
+        "zh-Hans": "服务网址或密钥无效，设置未更改。",
+        "en": "The service URL or key is invalid. Settings were not changed."
+      }
+    },
+    {
+      "case": "workerRemoved",
+      "key": "worker.removed",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已移除腳本服務設定與金鑰。",
+        "zh-Hans": "已移除脚本服务设置与密钥。",
+        "en": "Script service settings and key were removed."
+      }
+    },
+    {
+      "case": "workerRemoveFailed",
+      "key": "worker.removeFailed",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "無法移除腳本服務設定與金鑰，請解鎖後重試。",
+        "zh-Hans": "无法移除脚本服务设置与密钥，请解锁后重试。",
+        "en": "Could not remove script service settings and key. Unlock the device and retry."
+      }
+    },
+    {
+      "case": "modelSettingsInvalidURL",
+      "key": "modelSettings.invalidURL",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請輸入完整的 HTTPS Base URL，不可包含帳密、查詢參數或片段。",
+        "zh-Hans": "请输入完整的 HTTPS Base URL，不可包含用户名密码、查询参数或片段。",
+        "en": "Enter a full HTTPS base URL without credentials, query parameters or a fragment."
+      }
+    },
+    {
+      "case": "modelSettingsMissingModel",
+      "key": "modelSettings.missingModel",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請填寫服務供應商提供的模型名稱。",
+        "zh-Hans": "请填写服务提供商提供的模型名称。",
+        "en": "Enter the model name supplied by your service provider."
+      }
+    },
+    {
+      "case": "modelSettingsMissingKey",
+      "key": "modelSettings.missingKey",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請輸入 API Key。已有儲存的金鑰時，同一服務可留空沿用。",
+        "zh-Hans": "请输入 API Key。已有保存的密钥时，同一服务可留空沿用。",
+        "en": "Enter an API key. Leave it blank to reuse a saved key for the same service."
+      }
+    },
+    {
+      "case": "modelSettingsChangedOrigin",
+      "key": "modelSettings.changedOrigin",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "服務主機或連接埠已變更，請重新輸入該服務的 API Key；不會自動沿用舊金鑰。",
+        "zh-Hans": "服务主机或端口已更改，请重新输入此服务的 API Key；不会自动沿用旧密钥。",
+        "en": "The service host or port changed. Enter its API key again; the old key is not reused automatically."
+      }
+    },
+    {
+      "case": "modelSettingsInvalidKey",
+      "key": "modelSettings.invalidKey",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "API Key 不可包含空白或控制字元。",
+        "zh-Hans": "API Key 不可包含空白或控制字符。",
+        "en": "The API key must not contain whitespace or control characters."
+      }
+    },
+    {
+      "case": "modelSettingsUnavailableKeychain",
+      "key": "modelSettings.unavailableKeychain",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "無法存取 Keychain，設定未變更。請解鎖裝置後再試。",
+        "zh-Hans": "无法访问 Keychain，设置未更改。请解锁设备后再试。",
+        "en": "Keychain is unavailable. Settings were not changed. Unlock the device and retry."
+      }
+    },
+    {
+      "case": "modelSettingsKeychainStatus",
+      "key": "modelSettings.keychainStatus",
+      "parameters": [
+        {
+          "name": "code",
+          "type": "String"
+        }
+      ],
+      "translations": {
+        "zh-Hant": "Keychain 存取失敗（系統代碼 %1$@），設定未變更。",
+        "zh-Hans": "Keychain 访问失败（系统代码 %1$@），设置未更改。",
+        "en": "Keychain access failed (system code %1$@). Settings were not changed."
+      }
+    }
+  ]
+}

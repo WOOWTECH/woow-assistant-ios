@@ -12,5 +12,6 @@ swiftc -parse-as-library -emit-module -emit-library -static -module-name Assista
   -o "$worker_settings_build/libAssistantSkills.a"
 swiftc -DDEBUG -parse-as-library -I "$worker_settings_build" -L "$worker_settings_build" \
   -lAssistantModels -lAssistantSkills Sources/App/ModelSettings.swift Sources/App/SkillWorkerSettings.swift \
+  Sources/App/AppLanguage.swift Sources/App/AppText.swift Sources/App/AppLocalizer.swift Sources/App/AppModelSettingsText.swift \
   scripts/SkillWorkerSettingsChecks.swift -o "$worker_settings_build/checks"
 "$worker_settings_build/checks"

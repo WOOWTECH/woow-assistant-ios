@@ -77,8 +77,10 @@ import XCTest
             let model = SelfConfigurationSequenceModel([list, try set(appearance.rawValue)])
             let runtime = try SelfConfigurationRuntime(request: "請調整外觀", store: scope.store)
             var steps: [String] = []
-            let outcome = try await runtime.run(client: model, configuration: configuration, apiKey: key, onStep: { steps.append($0) })
+            var events: [SelfConfigurationEvent] = []
+            let outcome = try await runtime.run(client: model, configuration: configuration, apiKey: key, onEvent: { events.append($0) }, onStep: { steps.append($0) })
             guard case .changed(let receipt) = outcome else { throw Failure(message: "expected a real store receipt") }
+            try expect(events == [.listedOptions, .appliedAppearance(appearance)], "typed events describe actual readback")
             try expect(receipt.appearance == appearance && receipt.previous == previous, "receipt is actual old/new value")
             try expect(scope.store.appearance == appearance && observed.last == appearance, "appearance publishes immediately")
             try expect(SelfConfigurationStore(defaults: UserDefaults(suiteName: scope.name)!).appearance == appearance, "readback survives another store instance")
@@ -175,9 +177,11 @@ import XCTest
         let base = SelfConfigurationHTTPBridge.register(try await server.start()); defer { SelfConfigurationHTTPBridge.remove(base) }
         let transport = SelfConfigurationHTTPBridge.session(); defer { transport.invalidateAndCancel() }
         let runtime = try SelfConfigurationRuntime(request: "請把外觀改成深色", store: scope.store)
+        var events: [SelfConfigurationEvent] = []
         let outcome = try await runtime.run(client: HTTPChatModelClient(session: transport),
-            configuration: .init(baseURL: base, model: "synthetic-socket-model"), apiKey: key)
+            configuration: .init(baseURL: base, model: "synthetic-socket-model"), apiKey: key, onEvent: { events.append($0) })
         guard case .changed(let receipt) = outcome else { throw Failure(message: "HTTP operation did not produce a real receipt") }
+        try expect(events == [.listedOptions, .appliedAppearance(.dark)], "typed events follow actual HTTP and persistent readback")
         try expect(receipt.appearance == .dark && scope.store.appearance == .dark, "socket replies cause the real store update")
         let bodies = server.requestBodies
         try expect(bodies.count == 2, "server actually received two HTTP requests")

@@ -8,6 +8,12 @@ public enum SelfConfigurationOutcome: Equatable, Sendable {
     case unchanged
 }
 
+/// Presentation-only events. Tool result JSON and authorization are unchanged.
+public enum SelfConfigurationEvent: Equatable, Sendable {
+    case listedOptions
+    case appliedAppearance(SelfConfigurationAppearance)
+}
+
 /// The JSON tool protocol is deliberately closed; names, argument names and
 /// values are all allowlisted. No KVC, arbitrary defaults key, or dynamic tool.
 enum SelfConfigurationCommand: Equatable {
@@ -65,6 +71,7 @@ enum SelfConfigurationCommand: Equatable {
     }
 
     public func run(client: any ChatModelClient, configuration: ModelConfiguration, apiKey: String,
+                    onEvent: @MainActor (SelfConfigurationEvent) -> Void = { _ in },
                     onStep: @MainActor (String) -> Void = { _ in }) async throws -> SelfConfigurationOutcome {
         guard !used else { throw SelfConfigurationError.alreadyUsed }
         used = true
@@ -93,11 +100,13 @@ enum SelfConfigurationCommand: Equatable {
                     messages.append(.init(role: "user", content: String(decoding: try JSONEncoder().encode(result), as: UTF8.self)))
                     listed = true
                     onStep("settings_list：已讀取外觀及三個可選值")
+                    onEvent(.listedOptions)
                 case .set(let appearance):
                     guard listed else { throw SelfConfigurationError.listRequired }
                     try check()
                     let receipt = try store.apply(appearance, authorization: authorization)
                     onStep("settings_set：已寫入並讀回「\(receipt.appearance.label)」")
+                    onEvent(.appliedAppearance(receipt.appearance))
                     return .changed(receipt)
                 case .ask(let question): return .needsClarification(question)
                 case .finish: return .unchanged

@@ -14,7 +14,7 @@ private final class WorkerCheckCredentials: ModelCredentialStoring {
 }
 
 @main enum SkillWorkerSettingsChecks {
-    static func main() throws {
+    @MainActor static func main() throws {
         let suite = "woow-worker-check-" + UUID().uuidString
         let defaults = UserDefaults(suiteName: suite)!
         defer { defaults.removePersistentDomain(forName: suite) }
@@ -66,6 +66,28 @@ private final class WorkerCheckCredentials: ModelCredentialStoring {
         try check(isolated.endpoint() == nil)
         #endif
         try store.remove()
+        try check(credentials.values.isEmpty && defaults.data(forKey: ModelSettingsRepository.configurationKey) == nil)
+        credentials.rejectInsert = false
+        let preferences = SkillWorkerPreferences(repository: store)
+        try check(preferences.worker == nil && preferences.errorText == nil)
+        preferences.endpointDraft = endpoint; preferences.tokenDraft = token
+        preferences.save()
+        try check(preferences.noticeText == .workerSaved && preferences.tokenDraft.isEmpty)
+        try check(preferences.worker?.destination == endpoint && credentials.values.values.first == token)
+        let beforeLanguageRendering = defaults.data(forKey: ModelSettingsRepository.configurationKey)
+        let literalToken = preferences.noticeText!
+        let hant = AppLocalizer(language: .traditionalChinese)
+        try check(hant.text(literalToken) == "設定已儲存；尚未連線或上傳文件。")
+        try check(defaults.data(forKey: ModelSettingsRepository.configurationKey) == beforeLanguageRendering)
+        let reopenedPreferences = SkillWorkerPreferences(repository: SkillWorkerSettingsRepository(defaults: defaults, credentials: credentials))
+        try check(reopenedPreferences.endpointDraft == endpoint && reopenedPreferences.worker?.destination == endpoint)
+        preferences.endpointDraft = "https://different.invalid/v1/extract-pdf"
+        preferences.save()
+        try check(preferences.errorText == .modelSettingsChangedOrigin && preferences.noticeText == nil)
+        try check(defaults.data(forKey: ModelSettingsRepository.configurationKey) == beforeLanguageRendering)
+        try check(preferences.tokenDraft.isEmpty && credentials.values.values.first == token)
+        preferences.remove()
+        try check(preferences.noticeText == .workerRemoved && preferences.worker == nil)
         try check(credentials.values.isEmpty && defaults.data(forKey: ModelSettingsRepository.configurationKey) == nil)
         print("PASS \(count) worker settings isolation, persistence and rejection checks")
     }

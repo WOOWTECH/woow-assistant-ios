@@ -1,0 +1,284 @@
+{
+  "version": 1,
+  "scope": "pdf-assembly-multi",
+  "method": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
+  "runs": [
+    {
+      "variant": "current",
+      "run_id": 42920217869,
+      "job_id": 130192883232,
+      "artifact_id": 13815185061,
+      "source_revision": "3a84b694515a7d0adee16e31357301117f16a747",
+      "device": {
+        "architecture": "arm64",
+        "deviceId": "74A3025F-5485-4EA8-ACE4-A5B7F3AD2DB7",
+        "deviceName": "Woow-CI-6b18f09b30454bdbbe29a2c6613cee8d",
+        "modelName": "iPhone 17",
+        "osBuildNumber": "23C54",
+        "osVersion": "26.2",
+        "platform": "iOS Simulator"
+      },
+      "result": {
+        "expected": 1,
+        "actual_starts": 1,
+        "actual_completions": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "expected_failures": 0,
+        "elapsed_seconds": 118.86,
+        "assertion_file": "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift",
+        "assertion_line": 332
+      },
+      "namespace": "78560468-DC3B-4079-ADE6-BBB25EBF1C77",
+      "failure_boundary": {
+        "selected_role": "A",
+        "native_picked_total": 0,
+        "app_completion_total": 0,
+        "failing_presentation_native_picked": 0,
+        "failing_presentation_native_dismantled_before_termination": 0,
+        "mode": "import",
+        "allowsMultipleSelection": false,
+        "observed_delegate_present": true,
+        "observed_in_window": true,
+        "two_source_read_grants_or_assembly_reached": false
+      },
+      "provider": {
+        "error_time_utc": "2026-11-10T23:48:37.502Z",
+        "domain": "NSFileProviderErrorDomain",
+        "code": -1005,
+        "item_identifier": "localstorage/did=3",
+        "subsequent_nil_url": true,
+        "selection_exact_synthetic_filename_confirmed": true,
+        "selected_file_id": 3553999,
+        "selected_file_id_matches_baseline_inode": true,
+        "uti": "com.adobe.pdf",
+        "successful_first_A_item_id": null,
+        "successful_A_thumbnail_warning_is_not_failure_cause": false
+      },
+      "fixture_identity": {
+        "baseline_records": 4,
+        "all_observed_samples_valid": true,
+        "post_test_comparisons": {
+          "sameHash": true,
+          "sameIdentity": true,
+          "sameParentIdentity": true,
+          "sameSize": true,
+          "sameSourceURL": true
+        },
+        "post_test_is_not_failure_time_proof": true,
+        "records": [
+          {
+            "phase": "created",
+            "ordinal": 0,
+            "role": "A",
+            "inode": 3553999,
+            "sha256": "bff42b23373a023ea767e8e19ec53fbfc1af96fd76e9ad4c8a2bbe61791f3307",
+            "source_url_sha256": "7258f3c454fdcf9fb7fb5525b65d929a249fb84cfc2d02f08bbf7a0a16bb5b3f",
+            "parent_inode": 3552867
+          },
+          {
+            "phase": "created",
+            "ordinal": 0,
+            "role": "B",
+            "inode": 3554000,
+            "sha256": "86fb2648e2cde4314d7096af769a63fd39b7011d4dd7cc24f5a8f946be098ef9",
+            "source_url_sha256": "aee32c284b779908d80ae08630cdec8979914692e307805d1048524fcf3e28e4",
+            "parent_inode": 3552867
+          },
+          {
+            "phase": "prePicker",
+            "ordinal": 1,
+            "role": "A",
+            "inode": 3553999,
+            "sha256": "bff42b23373a023ea767e8e19ec53fbfc1af96fd76e9ad4c8a2bbe61791f3307",
+            "source_url_sha256": "7258f3c454fdcf9fb7fb5525b65d929a249fb84cfc2d02f08bbf7a0a16bb5b3f",
+            "parent_inode": 3552867
+          },
+          {
+            "phase": "prePicker",
+            "ordinal": 1,
+            "role": "B",
+            "inode": 3554000,
+            "sha256": "86fb2648e2cde4314d7096af769a63fd39b7011d4dd7cc24f5a8f946be098ef9",
+            "source_url_sha256": "aee32c284b779908d80ae08630cdec8979914692e307805d1048524fcf3e28e4",
+            "parent_inode": 3552867
+          }
+        ]
+      },
+      "evidence": {
+        "local_root": "/tmp/woow-pdf-add-3a-current",
+        "test_summary_sha256": "38e3a8bff3f06d3fac225aaf4748aa3bbd9a931d0d9c12d4c9f2947858a40095",
+        "fixture_evidence_sha256": "5774b15b9a5dda70148deb2b83144786f641817df52ee52c13f79246306eeb6c",
+        "app_stdout_member": "diagnostics/0_Test_Woow-CI-6b18f09b30454bdbbe29a2c6613cee8d_Diagnostics/WoowAssistantUITests-49245A37-08D4-4320-AF81-ABDB0B2EF523-Configuration-Test Scheme Action-Iteration-1/WoowAssistantUITests-AA4E144E-D417-4EBD-97EE-AE96F1534373/StandardOutputAndStandardError-io.woowtech.assistant.txt",
+        "app_stdout_bytes": 23537403,
+        "app_stdout_sha256": "aa1094f89fdc57da15428486bd83a782fcbd0e0cf320fd38d02c3485065750bc",
+        "fixed_provider_window": "/tmp/woow-pdf-add-3a-current-provider-fixed.log",
+        "fixed_provider_window_sha256": "cb6a3fff3cb941b377202683565c9c780a18609a6e6fdb44f903be3715c984c2",
+        "dsc_reused_from_verified_same_runtime_cache": true,
+        "decode_compose_failures_in_selected_window": 0,
+        "whole_artifact_downloaded": false
+      }
+    },
+    {
+      "variant": "se",
+      "run_id": 42920224583,
+      "job_id": 130192906488,
+      "artifact_id": 13813354126,
+      "source_revision": "3a84b694515a7d0adee16e31357301117f16a747",
+      "device": {
+        "architecture": "arm64",
+        "deviceId": "37F5ED8F-1A84-4435-96A7-B7E4856A5E64",
+        "deviceName": "Woow-CI-3b905344d77148e2bda1c6677ab824c6",
+        "modelName": "iPhone SE (3rd generation)",
+        "osBuildNumber": "22F77",
+        "osVersion": "18.5",
+        "platform": "iOS Simulator"
+      },
+      "result": {
+        "expected": 1,
+        "actual_starts": 1,
+        "actual_completions": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0,
+        "expected_failures": 0,
+        "elapsed_seconds": 113.221,
+        "assertion_file": "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift",
+        "assertion_line": 332
+      },
+      "namespace": "32633F7A-B60B-44BE-8168-04375E783073",
+      "failure_boundary": {
+        "selected_role": "B",
+        "native_picked_total": 1,
+        "app_completion_total": 1,
+        "failing_presentation_native_picked": 0,
+        "failing_presentation_native_dismantled_before_termination": 0,
+        "mode": "import",
+        "allowsMultipleSelection": false,
+        "observed_delegate_present": true,
+        "observed_in_window": true,
+        "two_source_read_grants_or_assembly_reached": false
+      },
+      "provider": {
+        "error_time_utc": "2026-11-10T23:50:44.607Z",
+        "domain": "NSFileProviderErrorDomain",
+        "code": -1005,
+        "item_identifier": "localstorage/did=3",
+        "subsequent_nil_url": true,
+        "selection_exact_synthetic_filename_confirmed": true,
+        "selected_file_id": 3585976,
+        "selected_file_id_matches_baseline_inode": true,
+        "uti": "com.adobe.pdf",
+        "successful_first_A_item_id": 4,
+        "successful_A_thumbnail_warning_is_not_failure_cause": true
+      },
+      "fixture_identity": {
+        "baseline_records": 8,
+        "all_observed_samples_valid": true,
+        "post_test_comparisons": {
+          "sameHash": true,
+          "sameIdentity": true,
+          "sameParentIdentity": true,
+          "sameSize": true,
+          "sameSourceURL": true
+        },
+        "post_test_is_not_failure_time_proof": true,
+        "records": [
+          {
+            "phase": "created",
+            "ordinal": 0,
+            "role": "A",
+            "inode": 3585975,
+            "sha256": "d6eea35b4dbbf6f6134448eea74224b4350ccbeabacddec4b55c7c1cd67e651b",
+            "source_url_sha256": "0b4c45a431d02b4e69650bff010aba0455721cb556b69cfeebfd57ff8d25709f",
+            "parent_inode": 3584798
+          },
+          {
+            "phase": "created",
+            "ordinal": 0,
+            "role": "B",
+            "inode": 3585976,
+            "sha256": "d53602a9458e74b44ea51a153b4150f53802499dc182149cd23f17b757155890",
+            "source_url_sha256": "de0ff5879b007f86c6efcf1df4072f01dad82c7da64dce9ec55f008d18f92721",
+            "parent_inode": 3584798
+          },
+          {
+            "phase": "prePicker",
+            "ordinal": 1,
+            "role": "A",
+            "inode": 3585975,
+            "sha256": "d6eea35b4dbbf6f6134448eea74224b4350ccbeabacddec4b55c7c1cd67e651b",
+            "source_url_sha256": "0b4c45a431d02b4e69650bff010aba0455721cb556b69cfeebfd57ff8d25709f",
+            "parent_inode": 3584798
+          },
+          {
+            "phase": "prePicker",
+            "ordinal": 1,
+            "role": "B",
+            "inode": 3585976,
+            "sha256": "d53602a9458e74b44ea51a153b4150f53802499dc182149cd23f17b757155890",
+            "source_url_sha256": "de0ff5879b007f86c6efcf1df4072f01dad82c7da64dce9ec55f008d18f92721",
+            "parent_inode": 3584798
+          },
+          {
+            "phase": "selectionReturned",
+            "ordinal": 1,
+            "role": "A",
+            "inode": 3585975,
+            "sha256": "d6eea35b4dbbf6f6134448eea74224b4350ccbeabacddec4b55c7c1cd67e651b",
+            "source_url_sha256": "0b4c45a431d02b4e69650bff010aba0455721cb556b69cfeebfd57ff8d25709f",
+            "parent_inode": 3584798
+          },
+          {
+            "phase": "selectionReturned",
+            "ordinal": 1,
+            "role": "B",
+            "inode": 3585976,
+            "sha256": "d53602a9458e74b44ea51a153b4150f53802499dc182149cd23f17b757155890",
+            "source_url_sha256": "de0ff5879b007f86c6efcf1df4072f01dad82c7da64dce9ec55f008d18f92721",
+            "parent_inode": 3584798
+          },
+          {
+            "phase": "prePicker",
+            "ordinal": 2,
+            "role": "A",
+            "inode": 3585975,
+            "sha256": "d6eea35b4dbbf6f6134448eea74224b4350ccbeabacddec4b55c7c1cd67e651b",
+            "source_url_sha256": "0b4c45a431d02b4e69650bff010aba0455721cb556b69cfeebfd57ff8d25709f",
+            "parent_inode": 3584798
+          },
+          {
+            "phase": "prePicker",
+            "ordinal": 2,
+            "role": "B",
+            "inode": 3585976,
+            "sha256": "d53602a9458e74b44ea51a153b4150f53802499dc182149cd23f17b757155890",
+            "source_url_sha256": "de0ff5879b007f86c6efcf1df4072f01dad82c7da64dce9ec55f008d18f92721",
+            "parent_inode": 3584798
+          }
+        ]
+      },
+      "evidence": {
+        "local_root": "/tmp/woow-pdf-add-3a-se",
+        "test_summary_sha256": "ee394877201b8512e02f8ba8ab87f021e1511edc7c0c0afec563d4d1740a64e8",
+        "fixture_evidence_sha256": "7a935cbcf9dc7bbb157405e99688b58d9e9e43a75a593611d61dce4abccae14c",
+        "app_stdout_member": "diagnostics/0_Test_Woow-CI-3b905344d77148e2bda1c6677ab824c6_Diagnostics/WoowAssistantUITests-040C3068-7E48-42F6-89F3-BECFC2D73104-Configuration-Test Scheme Action-Iteration-1/WoowAssistantUITests-05BA4AC3-71D4-4D4A-8687-53AB42B01CFA/StandardOutputAndStandardError-io.woowtech.assistant.txt",
+        "app_stdout_bytes": 33938001,
+        "app_stdout_sha256": "384c05edad7d181bec90f6ffb6fb9a160707687c1bc0c7df8135e7fb3f57a0f3",
+        "fixed_provider_window": "/tmp/woow-pdf-add-3a-se-provider-fixed.log",
+        "fixed_provider_window_sha256": "5112e15a03fccd8c62f8a4b5c2c5cce07a033fc3786af0a50c85dd102bdff784",
+        "dsc_reused_from_verified_same_runtime_cache": true,
+        "decode_compose_failures_in_selected_window": 0,
+        "whole_artifact_downloaded": false
+      }
+    }
+  ],
+  "conclusion": "Both strict cases fail before the selected failing PDF is delivered to the App delegate. DocumentManager selected the exact file with inode matching the fixture; localstorage/did=3 URL resolution returned -1005 and nil. Source identity remained stable at recorded checkpoints.",
+  "limitations": [
+    "Underlying FileProvider item-resolution cause remains unproved; no production repair is claimed.",
+    "Post-test inventory cannot prove continuous presence at failure time.",
+    "The historical iOS17 open-in-place case has no corresponding system trace and remains separately classified.",
+    "No gesture, fixture contents, callback acceptance, test assertions, deadlines, retries, or product behavior were changed."
+  ]
+}

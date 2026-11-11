@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "run_id": 42925396567,
+  "job_id": 130210472734,
+  "artifact_id": 13814154274,
+  "source_revision": "76ee518900ad01fe0a2d95d2821348da54f3cca9",
+  "scope": "pdf-assembly-multi",
+  "runtime": {
+    "architecture": "arm64",
+    "deviceId": "F7CE925D-0093-4AA0-9B45-D8B5959AE8D5",
+    "deviceName": "Woow-iOS17-f8819acf2e9b4c89b518a185862fdb5c",
+    "modelName": "iPhone 15",
+    "osBuildNumber": "21A342",
+    "osVersion": "17.0.1",
+    "platform": "iOS Simulator"
+  },
+  "results": {
+    "expected": 1,
+    "starts": 1,
+    "completions": 1,
+    "passed": 0,
+    "failed": 1,
+    "skipped": 0,
+    "expected_failures": 0,
+    "elapsed_seconds": 186.613,
+    "assertion_line": 344,
+    "assertion_file": "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift"
+  },
+  "prebuild": {
+    "experimental_build_before_boot": true,
+    "prebuild_exit_code": 0,
+    "prebuild_elapsed_seconds": 114.364,
+    "prebuilt_xctestrun": {
+      "path": "DerivedData/Build/Products/WoowAssistant_iphonesimulator18.5-arm64.xctestrun",
+      "sha256": "9978e367f9653f556eb13135435df6a6257e0d78a60f4fcc7482c857ec8b63e2"
+    },
+    "maximum_case_seconds": 300,
+    "build_test_timeout_seconds": 4800,
+    "remaining_test_timeout_seconds": 4685.636375791
+  },
+  "boot_succeeded": true,
+  "test_exit_code": 65,
+  "simulator_deleted": true,
+  "native_boundary": {
+    "namespace": "6718C154-D981-42CE-98FC-0D86F151C18E",
+    "first_A_native_picked": 1,
+    "first_A_app_completion": 1,
+    "first_A_unique_exact_filename_assertion_passed": true,
+    "explicit_add_copy_tapped": true,
+    "second_B_exact_native_file_tapped": true,
+    "second_B_native_created": 1,
+    "second_B_observed_mode": "import",
+    "second_B_observed_delegate_present": true,
+    "second_B_native_picked": 0,
+    "second_B_app_completion": 0,
+    "second_B_native_dismantled_before_termination": 0,
+    "read_grants_or_assembly_reached": false
+  },
+  "classification": "Actual UI failure waiting for second source B delivery. The first A completed and passed the new transition plus unchanged unique/exact filename assertions. Not a bootstrap failure; not the old first-A AX false-negative.",
+  "limitations": [
+    "No system.logarchive is present in this bounded-diagnostics artifact; -1005 on this run is not established.",
+    "No two-source read/assembly/export acceptance passed.",
+    "A passing first-A transition on this run is not proof that every AX transition problem is fixed."
+  ],
+  "evidence": {
+    "local_root": "/tmp/woow-pdf-add-76-ios17",
+    "report_sha256": "371696464450e1c58664184dfda45fb7543b6d00affaf6e08380acaf3fa617ff",
+    "test_summary_sha256": "1ff74b7fc195bded32e56fd39c69e225dd8f72fca08ccc78abf24a1da25faea0",
+    "tests_log_sha256": "4377f120da24c585a2d0164edfda3828e2ec262134fc06f0e794673e0c75b4fd",
+    "app_stdout_member": "runner-diagnostics/0_Test_Woow-iOS17-f8819acf2e9b4c89b518a185862fdb5c_Diagnostics/WoowAssistantUITests-1BFEFF3A-AC58-40C9-A2B1-E9B76EFB5C90-Configuration-Test Scheme Action-Iteration-1/WoowAssistantUITests-B2836320-780F-453F-94E4-EE704594B1A5/StandardOutputAndStandardError-io.woowtech.assistant.txt",
+    "app_stdout_sha256": "a7ac53b55e035177de7db62376d7e3c7d255b79fefd7875dce9b4aacf3c15e8f",
+    "app_stdout_bytes": 33038274,
+    "fixed_events_sha256": "9f2e32db2170e1b298cf15f7842b2349d16d3afe46a0ee5b25fd59f6caf2b739",
+    "system_logarchive_members": 0,
+    "whole_artifact_downloaded": false
+  }
+}

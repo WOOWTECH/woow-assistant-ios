@@ -59,7 +59,7 @@ final class LiveMCPConversationUITests: XCTestCase {
             XCTFail("LIVE_MCP_CLEANUP initial launch did not complete; namespace cleanup is unverified and isolated simulator removal is required.")
             return
         }
-        app.launchArguments = ["-LiveModelUITest", "-LiveModelUITestNamespace", namespace, "-LiveModelUITestCleanup"]
+        app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW", "-LiveModelUITest", "-LiveModelUITestNamespace", namespace, "-LiveModelUITestCleanup"]
         app.launchEnvironment = [:]
         app.launch()
         try LiveMCPNativeLifecycle.requireForeground(app)

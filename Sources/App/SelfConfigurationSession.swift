@@ -4,17 +4,22 @@ import Foundation
 
 @MainActor final class SelfConfigurationSession: ObservableObject {
     @Published private(set) var running = false
-    @Published private(set) var message = "尚未提出外觀調整要求。"
+    @Published private(set) var presentation: SelfConfigurationMessage = .idle
     @Published private(set) var question: String?
-    @Published private(set) var error: String?
-    @Published private(set) var steps: [String] = []
+    @Published private(set) var errorText: AppText?
+    @Published private(set) var stepEvents: [SelfConfigurationEvent] = []
+
+    // Compatibility for existing native harnesses; views use typed state.
+    var message: String { presentation.text(using: AppLocalizer(language: .traditionalChinese)) }
+    var error: String? { errorText.map { AppLocalizer(language: .traditionalChinese).text($0) } }
+    var steps: [String] { stepEvents.map { AppLocalizer(language: .traditionalChinese).configurationStep($0) } }
     private var task: Task<Void, Never>?
     private var runtime: SelfConfigurationRuntime?
     private var operationID: UUID?
 
     func start(request: String, store: SelfConfigurationStore, modelAccess: () throws -> ModelAccess) {
         cancel(showNotice: false)
-        question = nil; error = nil; steps = []
+        question = nil; errorText = nil; stepEvents = []
         do {
             // Refuse before resolving credentials or starting a model request.
             guard let original = try BundledSkillCatalog.bundled().entry(id: "configure-mika")?.original else {
@@ -27,34 +32,34 @@ import Foundation
             let id = UUID()
             operationID = id
             running = true
-            message = "正在查詢並調整外觀……"
+            presentation = .running
             task = Task { [weak self] in
                 do {
                     let outcome = try await runtime.run(client: access.client, configuration: access.configuration,
-                        apiKey: access.key, onStep: { [weak self] step in
+                        apiKey: access.key, onEvent: { [weak self] event in
                             guard let self, self.operationID == id else { return }
-                            self.steps.append(step)
+                            self.stepEvents.append(event)
                         })
                     guard let self, self.operationID == id, !Task.isCancelled else { return }
                     switch outcome {
                     case .changed(let receipt):
-                        self.message = "已讀回外觀：\(receipt.appearance.label)。已立即套用。"
+                        self.presentation = .changed(receipt.appearance)
                     case .needsClarification(let question):
                         self.question = question
-                        self.message = "尚未變更外觀；請補充要求後重新送出。"
-                    case .unchanged: self.message = "這次沒有變更外觀。"
+                        self.presentation = .clarification
+                    case .unchanged: self.presentation = .unchanged
                     }
                     self.finish()
                 } catch {
                     guard let self, self.operationID == id else { return }
-                    self.error = (error as? SelfConfigurationError)?.errorDescription ?? "模型連線或回應失敗，未套用變更。"
-                    self.message = "這次外觀調整已停止。"
+                    self.errorText = (error as? SelfConfigurationError).map { AppLocalizer(language: .traditionalChinese).configurationError($0) } ?? .configurationErrorModel
+                    self.presentation = .stopped
                     self.finish()
                 }
             }
         } catch {
-            self.error = (error as? SelfConfigurationError)?.errorDescription ?? "請先在模型設定完成連線設定。"
-            message = "尚未開始外觀調整。"
+            self.errorText = (error as? SelfConfigurationError).map { AppLocalizer(language: .traditionalChinese).configurationError($0) } ?? .configurationNeedsModel
+            presentation = .notStarted
         }
     }
 
@@ -63,7 +68,7 @@ import Foundation
         operationID = nil
         runtime?.cancel(); task?.cancel()
         runtime = nil; task = nil; running = false
-        if showNotice && wasRunning { message = "已停止；之後抵達的模型回應不會套用。" }
+        if showNotice && wasRunning { presentation = .cancelled }
     }
 
     private func finish() {
