@@ -1,5 +1,17 @@
 # Verification — 2026-11-11
 
+## Exact iOS 17 saved-PDF chat UI completed at `23b4e6a`
+
+[Run 42965803863](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42965803863)
+passed the focused `documents-chat` shard **3/3, zero failed or skipped** on
+iPhone 15 / iOS 17.0.1. Its methods each ran once and exercised PDF citations,
+page extraction, archive reopen and deletion/relaunch. Expanded AX snapshots
+show separate identifiers for the saved PDF row, citation text and pages
+button, resolving the earlier nested-disclosure collision on this runtime.
+The 59-member full ZIP passed SHA-256 and all-member CRC verification. This
+result does not cover other UI shards or a live model service.
+[Method, AX and artifact evidence](evidence/documents-chat-23b4e6a-exact17.json).
+
 ## Exact17 archive UI failed at native keyboard selection
 
 At `e3eda78`, [exact17 run 42967052289](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967052289)

@@ -1,0 +1,131 @@
+{
+  "run": 42965803863,
+  "run_conclusion": "success",
+  "job_completed_at": "2026-11-11T06:23:56Z",
+  "source_revision": "23b4e6a79a132b1f85de48b5a49a9f169ac6395b",
+  "scope": "documents-chat",
+  "coverage_kind": "focused",
+  "runtime": "17.0.1",
+  "device_model": "iPhone 15",
+  "artifact": {
+    "id": 13833458849,
+    "name": "ios17-17.0.1-42965803863",
+    "bytes": 27331864,
+    "sha256": "d7585f7ad1da15d01f8389e5d784a46d1acdeb73beadd83800449cc1239c750a",
+    "zip_member_count": 59,
+    "zip_crc_all_members": "PASS",
+    "xcresult_member_count": 40
+  },
+  "prebuild_exit_code": 0,
+  "test_exit_code": 0,
+  "selected_tests_succeeded": true,
+  "observed_ui_events": {
+    "status": "observed",
+    "acceptance_evidence": false,
+    "expected_methods": 3,
+    "counts": {
+      "starts": 3,
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0
+    },
+    "unexpected_events": 0,
+    "all_expected_completed_once": true,
+    "methods": {
+      "WoowAssistantUITests/ChatPDFAttachmentUITests/testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/ChatPDFAttachmentUITests/testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/ChatPDFAttachmentUITests/testReadApprovalThenRemoveNeverExtractsOrSubmitsAndRetainsDraft": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "xcresult_summary": {
+    "result": "Passed",
+    "total": 3,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "expected_failures": 0,
+    "failure_count": 0
+  },
+  "methods": [
+    {
+      "name": "testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive",
+      "status": "passed",
+      "seconds": 194.541
+    },
+    {
+      "name": "testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete",
+      "status": "passed",
+      "seconds": 198.954
+    },
+    {
+      "name": "testReadApprovalThenRemoveNeverExtractsOrSubmitsAndRetainsDraft",
+      "status": "passed",
+      "seconds": 122.511
+    }
+  ],
+  "archived_pdf_ax": [
+    {
+      "member": "screenshots/5C412765-4913-4F13-8DDB-64717557E873.txt",
+      "sha256": "7d55360163fead71f880ea4f9ad3ab6f6ad4d8c16819d6b206398309cf8f0d36",
+      "bytes": 2814,
+      "timestamp": 1794378052.466,
+      "visited": 32,
+      "outerButton": true,
+      "citationStaticText": false,
+      "pagesButton": false
+    },
+    {
+      "member": "screenshots/B2079F06-94EC-4F60-9CA0-9AB611A96A17.txt",
+      "sha256": "c3ee73984b2c30b73ef812668e930b3eac6a42aa2cd7f41b4568d5cc2720852f",
+      "bytes": 3223,
+      "timestamp": 1794378056.015,
+      "visited": 39,
+      "outerButton": true,
+      "citationStaticText": true,
+      "pagesButton": true
+    }
+  ],
+  "business_completion_marker_count": 1,
+  "native_log_identifier_counts": {
+    "archive.turn.0.pdf.citation.0": 5,
+    "archive.turn.0.pdf.page.1": 6,
+    "archive.open": 7,
+    "archive.delete": 7,
+    "archive.delete.confirm": 7,
+    "archive.empty": 18
+  },
+  "files": {
+    "tests.log": {
+      "sha256": "acabb73930664bc34345c5a2a6d290c5e99155e8f22b70cdee3176135e05ce7b",
+      "bytes": 188061
+    },
+    "test-summary.json": {
+      "sha256": "c45ba99240870c1e83cb9cf49774f5d54494d16895df40df6f0a2ec2a424ec45",
+      "bytes": 1007
+    },
+    "report.json": {
+      "sha256": "9e5bf1625696c85eb1d0936cd637593d4df4819c7958741f139d69fa69a0d315",
+      "bytes": 8372
+    },
+    "screenshots/manifest.json": {
+      "sha256": "97b97df4472c184756b2f6019b42dad117748219a8352fe04e0610475793a645",
+      "bytes": 1249
+    }
+  },
+  "limits": "Focused documents-chat iOS 17.0.1 simulator acceptance only. Full app/device matrix and real model service are outside this run. No CI redispatch or source edit."
+}
