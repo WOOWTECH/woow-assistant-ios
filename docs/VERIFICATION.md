@@ -1,5 +1,23 @@
 # Verification — 2026-11-11
 
+## Three-platform MCP interface completed at `fe66ab2`
+
+The native `ui-mcp` shard passed **8/8, zero skipped** separately on
+[current iOS 26.2](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961017274),
+[SE/iOS 18.5](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961031203),
+and [exact iOS 17.0.1](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961045935):
+**24/24 selected method executions**. Each full artifact ZIP passed SHA-256 and
+all-member CRC checks; every selected source method completed exactly once.
+The learning method actually clicked remote and local approvals, closed the
+result sheet, undid the stored change, then relaunched without reset and
+verified empty memory/pending state. The former current setup-navigation
+failure did not recur. These are **synthetic MCP fixture** UI cases; real HA
+model conversations failed separately at `fe66ab2` and are not accepted by
+this result. [Aggregate method/source/AX evidence](evidence/ui-mcp-fe66ab2-three-platforms.json),
+[exact17](evidence/ui-mcp-fe66ab2-exact17.json),
+[current](evidence/ui-mcp-fe66ab2-ios26-current.json),
+[SE](evidence/ui-mcp-fe66ab2-ios18-compact.json).
+
 ## Current product source compiles for iPhoneOS
 
 At `c93f894`, [run 42966148674](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966148674)

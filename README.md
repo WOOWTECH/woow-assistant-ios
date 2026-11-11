@@ -8,6 +8,8 @@
 
 最近核實的原生／App 整合結果：`a663fbd` 在 iOS 26.2 **345/345**、`dfd6eff` 在 SE／iOS 18.5 與精確 iOS 17.0.1 各 **345/345**，均零略過。三個系統測試結果不能加總或代替後續修改及獨立介面分片的驗收；見[SE](docs/evidence/native-se-dfd6eff.json)與[精確 iOS 17](docs/evidence/native-exact17-dfd6eff.json)完整方法證據。
 
+`fe66ab2` 的 MCP 原生介面在 current、SE 與精確 iOS 17 各 **8/8、零略過**，涵蓋逐次核准、結果檢視、撤銷與重開後狀態；這使用合成 MCP 測試服務，不代表真實 HA 模型對話已通過。[逐方法與附件證據](docs/evidence/ui-mcp-fe66ab2-three-platforms.json)。
+
 `83f4ddd` 的瀏覽器工作區介面在 iOS 26.2、SE／iOS 18.5 及精確 iOS 17.0.1 都是 **5/9**、零略過；兩項登入、搜尋設定及頁內尋找案例尚未通過。已根據三份原生紀錄修正部分測試控制元件選取，重測仍待結果。詳見[三平台失敗證據](docs/evidence/ui-workspace-83f-three-failures.json)。語言介面的原生驗收也尚未完成。
 
 非 Live 介面清單在 `8ab93d5` 為 **107 項／15 分組**。雙 PDF 選檔的 FileProvider 問題仍在隔離實驗；每檔協調建立的候選在三平台均失敗，另一個 UIDocument 候選只在精確 iOS 17 通過，SE 與 iOS 26.2 仍失敗，因此未合入正式來源。詳見[驗證紀錄](docs/VERIFICATION.md)及各版本的[測試證據](docs/evidence)。
@@ -24,7 +26,7 @@
 
 已核實的先前版本結果：`1abc6d7` 原生／App 整合 **286/286**、SE 個人檔案 **9/9**、SE 學習介面 **5/5**，精確 iOS 17.0.1 文件讀取／輸出 **6/6、9/9**；`f49c8f7` 通知流程在三種模擬器各 **2/2**，均零略過。這些結果不代替後續修改的驗收。`956aa9f` 真實模型 PDF 問答已於 iOS 17.0.1 完成 **1/1、零略過**，包括兩筆引用與匯出取消後保留結果；該測試不含保存偏好。雙檔加入仍有失敗待修；另測的保存格式偏好經共用參考訊息改善後，兩項本機真模型案例通過，原生介面另待驗證；原始失敗保留於[驗證紀錄](docs/VERIFICATION.md)。
 
-尚待完成：新版功能的完整原生回歸、原版技能工具環境與已部署的認證腳本服務、完整瀏覽器相容性與網站版型原生驗收、聊天附件的完整原生介面驗收、記憶／MCP 結構化回覆的串流顯示、完整語言介面與 Mika 十語、實際通知聲音及 iOS 17 真機。原版 Python PDF worker 已有真實隔離容器測試，尚未部署成 App 可用服務。`fe66ab2` 的 Release 裝置建置 102 通過，但尚未簽章、不能安裝；後續產品修正的新建置仍在排隊，見[發行紀錄](docs/IOS_DISTRIBUTION.md)。
+尚待完成：新版功能的完整原生回歸、原版技能工具環境與已部署的認證腳本服務、完整瀏覽器相容性與網站版型原生驗收、聊天附件的完整原生介面驗收、記憶／MCP 結構化回覆的串流顯示、完整語言介面與 Mika 十語、實際通知聲音及 iOS 17 真機。原版 Python PDF worker 已有真實隔離容器測試，尚未部署成 App 可用服務。`c93f894` 的 Release 裝置建置 105 通過，但尚未簽章、不能安裝；後續新增用途說明產物檢查的新建置仍在排隊，見[發行紀錄](docs/IOS_DISTRIBUTION.md)。
 
 「使用記憶」關閉後不讀取或自動整理記憶，但不刪除資料；已核准 Skills 依各自開關啟停。記憶／技能檔以 AES-GCM 加密，金鑰限本裝置 Keychain；目前不提供 iCloud 同步或備份還原。清除學習資料需要兩次確認，不刪除模型／MCP 憑證。詳細行為見[記憶／Skills 對齊清單](docs/MEMORY_SKILLS_PARITY.md)、[技能執行範圍](docs/SKILL_RUNTIME.md)、[參考資料範圍](docs/RUN_REFERENCES.md)及[通知範圍](docs/TASK_NOTIFICATIONS.md)。
 

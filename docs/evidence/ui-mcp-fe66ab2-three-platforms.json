@@ -1,0 +1,436 @@
+{
+  "source_head": "fe66ab2ed1607c32ab7623d45f31e60e963d0550",
+  "source_sha256_at_head": {
+    "Tests/WoowAssistantUITests/MCPLearningUITests.swift": "530c99be7825b5d891a3e47ec4d0fb0221be80e40bee613138b021f33559827b",
+    "Tests/WoowAssistantUITests/MCPConversationUITests.swift": "45a879b28bb5b7dd0b328edc5c03de0b02d53a8afda082863feab92040e5cb00",
+    "Sources/App/MCPApprovalView.swift": "608ea09c183309adc3def10bef1e197d64d9787f963170375d4fecd38df301d8"
+  },
+  "scope": "Synthetic native ui-mcp simulator fixtures on three named runtimes; no live model, physical phone, or external MCP service claim.",
+  "methods_exactly_once": [
+    "MCPConversationUITests/testBackgroundRevokesPendingApprovalAndRetainsDraft",
+    "MCPConversationUITests/testModelSelectedToolRequiresExactApprovalAndReturnsResult",
+    "MCPConversationUITests/testRefusalPreservesDraftAndMakesNoServerCall",
+    "MCPConversationUITests/testSelectedResourceRequiresApprovalAndResultIsReviewable",
+    "MCPConversationUITests/testToolErrorPreservesDraftAndActualErrorResult",
+    "MCPLearningUITests/testDeclinedLocalMemoryPreservesDraftWithoutDataOrRemoteAttempt",
+    "MCPLearningUITests/testProfileApprovalSurvivesRemoteDeclineAndRelaunch",
+    "MCPLearningUITests/testRemoteThenMemoryApprovalFinishesAndUndoRemainsAbsentAfterRelaunch"
+  ],
+  "platforms": {
+    "exact17": {
+      "run_id": 42961045935,
+      "artifact_id": 13831200958,
+      "artifact_name": "ios17-17.0.1-42961045935",
+      "zip_bytes": 22798197,
+      "zip_sha256": "1ef1927f2ada380f4d310566b24285afb86e74f76ee91ec3915245c09bc33bd5",
+      "zip_member_count": 65,
+      "all_zip_member_crc_verified": true,
+      "counts": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0
+      },
+      "methods": [
+        {
+          "name": "MCPConversationUITests/testBackgroundRevokesPendingApprovalAndRetainsDraft",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 0,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 2
+        },
+        {
+          "name": "MCPConversationUITests/testModelSelectedToolRequiresExactApprovalAndReturnsResult",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPConversationUITests/testRefusalPreservesDraftAndMakesNoServerCall",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 1,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPConversationUITests/testSelectedResourceRequiresApprovalAndResultIsReviewable",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPConversationUITests/testToolErrorPreservesDraftAndActualErrorResult",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPLearningUITests/testDeclinedLocalMemoryPreservesDraftWithoutDataOrRemoteAttempt",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 0,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 1,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 2
+        },
+        {
+          "name": "MCPLearningUITests/testProfileApprovalSurvivesRemoteDeclineAndRelaunch",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 0,
+            "mcp.approval.decline": 1,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 1,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 2
+        },
+        {
+          "name": "MCPLearningUITests/testRemoteThenMemoryApprovalFinishesAndUndoRemainsAbsentAfterRelaunch",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 1,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 1,
+            "chat.undoMemory.0": 1
+          },
+          "app_open_events": 2
+        }
+      ],
+      "evidence_file": "ui-mcp-fe66ab2-exact17.json"
+    },
+    "ios26-current": {
+      "run_id": 42961017274,
+      "artifact_id": 13832057831,
+      "artifact_name": "ios-test-evidence-ios26-current-42961017274",
+      "zip_bytes": 258303932,
+      "zip_sha256": "279215860996ca3478b66fa87d7da83d346616bca703af488bf98ae0eb6d54e6",
+      "zip_member_count": 1506,
+      "all_zip_member_crc_verified": true,
+      "counts": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0
+      },
+      "methods": [
+        {
+          "name": "MCPConversationUITests/testBackgroundRevokesPendingApprovalAndRetainsDraft",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 0,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 2
+        },
+        {
+          "name": "MCPConversationUITests/testModelSelectedToolRequiresExactApprovalAndReturnsResult",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPConversationUITests/testRefusalPreservesDraftAndMakesNoServerCall",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 1,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPConversationUITests/testSelectedResourceRequiresApprovalAndResultIsReviewable",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPConversationUITests/testToolErrorPreservesDraftAndActualErrorResult",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPLearningUITests/testDeclinedLocalMemoryPreservesDraftWithoutDataOrRemoteAttempt",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 0,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 1,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 2
+        },
+        {
+          "name": "MCPLearningUITests/testProfileApprovalSurvivesRemoteDeclineAndRelaunch",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 0,
+            "mcp.approval.decline": 1,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 1,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 2
+        },
+        {
+          "name": "MCPLearningUITests/testRemoteThenMemoryApprovalFinishesAndUndoRemainsAbsentAfterRelaunch",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 1,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 1,
+            "chat.undoMemory.0": 1
+          },
+          "app_open_events": 2
+        }
+      ],
+      "evidence_file": "ui-mcp-fe66ab2-ios26-current.json"
+    },
+    "ios18-compact": {
+      "run_id": 42961031203,
+      "artifact_id": 13833175922,
+      "artifact_name": "ios-test-evidence-ios18-compact-42961031203",
+      "zip_bytes": 24362768,
+      "zip_sha256": "5be8eac1aef69e9d532141ad337dd85961f2bc911e29deb2439faaba7f637068",
+      "zip_member_count": 64,
+      "all_zip_member_crc_verified": true,
+      "counts": {
+        "total": 8,
+        "passed": 8,
+        "failed": 0,
+        "skipped": 0
+      },
+      "methods": [
+        {
+          "name": "MCPConversationUITests/testBackgroundRevokesPendingApprovalAndRetainsDraft",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 0,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 2
+        },
+        {
+          "name": "MCPConversationUITests/testModelSelectedToolRequiresExactApprovalAndReturnsResult",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPConversationUITests/testRefusalPreservesDraftAndMakesNoServerCall",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 1,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPConversationUITests/testSelectedResourceRequiresApprovalAndResultIsReviewable",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPConversationUITests/testToolErrorPreservesDraftAndActualErrorResult",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 1
+        },
+        {
+          "name": "MCPLearningUITests/testDeclinedLocalMemoryPreservesDraftWithoutDataOrRemoteAttempt",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 0,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 1,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 2
+        },
+        {
+          "name": "MCPLearningUITests/testProfileApprovalSurvivesRemoteDeclineAndRelaunch",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 0,
+            "mcp.approval.decline": 1,
+            "memoryTool.approve": 0,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 1,
+            "profileTool.decline": 0,
+            "mcp.results.close": 0,
+            "chat.undoMemory.0": 0
+          },
+          "app_open_events": 2
+        },
+        {
+          "name": "MCPLearningUITests/testRemoteThenMemoryApprovalFinishesAndUndoRemainsAbsentAfterRelaunch",
+          "status": "passed",
+          "native_taps": {
+            "mcp.approval.approve": 1,
+            "mcp.approval.decline": 0,
+            "memoryTool.approve": 1,
+            "memoryTool.decline": 0,
+            "profileTool.approve": 0,
+            "profileTool.decline": 0,
+            "mcp.results.close": 1,
+            "chat.undoMemory.0": 1
+          },
+          "app_open_events": 2
+        }
+      ],
+      "evidence_file": "ui-mcp-fe66ab2-ios18-compact.json"
+    }
+  },
+  "cross_platform_finding": "All 24 selected method executions passed; each platform completed native remote/local approval, result-sheet close, undo, and non-reset relaunch in the same learning method."
+}
