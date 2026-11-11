@@ -19,9 +19,10 @@
     "zip_member_count": 2,
     "all_crc_pass": true
   },
-  "rerun_id": 42972333125,
   "limits": [
     "No product memory UI method was executed in this run.",
-    "A rerun is queued; its result is independent of this failed preflight."
-  ]
+    "The earlier queued rerun was cancelled before start; the replacement includes a bounded inventory retry and remains pending."
+  ],
+  "cancelled_unstarted_rerun_id": 42972333125,
+  "replacement_rerun_id": 42974321694
 }

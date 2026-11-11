@@ -5,9 +5,10 @@
 [Run 42967057485](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967057485)
 failed while listing installed simulator runtimes after the fixed 120-second
 bound. It never started any of the eight selected `ui-memory` methods, so no
-memory behavior can be judged from that run. A fresh [exact17 rerun
-42972333125](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42972333125)
-is queued. [Fixed-category preflight and artifact evidence](evidence/ui-memory-e3eda78-exact17-runtime-timeout.json).
+memory behavior can be judged from that run. The earlier unstarted rerun was
+cancelled; [replacement exact17 run 42974321694](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42974321694)
+is queued with the bounded inventory retry. [Fixed-category preflight and
+artifact evidence](evidence/ui-memory-e3eda78-exact17-runtime-timeout.json).
 
 After this second observed runtime inventory timeout, `release_ios17.py` now
 retries that one `simctl list runtimes --json` call **once only after a timeout**.
