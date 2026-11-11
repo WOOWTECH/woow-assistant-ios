@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "PASS_UNSIGNED_DEVICE_BUILD",
+  "source_commit": "d03dbde7a7512422de8701f232c738396b398a4e",
+  "run_id": 42970132111,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42970132111",
+  "artifact": {
+    "id": 13833931848,
+    "bytes": 41351,
+    "sha256": "a64cf16281c0f5cdd89c8cd5da945bb2c3cf8ff066a2fe490752adae5ef8b3e5",
+    "zip_crc_checked": true,
+    "report_sha256": "cf1f82df078687f0c0d6a7f98ee374946568a8a03611fd4d4761edf19f27c1f0",
+    "device_build_log_sha256": "94645318f94c984e222b138f6da285992077c4698233d55ceb69de2625bf2797"
+  },
+  "report": {
+    "xcode": "Xcode 26.2\nBuild version 17C52",
+    "iphoneos_sdk": "26.2",
+    "build_number": "118",
+    "bundle_id": "io.woowtech.assistant",
+    "minimum_os": "17.0",
+    "platform": "iphoneos",
+    "verified_binary_count": 9,
+    "signature_verified": false,
+    "ats_key_absent": true,
+    "native_documents_enabled": true,
+    "browser_media_purpose_strings_verified": true,
+    "required_reason_entries_verified": true,
+    "artifact_kind": "unsigned-device-build-not-installable",
+    "runtime_tested": false,
+    "uploaded": false
+  },
+  "build_log": {
+    "build_succeeded_count": 1,
+    "build_failed_count": 0,
+    "compiler_error_lines": 0
+  },
+  "limits": [
+    "Unsigned iPhoneOS compile and packaged purpose string verification only; no signed install, iPhone runtime, or App Store upload."
+  ]
+}

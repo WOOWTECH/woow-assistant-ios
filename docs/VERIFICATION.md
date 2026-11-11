@@ -94,15 +94,15 @@ this result. [Aggregate method/source/AX evidence](evidence/ui-mcp-fe66ab2-three
 
 ## Current product source compiles for iPhoneOS
 
-At `c93f894`, [run 42966148674](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966148674)
+At `d03dbde`, [run 42970132111](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42970132111)
 completed an **unsigned Release iPhoneOS build** with Xcode 26.2, minimum iOS
 17.0 and nine verified binaries. This source includes the manual website media
 delegate/purpose strings and saved-PDF accessibility product corrections. The
 full two-member artifact ZIP passed SHA-256 and CRC checks; the build log has
 one `BUILD SUCCEEDED`, no build failure and no compiler error line. It is not
-signed or installable. The source predates the subsequent packaged purpose
-string release gate; [run 42970132111](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42970132111)
-will test that gate. [Artifact evidence](evidence/unsigned-device-c93f894.json).
+signed or installable. The new release gate verified the nonempty camera and
+microphone purpose strings in the built App package.
+[Artifact evidence](evidence/unsigned-device-d03dbde.json).
 
 ## Current simulator selected core with website media source
 
