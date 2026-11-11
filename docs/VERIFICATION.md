@@ -1,5 +1,24 @@
 # Verification — 2026-11-11
 
+## Live public source discovery isolated from model quota
+
+At `fe66ab2`, the exact17 live-model [run 42961323643](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961323643)
+failed both `LiveSourceDiscoveryUITests` before a public-search tap: iOS 17
+exposed the vertical native input as a `TextView`, and the test stopped at its
+keyboard query. The SE [run 42961335239](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961335239)
+passed both source-discovery methods and completed real public search and
+selection of two different origins. Both runs independently classified their
+model transport as HTTP 429 `rate_limited`; that does not explain exact17's
+pre-search UI failure. [Sanitized method-level diagnosis](evidence/live-source-discovery-fe66ab2-diagnosis.json).
+
+The focused test now handles only the known native keyboard introduction,
+then still requires `typeText`, an exact input value, the visible Done button,
+the public search and the existing source-selection assertions. The
+`source-discovery` workflow scope skips unrelated model probes, so a provider
+429 cannot prevent this independent browser acceptance test. Other live
+scopes keep the successful model-transport prerequisite. This candidate
+requires a new native exact17 run; it has not passed yet.
+
 ## Three-platform browser workspace interface completed at `fe66ab2`
 
 The native `ui-workspace` shard passed **9/9, zero failed or skipped** on

@@ -279,13 +279,18 @@ final class LiveSourceDiscoveryUITests: XCTestCase {
         try show(input)
         try ready(input)
         input.tap()
-        try wait("The actual native input did not acquire its keyboard.", timeout: 5) { self.app.keyboards.firstMatch.exists }
+        // iOS 17 exposes these vertical SwiftUI fields as TextView. The failed
+        // native runs stopped at a pre-typing XCUIKeyboard query; use the same
+        // exact native introduction gate as other live browser input tests.
         let introduction = app.buttons["Continue"].firstMatch
-        if introduction.exists {
+        if introduction.waitForExistence(timeout: 3) {
             XCTAssertTrue(app.staticTexts["Speed up your typing by sliding your finger across the letters to compose a word."].exists,
                           "Only the known native keyboard introduction may be dismissed.")
             try ready(introduction)
             introduction.tap()
+            try wait("The native keyboard introduction must dismiss before typing.", timeout: 5) {
+                !introduction.exists
+            }
         }
         input.typeText(value)
         XCTAssertTrue(input.value as? String == value, "The exact public input must arrive through the native keyboard.")

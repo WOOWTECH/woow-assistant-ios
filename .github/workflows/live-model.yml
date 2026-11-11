@@ -10,7 +10,7 @@ on:
         options: ['18.5', '17.0.1']
         default: '18.5'
       ui_scope:
-        description: Live App UI coverage (native probes always run)
+        description: Live App UI coverage (source discovery uses public search without model probes)
         type: choice
         options: [all, browser, browser-learning, browser-interaction, multi-source, source-discovery, user-profile, profile-tool, memory-tools, skill-authoring, self-configuration, browser-transcript, transcript-files, transcript-formats, document-query]
         default: all
@@ -101,6 +101,7 @@ jobs:
           fi
       - name: Make two bounded live requests inside iOS Simulator
         id: transport_probe
+        if: inputs.ui_scope != 'source-discovery'
         timeout-minutes: 4
         env:
           SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ secrets.WOOW_MODEL_TEST_BASE_URL }}
@@ -110,6 +111,7 @@ jobs:
           test -n "$SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY" || { echo 'Missing model test secret'; exit 1; }
           xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveModelSmoke"
       - name: Real memory and approved skill behavior inside iOS Simulator
+        if: inputs.ui_scope != 'source-discovery'
         timeout-minutes: 6
         env:
           SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ secrets.WOOW_MODEL_TEST_BASE_URL }}
@@ -117,6 +119,7 @@ jobs:
           SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveLearningSmoke"
       - name: Real outcome judge and pending skill generation
+        if: inputs.ui_scope != 'source-discovery'
         timeout-minutes: 6
         env:
           SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ secrets.WOOW_MODEL_TEST_BASE_URL }}
@@ -134,7 +137,7 @@ jobs:
           xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveTranscriptSmoke" \
             "$PWD/Sources/AssistantSkills/Resources/MikaBundledSkills.json"
       - name: Real model App UI tests
-        if: ${{ !cancelled() && steps.app-build.outcome == 'success' && steps.transport_probe.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.app-build.outcome == 'success' && (steps.transport_probe.outcome == 'success' || inputs.ui_scope == 'source-discovery') }}
         # Live UI methods include settings, reviewed profile tools and research flows;
         # focused scopes keep their previous 20-minute bound and case limits.
         timeout-minutes: ${{ (inputs.ui_scope || 'all') == 'all' && 40 || 20 }}

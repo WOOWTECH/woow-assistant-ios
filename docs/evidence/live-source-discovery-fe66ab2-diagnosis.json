@@ -1,0 +1,112 @@
+{
+  "source_head": "fe66ab2ed1607c32ab7623d45f31e60e963d0550",
+  "run_scope": "live-model all; report isolates LiveSourceDiscoveryUITests and the independent native model transport probe",
+  "runs": {
+    "exact17": {
+      "run_id": 42961323643,
+      "job_id": 130328294850,
+      "job_conclusion": "failure",
+      "private_job_log_sha256": "74cacfd8f74a54b140cf8bb3d10fb4bd24e78b00aadbb69a6badbdd16bf26a11",
+      "native_model_transport_category": "rate_limited",
+      "source_discovery_methods": [
+        {
+          "method": "testPublicSearchAppliesTwoDistinctOriginsWithoutStartingResearch",
+          "status": "failed",
+          "duration_seconds": 30.465,
+          "native_input_accessibility_types": [
+            "TextView"
+          ],
+          "public_search_button_taps": 0,
+          "search_terminal_classes": [],
+          "keyboard_gate_failed": true,
+          "last_relevant_input_id": "multiResearch.goal"
+        },
+        {
+          "method": "testPublicSearchCancellationOrCompletionPreservesQueryUntilSheetCloses",
+          "status": "failed",
+          "duration_seconds": 108.958,
+          "native_input_accessibility_types": [
+            "TextView"
+          ],
+          "public_search_button_taps": 0,
+          "search_terminal_classes": [],
+          "keyboard_gate_failed": true,
+          "last_relevant_input_id": "sourceDiscovery.query"
+        }
+      ]
+    },
+    "ios18_se": {
+      "run_id": 42961335239,
+      "job_id": 130328317037,
+      "job_conclusion": "failure",
+      "private_job_log_sha256": "1e23ad8db38af9d3d3d0511d105bb141d6e731ff52e81dcc36a6a159113e62c1",
+      "native_model_transport_category": "rate_limited",
+      "source_discovery_methods": [
+        {
+          "method": "testPublicSearchAppliesTwoDistinctOriginsWithoutStartingResearch",
+          "status": "passed",
+          "duration_seconds": 218.816,
+          "native_input_accessibility_types": [
+            "TextField"
+          ],
+          "public_search_button_taps": 1,
+          "search_terminal_classes": [
+            "completed"
+          ],
+          "keyboard_gate_failed": false,
+          "last_relevant_input_id": "multiResearch.goal"
+        },
+        {
+          "method": "testPublicSearchCancellationOrCompletionPreservesQueryUntilSheetCloses",
+          "status": "passed",
+          "duration_seconds": 222.217,
+          "native_input_accessibility_types": [
+            "TextField"
+          ],
+          "public_search_button_taps": 1,
+          "search_terminal_classes": [
+            "completed"
+          ],
+          "keyboard_gate_failed": false,
+          "last_relevant_input_id": "sourceDiscovery.query"
+        }
+      ]
+    }
+  },
+  "source_lines": {
+    "LiveSourceDiscoveryUITests.swift": {
+      "native_input_keyboard_gate": 282,
+      "generic_wait_failure": 368,
+      "search_tap": 42,
+      "candidate_assertion": 44
+    },
+    "LiveModelSmoke.swift": {
+      "http429_to_rate_limited": 63
+    },
+    "live-model.yml_at_fe66ab2": {
+      "model_transport_step": 102,
+      "app_ui_step_not_transport_gated": 135
+    }
+  },
+  "finding": "Exact17 failed before public search; SE completed real public search on both methods. Both model transport probes were rate_limited (HTTP 429 category). The two failures are independent.",
+  "candidate_fix": {
+    "base_head": "43ba9d045a6b9ce982249777dba1af4c2187b807",
+    "path": "Tests/WoowAssistantUITests/LiveSourceDiscoveryUITests.swift",
+    "change": "Handle only the exact native QuickPath introduction before typing; require XCTest native typeText, exact field value, visible Done control and all existing search/source assertions. Remove the premature XCUIKeyboard gate.",
+    "native_validation": "pending; Swift syntax, actionlint, and git diff checks passed; current source test requires new native run",
+    "patch_sha256": "454764be76e1f8bac1bee299c2c214f52c3dce3712f35b97b1b07da6634ae8ca",
+    "edited_source_sha256": "0bf85fbd358ed27b1ffdb079417fb19833462ed28c9250591c013fceb8089413"
+  },
+  "limits": [
+    "Private live runner intentionally publishes no xcresult or screenshots; focus/overlay state at the failed tap is unproven.",
+    "No public-search network request occurred in either exact17 failed method.",
+    "Model quota status does not explain the exact17 keyboard failure; SE search methods passed despite the same model transport category."
+  ],
+  "source_sha256_at_fe66ab2": {
+    "Tests/WoowAssistantUITests/LiveSourceDiscoveryUITests.swift": "4216a56702f0816c524d7b8100406cfe7f639871387b51519864f88ab46b4b31",
+    "Sources/App/MultiSourceResearchView.swift": "449f50af86efeba849334a722523c6c3169d95f4c8777dcb9cf5e0bbc2621d61",
+    "Sources/App/ResearchSourceDiscoveryView.swift": "9ec38703c9b7a70a881f893859425978d419a39dfb4cc2acda0af2da734ae48e",
+    ".github/workflows/live-model.yml": "981527f193a31e46badc5907c258bcaafa5465a49ce9e95daf44f454031884d2",
+    "scripts/LiveModelSmoke.swift": "0ae1db4835bcb21768a05613d038ce3c677e6abe9311468a28caa25b2de4bf48"
+  }
+}
