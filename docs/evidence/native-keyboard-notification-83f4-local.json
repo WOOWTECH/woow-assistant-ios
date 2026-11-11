@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "local_syntax_pass_native_pending",
+  "base_sha": "83f4ddd15db9a40f54dc81de6ba43226a94b5f51",
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/ChatPDFAttachmentUITests.swift": "fc8853bef582d5e8bd4924ab2a7164f888604164fd5e11e0dfef07c697d80c92",
+    "Tests/WoowAssistantUITests/ChatStreamingUITests.swift": "b44ef4182a62fe5bcfa4f237d8f4f6badcf0b846edb4e8b7c9c7671a38caf2a1",
+    "Tests/WoowAssistantUITests/NotificationApprovalUITests.swift": "21970923c5c6da7979076e263361298ee92e43d016cae3457cf4b705cbc31b70"
+  },
+  "frozen_patch_sha256": {
+    "keyboard": "0c382cfdf0216cfd80894cfe01569bce23b812783abd76081e6a205414501e4d",
+    "notification": "e3bec93936b042dad704374c57eee0ff3715a67f6d5fac8c2229fadc200d4817"
+  },
+  "original_runs": {
+    "startup_current": 42931411710,
+    "startup_se": 42931416751,
+    "startup_exact17": 42931421737,
+    "notification_current": 42935065015,
+    "chat_pdf_se": 42945359001
+  },
+  "observations": [
+    "SE native Zhuyin switch AX label is 下一個鍵盤; the English-only lookup timed out before text entry.",
+    "The notification sheet can retain its initial generation; the root generation is checked after the sheet closes."
+  ],
+  "checks": {
+    "swift_ios17_parse": "PASS",
+    "git_diff_check": "PASS",
+    "native_xctest": "pending"
+  },
+  "limits": [
+    "The keyboard fix is a native test driver correction, not evidence that model or PDF flow passed.",
+    "Notification routing still requires a successful native callback and root generation change."
+  ]
+}

@@ -288,7 +288,9 @@ final class ChatPDFAttachmentUITests: XCTestCase {
                 && keyboard.keys.matching(NSPredicate(format: "label IN %@", ["a", "A"])).firstMatch.exists
         }
         if latin() { return }
-        let globe = app.buttons["Next keyboard"].firstMatch; ready(globe); globe.press(forDuration: 1)
+        // ccfd SE AX labels this native control 下一個鍵盤 (identifier emoji).
+        let globe = app.buttons.matching(NSPredicate(format: "label IN %@", ["Next keyboard", "下一個鍵盤"])).firstMatch
+        ready(globe); globe.press(forDuration: 1)
         let english = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "English (US)")).firstMatch
         ready(english); english.tap(); dismissIntroduction()
         if !latin() { XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in latin() }, object: nil)], timeout: 10), .completed) }

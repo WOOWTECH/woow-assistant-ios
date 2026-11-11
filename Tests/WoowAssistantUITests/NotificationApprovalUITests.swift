@@ -96,11 +96,13 @@ final class NotificationApprovalUITests: XCTestCase {
         // No Home, activate(), reconnect, resend, or replacement review. If the
         // OS makes the scene inactive, the existing cancellation policy wins.
         var represented: Review?
-        try wait("The actual default-open route must change generation before approving the same pending UUID.", seconds: 10) {
+        // A presented sheet can retain the environment value from its initial
+        // presentation. Verify the pending review here; verify the root-owned
+        // route generation after the sheet closes below.
+        try wait("The same pending UUID must remain available after the actual banner tap.", seconds: 10) {
             represented = self.review()
             self.navigationAfter = represented?.navigation.raw
             return self.app.state == .runningForeground && represented?.id == original.id
-                && represented?.navigation.id != initialNavigation.id
                 && represented?.navigation.destination == "chat"
         }
         guard let represented else { throw Failure.readiness }
@@ -109,7 +111,6 @@ final class NotificationApprovalUITests: XCTestCase {
         XCTAssertEqual(represented.name, "fixture_echo")
         XCTAssertEqual(represented.arguments, ["text": "hello"])
         XCTAssertFalse(represented.hasAssistantResult)
-        XCTAssertNotEqual(represented.navigation.id, initialNavigation.id)
         XCTAssertEqual(represented.navigation.destination, "chat")
         XCTAssertTrue(app.buttons["mcp.approval.decline"].isHittable)
         XCTAssertTrue(app.buttons["mcp.approval.approve"].isHittable)
@@ -132,12 +133,12 @@ final class NotificationApprovalUITests: XCTestCase {
         XCTAssertEqual(app.state, .runningForeground)
         XCTAssertEqual(app.buttons["navigation.chat"].value as? String, "已選取")
         stage = "retainedRootNavigationGeneration"
-        // The sheet observed the real callback before explicit approval. Once
-        // the modal closes, the root must expose that same changed generation.
+        // Only the root owns this generation. The notification-open callback
+        // must have changed it; explicit approval itself does not route.
         try wait("Root Chat must retain the actual notification-open generation.", seconds: 5) {
             guard let current = self.navigation() else { return false }
             self.navigationAfter = current.raw
-            return current.id == represented.navigation.id && current.destination == "chat"
+            return current.id != initialNavigation.id && current.destination == "chat"
         }
         attach("Observed notification navigation generations",
                "before=\(navigationBefore ?? "none")\nafter=\(navigationAfter ?? "none")")
