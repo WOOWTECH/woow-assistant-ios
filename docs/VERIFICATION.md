@@ -1,5 +1,18 @@
 # Verification — 2026-11-11
 
+## Chat PDF Files picker driver candidate awaits native retest
+
+The `61c8e3e` three-method `documents-chat` UI shard completed **1 pass / 2
+failures** on [SE/iOS 18.5](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42969099406).
+The [current/iOS 26.2 run](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42969112726)
+timed out with no complete three-method summary. The SE fixture showed a
+visible native Files location row that the driver did not select; current
+left Files open after tapping a thumbnail image rather than the exact unique
+file cell. The driver now searches bounded visible location rows and taps the
+verified native cell once. Original approval, cancellation, archive, citation
+and relaunch assertions remain. This is a candidate, not a pass, until native
+reruns finish. [Original method-level evidence](evidence/chat-pdf-picker-reruns-61c8e3e.json).
+
 ## SE full native core completed at `43ba9d0`
 
 [Run 42971185488](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42971185488)
