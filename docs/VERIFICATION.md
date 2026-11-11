@@ -24,6 +24,18 @@ PDF and MCP test-driver candidates through `dfd6eff`; their separate UI shards
 remain independent. The later website media-permission changes need their own
 native compile result. [Method-level evidence](evidence/native-se-dfd6eff.json).
 
+## Exact iOS 17 native core at `dfd6eff`
+
+[Run 42958720550](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42958720550)
+passed **345/345 native and hosted App methods**, zero failures and zero skips,
+on iPhone 15 / iOS 17.0.1 (21A342). The full 818-member ZIP passed SHA-256 and
+CRC verification; the XCTest summary, workflow completion gate and 345 unique
+method start/pass events agree. This validates the selected core scope only;
+separate language, PDF, MCP and browser UI failures or pending shards remain.
+The workflow's `runtime_tested` field is reserved for `test_scope=all`; the
+actual XCTest device and selected runtime both identify iOS 17.0.1.
+[Method-level evidence](evidence/native-exact17-dfd6eff.json).
+
 ## Dual-PDF UIDocument candidate: one platform passes, two fail
 
 The isolated `9600dfb` candidate creates the two synthetic PDF fixtures through
