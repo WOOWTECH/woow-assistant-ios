@@ -128,7 +128,8 @@ final class ChatStreamingUITests: XCTestCase {
     private func configure() {
         navigate("settings")
         write("https://model.invalid/v1", field: app.textFields["settings.baseURL"].firstMatch, scroll: true)
-        tap("settings.dismissKeyboard")
+        // Move focus directly between visible fields. write() still requires
+        // a hittable field, the native keyboard, and an exact value readback.
         write("fixture", field: app.textFields["settings.model"].firstMatch, scroll: true)
         tap("settings.dismissKeyboard")
         let key = app.secureTextFields["settings.apiKey"].firstMatch

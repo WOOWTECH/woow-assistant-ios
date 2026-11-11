@@ -1,0 +1,441 @@
+{
+  "schema": "woow-fe66-workspace-artifact-audit-v1",
+  "created_at_utc": "2026-11-11T06:03:33.002020+00:00",
+  "variant": "current",
+  "run_id": 42961063289,
+  "source_sha": "fe66ab2ed1607c32ab7623d45f31e60e963d0550",
+  "verdict": "pass",
+  "issues": [],
+  "checks": {
+    "terminal_exact_run_attempt_source": true,
+    "run_success": true,
+    "artifact_exact_run_source": true,
+    "full_zip_digest_matches_api": true,
+    "full_zip_size_matches_api": true,
+    "expected_job_structure": true,
+    "job_success": true,
+    "all_zip_member_crc_valid": true,
+    "no_duplicate_zip_names": true,
+    "no_unsafe_zip_names": true,
+    "required_native_members_present": true,
+    "summary_nine_total_zero_skips": true,
+    "summary_nine_pass": true,
+    "device_summary_zero_skips": true,
+    "completion_verified_exact_nine": true,
+    "simulator_device_runtime_identity": true,
+    "simulator_cleanup_consistent": true,
+    "exact_nine_method_event_set": true,
+    "each_method_started_then_terminal_once": true,
+    "each_method_started_then_passed_once": true,
+    "zero_skipped_method_events": true,
+    "selected_suite_passed": true,
+    "exported_attachments_present": true
+  },
+  "run": {
+    "conclusion": "success",
+    "created_at": "2026-11-11T04:43:22Z",
+    "head_sha": "fe66ab2ed1607c32ab7623d45f31e60e963d0550",
+    "id": 42961063289,
+    "name": "iOS",
+    "run_attempt": 1,
+    "run_started_at": "2026-11-11T04:43:22Z",
+    "status": "completed",
+    "updated_at": "2026-11-11T06:01:32Z",
+    "workflow_id": 412115524
+  },
+  "job": {
+    "name": "build-and-test (ios26-current, 26.2, iOS-26-2, iPhone 17)",
+    "conclusion": "success",
+    "steps": [
+      {
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "name": "Run actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5",
+        "conclusion": "success"
+      },
+      {
+        "name": "Show toolchain",
+        "conclusion": "success"
+      },
+      {
+        "name": "Test portable core",
+        "conclusion": "success"
+      },
+      {
+        "name": "Test original PDF script through the Swift HTTP client",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Test simulator selection",
+        "conclusion": "success"
+      },
+      {
+        "name": "Check interface language resources and explicit UI launch languages",
+        "conclusion": "success"
+      },
+      {
+        "name": "Test synthetic PDF fixture evidence guards",
+        "conclusion": "skipped"
+      },
+      {
+        "name": "Test App MCP credential isolation",
+        "conclusion": "success"
+      },
+      {
+        "name": "Test dedicated script-service settings and credential isolation",
+        "conclusion": "success"
+      },
+      {
+        "name": "Install XcodeGen",
+        "conclusion": "success"
+      },
+      {
+        "name": "Generate project",
+        "conclusion": "success"
+      },
+      {
+        "name": "Show destinations",
+        "conclusion": "success"
+      },
+      {
+        "name": "Build",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify built native Files configuration",
+        "conclusion": "success"
+      },
+      {
+        "name": "Test",
+        "conclusion": "success"
+      },
+      {
+        "name": "Export simulator evidence",
+        "conclusion": "success"
+      },
+      {
+        "name": "Verify every selected shard case completed without skips",
+        "conclusion": "success"
+      },
+      {
+        "name": "Collect synthetic PDF fixture evidence",
+        "conclusion": "success"
+      },
+      {
+        "name": "Delete only the owned disposable simulator",
+        "conclusion": "success"
+      },
+      {
+        "name": "Preserve test evidence",
+        "conclusion": "success"
+      },
+      {
+        "name": "Post Run actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5",
+        "conclusion": "success"
+      },
+      {
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "artifact": {
+    "id": 13833125668,
+    "name": "ios-test-evidence-ios26-current-42961063289",
+    "api_digest": "sha256:615dd82e8a2a14c01c14392ae8300a11935e27588c6a092d8f63df1c9fae1f10",
+    "full_zip_sha256": "615dd82e8a2a14c01c14392ae8300a11935e27588c6a092d8f63df1c9fae1f10",
+    "bytes": 15501985,
+    "zip_members": 85,
+    "crc_checked": 85,
+    "first_bad_crc_member": null,
+    "duplicate_names": [],
+    "unsafe_names": [],
+    "critical_members": {
+      "test-summary.json": {
+        "sha256": "17ebc5e8886007e28ea2ecd86f381ccffb2e05dbd0d64f560d4de3e47d6d4c04",
+        "crc32": "54b3b1c5",
+        "bytes": 1001
+      },
+      "Tests.xcresult/Info.plist": {
+        "sha256": "0ee635329b01814cd3b25c63a203aee659bb62411cd1cd6f9e88368bea4773ca",
+        "crc32": "053d62c4",
+        "bytes": 715
+      },
+      "ui-shard-completion.json": {
+        "sha256": "2f358da8b5602fb2699fe3a3d9a6139743c78a2f49d39dd5c78ee737b2a4f72b",
+        "crc32": "985a44df",
+        "bytes": 331
+      },
+      "test-simulator.json": {
+        "sha256": "6c0cf7744a59d4f6beed5ecfae11c719e686921a84819023104577e816117ab2",
+        "crc32": "4ac79dc1",
+        "bytes": 883
+      },
+      "ios-tests.log": {
+        "sha256": "c2d156b62dbedab6729e251ca40b5289c52e22bd9b86d5d4fc20c4fa8447f21c",
+        "crc32": "0e267fc8",
+        "bytes": 1107080
+      }
+    },
+    "xcresult_members": 62
+  },
+  "expected_methods": [
+    "WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+    "WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+    "WoowAssistantUITests/BrowserSearchUITests/testCustomSearchQueryAndSettingsSurviveRelaunch",
+    "WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testBookmarkRenameHistoryClearAndRelaunch",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testManualQueryPageAndRealJavaScriptDialog",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindClearsOnReloadAndTabSwitch",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testTabsKeepIndependentPageStateAndRestoreSelection"
+  ],
+  "source_git_blobs": {
+    "Tests/WoowAssistantUITests/BrowserWorkspaceUITests.swift": "398d99626aa4505f2f99cd6dc8a9b4c593cae6e9",
+    "Tests/WoowAssistantUITests/BrowserLoginUITests.swift": "82e8e36e78dcd689e4649a2b51c9f31533f4323d",
+    "Tests/WoowAssistantUITests/BrowserSiteModesUITests.swift": "c0cf9c24a34535ef3ddb2a02b3435890ca006d05",
+    "Tests/WoowAssistantUITests/BrowserSearchUITests.swift": "7c95cb30c560a6159f615b04ea9bd32ca11fa913"
+  },
+  "method_events": [
+    {
+      "name": "WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+      "events": [
+        {
+          "event": "started",
+          "line": 3501,
+          "duration_seconds": null
+        },
+        {
+          "event": "passed",
+          "line": 3793,
+          "duration_seconds": 118.426
+        }
+      ]
+    },
+    {
+      "name": "WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+      "events": [
+        {
+          "event": "started",
+          "line": 3794,
+          "duration_seconds": null
+        },
+        {
+          "event": "passed",
+          "line": 4088,
+          "duration_seconds": 76.689
+        }
+      ]
+    },
+    {
+      "name": "WoowAssistantUITests/BrowserSearchUITests/testCustomSearchQueryAndSettingsSurviveRelaunch",
+      "events": [
+        {
+          "event": "started",
+          "line": 4092,
+          "duration_seconds": null
+        },
+        {
+          "event": "passed",
+          "line": 4563,
+          "duration_seconds": 75.417
+        }
+      ]
+    },
+    {
+      "name": "WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch",
+      "events": [
+        {
+          "event": "started",
+          "line": 4567,
+          "duration_seconds": null
+        },
+        {
+          "event": "passed",
+          "line": 4906,
+          "duration_seconds": 66.913
+        }
+      ]
+    },
+    {
+      "name": "WoowAssistantUITests/BrowserWorkspaceUITests/testBookmarkRenameHistoryClearAndRelaunch",
+      "events": [
+        {
+          "event": "started",
+          "line": 4910,
+          "duration_seconds": null
+        },
+        {
+          "event": "passed",
+          "line": 5095,
+          "duration_seconds": 52.621
+        }
+      ]
+    },
+    {
+      "name": "WoowAssistantUITests/BrowserWorkspaceUITests/testManualQueryPageAndRealJavaScriptDialog",
+      "events": [
+        {
+          "event": "started",
+          "line": 5096,
+          "duration_seconds": null
+        },
+        {
+          "event": "passed",
+          "line": 5173,
+          "duration_seconds": 22.33
+        }
+      ]
+    },
+    {
+      "name": "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindClearsOnReloadAndTabSwitch",
+      "events": [
+        {
+          "event": "started",
+          "line": 5174,
+          "duration_seconds": null
+        },
+        {
+          "event": "passed",
+          "line": 5359,
+          "duration_seconds": 51.772
+        }
+      ]
+    },
+    {
+      "name": "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose",
+      "events": [
+        {
+          "event": "started",
+          "line": 5360,
+          "duration_seconds": null
+        },
+        {
+          "event": "passed",
+          "line": 5580,
+          "duration_seconds": 66.435
+        }
+      ]
+    },
+    {
+      "name": "WoowAssistantUITests/BrowserWorkspaceUITests/testTabsKeepIndependentPageStateAndRestoreSelection",
+      "events": [
+        {
+          "event": "started",
+          "line": 5581,
+          "duration_seconds": null
+        },
+        {
+          "event": "passed",
+          "line": 5748,
+          "duration_seconds": 65.079
+        }
+      ]
+    }
+  ],
+  "unparsable_method_lines": [],
+  "native": {
+    "summary_counts": {
+      "totalTestCount": 9,
+      "passedTests": 9,
+      "failedTests": 0,
+      "skippedTests": 0,
+      "expectedFailures": 0
+    },
+    "summary_result": "Passed",
+    "test_failures": [],
+    "device": {
+      "architecture": "arm64",
+      "deviceId": "62A58F18-54AF-4AC3-A189-BAABED9E4ADC",
+      "deviceName": "Woow-CI-fa8e62213ece4bc68d5245277e91700a",
+      "modelName": "iPhone 17",
+      "osBuildNumber": "23C54",
+      "osVersion": "26.2",
+      "platform": "iOS Simulator"
+    },
+    "completion": {
+      "verified": true,
+      "counts": {
+        "totalTestCount": 9,
+        "passedTests": 9,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "result": "Passed",
+      "expected_ui_count": 9,
+      "completed_ui_count": 9,
+      "missing_ui_tests": [],
+      "unexpected_ui_tests": [],
+      "nonpassing_or_repeated_ui_tests": []
+    },
+    "simulator": {
+      "cleanup": "deleted",
+      "cleanup_at": "2026-11-11T06:01:22.555917+00:00",
+      "created_at": "2026-11-11T05:47:08.413557+00:00",
+      "created_name": "Woow-CI-fa8e62213ece4bc68d5245277e91700a",
+      "creation_attempted": true,
+      "delete_attempted": true,
+      "device_name": "iPhone 17",
+      "device_type_identifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-17",
+      "identity_verified_at": "2026-11-11T05:47:08.753055+00:00",
+      "mode": "fresh",
+      "owner": "woow-ci-test-simulator-v1",
+      "phase": "ready_to_boot",
+      "runtime_build": "23C54",
+      "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2",
+      "runtime_version": "26.2",
+      "selected_at": "2026-11-11T05:47:07.947105+00:00",
+      "shutdown_succeeded": true,
+      "simulator_id": "62A58F18-54AF-4AC3-A189-BAABED9E4ADC",
+      "source_simulator_id": "BC7CEBFB-6B90-4D7E-B85E-BB0102C99F06",
+      "source_simulator_state": "Shutdown"
+    },
+    "release_report": null
+  },
+  "failure_log_lines": [],
+  "attachment_summary": [
+    {
+      "test": "BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch()",
+      "member": "screenshots/B0295F1D-1BC7-449B-918B-C8E86103042D.png",
+      "present": true,
+      "failure_related": false
+    },
+    {
+      "test": "BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch()",
+      "member": "screenshots/75F28E5B-7924-4CBF-86B5-CC5BB3171854.txt",
+      "present": true,
+      "failure_related": false
+    },
+    {
+      "test": "BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch()",
+      "member": "screenshots/65462C06-C351-4F63-8D95-51F3357B2485.png",
+      "present": true,
+      "failure_related": false
+    },
+    {
+      "test": "BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch()",
+      "member": "screenshots/BD3674EA-322E-4863-9C35-4703D1902706.txt",
+      "present": true,
+      "failure_related": false
+    },
+    {
+      "test": "BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose()",
+      "member": "screenshots/65535503-EE77-4CC4-9E30-6F5F44865FEF.png",
+      "present": true,
+      "failure_related": false
+    },
+    {
+      "test": "BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose()",
+      "member": "screenshots/451C8386-C6C4-4223-B587-6E4879644A7B.txt",
+      "present": true,
+      "failure_related": false
+    }
+  ],
+  "limitations": [
+    "Local CLT host does not decode xcresult objects; runner-exported summary and full bundle are preserved and cross-checked.",
+    "A passing ui-workspace shard proves only these selected native UI methods, not full browser parity or all app methods."
+  ]
+}

@@ -12,7 +12,7 @@
 
 `fe66ab2` 的 MCP 原生介面在 current、SE 與精確 iOS 17 各 **8/8、零略過**，涵蓋逐次核准、結果檢視、撤銷與重開後狀態；這使用合成 MCP 測試服務，不代表真實 HA 模型對話已通過。[逐方法與附件證據](docs/evidence/ui-mcp-fe66ab2-three-platforms.json)。
 
-`83f4ddd` 的瀏覽器工作區介面在 iOS 26.2、SE／iOS 18.5 及精確 iOS 17.0.1 都是 **5/9**、零略過；兩項登入、搜尋設定及頁內尋找案例尚未通過。已根據三份原生紀錄修正部分測試控制元件選取，重測仍待結果。詳見[三平台失敗證據](docs/evidence/ui-workspace-83f-three-failures.json)。語言介面的原生驗收也尚未完成。
+`fe66ab2` 的瀏覽器工作區介面在 iOS 26.2、SE／iOS 18.5 及精確 iOS 17.0.1 各 **9/9、零略過**，涵蓋登入與登出、分頁與書籤、搜尋設定、網站資料清除、手動 GET 模式及原生頁內尋找。這是指定介面分片，尚不代表 Mika 瀏覽器全部能力或真人網站登入都已驗收。[逐方法及附件證據](docs/evidence/ui-workspace-fe66ab2-three-platforms.json)。語言介面的修正重測仍待結果。
 
 非 Live 介面清單在 `8ab93d5` 為 **107 項／15 分組**。雙 PDF 選檔的 FileProvider 問題仍在隔離實驗；每檔協調建立的候選在三平台均失敗，另一個 UIDocument 候選只在精確 iOS 17 通過，SE 與 iOS 26.2 仍失敗，因此未合入正式來源。詳見[驗證紀錄](docs/VERIFICATION.md)及各版本的[測試證據](docs/evidence)。
 

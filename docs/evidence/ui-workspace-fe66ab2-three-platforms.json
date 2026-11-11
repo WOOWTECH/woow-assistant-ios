@@ -1,0 +1,97 @@
+{
+  "schema": "woow-fe66-workspace-three-platform-handoff-v1",
+  "source_sha": "fe66ab2ed1607c32ab7623d45f31e60e963d0550",
+  "expected_methods": [
+    "WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+    "WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+    "WoowAssistantUITests/BrowserSearchUITests/testCustomSearchQueryAndSettingsSurviveRelaunch",
+    "WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testBookmarkRenameHistoryClearAndRelaunch",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testManualQueryPageAndRealJavaScriptDialog",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindClearsOnReloadAndTabSwitch",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose",
+    "WoowAssistantUITests/BrowserWorkspaceUITests/testTabsKeepIndependentPageStateAndRestoreSelection"
+  ],
+  "all_three_pass_nine_methods_zero_skips": true,
+  "runs": [
+    {
+      "variant": "current",
+      "run_id": 42961063289,
+      "source_sha": "fe66ab2ed1607c32ab7623d45f31e60e963d0550",
+      "run_conclusion": "success",
+      "artifact_id": 13833125668,
+      "artifact_name": "ios-test-evidence-ios26-current-42961063289",
+      "zip_sha256": "615dd82e8a2a14c01c14392ae8300a11935e27588c6a092d8f63df1c9fae1f10",
+      "zip_bytes": 15501985,
+      "zip_crc_members_checked": 85,
+      "native_counts": {
+        "totalTestCount": 9,
+        "passedTests": 9,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "method_count": 9,
+      "method_events_sha256": "789224dfb1f0d616c5af6d6936657bda2062bc4000afb761a634b2b38fcdaa00",
+      "runtime": "26.2",
+      "device": "iPhone 17",
+      "evidence_sha256": "492b6cd004eb401419970edc50e20baff7d4fbddc7e2a9e75be439052ebec3ee",
+      "manifest_sha256": "fd5f6c699ff31320ede7427e1165e181c7f349e8b33a04a51f8f35c5d4f63431",
+      "evidence_file": "ui-workspace-fe66ab2-ios26-current.json"
+    },
+    {
+      "variant": "se",
+      "run_id": 42961079617,
+      "source_sha": "fe66ab2ed1607c32ab7623d45f31e60e963d0550",
+      "run_conclusion": "success",
+      "artifact_id": 13832064871,
+      "artifact_name": "ios-test-evidence-ios18-compact-42961079617",
+      "zip_sha256": "13dda44eb7c85256a6fc760e9175b442f890d37bbc84864e720ac4854c7fb0e5",
+      "zip_bytes": 15213196,
+      "zip_crc_members_checked": 85,
+      "native_counts": {
+        "totalTestCount": 9,
+        "passedTests": 9,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "method_count": 9,
+      "method_events_sha256": "f8abaa19a970042eaaa556b282530b0ea23cf42efa76a3365379df6c68b3c6be",
+      "runtime": "18.5",
+      "device": "iPhone SE (3rd generation)",
+      "evidence_sha256": "2dfb571969f95dd9b108f2ec913c5cba409d51cf54c64ac47f63bf61ad54ad42",
+      "manifest_sha256": "0c326d82aab36641e3cc4caf5f3195b3889f3f0c938bdc53d2475d06cd6af5bd",
+      "evidence_file": "ui-workspace-fe66ab2-ios18-compact.json"
+    },
+    {
+      "variant": "exact17",
+      "run_id": 42961096341,
+      "source_sha": "fe66ab2ed1607c32ab7623d45f31e60e963d0550",
+      "run_conclusion": "success",
+      "artifact_id": 13832718816,
+      "artifact_name": "ios17-17.0.1-42961096341",
+      "zip_sha256": "7ea24d322283390b95e8e69647cf7baa476f51f31cb9d1dd2e53af871476c6d0",
+      "zip_bytes": 16668885,
+      "zip_crc_members_checked": 85,
+      "native_counts": {
+        "totalTestCount": 9,
+        "passedTests": 9,
+        "failedTests": 0,
+        "skippedTests": 0,
+        "expectedFailures": 0
+      },
+      "method_count": 9,
+      "method_events_sha256": "53a0d2ab6430be47a2e9da7c838db71f5e656913ff6aa67f83aea9bb00926585",
+      "runtime": "17.0.1",
+      "device": "iPhone 15",
+      "evidence_sha256": "730b056e8c8f7ef4cd54c91faf2d3dc1eeb48f94a221f82efc2fccf168d6f57b",
+      "manifest_sha256": "81887dcd11c5454c03e2f081cd10b483139918c5f8ce0261f876b47b031822f9",
+      "evidence_file": "ui-workspace-fe66ab2-exact17.json"
+    }
+  ],
+  "limitations": [
+    "ui-workspace is a nine-method shard, not full app or full browser parity.",
+    "Exact iOS 17 report runtime_tested=false and full_acceptance_succeeded=false by scope design, while selected_tests_succeeded=true and the device summary proves iOS 17.0.1 was used."
+  ]
+}

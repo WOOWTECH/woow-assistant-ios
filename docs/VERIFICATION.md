@@ -1,5 +1,36 @@
 # Verification — 2026-11-11
 
+## Three-platform browser workspace interface completed at `fe66ab2`
+
+The native `ui-workspace` shard passed **9/9, zero failed or skipped** on
+[current iOS 26.2](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961063289),
+[SE/iOS 18.5](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961079617),
+and [exact iOS 17.0.1](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961096341):
+**27/27 selected method executions**. The nine methods cover native form login,
+cookie sharing and clearing, tabs, bookmarks, history, custom search, manual
+GET site mode, JavaScript dialog and page find. Every method started and passed
+once; complete artifact ZIP digests and all-member CRCs matched. The exact17
+release report marks the selected tests successful, while its full-acceptance
+flag remains false by the intentionally narrow scope. These cases use local
+test pages; they do not accept external account login, all browser features,
+or complete Mika parity. [Aggregate run and method evidence](evidence/ui-workspace-fe66ab2-three-platforms.json),
+[current](evidence/ui-workspace-fe66ab2-ios26-current.json),
+[SE](evidence/ui-workspace-fe66ab2-ios18-compact.json),
+[exact17](evidence/ui-workspace-fe66ab2-exact17.json).
+
+## Current startup streaming UI rerun pending
+
+At `a03eac0`, [current run 42956288760](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42956288760)
+passed **14/15** selected startup UI cases, zero skipped. The remaining
+`ChatStreamingUITests/testPartialBecomesCompletedReplyAndDurableArchive` stopped
+while entering the settings model field: its visible field received a native
+tap, but the keyboard did not appear. The completed-stream and saved-archive
+assertions were not reached. SE [run 42956303279](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42956303279)
+passed **15/15** on that source. The candidate changes only the test's focus
+transition between URL and model fields; it retains native keyboard, exact
+field value, streaming and archive assertions. A current native rerun is
+required before this case can be accepted.
+
 ## Three-platform MCP interface completed at `fe66ab2`
 
 The native `ui-mcp` shard passed **8/8, zero skipped** separately on
