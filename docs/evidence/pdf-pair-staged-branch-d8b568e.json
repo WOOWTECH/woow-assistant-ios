@@ -1,0 +1,56 @@
+{
+  "base_sha": "f5b7a55d94576ef3349a42663bd5dbe9dfa6ed6d",
+  "worktree": "/private/tmp/woow-pdf-pair-staged-f5b7a55",
+  "hypothesis": "Eager publication of both synthetic PDFs before the first Files picker may invalidate LocalStorage item ID to URL resolution; defer B until the first genuine A picker callback.",
+  "prior_evidence": {
+    "current_ios26": "A delegate succeeded, B tap had no second delegate; FileProvider -1005 for localstorage/did=4; fixture hash/inode unchanged in later observation.",
+    "se_ios18": "Quick Look associated localstorage/did=3 with A and its fixture inode/size before selection; the same ID received FileProvider -1005 after A tap, with no delegate; later fixture hash/inode unchanged.",
+    "exact_ios17": "Unchanged UIDocument focused method passed 1/1 with two native callbacks and A2/B1/A1/export assertions; this is separate from cross-platform acceptance."
+  },
+  "scope": "pdf-pair-staged",
+  "exact_selector": "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testStagedSecondPDFCreationAfterFirstNativeSelectionInterleavesApprovedPages",
+  "native_acceptance": "One case each on current iOS26.2, SE iOS18.5, exact iOS17.0.1; A visible/B absent before first picker; two deliberate Files selections and actual delegates; per-source read grants; exact A2,B1,A1 output; unchanged originals; native export cancellation retains result.",
+  "bounds": "Existing 15-second selection transition, 300-second case maximum, 20-minute current/SE focused Test step and unchanged iOS17 combined budget; no retries or URL injection.",
+  "changed_files": {
+    ".github/workflows/ios.yml": "9d94ce2eead33ee1e8fab848ed848cf65a7208abed2c95f95c19b25599597f61",
+    ".github/workflows/release-ios.yml": "267aff842fc8650855ae5f890d78b7f777ca259d44685ff4b7be36066fb8dd40",
+    "Sources/App/SkillExecutionUITestSupport.swift": "adc970b3eba6b2fe3eaaf2b056860bb88b6608352e017ee2512b578192ed0749",
+    "Sources/App/SkillPDFAssemblySession.swift": "6ec3ca8b5667ee46ac94c7e576616260bc2c7a5392b037fc5ab761ef03fbcddb",
+    "Sources/App/SkillPDFAssemblyView.swift": "5901f1523bc81a40ab2e34f66b00346d6dd9f2f339cb077910dc55faa824271b",
+    "Tests/WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests.swift": "6a8bbce63134cde94f28dddb6ff9cec915d312a4e994b850e01e8b5c4c8a2aad",
+    "scripts/check_pdf_assembly_pair.py": "c8c877229d7432d99b03a999c13ed5729fa479c6139fdb3a7d9d57568b7c7eaf",
+    "scripts/release_ios17.py": "ff22841de1f6ed629d518b141d478c68451674f398a0986a4bdc8c89e6f5c877",
+    "scripts/test_release_ios17_document_scopes.py": "e27d1231fdd9e86f9fe0a069f74abf4e14f1e49b370fabad8dba5a69cdb49ad7",
+    "scripts/test_release_ios17_prebuild.py": "26e1cb551f9da4e33ab542e21ee34490424ffdcd9fe09b36e168fe98dd1c5ff5"
+  },
+  "patch_sha256": "5ec872cfcf5cab96956d6b81e51f62abdfeb82ee259dcb999c5a99a92ad18e01",
+  "patch_bytes": 39252,
+  "local_checks": {
+    "debug_host_assertions": 60,
+    "release_host_assertions": 24,
+    "staged_creation_verified": true,
+    "app_logic_typecheck_debug_release": true,
+    "ios17_syntax_parse_debug_release": true,
+    "release_ios17_python_tests": 60,
+    "fixture_diagnostics": "passed",
+    "workflow_yaml": "Ruby YAML parsed both",
+    "actionlint": "unavailable locally",
+    "native_picker": "not run"
+  },
+  "limitations": [
+    "This is an isolated test-fixture experiment, not a production FileProvider repair.",
+    "Passing it would implicate eager two-item publication but would not by itself prove why the provider mapping fails.",
+    "The macOS host has no Xcode; full iOS typecheck and native behavior require focused CI."
+  ],
+  "runs_dispatched": [],
+  "main_edited": false,
+  "isolated_branch": "test/pdf-pair-staged-fileprovider",
+  "candidate_commit": "d8b568e",
+  "runs": {
+    "current_ios26": 42966416710,
+    "se_ios18": 42966422108,
+    "exact_ios17": 42966427095
+  },
+  "main_modified": false,
+  "native_verdict": "pending"
+}

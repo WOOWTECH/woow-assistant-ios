@@ -1,5 +1,23 @@
 # Verification — 2026-11-11
 
+## Staged dual-PDF FileProvider experiment in isolated branch
+
+Current and SE logs correlate missed native picker callbacks with FileProvider
+`-1005` while the synthetic PDF inode/hash remain unchanged in later checks.
+Apple defines `noSuchItem` as a specified item not existing, but these logs do
+not prove the FileProvider root cause. The isolated
+[`d8b568e` branch](https://github.com/WOOWTECH/woow-assistant-ios/tree/test/pdf-pair-staged-fileprovider)
+tests one new hypothesis: show only PDF A before the first Files picker, then
+create PDF B only after A's genuine native selection callback. It preserves two
+Files selections, separate grants, A2/B1/A1 page order and cancelled-export
+assertions. Local Debug/Release checks and workflow lint passed. Three focused
+native runs are pending: [current](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966416710),
+[SE](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966422108),
+[exact iOS 17](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966427095).
+The candidate is **not in main** and is not yet accepted as a fix.
+[Patch scope and local checks](evidence/pdf-pair-staged-branch-d8b568e.json),
+[Apple error definition](https://developer.apple.com/documentation/fileprovider/nsfileprovidererror/code/nosuchitem).
+
 ## Unsigned iPhoneOS build after MCP results correction
 
 At `fe66ab2`, [run 42961148082](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961148082)
