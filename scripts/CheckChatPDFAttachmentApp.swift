@@ -616,13 +616,34 @@ private actor PlainPDFContinuationModel: ChatModelClient {
 }
 #else
 final class ChatPDFAttachmentAppTests: XCTestCase {
-    @MainActor func testRequestBoundaryAndEncryptedMigration() async throws { XCTAssertGreaterThan(try await ChatPDFChecks.requestBoundaryAndEncryptedMigration(), 0) }
-    @MainActor func testFixtureIsolation() async throws { XCTAssertGreaterThan(try await ChatPDFChecks.fixtureIsolation(), 0) }
-    @MainActor func testGrantsAndSuccess() async throws { XCTAssertGreaterThan(try await ChatPDFChecks.grantsAndSuccess(), 0) }
-    @MainActor func testMigrationAndMalformed() async throws { XCTAssertGreaterThan(try await ChatPDFChecks.migrationAndMalformed(), 0) }
-    @MainActor func testLateLifecycle() async throws { XCTAssertGreaterThan(try await ChatPDFChecks.lateLifecycle(), 0) }
-    @MainActor func testFailuresAndPersistence() async throws { XCTAssertGreaterThan(try await ChatPDFChecks.failuresAndPersistence(), 0) }
-    @MainActor func testBoundsAndRestoreCancellation() async throws { XCTAssertGreaterThan(try await ChatPDFChecks.boundsAndRestoreCancellation(), 0) }
+    @MainActor func testRequestBoundaryAndEncryptedMigration() async throws {
+        let passed = try await ChatPDFChecks.requestBoundaryAndEncryptedMigration()
+        XCTAssertGreaterThan(passed, 0)
+    }
+    @MainActor func testFixtureIsolation() async throws {
+        let passed = try await ChatPDFChecks.fixtureIsolation()
+        XCTAssertGreaterThan(passed, 0)
+    }
+    @MainActor func testGrantsAndSuccess() async throws {
+        let passed = try await ChatPDFChecks.grantsAndSuccess()
+        XCTAssertGreaterThan(passed, 0)
+    }
+    @MainActor func testMigrationAndMalformed() async throws {
+        let passed = try await ChatPDFChecks.migrationAndMalformed()
+        XCTAssertGreaterThan(passed, 0)
+    }
+    @MainActor func testLateLifecycle() async throws {
+        let passed = try await ChatPDFChecks.lateLifecycle()
+        XCTAssertGreaterThan(passed, 0)
+    }
+    @MainActor func testFailuresAndPersistence() async throws {
+        let passed = try await ChatPDFChecks.failuresAndPersistence()
+        XCTAssertGreaterThan(passed, 0)
+    }
+    @MainActor func testBoundsAndRestoreCancellation() async throws {
+        let passed = try await ChatPDFChecks.boundsAndRestoreCancellation()
+        XCTAssertGreaterThan(passed, 0)
+    }
 }
 #endif
 #endif

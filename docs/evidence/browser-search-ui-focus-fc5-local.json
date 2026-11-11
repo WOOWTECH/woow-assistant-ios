@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "status": "local_pass_native_pending",
+  "source_commit_before_fix": "fc5ebbc4406a4bd72020f3324eb22e94f3249d73",
+  "scope": "Search UI native focus and isolated namespace persistence driver",
+  "source_sha256": "dbf11123e375bc6442c3a874c3fd3303acaa69aba0f5da0ec772414425c6eb09",
+  "frozen_patch_sha256": "424c21e62eb58751b029fd21f3f4e306f2f906f260f63535505b7faf38bee5f8",
+  "local_app_webkit_assertions": {
+    "debug": 172,
+    "release": 172,
+    "site_modes_debug": 118,
+    "site_modes_release": 118
+  },
+  "native_ui": "pending",
+  "original_failing_runs": [
+    42929156261,
+    42929160936,
+    42929166070
+  ],
+  "limits": [
+    "Local App/WebKit checks do not establish native XCTest UI behavior.",
+    "Google public page attempt4 lacked destination rejection subreasons; no destination rule change was made."
+  ]
+}

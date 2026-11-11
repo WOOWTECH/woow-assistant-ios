@@ -7,19 +7,25 @@ final class BrowserSearchUITests: XCTestCase {
     override func tearDownWithError() throws { app.terminate() }
 
     func testCustomSearchQueryAndSettingsSurviveRelaunch() {
-        launch(reset: true)
+        launch()
         let settings = app.buttons["browser.searchEngine.open"]
         XCTAssertTrue(settings.waitForExistence(timeout: 10))
         XCTAssertTrue(settings.label.contains("Bing"))
         tap(settings)
         XCTAssertTrue(app.buttons["browser.searchEngine.select.bing"].waitForExistence(timeout: 10))
         XCTAssertEqual(app.buttons["browser.searchEngine.select.bing"].value as? String, "已選取")
+        XCTAssertFalse(app.buttons.matching(NSPredicate(format: "identifier BEGINSWITH %@", "browser.searchEngine.remove.custom:")).firstMatch.exists,
+                       "The fresh namespace must contain no previously saved custom engine")
         tap(app.buttons["browser.searchEngine.select.google"], scroll: true)
         XCTAssertEqual(app.buttons["browser.searchEngine.select.google"].value as? String, "已選取")
         let name = app.textFields["browser.searchEngine.name"]
         enter("Fixture Search", in: name, scroll: true)
+        // Use the form's real Next action. With the name keyboard open, the
+        // template is obscured; scrolling via the background browser's tab bar
+        // cannot establish the presented sheet's visible input area.
+        name.typeText("\n")
         let template = app.textFields["browser.searchEngine.template"]
-        enter("https://research.example.invalid/search?q=%s&lang=en", in: template, scroll: true)
+        enter("https://research.example.invalid/search?q=%s&lang=en", in: template)
         // Submit the single-line native field to resign focus. Do not close
         // the settings sheet, patch its text, or press Add behind the keyboard.
         template.typeText("\n")
@@ -45,7 +51,7 @@ final class BrowserSearchUITests: XCTestCase {
         revealLearningElement(history, in: app)
         XCTAssertTrue(history.label.contains("搜尋：fixture cats & dogs/+%"))
         tap(app.buttons["browser.library.close"])
-        launch(reset: false)
+        launch()
         XCTAssertTrue(query.waitForExistence(timeout: 75))
         XCTAssertTrue(query.label.contains("fixture cats & dogs/+%"))
         XCTAssertTrue(settings.label.contains("Fixture Search"))
@@ -58,10 +64,12 @@ final class BrowserSearchUITests: XCTestCase {
         XCTAssertTrue(settings.label.contains("Bing"))
     }
 
-    private func launch(reset: Bool) {
+    private func launch() {
         app.terminate()
         app.launchArguments = ["-AppleLanguages", "(zh-Hant)", "-AppleLocale", "zh_TW", "-UITestMode", "-UITestNamespace", namespace]
-        if reset { app.launchArguments.append("-UITestResetStorage") }
+        // This test owns a new UUID namespace. Clearing its empty WebKit store
+        // adds an unrelated asynchronous reset before settings are usable. Both
+        // launches keep this same isolated store to exercise actual persistence.
         app.launch()
         XCTAssertTrue(app.buttons["navigation.browser"].waitForExistence(timeout: 10))
         tap(app.buttons["navigation.browser"])
@@ -70,11 +78,31 @@ final class BrowserSearchUITests: XCTestCase {
     private func enter(_ text: String, in field: XCUIElement, scroll: Bool = false) {
         if scroll { revealLearningElement(field, in: app) }
         ready(field)
-        XCTAssertTrue(app.frame.contains(field.frame)); XCTAssertFalse(field.frame.isEmpty)
+        assertVisibleField(field)
         field.tap()
         prepareKeyboard()
+        // The real focus transition must put the entire field above the native
+        // keyboard. Do not type into an offscreen or covered field.
+        assertVisibleField(field)
         field.typeText(text)
         XCTAssertEqual(field.value as? String, text, "Native field input must match exactly; no replacement or retyping repair")
+    }
+
+    private func assertVisibleField(_ field: XCUIElement, file: StaticString = #filePath, line: UInt = #line) {
+        let frame = field.frame
+        XCTAssertFalse(frame.isEmpty, file: file, line: line)
+        XCTAssertTrue(app.frame.contains(frame), "Native input must be fully on screen", file: file, line: line)
+        XCTAssertTrue(field.isHittable, "Native input must remain operable", file: file, line: line)
+        let keyboard = app.keyboards.firstMatch
+        if keyboard.exists {
+            XCTAssertLessThanOrEqual(frame.maxY, keyboard.frame.minY,
+                                     "Native input must be fully above the keyboard", file: file, line: line)
+        }
+        let settingsNavigation = app.navigationBars["搜尋引擎"]
+        if settingsNavigation.exists {
+            XCTAssertGreaterThanOrEqual(frame.minY, settingsNavigation.frame.maxY,
+                                        "Native input must be below the settings navigation bar", file: file, line: line)
+        }
     }
 
     private func tap(_ element: XCUIElement, scroll: Bool = false) {
