@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "status": "PASS_UNSIGNED_DEVICE_BUILD",
+  "source_commit": "c93f894dc5ea0725704f1686bdb8a17abf911f3e",
+  "run_id": 42966148674,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966148674",
+  "artifact": {
+    "id": 13833510226,
+    "bytes": 40244,
+    "sha256": "9e2337db75e08864a32c527be08bc4fa6e4fdcbd4b0541556e49260db31d188e",
+    "zip_crc_checked": true,
+    "report_sha256": "7a752a4670a38c2cfb823acf1b10ad637c69af86247c33037a4233dbacd6bb81",
+    "device_build_log_sha256": "c033a5cd9a882ed4d27dcba08f016d91aed47ea6314da2d5214acf59d65b98b9"
+  },
+  "report": {
+    "xcode": "Xcode 26.2\nBuild version 17C52",
+    "iphoneos_sdk": "26.2",
+    "build_number": "105",
+    "bundle_id": "io.woowtech.assistant",
+    "minimum_os": "17.0",
+    "platform": "iphoneos",
+    "verified_binary_count": 9,
+    "signature_verified": false,
+    "ats_key_absent": true,
+    "native_documents_enabled": true,
+    "required_reason_entries_verified": true,
+    "artifact_kind": "unsigned-device-build-not-installable",
+    "runtime_tested": false,
+    "uploaded": false
+  },
+  "build_log": {
+    "build_succeeded_count": 1,
+    "build_failed_count": 0,
+    "error_line_count": 0
+  },
+  "limits": [
+    "This source includes website media-permission and archived-PDF accessibility product changes, but predates the later release-verifier gate for packaged camera/microphone purpose strings.",
+    "The workflow artifact contains only report and build log; no installable IPA was signed or uploaded.",
+    "A separate latest-source unsigned build must prove the new packaged-purpose-string gate."
+  ]
+}

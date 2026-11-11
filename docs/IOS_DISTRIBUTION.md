@@ -1,8 +1,8 @@
 # iOS 簽章與最低版本驗證
 
-最新已核實的 Release 裝置建置為 `fe66ab2` 的 [建置 102](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961148082)：Xcode／iphoneos SDK 26.2、最低 iOS 17.0、九個二進位檔及原生文件／ATS／隱私檢查通過。產物**未簽章、不可安裝、未上傳**；[完整證據](evidence/unsigned-device-fe66ab2.json)。它早於後續網站媒體權限與 PDF 無障礙修正。包含這些產品修改的[新裝置建置](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966148674)仍在排隊，不能沿用建置 102 的通過結論。
+最新已核實的 Release 裝置建置為 `c93f894` 的 [建置 105](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966148674)：Xcode／iphoneos SDK 26.2、最低 iOS 17.0、九個二進位檔及原生文件／ATS／隱私檢查通過。此版本包含網站媒體權限與 PDF 無障礙產品修正，產物仍**未簽章、不可安裝、未上傳**；[完整證據](evidence/unsigned-device-c93f894.json)。當次發行腳本尚未包含下述新增的用途說明產物檢查。
 
-發行腳本現在額外檢查實際 App 產物的相機與麥克風用途說明為非空字串；缺少任一項便阻止標示為可發行。此檢查與缺漏／空白負例、既有簽章及最低系統檢查共 42 項本機腳本測試已通過；仍需在新版 iPhoneOS 產物驗證，且不代表網站實際取得媒體權限。
+發行腳本現在額外檢查實際 App 產物的相機與麥克風用途說明為非空字串；缺少任一項便阻止標示為可發行。此檢查與缺漏／空白負例、既有簽章及最低系統檢查共 42 項本機腳本測試已通過；[新版 iPhoneOS 建置](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42970132111)仍待驗證該新增關卡，且不能代替網站實際要求媒體權限的測試。
 
 最低版本模擬器已有獨立實跑證據：`8c4195f` 的 iOS 17.0.1 啟動介面 13/13、保存對話 4/4、通知介面 2/2；`956aa9f` 真實模型 PDF 問答完整流程 1/1，均零略過。這些通過不代表整個 App、所有後續版本或真機已通過；詳細來源與限制見 [VERIFICATION.md](VERIFICATION.md)。下方歷史紀錄保留當次結果。
 

@@ -1,5 +1,17 @@
 # Verification — 2026-11-11
 
+## Current product source compiles for iPhoneOS
+
+At `c93f894`, [run 42966148674](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42966148674)
+completed an **unsigned Release iPhoneOS build** with Xcode 26.2, minimum iOS
+17.0 and nine verified binaries. This source includes the manual website media
+delegate/purpose strings and saved-PDF accessibility product corrections. The
+full two-member artifact ZIP passed SHA-256 and CRC checks; the build log has
+one `BUILD SUCCEEDED`, no build failure and no compiler error line. It is not
+signed or installable. The source predates the subsequent packaged purpose
+string release gate; [run 42970132111](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42970132111)
+will test that gate. [Artifact evidence](evidence/unsigned-device-c93f894.json).
+
 ## Exact iOS 17 live-model suite blocked at model service
 
 At `fe66ab2`, [run 42961323643](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961323643)
