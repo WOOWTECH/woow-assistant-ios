@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "status": "verified_pass",
+  "scope": "One actual in-app browser PDF download, explicit plan, separate read and extraction approvals, exact output and input digest",
+  "variants": [
+    {
+      "variant": "current",
+      "run_id": 42946917355,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42946917355",
+      "head_sha": "83f4ddd15db9a40f54dc81de6ba43226a94b5f51",
+      "artifact_id": 13823672761,
+      "artifact_zip_sha256": "67181ac34d9f3aa5e8ac773875d39b1c77fe040cf287f91204d80c4e10aa4d0c",
+      "artifact_members": 68,
+      "artifact_crc_verified": true,
+      "device": "iPhone 17",
+      "runtime_version": "26.2",
+      "runtime_build": "23C54",
+      "method": "BrowserDownloadedPDFUITests/testRealBrowserDownloadRequiresBothApprovalsAndReturnsExactPDFText",
+      "counts": {
+        "passedTests": 1,
+        "failedTests": 0,
+        "skippedTests": 0
+      },
+      "ui_shard_verified": true,
+      "key_members_sha256": {
+        "test-summary.json": "142f6e2b743616142e5ed6610f8981056a208a75e5ffe411b65cf80482a07f8b",
+        "ui-shard-completion.json": "8a279e1a8985b031dbc2ed1d84fa3997ebd32b8f52ce6024d388f88f2ea5cfaf",
+        "ios-tests.log": "39c87c471112d6b745b52a8f606c9814e8ecbe7911f4cae77fdcb9c9ddd640c6"
+      }
+    },
+    {
+      "variant": "se",
+      "run_id": 42946928172,
+      "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42946928172",
+      "head_sha": "83f4ddd15db9a40f54dc81de6ba43226a94b5f51",
+      "artifact_id": 13823558269,
+      "artifact_zip_sha256": "8b3c8f5b8b72dc15fdbf5c5d9dd040690e17228e71a76a15c49e73f1b7f5b679",
+      "artifact_members": 68,
+      "artifact_crc_verified": true,
+      "device": "iPhone SE (3rd generation)",
+      "runtime_version": "18.5",
+      "runtime_build": "22F77",
+      "method": "BrowserDownloadedPDFUITests/testRealBrowserDownloadRequiresBothApprovalsAndReturnsExactPDFText",
+      "counts": {
+        "passedTests": 1,
+        "failedTests": 0,
+        "skippedTests": 0
+      },
+      "ui_shard_verified": true,
+      "key_members_sha256": {
+        "test-summary.json": "18c40b4cc45b8e0151c4ca39445117a81994fcb983a880a6084ba70afba76d70",
+        "ui-shard-completion.json": "8a279e1a8985b031dbc2ed1d84fa3997ebd32b8f52ce6024d388f88f2ea5cfaf",
+        "ios-tests.log": "5a6121e9eaa0dcf931cc2a9034f84c6ecf5c14488fe9976f0b2c77bd19f31303"
+      }
+    }
+  ],
+  "limits": [
+    "These two focused UI runs do not establish the other document-picker or skill cases.",
+    "Exact iOS 17 run was separate and is not included in this two-variant proof."
+  ]
+}
