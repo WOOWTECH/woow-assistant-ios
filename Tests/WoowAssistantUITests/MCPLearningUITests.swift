@@ -356,8 +356,15 @@ final class MCPLearningUITests: XCTestCase {
                 && keyboard.keys.matching(NSPredicate(format: "label IN %@", ["a", "A"])).firstMatch.exists
         }
         if latin() { return }
-        let globe = app.buttons["Next keyboard"].firstMatch
-        ready(globe); globe.press(forDuration: 1)
+        // The native keyboard switch is localized by iOS, even when the app's
+        // own test language is fixed. iOS 26 exposes the same visible globe as
+        // 「下一個鍵盤」; earlier runtimes expose it as "Next keyboard".
+        let globe = app.buttons.matching(NSPredicate(
+            format: "label IN %@", ["Next keyboard", "下一個鍵盤"]
+        )).firstMatch
+        ready(globe)
+        XCTAssertTrue(app.frame.contains(globe.frame), "The native keyboard switch must be visible")
+        globe.press(forDuration: 1)
         let english = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "English (US)")).firstMatch
         ready(english); english.tap()
         dismissKeyboardIntroductionIfPresented()

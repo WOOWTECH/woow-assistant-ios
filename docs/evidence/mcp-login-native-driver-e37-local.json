@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "status": "local_pass_native_ui_pending",
+  "base_sha": "e37b641ff65d4c6aad2bbe2aed9c2d5681d82edb",
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/MCPLearningUITests.swift": "f88cda7177a36611d70f9bd662582e91e3995b12a9f2dd193d6c364253ab7546",
+    "Tests/WoowAssistantUITests/BrowserLoginUITests.swift": "13f05b0a0e74e83b690af68930be6d496512de59c5345d90ac55d84e7f0b67bb"
+  },
+  "patch_sha256": {
+    "mcp_keyboard": "897f4e4c0a39911e61b0f4a851dc4631b83d9b382df1deb4f2baa23e031bc7b9",
+    "login_se": "3423188ea88e45234987cad1c2f6c441acb41a3945555d0a481b6bd29924dac0"
+  },
+  "original_runs": {
+    "mcp_current": 42934984870,
+    "workspace_se": 42929160936
+  },
+  "checks": {
+    "ios17_syntax": "PASS",
+    "ui_inventory_mcp_cases": 8,
+    "ui_inventory_workspace_cases": 9,
+    "locale_assignments": 44,
+    "mcp_agent_local_language_checks": 40,
+    "login_agent_real_http_assertions": 42,
+    "login_agent_macos_webkit_assertions": 16
+  },
+  "limits": [
+    "MCP approval cases stopped at keyboard preparation in original native run; they have not passed after this change.",
+    "Login status-first navigation is a diagnostic candidate. Server denial and relaunch remain mandatory in native XCTest."
+  ]
+}

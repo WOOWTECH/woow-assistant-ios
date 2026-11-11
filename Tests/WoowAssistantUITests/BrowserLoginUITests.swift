@@ -391,6 +391,18 @@ final class BrowserLoginUITests: XCTestCase {
         XCTAssertTrue(empty.waitForExistence(timeout: max(0, removalDeadline - ProcessInfo.processInfo.systemUptime)),
                       "Wait for the post-deletion WebKit website-record refresh to show an empty list.")
         tap(app.buttons["browser.library.close"])
+        // The cleared store was empty in d938 SE, but its first post-clear
+        // protected navigation stayed in the provisional loading state. Visit
+        // the same live server's ordinary status document through a fresh
+        // WebView first. Its server-rendered anonymous/login counters prove the
+        // cleared cookie header independently; the protected 401 below remains
+        // a separate, required native navigation and denial assertion.
+        let statusURL = protectedURL.deletingLastPathComponent().appendingPathComponent("status")
+        openInNewTab(statusURL)
+        XCTAssertTrue(text("LOGIN_ANONYMOUS").waitForExistence(timeout: 30),
+                      "The same HTTP server must receive a fresh WebKit request without the cleared cookie.")
+        XCTAssertTrue(text("LOGIN_SERVER_LOGINS_1").exists,
+                      "The anonymous response must come from the original live server, not a reset fixture.")
         openInNewTab(protectedURL)
         XCTAssertTrue(text("LOGIN_PROTECTED_DENIED").waitForExistence(timeout: 30),
                       "Website clearing must change the Cookie header observed by the same HTTP server.")
@@ -461,17 +473,25 @@ final class BrowserLoginUITests: XCTestCase {
         }
         if hasLatinKeys() { return true }
 
-        // The failing run exposes this exact native globe control, and its
-        // next-language value includes English (US). Select that keyboard from
-        // the native language menu once instead of cycling unknown layouts or
-        // changing simulator preferences. App language remains zh-Hant.
-        let globe = app.buttons["Next keyboard"].firstMatch
+        // d938 SE's video still shows the native globe after QuickPath closes.
+        // Its AX node in the same simulator is a Button with identifier
+        // "emoji" and label "Next keyboard". Bind the stable native ID under
+        // the active keyboard; an app-wide label lookup timed out after the
+        // tutorial even though the control remained visibly present.
+        let globe = keyboard.buttons["emoji"].firstMatch
         let globeReady = XCTNSPredicateExpectation(
             predicate: NSPredicate(format: "exists == true AND hittable == true AND enabled == true"), object: globe)
         guard XCTWaiter.wait(for: [globeReady], timeout: 10) == .completed else {
             XCTFail("The native keyboard switch must be available for the synthetic ASCII account.")
             return false
         }
+        guard globe.identifier == "emoji", globe.label == "Next keyboard",
+              keyboard.frame.contains(globe.frame) else {
+            XCTFail("The exact native keyboard switch must be visible within the active keyboard.")
+            return false
+        }
+        // Select English (US) from the real native language menu once; do not
+        // cycle unknown layouts or change simulator preferences.
         globe.press(forDuration: 1)
         let english = app.descendants(matching: .any)
             .matching(NSPredicate(format: "label == %@", "English (US)")).firstMatch
