@@ -1,0 +1,20 @@
+name: Android UI reference check
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        with:
+          persist-credentials: false
+      - name: Check Android source snapshot
+        run: |
+          git clone --depth 1 https://github.com/WOOWTECH/woowtech_mika_smart_app.git "$RUNNER_TEMP/woow-android-reference"
+          python3 scripts/check_android_ui_reference.py --android-repo "$RUNNER_TEMP/woow-android-reference"

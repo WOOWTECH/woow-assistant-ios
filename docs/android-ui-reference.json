@@ -1,0 +1,31 @@
+{
+  "repository": "https://github.com/WOOWTECH/woowtech_mika_smart_app",
+  "commit": "de5be358c4e24b7eed46a95e46edf35a86881bff",
+  "description": "Source snapshot for reviewing iOS parity; a file match does not prove visual or behavioral parity.",
+  "files": {
+    "app/src/main/java/com/wangzan101/mika/ui/BrowserPageParts.kt": "e995a33141740005eceb5325df75624256d5fcc84a7a8f147b118527dacc1459",
+    "app/src/main/java/com/wangzan101/mika/ui/BrowserScreen.kt": "51d6e08da4b7398781d25bb0fe87dfc9429c91ed0b99167487ad151b6f21d623",
+    "app/src/main/java/com/wangzan101/mika/ui/BrowserStart.kt": "86c0e4c11ff6edd5c0faa8e7753454fcee8618b65658f491a64869ce24e4318d",
+    "app/src/main/java/com/wangzan101/mika/ui/ChatAttachments.kt": "ccebe24d3ca059238c730a30c5993246a276503a8ee1f413eb7f7260dd83cd57",
+    "app/src/main/java/com/wangzan101/mika/ui/ChatCopy.kt": "3452b284e8776318b82749300979ce9e960d56db1304cf120f64a20fda138435",
+    "app/src/main/java/com/wangzan101/mika/ui/ChatDrawer.kt": "472445c5e42ff09b14dac788da7e3d5fe6d4bd63d8b36ba8ee0e88428bad624f",
+    "app/src/main/java/com/wangzan101/mika/ui/ChatScreen.kt": "3cd37438c4f683d8852fbec5b41d8c44711246ca84763a0e45e1ddc0ae9db9d0",
+    "app/src/main/java/com/wangzan101/mika/ui/McpScreen.kt": "286d4f1027e023b22f981663449a28312ed7833eba7cc08715f3853c42322dd9",
+    "app/src/main/java/com/wangzan101/mika/ui/McpServersScreen.kt": "76498ab9027351e75ffa0e00d6e0ef215d2d74159b45abfbaa8ce894daf03526",
+    "app/src/main/java/com/wangzan101/mika/ui/MemoryScreen.kt": "b03f7f173980fc238997d045194e4b1a4c2f73273e4d9f6011301ce979ec3cd2",
+    "app/src/main/java/com/wangzan101/mika/ui/ModelSetupScreen.kt": "a08b129c0a495afdbbb60d091019919d5ef158cc095e3be7208b6bc1d599f5d0",
+    "app/src/main/java/com/wangzan101/mika/ui/ModelsScreen.kt": "15c7871e6b763ce957d0044b7e2b60f027fee4d14373711a22b0d8775c0a775a",
+    "app/src/main/java/com/wangzan101/mika/ui/Navigation.kt": "0e104e3badd0f9dc2fdd2f70a262e1dc8b8d0978c1b18492f5562d56e2bc4d63",
+    "app/src/main/java/com/wangzan101/mika/ui/SettingsScreen.kt": "006979ab5a37d8dded7930f8cc1458160d85f8a6a0ccd9f2a410d0aeabe9db16",
+    "app/src/main/java/com/wangzan101/mika/ui/SettingsSubPages.kt": "4ae07b0874bf8e6b808936cf50c09a570edfa040b6dcdba6656680cfd90131b6",
+    "app/src/main/java/com/wangzan101/mika/ui/SkillsSection.kt": "45898c5b71dc028aaf8a8b847a0b88766f9c1ded83bd3f29a3234a20f47baedd",
+    "app/src/main/java/com/wangzan101/mika/ui/components/Page.kt": "03a697a73fcd6a5a3737931d3b67b2ee0f8fffb25193afc372d3461bf7faaf9d",
+    "app/src/main/java/com/wangzan101/mika/ui/components/Rows.kt": "3900d500adc378d7c4f472954229113d2c0e69a31cb71b1ec2d83af9af8465a6",
+    "app/src/main/java/com/wangzan101/mika/ui/theme/Colors.kt": "93d15ac7c866208c564062c992aa76e442103d941bf74cd45e1c3632be976dae",
+    "app/src/main/java/com/wangzan101/mika/ui/theme/Theme.kt": "7a57b1e4fce6777b0a210b651b5cb137f77c6f32f1a4ea1b374798d42ce670b5",
+    "app/src/main/java/com/wangzan101/mika/ui/theme/Tokens.kt": "d56fc5c5e37ce95bce220d50c98fccfb6c5d7b2fb1dfb7ae47a2bde807c6609f",
+    "app/src/main/res/values-b+zh+Hant/strings.xml": "7cd20d2b1e416e978490819e45b83b0627900c139eefcda3aa7c18af37efef84",
+    "app/src/main/res/values/strings.xml": "cee7109d3e82e76a907e7e1b4fcab657e31954226a8192fbc26af8a892c58c16",
+    "app/src/woowtech/resources/brand.properties": "06b47867f9da21301c442562360b6c430035e3bb1b63ff63fa4ea59d485ac449"
+  }
+}
