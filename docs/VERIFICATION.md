@@ -1,5 +1,18 @@
 # Verification — 2026-11-11
 
+## Language UI rerun: 4/5 on each simulator
+
+At `dfd6eff`, current iOS 26.2, SE/iOS 18.5 and exact iOS 17.0.1 each
+completed **4/5 ui-language methods**, zero skips. The two newly added English
+screen cases reached their actual browser, search, catalog, MCP and notification
+checks; the browser/search/catalog case also verified its unsent chat draft.
+The only failure on all three platforms came after the notification checks:
+the test sought the root Chat control while still inside the Task notifications
+navigation page. Each failed AX snapshot shows its native back button and no
+root Chat control. The driver now taps that observed back button before the
+unchanged final draft assertion. This is a test candidate, with **no native pass
+claimed until a rerun**. [Three-run method and artifact evidence](evidence/ui-language-dfd-three-runs.json).
+
 ## SE native core at `dfd6eff`
 
 [Run 42958707611](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42958707611)

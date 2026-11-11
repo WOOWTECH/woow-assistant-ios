@@ -52,6 +52,7 @@ final class AppLanguagePhase2UITests: XCTestCase {
         XCTAssertFalse(testNotification.isEnabled,
                        "Changing language must not enable local notifications.")
 
+        tapChrome(app.navigationBars["Task notifications"].buttons.firstMatch)
         tapRoot("chat")
         XCTAssertEqual(app.textFields["chat.draft"].value as? String, chatDraft)
     }

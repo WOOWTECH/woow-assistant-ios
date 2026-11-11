@@ -1,0 +1,247 @@
+{
+  "schema": 1,
+  "source_commit": "dfd6eff3eb94dd4e45378c3f69163fc22722a2f9",
+  "test_source": "Tests/WoowAssistantUITests/AppLanguagePhase2UITests.swift",
+  "test_source_sha256": "9f129acd40f068ef376b6c1633eee98f948cafb17d75384c1fb9e61c9504187f",
+  "platforms": {
+    "ios17": {
+      "run_id": 42958323742,
+      "artifact_id": 13829229109,
+      "runtime": "iOS 17.0.1",
+      "counts": {
+        "started": 5,
+        "passed": 4,
+        "failed": 1,
+        "skipped": 0
+      },
+      "methods": {
+        "AppLanguagePhase2UITests.testEnglishBrowserLibrarySearchAndSkillCatalogKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 88.789
+        },
+        "AppLanguagePhase2UITests.testEnglishMCPAndNotificationsKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 0,
+          "failed": 1,
+          "skipped": 0,
+          "duration_seconds": 67.876
+        },
+        "AppLanguageUITests.testExplicitEnglishPersistsAndPreservesAppearancePermissionAndDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 53.913
+        },
+        "AppLanguageUITests.testSimplifiedChineseAndSystemFollowActualPreferredLanguages": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 32.592
+        },
+        "AppLanguageUITests.testUnsupportedSystemLanguageUsesTraditionalChineseFallback": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 10.399
+        }
+      },
+      "failure": {
+        "method": "AppLanguagePhase2UITests.testEnglishMCPAndNotificationsKeepUnsentChatDraft",
+        "file": "Tests/WoowAssistantUITests/AppLanguagePhase2UITests.swift",
+        "line": 148,
+        "stage": "after English MCP/notification checks, before final chat draft recheck"
+      },
+      "ax_observation": {
+        "notification_navigation_bar_present": true,
+        "native_back_button_present": true,
+        "root_chat_button_absent": true,
+        "attachment": "/tmp/woow-dfd-language17-evidence/attachments/12600571-D0A8-4759-B72D-C0C9A2A703EC.txt"
+      },
+      "test_log": "/tmp/woow-dfd-language17-evidence/tests.log",
+      "test_log_sha256": "05a75a904e492800795193f7997d7ec0ed0b1ecfd64b22ce8e29664a25f69133",
+      "artifact": {
+        "artifact_id": 13829229109,
+        "name": "ios17-17.0.1-42958323742",
+        "size_bytes": 34989243,
+        "archive_sha256": "0373f0f5a5d05d642ca432ec4448d4bd9ff4895f79ed1e7d66d3c1bdaa395e42",
+        "archive_crc32": "7aa3dbbc",
+        "github_digest_matches": true,
+        "zip_entry_count": 126,
+        "zip_member_crc_verified": true,
+        "archive_path": "/tmp/woow-dfd-language17-evidence/full/artifact-13829229109.zip"
+      }
+    },
+    "current": {
+      "run_id": 42958294225,
+      "artifact_id": 13829741979,
+      "runtime": "iOS 26.2",
+      "counts": {
+        "started": 5,
+        "passed": 4,
+        "failed": 1,
+        "skipped": 0
+      },
+      "methods": {
+        "AppLanguagePhase2UITests.testEnglishBrowserLibrarySearchAndSkillCatalogKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 165.613
+        },
+        "AppLanguagePhase2UITests.testEnglishMCPAndNotificationsKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 0,
+          "failed": 1,
+          "skipped": 0,
+          "duration_seconds": 82.998
+        },
+        "AppLanguageUITests.testExplicitEnglishPersistsAndPreservesAppearancePermissionAndDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 116.857
+        },
+        "AppLanguageUITests.testSimplifiedChineseAndSystemFollowActualPreferredLanguages": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 70.152
+        },
+        "AppLanguageUITests.testUnsupportedSystemLanguageUsesTraditionalChineseFallback": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 16.863
+        }
+      },
+      "failure": {
+        "method": "AppLanguagePhase2UITests.testEnglishMCPAndNotificationsKeepUnsentChatDraft",
+        "file": "Tests/WoowAssistantUITests/AppLanguagePhase2UITests.swift",
+        "line": 148,
+        "stage": "after English MCP/notification checks, before final chat draft recheck"
+      },
+      "ax_observation": {
+        "notification_navigation_bar_present": true,
+        "native_back_button_present": true,
+        "root_chat_button_absent": true,
+        "attachment": "/tmp/woow-dfd-language26-evidence/attachments/B781041D-5315-48A9-9330-6B5A2010AEE5.txt"
+      },
+      "test_log": "/tmp/woow-dfd-language26-evidence/ios-tests.log",
+      "test_log_sha256": "ce25ae3010a51824b631527738804928da856c006e7e2f6c8ff4ed59b13cf626",
+      "artifact": {
+        "artifact_id": 13829741979,
+        "name": "ios-test-evidence-ios26-current-42958294225",
+        "size_bytes": 218599433,
+        "archive_sha256": "6ebcb1f7bc1f8e999b05e763797be02bb91694f7bc29161032556b13e63328ff",
+        "archive_crc32": "5ec8a2e3",
+        "github_digest_matches": true,
+        "zip_entry_count": 1455,
+        "zip_member_crc_verified": true,
+        "archive_path": "/tmp/woow-dfd-language26-evidence/full/artifact-13829741979.zip"
+      }
+    },
+    "se": {
+      "run_id": 42958309562,
+      "artifact_id": 13829339883,
+      "runtime": "iOS 18.5",
+      "counts": {
+        "started": 5,
+        "passed": 4,
+        "failed": 1,
+        "skipped": 0
+      },
+      "methods": {
+        "AppLanguagePhase2UITests.testEnglishBrowserLibrarySearchAndSkillCatalogKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 133.274
+        },
+        "AppLanguagePhase2UITests.testEnglishMCPAndNotificationsKeepUnsentChatDraft": {
+          "started": 1,
+          "passed": 0,
+          "failed": 1,
+          "skipped": 0,
+          "duration_seconds": 138.393
+        },
+        "AppLanguageUITests.testExplicitEnglishPersistsAndPreservesAppearancePermissionAndDraft": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 153.301
+        },
+        "AppLanguageUITests.testSimplifiedChineseAndSystemFollowActualPreferredLanguages": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 112.732
+        },
+        "AppLanguageUITests.testUnsupportedSystemLanguageUsesTraditionalChineseFallback": {
+          "started": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0,
+          "duration_seconds": 14.979
+        }
+      },
+      "failure": {
+        "method": "AppLanguagePhase2UITests.testEnglishMCPAndNotificationsKeepUnsentChatDraft",
+        "file": "Tests/WoowAssistantUITests/AppLanguagePhase2UITests.swift",
+        "line": 148,
+        "stage": "after English MCP/notification checks, before final chat draft recheck"
+      },
+      "ax_observation": {
+        "notification_navigation_bar_present": true,
+        "native_back_button_present": true,
+        "root_chat_button_absent": true,
+        "attachment": "/tmp/woow-dfd-language18-evidence/attachments/742C0E01-E153-4300-89FF-F03C548D1FE2.txt"
+      },
+      "test_log": "/tmp/woow-dfd-language18-evidence/ios-tests.log",
+      "test_log_sha256": "98e771e54bb57c0791b2aa934a00aa8c0e47e5fee46ff9a35a6fc5311513cb65",
+      "artifact": {
+        "artifact_id": 13829339883,
+        "name": "ios-test-evidence-ios18-compact-42958309562",
+        "size_bytes": 242768777,
+        "archive_sha256": "91c883c0dc421d49a1a851b8127b181fa160d17a57aa3f0148a90518d528dcf9",
+        "archive_crc32": "aab84995",
+        "github_digest_matches": true,
+        "zip_entry_count": 1454,
+        "zip_member_crc_verified": true,
+        "archive_path": "/tmp/woow-dfd-language18-evidence/full/artifact-13829339883.zip"
+      }
+    }
+  },
+  "business_boundary": {
+    "english_browser_library_search_catalog_case_passed_on_all_three": true,
+    "english_mcp_and_notification_assertions_reached_on_all_three": true,
+    "final_unsent_chat_draft_recheck_in_failed_case_reached": false,
+    "no_full_5_of_5_native_acceptance_yet": true
+  },
+  "isolated_patch": {
+    "path": "/tmp/woow-dfd-language-notification-back.patch",
+    "sha256": "bbd66800387c85d398dfc97f09e5b8d4ca3e5cf0431d5a5abfbfa5b8c88fa544",
+    "change": "Tap the actual Task notifications navigation back button before the existing root chat and draft assertions.",
+    "native_retest": false,
+    "shared_main_modified": false
+  },
+  "checks": {
+    "swift_parse": "PASS",
+    "language_launch_assignments": "44 passed, 0 failed",
+    "git_diff_check": "PASS",
+    "git_apply_reverse_isolated": "PASS",
+    "git_apply_forward_shared_readonly": "PASS"
+  }
+}
