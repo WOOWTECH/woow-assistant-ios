@@ -1,5 +1,14 @@
 # Verification — 2026-11-11
 
+## Unsigned iPhoneOS device build
+
+At `eebb019`, [run 42950596606](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42950596606)
+completed an **unsigned iPhoneOS build** with Xcode 26.2, minimum iOS 17.0 and
+nine verified binaries. The downloaded report and build log have matching hashes;
+the log contains one `BUILD SUCCEEDED` and no build errors. This proves device
+compilation only. It produced no installable signed IPA and ran no physical-device
+tests. [Full artifact and report evidence](evidence/unsigned-device-eebb019.json).
+
 ## iOS 17 MCP keyboard geometry
 
 At `b4e8c70`, the exact iOS 17.0.1 MCP UI shard completed **5/8**, zero skips.
