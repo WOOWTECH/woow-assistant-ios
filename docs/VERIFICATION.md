@@ -1,5 +1,16 @@
 # Verification — 2026-11-11
 
+## Current notification interface at `a663fbd`
+
+[Run 42947630736](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42947630736)
+passed **2/2 UI methods**, zero failures and zero skips, on iPhone 17 / iOS
+26.2. The complete artifact ZIP passed CRC verification, and each selected
+method started and passed once. A system approval banner opened the same pending
+proposal; execution occurred only after one explicit approval. The settings
+banner returned to root Chat, and notification preference changes survived
+relaunch. Both methods recorded `audibleSoundVerified=0`; sound and physical
+device behavior remain unverified. [Source and artifact evidence](evidence/ui-notifications-current-a663fbd.json).
+
 ## Current native core at `a663fbd`
 
 [Run 42947685010](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42947685010)

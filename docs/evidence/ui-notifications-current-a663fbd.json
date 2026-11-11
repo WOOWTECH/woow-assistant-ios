@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "PASS_NATIVE_UI_SHARD",
+  "source_commit": "a663fbd1a523027511b9ac7d85208aaf301ae154",
+  "run_id": 42947630736,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42947630736",
+  "scope": "ui-notifications",
+  "device": "iPhone 17 / iOS 26.2 (23C54)",
+  "artifact": {
+    "id": 13827211211,
+    "bytes": 172316223,
+    "sha256": "ad6a04e15101d357b69ecd1fb5313274aecf8118f3cf165a7a6e5b834876c1ed",
+    "zip_members_crc_checked": 1338,
+    "test_summary_sha256": "80e786f76b442067c2f5a39f85b596b747a761acb1b8d6ed1a704b7f19d97e4e",
+    "completion_gate_sha256": "5a2755ad990886b1a41daf572f64d1f7d68eb4654d478c4f6ea1f55601a36b7e",
+    "test_log_sha256": "c06aa6f84b0c43fa19499a4137c0dfe696759f1a5e91b1ca68811f8b72cd669a"
+  },
+  "verification": {
+    "summary": {"total": 2, "passed": 2, "failed": 0, "skipped": 0, "expected_failures": 0},
+    "completion_gate_verified": true,
+    "each_selected_method_started_and_passed_once": true,
+    "methods": [
+      "NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval",
+      "NotificationUITests/testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable"
+    ],
+    "approval_banner": "Actual system banner opened the same pending proposal; root chat route generation changed; one explicit approval executed one MCP call.",
+    "settings_banner": "Actual system banner opened root chat; notification preference survived relaunch and disable persisted."
+  },
+  "limits": [
+    "Both methods recorded audibleSoundVerified=0; simulator evidence does not establish audible sound.",
+    "The settings test observed no permission prompt because the approval test had already granted permission on this fresh simulator.",
+    "This source and device result does not accept later UI changes, iOS 17 or a physical iPhone."
+  ]
+}
