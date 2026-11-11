@@ -1,0 +1,27 @@
+{
+  "schema": "woow-ui-memory-exact17-preflight-v1",
+  "source_revision": "e3eda7805d8441687ae00916ac3eaa972402d3fd",
+  "run_id": 42967057485,
+  "scope": "ui-memory",
+  "phase": "checking_runtime",
+  "failure": {
+    "category": "timeout",
+    "operation": "simulator_runtime_inventory",
+    "elapsed_seconds": 120.03,
+    "timeout_seconds": 120
+  },
+  "expected_ui_method_count": 8,
+  "native_methods_started": 0,
+  "artifact": {
+    "id": 13833517365,
+    "bytes": 5370,
+    "sha256": "f0e9bd37a90a15826b488bc5caa79a95daab22be3657938381fd92d8c77b8ab8",
+    "zip_member_count": 2,
+    "all_crc_pass": true
+  },
+  "rerun_id": 42972333125,
+  "limits": [
+    "No product memory UI method was executed in this run.",
+    "A rerun is queued; its result is independent of this failed preflight."
+  ]
+}

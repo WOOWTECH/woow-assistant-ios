@@ -1,5 +1,14 @@
 # Verification — 2026-11-11
 
+## Exact17 memory UI preflight interrupted by Simulator inventory
+
+[Run 42967057485](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967057485)
+failed while listing installed simulator runtimes after the fixed 120-second
+bound. It never started any of the eight selected `ui-memory` methods, so no
+memory behavior can be judged from that run. A fresh [exact17 rerun
+42972333125](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42972333125)
+is queued. [Fixed-category preflight and artifact evidence](evidence/ui-memory-e3eda78-exact17-runtime-timeout.json).
+
 ## Exact iOS 17 saved-PDF chat UI completed at `23b4e6a`
 
 [Run 42965803863](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42965803863)
