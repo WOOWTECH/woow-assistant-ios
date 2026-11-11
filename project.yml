@@ -122,7 +122,7 @@ targets:
         INFOPLIST_KEY_CFBundleDisplayName: 渥屋助理
         INFOPLIST_KEY_UILaunchScreen_Generation: YES
         INFOPLIST_FILE: Configuration/Info-Release.plist
-        TARGETED_DEVICE_FAMILY: "1"
+        TARGETED_DEVICE_FAMILY: "1,2"
       configs:
         Debug:
           INFOPLIST_FILE: Configuration/Info-Debug.plist
