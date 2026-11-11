@@ -118,6 +118,7 @@ private final class PageFindKeys: LearningKeyStore {
 
     static func queryAndNavigation() async throws -> Int {
         let f = try Fixture(); defer { f.finish() }
+        try checkViewportGeometry(f)
         try await f.load()
         let navigationCount = f.probe.actions.count
         let history = f.workspace.library.history
@@ -182,6 +183,48 @@ private final class PageFindKeys: LearningKeyStore {
         let manualMatch = try await f.engineFind("WOOW_FIND_ORCHID")
         try f.check(manualMatch, "native find works on manual-only query page")
         return f.assertions
+    }
+
+    /// Exercise the production geometry with a docked input-panel frame, not
+    /// an AX Keyboard child's smaller frame. These are layout calculations;
+    /// actual iOS keyboard notifications and native scrolling remain UI tests.
+    private static func checkViewportGeometry(_ f: Fixture) throws {
+        let window = CGRect(x: 0, y: 0, width: 402, height: 874)
+        let keyboard = CGRect(x: 0, y: 506, width: 402, height: 368)
+        let compact = CGRect(x: 0, y: 219, width: 402, height: 189)
+        func reserve(_ viewport: CGRect, _ input: CGRect = keyboard, finding: Bool = true) -> CGFloat {
+            BrowserFindViewport.reservedHeight(viewport: viewport, keyboard: input, window: window, finding: finding)
+        }
+        try f.check(reserve(compact) == 368, "already avoided keyboard is reserved exactly once for native find")
+        let expandedHeight = compact.height + reserve(compact)
+        try f.check(expandedHeight - keyboard.height == compact.height,
+                    "WebKit full input-panel subtraction leaves exactly the clipped viewport")
+        let textHeight: CGFloat = 20
+        let originalMatchTop = (compact.height - keyboard.height - textHeight) / 2
+        let repairedMatchTop = (expandedHeight - keyboard.height - textHeight) / 2
+        try f.check(originalMatchTop < 0, "original double subtraction moves a centered match above a short viewport")
+        try f.check(repairedMatchTop >= 0 && repairedMatchTop + textHeight <= compact.height,
+                    "native centering fits the complete match without changing scroll position or query")
+        let partiallyCovered = CGRect(x: 0, y: 219, width: 402, height: 500)
+        try f.check(reserve(partiallyCovered) == 155, "reserve excludes keyboard overlap already inside the web canvas")
+        try f.check(partiallyCovered.height + reserve(partiallyCovered) - keyboard.height == 287,
+                    "partly covered layout retains only its true visible height")
+        let shorterWindow = CGRect(x: 0, y: 0, width: 402, height: 700)
+        try f.check(BrowserFindViewport.reservedHeight(viewport: compact, keyboard: keyboard,
+                    window: shorterWindow, finding: true) == keyboard.height,
+                    "window intersection does not truncate the full input height WebKit subtracts")
+        let full = CGRect(x: 0, y: 0, width: 402, height: 874)
+        try f.check(reserve(full) == 0, "UIKit full-height host does not double-reserve keyboard")
+        try f.check(reserve(compact, finding: false) == 0, "ordinary manual forms keep their original layout")
+        try f.check(reserve(compact, .zero) == 0, "closed keyboard restores original canvas")
+        try f.check(reserve(compact, CGRect(x: 0, y: 874, width: 402, height: 368)) == 0,
+                    "offscreen hide notification restores original canvas")
+        try f.check(reserve(compact, CGRect(x: 40, y: 400, width: 300, height: 200)) == 0,
+                    "floating input is not treated as a docked keyboard")
+        try f.check(reserve(.zero) == 0 && reserve(.null) == 0 && reserve(.infinite) == 0,
+                    "unmounted or invalid viewport never expands")
+        try f.check(reserve(compact, CGRect(x: 0, y: 506, width: CGFloat.nan, height: 368)) == 0,
+                    "nonfinite keyboard geometry is rejected")
     }
 
     static func ownershipAndRetirement() async throws -> Int {

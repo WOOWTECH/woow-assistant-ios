@@ -110,20 +110,26 @@ final class BrowserWorkspaceUITests: XCTestCase {
         let field = openNativeFind()
         field.tap(); field.typeText("WOOW_FIND_ORCHID")
         XCTAssertEqual(field.value as? String, "WOOW_FIND_ORCHID")
-        let next = nativeFindButton(["Next", "Next Match", "Next Result", "Find Next"])
-        let previous = nativeFindButton(["Previous", "Previous Match", "Previous Result", "Find Previous"])
+        let next = app.buttons["find.nextButton"]
+        let previous = app.buttons["find.previousButton"]
         waitForEnabled(next, true); waitForEnabled(previous, true)
         next.tap(); next.tap()
         let last = dom("WOOW_FIND_ORCHID third 茶香")
-        let web = app.webViews["browser.webView"]
+        let viewport = app.otherElements["browser.viewport"]
         let movedToLast = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            last.exists && web.exists && web.frame.intersects(last.frame) && last.isHittable
+            guard last.exists, viewport.exists else { return false }
+            let visible = viewport.frame.intersection(self.app.frame)
+            return !visible.isEmpty && !last.frame.isEmpty && visible.contains(last.frame) && last.isHittable
         }, object: nil)
         XCTAssertEqual(XCTWaiter.wait(for: [movedToLast], timeout: 10), .completed,
                        "Two native Next actions must reveal the third real match below the 900pt spacer.")
+        let geometry = XCTAttachment(string: "viewport=\(viewport.frame) match=\(last.frame) keyboard=\(app.keyboards.firstMatch.frame)\n" + app.debugDescription)
+        geometry.name = "find-third-match-visible-AX"; geometry.lifetime = .keepAlways; add(geometry)
+        let shot = XCTAttachment(screenshot: app.screenshot())
+        shot.name = "find-third-match-visible"; shot.lifetime = .keepAlways; add(shot)
         previous.tap()
         let movedBack = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in
-            last.exists && web.exists && !web.frame.intersects(last.frame)
+            last.exists && viewport.exists && !viewport.frame.intersects(last.frame)
         }, object: nil)
         XCTAssertEqual(XCTWaiter.wait(for: [movedBack], timeout: 10), .completed,
                        "Previous must return to the second real match above the spacer.")
@@ -166,14 +172,9 @@ final class BrowserWorkspaceUITests: XCTestCase {
     private func openNativeFind() -> XCUIElement {
         let button = app.buttons["browser.find"]
         waitForEnabled(button, true); button.tap()
-        let field = app.searchFields.firstMatch
+        let field = app.searchFields["find.searchField"]
         XCTAssertTrue(field.waitForExistence(timeout: 10), "The actual UIKit find field must appear.")
         return field
-    }
-    private func nativeFindButton(_ labels: [String]) -> XCUIElement {
-        // Closed semantic-label set for system-localized UIKit versions, scoped
-        // to actual buttons. No coordinates or hidden production test endpoint.
-        app.buttons.matching(NSPredicate(format: "label IN %@", labels)).firstMatch
     }
     private func waitForEnabled(_ element: XCUIElement, _ enabled: Bool) {
         let expectation = XCTNSPredicateExpectation(
@@ -181,7 +182,7 @@ final class BrowserWorkspaceUITests: XCTestCase {
         XCTAssertEqual(XCTWaiter.wait(for: [expectation], timeout: 10), .completed)
     }
     private func closeNativeFind() {
-        let done = app.buttons.matching(identifier: "Done").firstMatch
+        let done = app.buttons["find.doneButton"]
         XCTAssertTrue(done.waitForExistence(timeout: 5)); done.tap()
         let dismissed = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: app.searchFields.firstMatch)
         XCTAssertEqual(XCTWaiter.wait(for: [dismissed], timeout: 10), .completed)

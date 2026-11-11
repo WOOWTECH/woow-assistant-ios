@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "local_pass_native_ui_pending",
+  "base_sha": "8397df5",
+  "scope": "Combined browser find/site mode and downloaded-PDF bridge",
+  "frozen_find_site_patch_sha256": "3bb8bd19684fbec07bd866f5173ef3162b836d411b4355cb7cac718c4108889a",
+  "reports": {
+    "find_site": {
+      "sha256": "91c421cf6df093994af464e69337f63805e0879a9ac5ece35335703607b2c2f7",
+      "checks": 18,
+      "debug_find": 64,
+      "release_find": 64,
+      "debug_site_modes": 118,
+      "release_site_modes": 118,
+      "debug_http_history": 26,
+      "debug_site_http": 12
+    },
+    "downloaded_pdf_bridge": {
+      "sha256": "3c301eb9f0c085ea1bd47ab01a5bee86394407c431748c19f419b107cfdca6ec",
+      "checks": 19,
+      "debug_assertions": 101,
+      "release_assertions": 51
+    }
+  },
+  "xcodegen": "PASS",
+  "ios17_syntax": "PASS",
+  "native_ui": "pending",
+  "limits": [
+    "Local WebKit checks do not execute iOS native find panel or SwiftUI Menu.",
+    "Neither local suite contacted public sites or the model endpoint."
+  ]
+}

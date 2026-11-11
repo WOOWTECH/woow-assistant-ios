@@ -1,10 +1,19 @@
 import XCTest
+import CoreGraphics
 
 final class BrowserSiteModesUITests: XCTestCase {
     private let app = XCUIApplication()
     private let namespace = UUID().uuidString
     override func setUpWithError() throws { continueAfterFailure = false; executionTimeAllowance = 180 }
-    override func tearDownWithError() throws { app.terminate() }
+    override func tearDownWithError() throws {
+        if let testRun, testRun.failureCount > 0 {
+            let tree = XCTAttachment(string: app.debugDescription)
+            tree.name = "site-mode-failure-AX"; tree.lifetime = .keepAlways; add(tree)
+            let shot = XCTAttachment(screenshot: app.screenshot())
+            shot.name = "site-mode-failure"; shot.lifetime = .keepAlways; add(shot)
+        }
+        app.terminate()
+    }
 
     func testManualGETChoiceReloadsAndSurvivesRelaunch() throws {
         launch(reset: true)
@@ -70,10 +79,31 @@ final class BrowserSiteModesUITests: XCTestCase {
     private func chooseMode(_ choice: String, from expected: String) throws {
         try waitForMode(expected)
         XCTAssertEqual(siteMode.value as? String, expected)
-        // One semantic tap; no coordinate fallback and no repeated mode action.
-        try XCTUnwrap(siteModeControl(), "Exactly one native site-mode control must remain visible and hittable").tap()
+        // A Menu's outer AX Button cannot perform scroll-to-visible on iOS 17
+        // and SE. Tap its visible, hittable native wrapper once when the leaf
+        // button has no AX hit point; the next assertion proves the real menu
+        // opened before any preference changes.
+        let control = try XCTUnwrap(siteModeControl(), "Exactly one native site-mode control must remain visible and hittable")
+        if control.elementType == .button {
+            control.tap()
+        } else {
+            let navigation = app.navigationBars.firstMatch
+            let center = CGPoint(x: control.frame.midX, y: control.frame.midY)
+            let otherControls = ["browser.find", "browser.multiResearch", "browser.transcript"]
+                .map { navigation.descendants(matching: .any).matching(identifier: $0).firstMatch }
+            XCTAssertTrue(control.isHittable && navigation.exists && navigation.frame.contains(control.frame)
+                && navigation.frame.contains(center) && app.frame.contains(center)
+                && !app.keyboards.firstMatch.exists
+                && otherControls.allSatisfy { !$0.exists || !$0.frame.contains(center) },
+                "The native Menu hit point must be fully inside the unobscured navigation bar")
+            control.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        }
         let item = app.buttons["browser.siteMode." + choice]
         try wait("Requested site-mode menu item must be visible and hittable") { self.canTap(item) }
+        let opened = XCTAttachment(string: app.debugDescription)
+        opened.name = "site-mode-native-menu-AX"; opened.lifetime = .keepAlways; add(opened)
+        let openedShot = XCTAttachment(screenshot: app.screenshot())
+        openedShot.name = "site-mode-native-menu"; openedShot.lifetime = .keepAlways; add(openedShot)
         item.tap()
     }
 
@@ -84,7 +114,13 @@ final class BrowserSiteModesUITests: XCTestCase {
         let leaves = descendants.filter { $0.descendants(matching: .button).count == 0 }
         let candidates = descendants.isEmpty && anchor.elementType == .button ? [anchor] : leaves
         let hittable = candidates.filter { canTap($0) && anchor.frame.contains($0.frame) }
-        return hittable.count == 1 ? hittable[0] : nil
+        if hittable.count == 1 { return hittable[0] }
+        // The native Menu wrapper is the only on-screen target when older AX
+        // exposes its nested Button without an independent hit point.
+        let navigation = app.navigationBars.firstMatch
+        guard hittable.isEmpty, anchor.elementType == .other, canTap(anchor),
+              navigation.exists, navigation.frame.contains(anchor.frame) else { return nil }
+        return anchor
     }
 
     private func onScreen(_ element: XCUIElement) -> Bool {

@@ -63,6 +63,7 @@ def main():
         modules = {name: [copy(str(p.relative_to(repo))) for p in sorted((repo / "Sources" / name).glob("*.swift"))]
                    for name, _ in MODULES}
         apps = [copy("Sources/App/" + name + ".swift") for name in APP_SOURCES]
+        apps.append(copy("Sources/App/BrowserFindViewport.swift"))
         checks = copy("Tests/AssistantDomainTests/BrowserUserSiteModesChecks.swift")
         harness = copy("scripts/CheckBrowserSiteModesApp.swift")
         find_harness = copy("Tests/AssistantBrowserIntegrationTests/BrowserPageFindAppChecks.swift")
