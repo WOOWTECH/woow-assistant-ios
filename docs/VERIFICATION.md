@@ -1,5 +1,15 @@
 # Verification — 2026-11-11
 
+## Current native core at `a663fbd`
+
+[Run 42947685010](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42947685010)
+passed **345/345 native and hosted App methods**, zero failures and zero skips,
+on iPhone 17 / iOS 26.2. The complete artifact ZIP passed CRC verification;
+the XCTest summary, completion gate and 345 unique starts and passes agree. This
+includes the later streaming, PDF and notification logic at `a663fbd`; separate
+interface shards remain unaccepted where their own runs fail or await execution.
+[Method-level artifact evidence](evidence/native-current-a663fbd.json).
+
 ## Three-platform browser workspace failures and scoped corrections
 
 At `83f4ddd`, the workspace UI shard completed **5/9** with zero skips on each
