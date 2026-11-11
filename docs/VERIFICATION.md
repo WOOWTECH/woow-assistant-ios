@@ -1,6 +1,6 @@
 # Verification — 2026-11-11
 
-## Live HA MCP on SE/iOS 18.5: native step passes, UI fails at model stage
+## Live HA MCP on SE/iOS 18.5 and exact iOS 17: model stage fails
 
 At `fe66ab2`, [run 42961307238](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961307238)
 completed the private read-only HA protocol step and native App build, then
@@ -13,7 +13,15 @@ live jobs may have contributed to rate limiting, but the run does not prove
 that cause. No private endpoint, credential, model reply or tool result is
 published. This is **not** a successful real model/MCP conversation acceptance;
 subsequent runs must be assessed separately.
-[Sanitized method and stage evidence](evidence/live-ha-se-fe66-first-failure.json).
+The exact iOS 17.0.1 run
+[42961293619](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961293619)
+showed the **same 1/4 UI result**, the same three failing methods, and the
+same two explicit first-call `modelRateLimited` diagnostics. Its read-only HA
+step and App build also passed; its UI result remains failed. The two platform
+results do not establish whether shared model capacity or another provider
+policy caused the rate limit.
+[SE sanitized evidence](evidence/live-ha-se-fe66-first-failure.json),
+[exact iOS 17 sanitized evidence](evidence/live-ha-exact17-fe66-first-failure.json).
 
 ## Exact iOS 17 archived PDF content loses child accessibility IDs
 
