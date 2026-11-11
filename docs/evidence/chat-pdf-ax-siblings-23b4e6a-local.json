@@ -1,0 +1,28 @@
+{
+  "base_revision": "5e0e7e77a9d3b7b990c8d3091ffdc965fa4afff7",
+  "worktree": "/tmp/woow-chatpdf-ax-siblings-5e0e7e7",
+  "patch": "/tmp/woow-chatpdf-ax-siblings-5e0e7e7.patch",
+  "patch_sha256": "cd067ebe47ed3dfac8b689d77cd46d60a413acfa92b17460506c4ce9015d1639",
+  "patch_bytes": 6263,
+  "files": {
+    "Sources/App/ChatPDFAttachmentView.swift": "b341e02cd0fac1ce84e7fafb6071eeb2f9183ff908e6f1db2d25c23ca7fcc571",
+    "Tests/WoowAssistantUITests/ChatPDFAttachmentUITests.swift": "eb1b947702fcc4f9fcdabf7b3378c47a858402aaa4e219a85b5f37cfec92acc7"
+  },
+  "scope": "Archived PDF disclosure AX controls + test selector/state verification",
+  "test_methods": [
+    "testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete",
+    "testReadApprovalThenRemoveNeverExtractsOrSubmitsAndRetainsDraft",
+    "testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive"
+  ],
+  "checks": {
+    "swift5_8_frontend_parse": "PASS, both changed Swift files",
+    "git_diff_check": "PASS",
+    "ui_language": "PASS, 44 assignments and zero failed",
+    "document_scopes": "PASS, 8/8 Python tests",
+    "native_iOS_typecheck": "UNAVAILABLE: macOS 13 Intel CLT Swift 5.8 has no iOS SDK; frontend typecheck could not load target standard library",
+    "reverse_patch_check": "PASS: patch exactly reverses in isolated worktree"
+  },
+  "assertion_boundary": "Three original test methods and all PDF selection, separate grants, model request, citation, pages, reopen, delete and cancellation assertions remain. Only disclosure locator and explicit AX state checks changed.",
+  "ci_dispatch": false,
+  "main_modified": false
+}

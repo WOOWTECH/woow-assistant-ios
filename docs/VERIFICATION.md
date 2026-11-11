@@ -24,10 +24,15 @@ failure was the saved citation query. Citation and nested page nodes inherited
 the outer `archive.turn.0.pdf` accessibility identifier, so the expected
 `archive.turn.0.pdf.citation.0` did not appear. Citation, page, reopen and delete
 assertions did not run. This points to the App's outer `DisclosureGroup`
-identifier propagation, not just the test lookup. A product-level hierarchy
-correction is under review; no pass is claimed. The 148,776,218-byte ZIP passed
+identifier propagation, not just the test lookup. At `23b4e6a`, the archived
+view now uses separate identified buttons for the outer PDF and inner pages,
+with citation/page text as sibling accessibility nodes. The test retains its
+later business assertions and checks each button's expanded state. The focused
+native rerun [42965803863](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42965803863)
+is pending; no pass is claimed. The failed 148,776,218-byte ZIP passed
 SHA-256 and all-member CRC checks.
 [Method, source and AX evidence](evidence/chat-pdf-exact17-017-citation-collision.json).
+[Scoped candidate and local checks](evidence/chat-pdf-ax-siblings-23b4e6a-local.json).
 
 ## Language UI rerun: 4/5 on each simulator
 
