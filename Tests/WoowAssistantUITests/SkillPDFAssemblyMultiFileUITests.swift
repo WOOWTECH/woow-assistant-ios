@@ -291,7 +291,10 @@ import CoreGraphics
         let desired = "\(a):2,\(b):1,\(a):1"
         order.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5)).tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 5))
-        reveal(order)
+        // On iOS 26 a field can be hittable immediately above the keyboard
+        // while its native Select All menu has no room to appear. The full
+        // viewport path moves it above the keyboard before the long press.
+        reveal(order, allowFastPath: false)
         order.coordinate(withNormalizedOffset: CGVector(dx: 0.1, dy: 0.5)).press(forDuration: 1)
         let selectAll = NSPredicate(format: "label IN %@", ["Select All", "全選", "全选"])
         func menu() -> XCUIElement? {
@@ -480,7 +483,7 @@ import CoreGraphics
     /// Cache the exact Assembly Form identity. One target snapshot per gesture
     /// avoids selecting the keyboard candidate CollectionView or querying every
     /// offscreen child. Static text needs visibility; tapped controls need full bounds.
-    private func reveal(_ target: XCUIElement, reading: Bool = false) {
+    private func reveal(_ target: XCUIElement, reading: Bool = false, allowFastPath: Bool = true) {
         var previousTargetPresent = false
         var hasSeenTarget = false
         var searchUp = true
@@ -497,7 +500,7 @@ import CoreGraphics
             // there, querying nav bars, toolbars and keyboard adds no evidence.
             // Keep the original occlusion and bounded-scroll path otherwise.
             let interior = viewport.insetBy(dx: 0, dy: 96)
-            if exists && !interior.isEmpty && target.isHittable &&
+            if allowFastPath && exists && !interior.isEmpty && target.isHittable &&
                 learningFrameIsVisible(frame, in: interior,
                                       visibility: reading ? .readableText : .fullyVisible) { return }
             let title = app.navigationBars["PDF 頁面處理"]
