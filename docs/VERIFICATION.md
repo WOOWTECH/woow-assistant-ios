@@ -1,5 +1,19 @@
 # Verification — 2026-11-11
 
+## Exact iOS 17 archived PDF content loses child accessibility IDs
+
+At `0170d3c`, exact iOS 17.0.1 documents-chat completed **2/3 methods**,
+zero skips. The earlier outer disclosure selector now found and opened the
+saved PDF: the bounded AX snapshot grew from 32 to 39 nodes. The new first
+failure was the saved citation query. Citation and nested page nodes inherited
+the outer `archive.turn.0.pdf` accessibility identifier, so the expected
+`archive.turn.0.pdf.citation.0` did not appear. Citation, page, reopen and delete
+assertions did not run. This points to the App's outer `DisclosureGroup`
+identifier propagation, not just the test lookup. A product-level hierarchy
+correction is under review; no pass is claimed. The 148,776,218-byte ZIP passed
+SHA-256 and all-member CRC checks.
+[Method, source and AX evidence](evidence/chat-pdf-exact17-017-citation-collision.json).
+
 ## Language UI rerun: 4/5 on each simulator
 
 At `dfd6eff`, current iOS 26.2, SE/iOS 18.5 and exact iOS 17.0.1 each

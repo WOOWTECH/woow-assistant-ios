@@ -1,0 +1,128 @@
+{
+  "run": 42960636769,
+  "source_revision": "0170d3ca84356122e5068a1bd4efb30a59df3149",
+  "scope": "documents-chat",
+  "runtime": "17.0.1",
+  "device_model": "iPhone 15",
+  "artifact": {
+    "name": "ios17-17.0.1-42960636769",
+    "id": 13830472313,
+    "bytes": 148776218,
+    "sha256": "1584f7883d8f013f5537a1e2acfcbc980c56f1ac1f91450a30a924ab3037e9bb",
+    "zip_member_count": 244,
+    "zip_crc_all_members": "PASS",
+    "xcresult_member_count": 132,
+    "xcresult_uncompressed_bytes": 72286780,
+    "xcresult_info_plist_present": true,
+    "screenshots_member_count": 95
+  },
+  "prebuild_exit_code": 0,
+  "test_exit_code": 65,
+  "xcresult_summary": {
+    "total": 3,
+    "passed": 2,
+    "failed": 1,
+    "skipped": 0,
+    "result": "Failed"
+  },
+  "observed_ui_events": {
+    "status": "observed",
+    "acceptance_evidence": false,
+    "expected_methods": 3,
+    "counts": {
+      "starts": 3,
+      "passed": 2,
+      "failed": 1,
+      "skipped": 0
+    },
+    "unexpected_events": 0,
+    "all_expected_completed_once": true,
+    "methods": {
+      "WoowAssistantUITests/ChatPDFAttachmentUITests/testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/ChatPDFAttachmentUITests/testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete": {
+        "starts": 1,
+        "passed": 0,
+        "failed": 1,
+        "skipped": 0
+      },
+      "WoowAssistantUITests/ChatPDFAttachmentUITests/testReadApprovalThenRemoveNeverExtractsOrSubmitsAndRetainsDraft": {
+        "starts": 1,
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "method_results": [
+    {
+      "name": "testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive",
+      "status": "passed",
+      "seconds": 148.653
+    },
+    {
+      "name": "testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete",
+      "status": "failed",
+      "seconds": 105.094
+    },
+    {
+      "name": "testReadApprovalThenRemoveNeverExtractsOrSubmitsAndRetainsDraft",
+      "status": "passed",
+      "seconds": 112.736
+    }
+  ],
+  "first_failure": {
+    "method": "testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete()",
+    "source_line": 54,
+    "failureText": "failed - Learning search made no visible progress in either direction while revealing unmaterialized element.",
+    "phase": "after archived outer PDF disclosure tap and second AX snapshot, while revealing citation staticText"
+  },
+  "archive_ax": [
+    {
+      "member": "screenshots/488D8E0E-FBB0-4AE5-B898-E3D906D7A951.txt",
+      "sha256": "109625f0d63476fd30f42c502dd77988608dd77aca413eb4aa729abe2dec599f",
+      "bytes": 2819,
+      "timestamp": 1794373867.053,
+      "nodeCount": 32,
+      "citationIdentifierPresent": false,
+      "pagesIdentifierPresent": false
+    },
+    {
+      "member": "screenshots/2C630F63-FB80-4EC7-BDF9-0B1A0177D0BB.txt",
+      "sha256": "9308298389e5a69bdf68b3e6ed70004f862dc3cb94bc33deceb828bb520aad4f",
+      "bytes": 3494,
+      "timestamp": 1794373868.646,
+      "nodeCount": 39,
+      "citationIdentifierPresent": false,
+      "pagesIdentifierPresent": false
+    }
+  ],
+  "files": {
+    "tests.log": {
+      "sha256": "35335953d21919a0b6cbdab44a97dc1a3704d5aa7c5a739bfeb5c1759d1ec69d",
+      "bytes": 175592
+    },
+    "test-summary.json": {
+      "sha256": "4596e271be81f3e0324088e65652f141d562a0961041357d510852d0b577cc63",
+      "bytes": 1604
+    },
+    "report.json": {
+      "sha256": "6d9db1ab8d5ae533660e64e49281ce44de1815aeae3fb7edbd29067c26d29b0b",
+      "bytes": 7661
+    },
+    "screenshots/manifest.json": {
+      "sha256": "73850c88656c062a45f8801c6c72d6005d0e12382dca2aeaeb4d628d5bb10e37",
+      "bytes": 41713
+    }
+  },
+  "assertion_boundary": {
+    "outer_disclosure_selector_and_tap": "passed; before 32 and after 39 AX nodes",
+    "citation_query": "failed; target identifier absent in complete 39-node snapshot",
+    "pages_reopen_delete": "not reached"
+  },
+  "notes": "Read-only artifact proof. No CI rerun or source modification. Safe AX attachments contain no raw model output or filename."
+}
