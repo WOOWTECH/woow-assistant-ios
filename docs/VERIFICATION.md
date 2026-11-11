@@ -1,5 +1,19 @@
 # Verification — 2026-11-11
 
+## Three-platform language interface failures and scoped correction
+
+At `e37b641`, the language UI shard completed **3/5**, zero skips, on each of
+current iOS 26.2, SE/iOS 18.5 and exact iOS 17.0.1. The three established
+language cases passed; both new English-screen cases stopped before their
+business assertions. On current and exact17, the native keyboard-switch button
+was a sibling of the Keyboard AX node and the test searched only within that
+node. On SE, English was selected but the resolved-language row was below the
+small-screen viewport while the test waited for it before scrolling. The test
+now uses the exact bilingual keyboard label across app buttons and reveals the
+localized row before its bounded existence and exact-text checks. These are
+test-driver corrections; native reruns remain required.
+[Run and failure evidence](evidence/ui-language-e37-three-failures.json).
+
 ## Current notification interface at `a663fbd`
 
 [Run 42947630736](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42947630736)

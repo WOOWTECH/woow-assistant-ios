@@ -175,8 +175,8 @@ final class AppLanguagePhase2UITests: XCTestCase {
 
     private func exactText(_ identifier: String, _ expected: String) {
         let element = app.staticTexts[identifier]
-        XCTAssertTrue(element.waitForExistence(timeout: 10))
         revealLearningElement(element, in: app)
+        XCTAssertTrue(element.waitForExistence(timeout: 10))
         let exact = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label == %@", expected), object: element)
         XCTAssertEqual(XCTWaiter.wait(for: [exact], timeout: 5), .completed)
     }
@@ -203,7 +203,7 @@ final class AppLanguagePhase2UITests: XCTestCase {
             introduction.tap()
         }
         if hasLatinKeys() { return }
-        let globe = keyboard.buttons.matching(NSPredicate(format: "label IN %@", ["Next keyboard", "下一個鍵盤"])).firstMatch
+        let globe = app.buttons.matching(NSPredicate(format: "label IN %@", ["Next keyboard", "下一個鍵盤"])).firstMatch
         XCTAssertTrue(globe.waitForExistence(timeout: 5) && globe.isHittable)
         globe.press(forDuration: 1)
         let english = app.descendants(matching: .any).matching(

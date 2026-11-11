@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "status": "FAIL_PRESERVED_PATCH_NOT_NATIVE_VERIFIED",
+  "source_commit": "e37b641ff65d4c6aad2bbe2aed9c2d5681d82edb",
+  "scope": "ui-language",
+  "per_run_counts": {"total": 5, "passed": 3, "failed": 2, "skipped": 0},
+  "failed_methods": [
+    "AppLanguagePhase2UITests/testEnglishBrowserLibrarySearchAndSkillCatalogKeepUnsentChatDraft",
+    "AppLanguagePhase2UITests/testEnglishMCPAndNotificationsKeepUnsentChatDraft"
+  ],
+  "runs": [
+    {
+      "variant": "current",
+      "run_id": 42947954795,
+      "artifact_id": 13826239246,
+      "device": "iPhone 17 / iOS 26.2",
+      "failure": "The native Next keyboard button appeared as a sibling of the Keyboard AX node. The test searched only keyboard.buttons and stopped before draft typing.",
+      "test_summary_sha256": "e271de59b1cf393735acab4d89ed36bd18ebe76ffa16cfaf2c8151fe99445b15"
+    },
+    {
+      "variant": "se",
+      "run_id": 42947959405,
+      "artifact_id": 13827059272,
+      "device": "iPhone SE (3rd generation) / iOS 18.5",
+      "failure": "English was selected, but settings.language.resolved was below the small-screen viewport; the test waited for the virtualized row before trying to reveal it.",
+      "test_summary_sha256": "1cc8ade2e10661ea7b7c36c420078c7017f3aa5f2df44913e552e3b276b1bb8f"
+    },
+    {
+      "variant": "exact17",
+      "run_id": 42947966334,
+      "artifact_id": 13825230516,
+      "device": "iPhone 15 / iOS 17.0.1",
+      "failure": "The native Next keyboard button appeared as a sibling of the Keyboard AX node. The test searched only keyboard.buttons and stopped before draft typing."
+    }
+  ],
+  "candidate": {
+    "file": "Tests/WoowAssistantUITests/AppLanguagePhase2UITests.swift",
+    "patch_sha256": "87ab4a6e25c32328629e01887db3bb141e3bc104881ef610138a5a06a877893e",
+    "result_file_sha256": "9f129acd40f068ef376b6c1633eee98f948cafb17d75384c1fb9e61c9504187f",
+    "changes": [
+      "Search the exact bilingual system keyboard switch label across app buttons, retaining the hittable check and real keyboard switch.",
+      "Reveal the expected localized settings row before the existing 10-second existence and exact-text assertions."
+    ],
+    "local_checks": "Swift syntax parse, 44 language launch-argument checks and diff check passed; native reruns required."
+  }
+}
