@@ -1,0 +1,42 @@
+{
+  "purpose": "Diagnostic AX snapshot before archived PDF row lookup; no product or selector change",
+  "baseHead": "cacd8f0aa780707150750bbaeaecca5f37a0beb6",
+  "worktree": "/private/tmp/woow-chatpdf-archive-ax-cacd8f0",
+  "source": "Tests/WoowAssistantUITests/ChatPDFAttachmentUITests.swift",
+  "sourceSHA256": "49cfb8c885c6ff305e2f363d989bc2b200ca43af2255525a6d7ad2ce1d4e519e",
+  "sourceDiffSHA256": "1047defb0b7973084d39f44c74def79677550a144725017d2c958f487599a9ab",
+  "changes": {
+    "diagnosticCallSite": "testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete, immediately before tap(\"archive.turn.0.pdf\", scroll: true)",
+    "maxSnapshotNodes": 1024,
+    "maxDetailLines": 36,
+    "output": "XCTest log and keepAlways XCTAttachment chat-pdf-archive-safe-ax"
+  },
+  "outputSchema": {
+    "node": [
+      "parent index",
+      "element type",
+      "identifier (known static archive row IDs only; others redacted)",
+      "visible (frame intersects app frame; not a hittability guarantee)",
+      "syntheticFilename (Boolean)"
+    ],
+    "excludes": [
+      "raw label",
+      "raw synthetic filename",
+      "model output",
+      "field value",
+      "key",
+      "raw AX debugDescription",
+      "element frame"
+    ]
+  },
+  "validation": {
+    "originalTestAndWaitsByteForBytePreservedAfterRemovingInsertions": true,
+    "staticPrivacyAndBoundsGate": "PASS",
+    "gitDiffCheck": "PASS",
+    "swiftIOS17DebugParse": "PASS (CLT MacOSX sysroot warning; syntax only)",
+    "swiftIOS17ReleaseParse": "PASS (CLT MacOSX sysroot warning; syntax only)",
+    "nativeTypecheckOrXCTest": "NOT RUN (local machine has CLT but no iOS SDK)"
+  },
+  "priorFailure": "a663fbd exact17 documents-chat run 42947607043 entered XCTest; archived PDF button selector failed after reopen; prior artifact did not provide a safe full AX hierarchy",
+  "dispatch": "NONE; parent to integrate and run focused native test"
+}

@@ -45,6 +45,7 @@ final class ChatPDFAttachmentUITests: XCTestCase {
         XCTAssertFalse(app.staticTexts["chat.message.1.assistant"].firstMatch.exists)
         tap("chat.archive"); let saved = row("[fixture:chat-pdf]"); ready(saved); saved.tap()
         assertLabel(app.staticTexts["archive.turn.0.assistant"].firstMatch, "PDF 問答已完成：WOOW_SKILL_PDF_PAGE_2")
+        recordArchivedPDFAX()
         tap("archive.turn.0.pdf", scroll: true)
         let citation = app.staticTexts["archive.turn.0.pdf.citation.0"].firstMatch
         revealLearningElement(citation, in: app, visibility: .readableText)
@@ -307,6 +308,98 @@ final class ChatPDFAttachmentUITests: XCTestCase {
         let button = app.buttons[id].firstMatch
         if scroll { revealLearningElement(button, in: app) }
         ready(button); XCTAssertTrue(app.frame.contains(button.frame)); button.tap()
+    }
+    /// Diagnostic only: inspect the real archived row without exporting labels,
+    /// model output, field values, or the synthetic filename itself.
+    private func recordArchivedPDFAX() {
+        let rowID = "archive.turn.0.pdf"
+        let maxNodes = 1_024, maxLines = 36
+        let appFrame = app.frame
+        guard let snapshot = try? app.snapshot() else {
+            saveArchivedPDFAX("ARCHIVE_PDF_AX snapshot=unavailable")
+            return
+        }
+        struct Fact {
+            let parent: Int?
+            let type: String
+            let identifier: String
+            let frame: CGRect
+            let visibleInAppFrame: Bool
+            let syntheticFilenameInLabel: Bool
+        }
+        var facts: [Fact] = []
+        var nodeLimitReached = false
+        func visit(_ node: XCUIElementSnapshot, parent: Int?) {
+            guard facts.count < maxNodes else { nodeLimitReached = true; return }
+            let index = facts.count
+            let frame = node.frame
+            let visibleInAppFrame = !frame.isNull && !frame.isInfinite && !frame.isEmpty
+                && frame.intersects(appFrame)
+            // The raw label is read only for this Boolean comparison, never stored.
+            facts.append(Fact(parent: parent, type: String(describing: node.elementType),
+                              identifier: node.identifier, frame: frame, visibleInAppFrame: visibleInAppFrame,
+                              syntheticFilenameInLabel: node.label.contains(filename)))
+            for child in node.children { visit(child, parent: index) }
+        }
+        visit(snapshot, parent: nil)
+
+        let direct = facts.indices.filter { index in
+            let fact = facts[index]
+            return fact.identifier == rowID || fact.identifier.hasPrefix(rowID + ".")
+                || fact.syntheticFilenameInLabel
+        }
+        var ordered: [Int] = []
+        var seen: Set<Int> = []
+        func add(_ index: Int) {
+            if seen.insert(index).inserted { ordered.append(index) }
+        }
+        for index in direct where facts[index].identifier == rowID { add(index) }
+        for index in direct where facts[index].identifier.hasPrefix(rowID + ".") { add(index) }
+        for index in direct where facts[index].syntheticFilenameInLabel { add(index) }
+        for index in direct {
+            var parent = facts[index].parent
+            for _ in 0..<8 {
+                guard let current = parent else { break }
+                add(current); parent = facts[current].parent
+            }
+        }
+        let filenameFrames = direct.compactMap { index -> CGRect? in
+            let fact = facts[index]
+            return fact.syntheticFilenameInLabel && fact.visibleInAppFrame ? fact.frame : nil
+        }
+        for index in facts.indices where facts[index].visibleInAppFrame {
+            let frame = facts[index].frame
+            if filenameFrames.contains(where: { $0.insetBy(dx: -24, dy: -36).intersects(frame) }) {
+                add(index)
+            }
+        }
+        if direct.isEmpty {
+            for index in facts.indices where facts[index].identifier.hasPrefix("archive.turn.0.") {
+                add(index)
+            }
+        }
+        var lines = ["ARCHIVE_PDF_AX snapshot=ok visited=\(facts.count) nodeLimit=\(nodeLimitReached) relevant=\(direct.count) output=\(min(ordered.count, maxLines)) lineLimit=\(ordered.count > maxLines)"]
+        for index in ordered.prefix(maxLines) {
+            let fact = facts[index]
+            lines.append("ARCHIVE_PDF_AX node=\(index) parent=\(fact.parent ?? -1) type=\(fact.type) identifier=\(safeArchiveAXIdentifier(fact.identifier)) visible=\(fact.visibleInAppFrame) syntheticFilename=\(fact.syntheticFilenameInLabel)")
+        }
+        saveArchivedPDFAX(lines.joined(separator: "\n"))
+    }
+    private func safeArchiveAXIdentifier(_ identifier: String) -> String {
+        guard !identifier.isEmpty else { return "<none>" }
+        let allowed = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-")
+        let known = identifier == "archive.turn.0.pdf" || identifier.hasPrefix("archive.turn.0.pdf.")
+            || identifier == "archive.turn.0.assistant" || identifier == "archive.turn.0.user"
+        guard known, identifier.utf8.count <= 128,
+              identifier.unicodeScalars.allSatisfy({ allowed.contains($0) }) else { return "<redacted>" }
+        return identifier
+    }
+    private func saveArchivedPDFAX(_ report: String) {
+        let attachment = XCTAttachment(string: report)
+        attachment.name = "chat-pdf-archive-safe-ax"
+        attachment.lifetime = .keepAlways
+        add(attachment)
+        print(report)
     }
     private func ready(_ element: XCUIElement) {
         let hittable = NSPredicate(format: "hittable == true")

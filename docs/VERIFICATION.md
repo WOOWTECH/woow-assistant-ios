@@ -1,5 +1,16 @@
 # Verification — 2026-11-11
 
+## Archived PDF native accessibility diagnosis
+
+At `a663fbd`, the exact iOS 17.0.1 chat PDF shard completed **2/3** with zero
+skips. The full-answer case reached PDF selection, both grants, model response,
+archive save and relaunch, then failed looking up the visible saved PDF disclosure
+as a `Button` by identifier. The video proves the row is rendered, but the prior
+artifact lacks its AX role and identifier. A bounded, redacted AX snapshot is now
+recorded immediately before the unchanged lookup. The original test remains
+failing until a native run identifies the row and the remainder of the archive,
+citations, reopen and delete flow passes. [Diagnostic scope and limits](evidence/chat-pdf-archive-ax-diagnostic-cacd8f0.json).
+
 ## iOS 17 streaming UI failure and scoped selector correction
 
 At `a663fbd`, the iOS 17.0.1 startup UI shard completed **14/15**, zero skips.
