@@ -321,7 +321,14 @@ import CoreGraphics
                         "Verify actual output PDF page markers, source receipt digests and unchanged synthetic originals.")
         XCTAssertFalse(form.buttons["pdfAssembly.assemble"].exists)
         tapForm("pdfAssembly.export")
-        ready(filesNavigation.buttons.matching(NSPredicate(format: "label IN %@", ["儲存", "Save", "匯出", "Export", "搬移", "移動", "Move"])).firstMatch)
+        let nativeSave = filesNavigation.buttons.matching(NSPredicate(
+            format: "label IN %@", ["儲存", "Save", "匯出", "Export", "搬移", "移動", "Move"])).firstMatch
+        // The test cancels this native exporter. Confirm Save is present and
+        // enabled without asking AX for its unused hit-test geometry, which
+        // cost a second predicate evaluation in the iOS 26 failure timeline.
+        XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate:
+            NSPredicate(format: "exists == true AND enabled == true"), object: nativeSave)],
+            timeout: 15), .completed)
         cancelNativeExport()
         XCTAssertEqual(XCTWaiter.wait(for: [XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: filesNavigation)], timeout: 30), .completed)
         let status = form.staticTexts["pdfAssembly.export.status"]
@@ -483,6 +490,16 @@ import CoreGraphics
             guard form.exists else { XCTFail("Exact Assembly Form must remain mounted."); return }
             let formFrame = form.frame
             var viewport = formFrame.intersection(app.frame)
+            let exists = target.exists
+            let frame = exists ? target.frame : .zero
+            // A conservative interior is inside the full viewport on every
+            // supported phone. When the element is fully visible and hittable
+            // there, querying nav bars, toolbars and keyboard adds no evidence.
+            // Keep the original occlusion and bounded-scroll path otherwise.
+            let interior = viewport.insetBy(dx: 0, dy: 96)
+            if exists && !interior.isEmpty && target.isHittable &&
+                learningFrameIsVisible(frame, in: interior,
+                                      visibility: reading ? .readableText : .fullyVisible) { return }
             let title = app.navigationBars["PDF 頁面處理"]
             if title.exists {
                 let bottom = viewport.maxY
@@ -501,8 +518,6 @@ import CoreGraphics
                 viewport.size.height = min(viewport.maxY, keyboard.frame.minY, toolbar.exists ? toolbar.frame.minY : done.frame.minY) - viewport.minY
             }
             viewport = viewport.insetBy(dx: 0, dy: 4)
-            let exists = target.exists
-            let frame = exists ? target.frame : .zero
             if exists && learningFrameIsVisible(frame, in: viewport, visibility: reading ? .readableText : .fullyVisible) {
                 if reading || target.isHittable { return }
             }
