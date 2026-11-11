@@ -108,7 +108,12 @@ struct MCPResultsView: View {
                 }
             }
             .navigationTitle(localizer.text(.mcpResultsTitle))
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button(localizer.text(.keyboardDone)) { dismiss() } } }
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(localizer.text(.commonClose)) { dismiss() }
+                        .accessibilityIdentifier("mcp.results.close")
+                }
+            }
         }
     }
     private func resultText(_ value: JSONValue) -> String {

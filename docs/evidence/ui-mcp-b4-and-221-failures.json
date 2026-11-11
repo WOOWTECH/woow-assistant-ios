@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "status": "FAIL_PRESERVED_CORRECTIONS_PENDING_NATIVE",
+  "scope": "ui-mcp",
+  "runs": [
+    {
+      "variant": "current",
+      "source_commit": "b4e8c702ab744a5f665f29b8ab31deaa15cf1dc4",
+      "run_id": 42948501103,
+      "artifact_id": 13828275053,
+      "artifact_sha256": "401c6e34ecbf33b7f65b0273b5b17c100f408fb5c9dc3dd817c1d2a32c7faf3c",
+      "counts": {"total": 8, "passed": 4, "failed": 4, "skipped": 0},
+      "failure_phases": "All three learning cases stopped at the old native keyboard whole-frame check before any approvals. One refusal case stopped in setup after a Chat tab tap left Tools selected; the cause of that navigation failure remains unresolved."
+    },
+    {
+      "variant": "se",
+      "source_commit": "b4e8c702ab744a5f665f29b8ab31deaa15cf1dc4",
+      "run_id": 42948505551,
+      "artifact_id": 13827837345,
+      "artifact_sha256": "2c77f03f4378e837003d3742dee9126bbab3476ff45f95d9e5bea1d8b830fc00",
+      "counts": {"total": 8, "passed": 7, "failed": 1, "skipped": 0},
+      "failure_phases": "The remaining learning case completed remote and memory approvals, one tool result and final reply, then the test looked for a Done result-sheet button while the actual label was Done typing. Undo and relaunch were not reached."
+    },
+    {
+      "variant": "exact17",
+      "source_commit": "221a080005625198bc1bbfdcd68e7f69e58665eb",
+      "run_id": 42953610828,
+      "artifact_id": 13828643365,
+      "artifact_sha256": "62624580c29847bbcde3d942bdcfb65b4f51b91c4bbf5984b05748784e75ee66",
+      "counts": {"total": 8, "passed": 7, "failed": 1, "skipped": 0},
+      "failure_phases": "The keyboard geometry correction let all three learning cases pass the original stop. The remaining case completed both approvals and a result, then stopped at the same result-sheet close label as SE. Undo and relaunch were not reached."
+    }
+  ],
+  "corrections": [
+    "The previously accepted keyboard geometry correction is source 221a080; current and SE reruns are still needed.",
+    "MCPResultsView now uses the already localized common Close action instead of Done typing, with a stable mcp.results.close identifier. The test checks the Traditional Chinese label, taps the actual button and keeps all undo/relaunch assertions.",
+    "The current setup navigation failure has no product correction yet; it requires a fresh native observation."
+  ],
+  "limits": "These are three distinct source/variant failures. Passing conversation and partial learning methods do not accept the full MCP shard, live HA or an iOS 17 phone."
+}

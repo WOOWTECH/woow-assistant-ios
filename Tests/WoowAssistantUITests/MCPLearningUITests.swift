@@ -58,8 +58,9 @@ final class MCPLearningUITests: XCTestCase {
         let content = object?["content"] as? [[String: String]]
         XCTAssertEqual(content, [["type": "text", "text": "FIXTURE_CALL_1: hello"]])
         XCTAssertFalse(app.staticTexts["mcp.result.1"].firstMatch.exists)
-        let done = app.navigationBars.buttons["完成"].firstMatch
-        ready(done); done.tap(); absent(result)
+        let close = app.buttons["mcp.results.close"].firstMatch
+        ready(close); XCTAssertEqual(close.label, "關閉")
+        close.tap(); absent(result)
 
         openMemory(); assertSingleMemory("Prefer jasmine tea")
         navigate("chat")

@@ -1,5 +1,19 @@
 # Verification — 2026-11-11
 
+## MCP UI after iOS 17 keyboard correction
+
+At `b4e8c70`, current completed **4/8** and SE **7/8** MCP UI methods, zero
+skips. At `221a080`, the exact iOS 17.0.1 rerun completed **7/8**, zero skips;
+all three learning cases cleared the old keyboard-geometry check. On SE and
+exact17, the remaining learning case completed remote and memory approvals,
+received its result and final reply, then stopped when the test sought a
+`完成` result-sheet button while the product labeled it `完成輸入`. The product
+now uses the existing localized Close text and a stable `mcp.results.close`
+identifier; the test retains all later undo and relaunch assertions. Current
+also had one unrelated setup navigation failure before any approval, still
+unresolved. All three shards require fresh native acceptance.
+[Method and artifact evidence](evidence/ui-mcp-b4-and-221-failures.json).
+
 ## iOS 17 archived PDF disclosure selector identified
 
 At `189796c`, the exact iOS 17.0.1 documents-chat shard completed **2/3**,
@@ -76,7 +90,8 @@ of current iOS 26.2, SE/iOS 18.5 and exact iOS 17.0.1. The same four methods
 failed on each: two login/website-clear cases and custom search stopped at the
 native keyboard switch before their business assertions; the page-find case
 reported zero results but its native arrows did not expose a Disabled AX state.
-The login test now selects the observed native keyboard label. The find test
+The login and custom-search tests now select the observed bilingual native
+keyboard label. The find test
 checks the zero count, actually taps both arrows when safely hittable and requires
 the query, URL, count and original visible match to remain unchanged. These are
 **native test candidates**, with no pass claimed until rerun.
