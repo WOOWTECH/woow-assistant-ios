@@ -25,7 +25,7 @@ on:
       test_scope:
         description: Focused validation without cancelling the full regression matrix
         type: choice
-        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, picker-uikit, picker-uikit-copy, picker-user-copy, pdf-assembly, pdf-assembly-uikit, pdf-assembly-copy, pdf-assembly-multi, pdf-pair-coordinated, profile-tool, memory-tools, documents-chat, pdf-export, authoring, skill-settings, transcript, memory-ui, memory-rollback, learning, browser, core, native, startup, ui-startup, ui-language, ui-notifications, ui-archive, ui-workspace, ui-browser, ui-learning, ui-memory, ui-profile, ui-memory-tools, ui-skills, ui-documents, ui-mcp]
+        options: [all, interaction, parity, workspace, login, files, file-picker, picker-direct, picker-coordinated, picker-uikit, picker-uikit-copy, picker-user-copy, pdf-assembly, pdf-assembly-uikit, pdf-assembly-copy, pdf-assembly-multi, pdf-pair-coordinated, profile-tool, memory-tools, documents-chat, pdf-export, authoring, skill-settings, transcript, memory-ui, memory-rollback, learning, browser, core, native, startup, ui-startup, ui-language, ui-notifications, ui-archive, ui-workspace, ui-browser, ui-learning, ui-memory, ui-profile, ui-memory-tools, ui-skills, ui-documents, ui-pdf-capability, ui-download-pdf, ui-mcp]
         default: all
 
 permissions:

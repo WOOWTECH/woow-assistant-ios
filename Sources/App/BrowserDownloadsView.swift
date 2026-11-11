@@ -6,6 +6,8 @@ import UIKit
 @MainActor
 struct BrowserDownloadsView: View {
     @ObservedObject var manager: BrowserDownloadManager
+    var pdfDestination: ((BrowserDownloadedPDFSelection) -> AnyView)? = nil
+    @State private var selectedPDF: BrowserDownloadedPDFSelection?
     @Environment(\.dismiss) private var dismiss
     @State private var deleting: BrowserDownloadItem?
     @State private var sharing: SharedFile?
@@ -48,6 +50,11 @@ struct BrowserDownloadsView: View {
                                     .disabled(item.status == .cancelling)
                             } else {
                                 if item.status == .completed {
+                                    if pdfDestination != nil, URL(fileURLWithPath: item.fileName).pathExtension.lowercased() == "pdf" {
+                                        Button("處理 PDF") { openPDF(item) }
+                                            .accessibilityIdentifier("download.pdf.\(item.id)")
+                                            .accessibilityHint("開啟待審計畫，尚未讀取檔案")
+                                    }
                                     Button { share(item) } label: {
                                         Label("開啟或分享", systemImage: "square.and.arrow.up")
                                     }.accessibilityIdentifier("download.share.\(item.id)")
@@ -78,11 +85,23 @@ struct BrowserDownloadsView: View {
             } message: { item in
                 Text("確定刪除「\(item.fileName)」？此 App 內的檔案會一併刪除，已分享的副本不受影響。")
             }
+            .navigationDestination(isPresented: Binding(get: { selectedPDF != nil }, set: { presented in
+                if !presented { selectedPDF?.invalidate(); selectedPDF = nil }
+            })) {
+                if let selectedPDF, let pdfDestination { pdfDestination(selectedPDF) }
+            }
             .sheet(item: $sharing) { file in BrowserDownloadShareSheet(url: file.url) }
             .alert("無法完成操作", isPresented: Binding(get: { actionError != nil }, set: { if !$0 { actionError = nil } })) {
                 Button("好", role: .cancel) { actionError = nil }
             } message: { Text(actionError ?? "") }
         }.accessibilityIdentifier("browser.downloads")
+    }
+
+    private func openPDF(_ item: BrowserDownloadItem) {
+        do {
+            selectedPDF?.invalidate()
+            selectedPDF = try BrowserDownloadedPDFSelection(manager: manager, userSelectedID: item.id)
+        } catch { actionError = (error as? LocalizedError)?.errorDescription ?? "無法開啟下載檔案。" }
     }
 
     private func share(_ item: BrowserDownloadItem) {

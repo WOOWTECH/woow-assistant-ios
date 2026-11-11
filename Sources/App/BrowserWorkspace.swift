@@ -32,6 +32,7 @@ final class BrowserWorkspace: ObservableObject {
     #if DEBUG
     private var uploadFixtureStarted = false
     private var loginFixtureStarted = false
+    private var downloadPDFFixtureStarted = false
     #endif
 
     init(dataStore injectedDataStore: WKWebsiteDataStore? = nil,
@@ -150,6 +151,18 @@ final class BrowserWorkspace: ObservableObject {
 
     func activateSelected() {
         #if DEBUG
+        if !downloadPDFFixtureStarted, let fixture = BrowserDownloadedPDFFixture.enabled {
+            downloadPDFFixtureStarted = true
+            Task { [weak self] in
+                do {
+                    let url = try await fixture.start()
+                    guard let self else { return }
+                    while self.isClearingWebsiteData { try await Task.sleep(nanoseconds: 50_000_000) }
+                    self.open(url)
+                } catch { self?.selected.reportDownloadPDFFixtureFailure() }
+            }
+            return
+        }
         if !uploadFixtureStarted, let fixture = BrowserUploadFixture.enabled {
             uploadFixtureStarted = true
             Task { [weak self] in
@@ -197,7 +210,8 @@ final class BrowserWorkspace: ObservableObject {
             #if DEBUG
             // Fixture HTTP pages exercise WebKit state, not the public-HTTPS
             // bookmark library. Do not invent persistent public URLs for them.
-            if BrowserUploadFixture.enabled?.allows(url) == true || BrowserLoginFixture.enabled?.allows(url) == true { return }
+            if BrowserUploadFixture.enabled?.allows(url) == true || BrowserLoginFixture.enabled?.allows(url) == true
+                || BrowserDownloadedPDFFixture.enabled?.allowsNavigation(url) == true { return }
             #endif
             _ = self?.update { try $0.visit(tab: id, url: url, title: title) }
         }

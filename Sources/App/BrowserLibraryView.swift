@@ -6,6 +6,7 @@ import WebKit
 struct BrowserLibraryView: View {
     @Environment(\.appLocalizer) private var localizer
     @ObservedObject var workspace: BrowserWorkspace
+    var pdfDestination: ((BrowserDownloadedPDFSelection) -> AnyView)? = nil
     @Environment(\.dismiss) private var dismiss
     @State private var section = 0
     @State private var renameID: UUID?
@@ -36,7 +37,7 @@ struct BrowserLibraryView: View {
             .navigationTitle(localizer.text(.browserLibrary))
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { dismiss() }.accessibilityIdentifier("browser.library.close") } }
             .toolbar { ToolbarItem(placement: .navigationBarLeading) { Button(localizer.text(.browserDownloads)) { showDownloads = true }.accessibilityIdentifier("browser.downloads.open") } }
-            .sheet(isPresented: $showDownloads) { BrowserDownloadsView(manager: workspace.downloads) }
+            .sheet(isPresented: $showDownloads) { BrowserDownloadsView(manager: workspace.downloads, pdfDestination: pdfDestination) }
             .alert(localizer.text(.browserRenameBookmark), isPresented: $showRename) {
                 TextField(localizer.text(.commonName), text: $renameTitle).accessibilityIdentifier("browser.bookmark.name")
                 Button(localizer.text(.commonSave)) { if let id = renameID { workspace.renameBookmark(id, title: renameTitle) }; renameID = nil }

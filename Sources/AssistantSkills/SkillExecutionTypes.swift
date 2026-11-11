@@ -86,16 +86,35 @@ public struct SkillExecutionApproval: Sendable {
     let expiresAt: Date
 }
 
-/// Construct only from a fileImporter/document-picker callback in trusted app code.
-/// The URL is never accepted from a skill, model, worker or a persisted plan.
+/// Both constructors are trusted UI boundaries, never model/worker/persisted input.
+/// Neither selection grants permission to read bytes or execute an extraction.
 public struct SkillExecutionSelectedFile: Sendable {
     let id = UUID()
     let url: URL
+    let browserDownloadID: UUID?
+    var accessDetail: String {
+        browserDownloadID == nil ? "需要系統檔案選擇器授予存取權。" :
+            "使用者從此 App 的已完成下載選取；仍須另行核准讀取。"
+    }
+
+    /// Construct only from the actual fileImporter/document-picker callback.
     public init(userSelectedURL: URL) throws {
-        guard userSelectedURL.isFileURL, userSelectedURL.pathExtension.lowercased() == "pdf" else {
+        try Self.validate(userSelectedURL)
+        url = userSelectedURL; browserDownloadID = nil
+    }
+
+    /// Construct only after an explicit user selection from the App download
+    /// manager. The host must revalidate ownership/identity and revoke on deletion.
+    /// This does not represent a system picker callback or security-scope grant.
+    public init(userSelectedBrowserDownloadURL: URL, downloadID: UUID) throws {
+        try Self.validate(userSelectedBrowserDownloadURL)
+        url = userSelectedBrowserDownloadURL; browserDownloadID = downloadID
+    }
+
+    private static func validate(_ url: URL) throws {
+        guard url.isFileURL, url.pathExtension.lowercased() == "pdf" else {
             throw SkillExecutionError.invalidSelection
         }
-        url = userSelectedURL
     }
 }
 

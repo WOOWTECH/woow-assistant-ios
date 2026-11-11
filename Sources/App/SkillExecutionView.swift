@@ -1,3 +1,11 @@
+import AssistantBrowser
+import AssistantSkills
+import Combine
+import Foundation
+#if DEBUG
+import Darwin
+#endif
+
 #if os(iOS) || SKILL_EXECUTION_EXPORT_CHECKS
 #if canImport(AssistantSkills)
 import AssistantSkills
@@ -86,7 +94,8 @@ private struct DocumentQueryPresentation: Identifiable {
     }
 
     init(learning: LearningStore, modelAccess: @escaping () throws -> ModelAccess, modelChanges: AnyPublisher<Void, Never>,
-         worker: (any SkillExecutionPDFWorker)? = nil) {
+         worker: (any SkillExecutionPDFWorker)? = nil, downloadedPDF: BrowserDownloadedPDFSelection? = nil) {
+        _model = StateObject(wrappedValue: SkillExecutionViewModel(downloadedPDF: downloadedPDF))
         self.learning = learning; self.modelAccess = modelAccess; self.modelChanges = modelChanges; self.suppliedWorker = worker
     }
 
@@ -95,30 +104,45 @@ private struct DocumentQueryPresentation: Identifiable {
             Section("PDF 文字擷取") {
                 Text("選取檔案後檢視每一步，再分別核准。預設使用裝置上的 PDFKit。")
                     .accessibilityIdentifier("skillExecution.intro")
+                Text(verbatim: SkillExecutionDependencies.pdfQueryScope)
+                    .font(.caption).accessibilityIdentifier("skillExecution.pdfQuery.scope")
                 if model.plan == nil {
                     TextField("頁碼，例如 1,3-5；留空代表全部", text: $pages)
                         .textInputAutocapitalization(.never).autocorrectionDisabled()
                     SecureField("PDF 密碼（需要時填寫）", text: $password)
                     Toggle("只讀取文件資訊", isOn: $metadataOnly)
                     if worker != nil { Toggle("使用已設定的原版腳本服務", isOn: $useWorker) }
-                    Button("選取 PDF") { presentPicker(.original) }
-                        .accessibilityIdentifier("skillExecutionSelectPDF")
-                    Button {
-                        importCopyExpanded.toggle()
-                    } label: {
-                        HStack {
-                            Text("改用匯入副本")
-                            Spacer()
-                            Image(systemName: importCopyExpanded ? "chevron.down" : "chevron.right")
-                        }
+                    if let download = model.downloadedPDF {
+                        Text(verbatim: download.filename).accessibilityIdentifier("downloadPDF.filename")
+                        Text("來源：此 App 的已完成下載。下載成功尚未授權讀取或擷取。")
+                            .font(.caption).accessibilityIdentifier("downloadPDF.source")
+                        Button("建立下載 PDF 計畫") {
+                            model.prepareDownload(pages: pages, password: password, metadataOnly: metadataOnly,
+                                                  worker: useWorker ? worker : nil)
+                            password = ""
+                        }.disabled(!model.downloadAvailable).accessibilityIdentifier("downloadPDF.prepare")
+                    } else {
+                        Button("選取 PDF") { presentPicker(.original) }
+                            .accessibilityIdentifier("skillExecutionSelectPDF")
                     }
-                    .accessibilityIdentifier("skillExecution.importCopy.options")
-                    .accessibilityValue(importCopyExpanded ? "已展開" : "已收合")
-                    if importCopyExpanded {
-                        Text("選檔後，系統會先建立暫存副本並占用儲存空間，不會更動原檔。App 讀取與後續擷取仍需分別核准。App 最多讀取 10 MiB；系統複製的大小不受此上限限制。")
-                            .accessibilityIdentifier("skillExecution.importCopy.notice")
-                        Button("選取 PDF 並匯入副本") { presentPicker(.importCopy) }
-                            .accessibilityIdentifier("skillExecutionImportPDFCopy")
+                    if model.downloadedPDF == nil {
+                        Button {
+                            importCopyExpanded.toggle()
+                        } label: {
+                            HStack {
+                                Text("改用匯入副本")
+                                Spacer()
+                                Image(systemName: importCopyExpanded ? "chevron.down" : "chevron.right")
+                            }
+                        }
+                        .accessibilityIdentifier("skillExecution.importCopy.options")
+                        .accessibilityValue(importCopyExpanded ? "已展開" : "已收合")
+                        if importCopyExpanded {
+                            Text("選檔後，系統會先建立暫存副本並占用儲存空間，不會更動原檔。App 讀取與後續擷取仍需分別核准。App 最多讀取 10 MiB；系統複製的大小不受此上限限制。")
+                                .accessibilityIdentifier("skillExecution.importCopy.notice")
+                            Button("選取 PDF 並匯入副本") { presentPicker(.importCopy) }
+                                .accessibilityIdentifier("skillExecutionImportPDFCopy")
+                        }
                     }
                 }
                 #if DEBUG
@@ -130,6 +154,14 @@ private struct DocumentQueryPresentation: Identifiable {
                 if let audit = model.uiTestAudit {
                     Text(audit.evidence).font(.caption)
                         .accessibilityIdentifier("skillExecution.uitest.audit")
+                }
+                if let audit = model.downloadUIAudit, let selection = model.downloadedPDF {
+                    Text("download=\(selection.downloadID.uuidString) plan=\(model.plan?.id.uuidString ?? "none") reads=\(audit.reads) extractions=\(audit.extractions) results=\(audit.results)")
+                        .font(.caption).accessibilityIdentifier("downloadPDF.audit")
+                    if let result = model.result {
+                        Text(verbatim: result.inputSHA256).font(.caption)
+                            .accessibilityIdentifier("downloadPDF.resultDigest")
+                    }
                 }
                 #endif
             }
@@ -222,7 +254,10 @@ private struct DocumentQueryPresentation: Identifiable {
                     .accessibilityIdentifier("skillExecution.workerSettings")
             }
         }
-        .onAppear { workerSettings.reload(); model.seedUITestIfRequested() }
+        .onChange(of: model.downloadAvailable) { _, available in
+            if model.downloadedPDF != nil && !available { resetExport(); documentQuery = nil }
+        }
+        .onAppear { workerSettings.reload(); if model.downloadedPDF == nil { model.seedUITestIfRequested() } }
         .onDisappear {
             resetExport()
             // The query sheet owns an immutable completed snapshot. Keep the
@@ -289,8 +324,12 @@ private struct DocumentQueryPresentation: Identifiable {
     }
 }
 
+#endif
+
+/// Shared execution state: UIKit presentation is separate so the actual caller
+/// and its cancellation/publication guards also execute in macOS checks.
 @MainActor
-private final class SkillExecutionViewModel: ObservableObject {
+final class SkillExecutionViewModel: ObservableObject {
     @Published var plan: SkillExecutionPlan?
     @Published var nextStepID: UUID?
     @Published var completedStepIDs: Set<UUID> = []
@@ -299,7 +338,40 @@ private final class SkillExecutionViewModel: ObservableObject {
     @Published var running = false
     private var runtime: SkillExecutionRuntime?
     private var task: Task<Void, Never>?
+    let downloadedPDF: BrowserDownloadedPDFSelection?
+    @Published private(set) var downloadAvailable: Bool
+    var executingTask: Task<Void, Never>? { task }
+
+    init(downloadedPDF: BrowserDownloadedPDFSelection? = nil) {
+        self.downloadedPDF = downloadedPDF
+        downloadAvailable = downloadedPDF?.isValid == true
+        #if DEBUG
+        if let downloadedPDF, let fixture = BrowserDownloadedPDFFixture.enabled,
+           downloadedPDF.filename == fixture.filename { downloadUIAudit = DownloadUIAudit() }
+        #endif
+        downloadedPDF?.onInvalidated = { [weak self] in
+            guard let self else { return }
+            self.clear()
+            self.downloadAvailable = false
+            self.status = "下載檔案已刪除或變更，本次計畫已取消。請重新選取。"
+        }
+    }
+
+    func prepareDownload(pages: String, password: String, metadataOnly: Bool, worker: (any SkillExecutionPDFWorker)?) {
+        clear()
+        do {
+            guard let downloadedPDF else { throw SkillExecutionError.invalidSelection }
+            try prepare(selection: downloadedPDF.selectedFile(), pages: pages, password: password,
+                        metadataOnly: metadataOnly, worker: worker)
+        } catch { status = (error as? LocalizedError)?.errorDescription ?? "無法建立執行計畫。" }
+    }
+
+    private func validateDownload() throws {
+        if let downloadedPDF { _ = try downloadedPDF.selectedFile() }
+    }
     #if DEBUG
+    struct DownloadUIAudit { var reads = 0, extractions = 0, results = 0 }
+    @Published private(set) var downloadUIAudit: DownloadUIAudit?
     @Published private(set) var uiTestFixture: SkillExecutionUITestSupport.Fixture?
     @Published private(set) var uiTestAudit: SkillExecutionUITestAudit?
     private var pickerDiagnosticOrdinal = 0
@@ -358,47 +430,64 @@ private final class SkillExecutionViewModel: ObservableObject {
     func prepare(url: URL, pages: String, password: String, metadataOnly: Bool, worker: (any SkillExecutionPDFWorker)?) {
         clear()
         do {
-            let options = try SkillExecutionPDFOptions(pages: pages, metadataOnly: metadataOnly, password: password.isEmpty ? nil : password)
-            let execution = try SkillExecutionRuntime(selectedFile: SkillExecutionSelectedFile(userSelectedURL: url), options: options,
-                backend: worker == nil ? .native : .originalWorker, worker: worker, catalog: BundledSkillCatalog.bundled())
-            runtime = execution; plan = execution.plan; nextStepID = execution.plan.steps.first?.id
+            guard downloadedPDF == nil else { throw SkillExecutionError.invalidSelection }
+            try prepare(selection: SkillExecutionSelectedFile(userSelectedURL: url), pages: pages, password: password,
+                        metadataOnly: metadataOnly, worker: worker)
             #if DEBUG
             uiTestAudit?.selections += 1
             #endif
         } catch { status = (error as? LocalizedError)?.errorDescription ?? "無法建立執行計畫。" }
     }
 
+    private func prepare(selection: SkillExecutionSelectedFile, pages: String, password: String,
+                         metadataOnly: Bool, worker: (any SkillExecutionPDFWorker)?) throws {
+        let options = try SkillExecutionPDFOptions(pages: pages, metadataOnly: metadataOnly, password: password.isEmpty ? nil : password)
+        let execution = try SkillExecutionRuntime(selectedFile: selection, options: options,
+            backend: worker == nil ? .native : .originalWorker, worker: worker, catalog: BundledSkillCatalog.bundled())
+        runtime = execution; plan = execution.plan; nextStepID = execution.plan.steps.first?.id
+    }
+
     func execute(stepID: UUID) {
         guard let runtime, !running else { return }
+        do { try validateDownload() }
+        catch { return } // Invalidation publishes the fixed cancellation notice.
         let id = runtime.plan.id
         running = true; status = nil
         task = Task {
             do {
                 let grant = try await runtime.authorize(stepID: stepID)
+                try Task.checkCancellation()
+                try validateDownload()
+                guard plan?.id == id else { return }
                 #if DEBUG
                 // Count the actual runtime dispatch, before awaiting it. A missing
                 // result alone is not evidence that extraction never started.
                 if runtime.plan.steps.first(where: { $0.id == stepID })?.capability == .selectedPDFRead {
-                    uiTestAudit?.reads += 1
-                } else { uiTestAudit?.extractionAttempts += 1 }
+                    uiTestAudit?.reads += 1; downloadUIAudit?.reads += 1
+                } else { uiTestAudit?.extractionAttempts += 1; downloadUIAudit?.extractions += 1 }
                 #endif
                 let outcome = try await runtime.execute(grant)
+                guard plan?.id == id, !Task.isCancelled else { return }
+                try validateDownload()
                 guard plan?.id == id, !Task.isCancelled else { return }
                 switch outcome {
                 case .selectedFileRead(let count, _): status = "已讀取 \(count) 位元組。請核准下一個步驟。"
                 case .pdf(let value):
                     result = value; status = "擷取完成。"
                     #if DEBUG
-                    uiTestAudit?.results += 1
+                    uiTestAudit?.results += 1; downloadUIAudit?.results += 1
                     #endif
                 }
                 completedStepIDs.insert(stepID)
-                nextStepID = await runtime.nextStep()?.id
+                let next = await runtime.nextStep()?.id
+                guard plan?.id == id, !Task.isCancelled else { return }
+                try validateDownload()
+                nextStepID = next
             } catch {
                 guard plan?.id == id else { return }
                 status = (error as? SkillExecutionError)?.errorDescription ?? "執行未完成。"
             }
-            if plan?.id == id { running = false }
+            if plan?.id == id { running = false; task = nil }
         }
     }
 
@@ -408,4 +497,3 @@ private final class SkillExecutionViewModel: ObservableObject {
         runtime = nil; plan = nil; nextStepID = nil; completedStepIDs = []; result = nil; status = nil; running = false
     }
 }
-#endif

@@ -25,11 +25,17 @@ public struct BrowserNavigationIntent {
     public init() {}
     public mutating func beginManual(_ url: URL) {
         invalidate()
-        if BrowserManualNavigationPolicy.allows(url) { manualURLs.insert(url) }
+        if Self.allowsManual(url) { manualURLs.insert(url) }
     }
     public mutating func recordManualRedirect(_ url: URL) {
-        guard !manualURLs.isEmpty, manualURLs.count < 16, BrowserManualNavigationPolicy.allows(url) else { return }
+        guard !manualURLs.isEmpty, manualURLs.count < 16, Self.allowsManual(url) else { return }
         manualURLs.insert(url)
+    }
+    private static func allowsManual(_ url: URL) -> Bool {
+        #if DEBUG && canImport(Network)
+        if BrowserDownloadedPDFFixture.enabled?.allowsNavigation(url) == true { return true }
+        #endif
+        return BrowserManualNavigationPolicy.allows(url)
     }
     public mutating func invalidate() {
         generation = UUID(); manualURLs = []; pendingDownload = nil

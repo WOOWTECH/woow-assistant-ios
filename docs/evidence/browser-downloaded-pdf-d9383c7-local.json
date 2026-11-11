@@ -1,0 +1,298 @@
+{
+  "schema_version": 1,
+  "result": "PASS_LOCAL_NATIVE_PENDING",
+  "base_commit": "d9383c73800562dc102007bf36d42d958853e74f",
+  "observed_at_utc": "2026-11-11T00:40:00.091494+00:00",
+  "isolated_worktree": "/tmp/woow-download-pdf-d9383c7",
+  "owned_file_sha256": {
+    "Sources/App/BrowserDownloadsView.swift": "d63e32db2b3fab13ba31d52b0ef00bb5ab1e21ea73574fd5832daac7c240d8dd",
+    "Sources/App/BrowserLibraryView.swift": "bf3c99f4458167de5fe6c70b908bdf20fe658a332958b269741c61452293103e",
+    "Sources/App/BrowserView.swift": "13dc868169e45b494b66769e4965c6b65321cd5b63b580a0d8e1c4120e763069",
+    "Sources/App/SkillExecutionView.swift": "81f669d3322e11076013cfbea6e0135f0358c67319e660afffde6aad15ad6a03",
+    "Sources/AssistantBrowser/BrowserDownloadedPDFSelection.swift": "ddc6596094b337e710ddcc7239b026f1a6daab122f9f529b842fe7d868ddde4e",
+    "Sources/AssistantSkills/SkillExecutionDependencies.swift": "36ba1241964cc112b10f34d88ef646ec41dec113fac070fd0cbe9fcfb33e78a7",
+    "Sources/AssistantSkills/SkillExecutionRuntime.swift": "09f3d02bff42ee830dee98081f7ff9ce07d587b969e227e26330e0aa6cab1050",
+    "Sources/AssistantSkills/SkillExecutionTypes.swift": "ad5913a841688f1c2fb84483b8b778724be8aa873d7c08d85b299bb3a3307332",
+    "Tests/AssistantBrowserIntegrationTests/BrowserDownloadedPDFIntegrationTests.swift": "ca55193f2c3f66a0f7e67b2ea4a901c9f831ed3fe820a42e3b2591831b24fad5",
+    "Tests/AssistantSkillsTests/SkillExecutionTests.swift": "4bb279a2e1c2515d36ca942d17366843fa2c5c66c4ef00d875849d17ffd59618",
+    "Tests/WoowAssistantUITests/SkillPDFCapabilityUITests.swift": "e5799d1ab4cd216169461096a5d2e39bd9fb3e71f26f867c71cd9c1cf0d5a967",
+    "docs/BROWSER_DOWNLOADED_PDF_BRIDGE.md": "ae9dd87bde88850f9c0234b79f0a696837ececa6b0e09698aa669379657882f8",
+    "scripts/CheckBrowserDownloadedPDFApp.swift": "1d7fc28d18e7226a58e12b1c5fa153d62c4dc9fed753ac44ad7b6e3fbcc29de7",
+    "scripts/check_browser_downloaded_pdf_app.py": "19ef324cbc93083272157893ff673a039f998105e64c640f44cdedf8f1720750"
+  },
+  "shared_product_edits": false,
+  "commit_push_dispatch": false,
+  "bridge": {
+    "report": "/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-browser-downloaded-pdf-4h_a6_qu/report.json",
+    "report_sha256": "5fb70745bf37a6409de41123fc4891ca43454e604ef1e816a98c50fff0875279",
+    "result": "PASS",
+    "checks": [
+      {
+        "exit_code": 0,
+        "name": "Debug-AssistantModels-build",
+        "seconds": 4.79
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-AssistantSkills-build",
+        "seconds": 42.904
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-AssistantBrowser-build",
+        "seconds": 50.24
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-build",
+        "seconds": 8.534
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-iOS-syntax",
+        "seconds": 0.159
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-run",
+        "result": {
+          "actual_app_execution_caller": true,
+          "actual_pdfkit": true,
+          "actual_wkdownload": true,
+          "external_network_or_model_requests": 0,
+          "failed": 0,
+          "groups": {
+            "deletionAndHeldRead": 7,
+            "invalidSourcesAndLimits": 9,
+            "lateWorkerAndDisclosure": 7,
+            "realDownloadAndApprovals": 27
+          },
+          "native_ui": false,
+          "passed": 50
+        },
+        "seconds": 5.334
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-AssistantModels-build",
+        "seconds": 4.436
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-AssistantSkills-build",
+        "seconds": 36.32
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-AssistantBrowser-build",
+        "seconds": 62.299
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-build",
+        "seconds": 12.544
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-iOS-syntax",
+        "seconds": 0.15
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-run",
+        "result": {
+          "actual_app_execution_caller": true,
+          "actual_pdfkit": true,
+          "actual_wkdownload": true,
+          "external_network_or_model_requests": 0,
+          "failed": 0,
+          "groups": {
+            "deletionAndHeldRead": 7,
+            "invalidSourcesAndLimits": 9,
+            "lateWorkerAndDisclosure": 7,
+            "realDownloadAndApprovals": 26
+          },
+          "native_ui": false,
+          "passed": 49
+        },
+        "seconds": 7.716
+      }
+    ],
+    "source_snapshot_unchanged": true
+  },
+  "query_regression": {
+    "report": "/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-document-query-app-j78jj1a9/report.json",
+    "report_sha256": "d4038fe1d436b4e469174cbdfadde8d322202e6ea02bfb1a6968c0fff3befc4b",
+    "result": "PASS",
+    "checks": [
+      {
+        "exit_code": 0,
+        "name": "Debug-AssistantModels-build",
+        "seconds": 5.484
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-AssistantMemory-build",
+        "seconds": 13.649
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-AssistantPersistence-build",
+        "seconds": 3.207
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-AssistantMCP-build",
+        "seconds": 6.547
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-AssistantSkills-build",
+        "seconds": 42.656
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-AssistantBrowser-build",
+        "seconds": 45.485
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-build",
+        "seconds": 73.435
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-iOS-syntax",
+        "seconds": 0.178
+      },
+      {
+        "exit_code": 0,
+        "name": "Debug-run",
+        "result": {
+          "failed": 0,
+          "groups": {
+            "cancellationAndQuestionChanges": 21,
+            "changedAccessBeforeStart": 8,
+            "consentAndExport": 20,
+            "correctionAuditAndQuestionReset": 10,
+            "failureRefusalAndExplicitRetry": 26,
+            "lateSettingsAndKeyChanges": 51,
+            "referenceCaptureAndSwitches": 53,
+            "referenceEditsStayFrozen": 18,
+            "referenceRevocationStopsActualTask": 184
+          },
+          "model_network_requests": 0,
+          "passed": 391
+        },
+        "seconds": 14.501
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-AssistantModels-build",
+        "seconds": 4.609
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-AssistantMemory-build",
+        "seconds": 17.28
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-AssistantPersistence-build",
+        "seconds": 3.695
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-AssistantMCP-build",
+        "seconds": 8.707
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-AssistantSkills-build",
+        "seconds": 67.243
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-AssistantBrowser-build",
+        "seconds": 51.108
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-build",
+        "seconds": 33.042
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-iOS-syntax",
+        "seconds": 0.169
+      },
+      {
+        "exit_code": 0,
+        "name": "Release-run",
+        "result": {
+          "failed": 0,
+          "groups": {
+            "cancellationAndQuestionChanges": 21,
+            "changedAccessBeforeStart": 8,
+            "consentAndExport": 20,
+            "correctionAuditAndQuestionReset": 10,
+            "failureRefusalAndExplicitRetry": 26,
+            "lateSettingsAndKeyChanges": 51,
+            "referenceCaptureAndSwitches": 53,
+            "referenceEditsStayFrozen": 18,
+            "referenceRevocationStopsActualTask": 184
+          },
+          "model_network_requests": 0,
+          "passed": 391
+        },
+        "seconds": 17.078
+      },
+      {
+        "exit_code": 0,
+        "name": "Live-build",
+        "seconds": 39.828
+      }
+    ],
+    "live_attempted": false,
+    "sources_still_current": true
+  },
+  "existing_dependency_and_skill_execution_checks": {
+    "command": "bash scripts/skill-worker/check_swift.sh",
+    "exit_code": 0,
+    "observed_groups": [
+      "six-skill provenance and dependency mapping",
+      "actual PDFKit text metadata pages encryption invalid inputs",
+      "real presenter save refusal post-coordination byte limit",
+      "per-step approval replay expiry selection byte snapshot",
+      "upload gating concurrency cancellation"
+    ],
+    "source_hashes_match_bridge_snapshot": true
+  },
+  "initial_harness_compile_failure": {
+    "report": "/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-browser-downloaded-pdf-9t4urx6b/report.json",
+    "classification": "test Host WKWebView/NSWindow initializer needed explicit MainActor",
+    "resolved_by_current_debug_release_compile": true
+  },
+  "native_registration": {
+    "target": "AssistantBrowserIntegrationTests",
+    "add_shared_body": "scripts/CheckBrowserDownloadedPDFApp.swift",
+    "wrapper": "Tests/AssistantBrowserIntegrationTests/BrowserDownloadedPDFIntegrationTests.swift",
+    "methods": [
+      "testRealWKDownloadTwoApprovalsAndPDFKit",
+      "testInvalidSelectionsReplacementAndBounds",
+      "testDeletionCancellationAndHeldReadReplacement",
+      "testExplicitWorkerApprovalAndLateReplyRevocation"
+    ],
+    "ui_case": "WoowAssistantUITests/SkillPDFCapabilityUITests/testPDFQueryScopeIsAvailableWithoutGrantingWorkspaceAccess",
+    "native_ui_case_scope": "capability label only; no download UI acceptance claim",
+    "native_status": "pending parent integration and CI"
+  },
+  "limits": [
+    "Real macOS WKDownload private loopback -> bytes -> actual App caller -> separate read/extraction approvals -> real PDFKit is verified; production HTTPS policy is retained.",
+    "Native iOS/SwiftUI typecheck, device UI navigation/taps and download-row presentation remain pending; iOS parse is syntax only.",
+    "Cancellation fences App publication and cancels its Task; synchronous coordination/PDFKit and uncooperative transports are not forcibly terminated. Held tests release and join old callers before checking late results.",
+    "Worker tests use an explicit held in-memory adapter, no real remote worker endpoint or upload. No model requests were run.",
+    "Debug and Release counts are separate executions of shared bodies, not cumulative unique tests.",
+    "No generic workspace read/search/shell capability or background execution is added."
+  ]
+}

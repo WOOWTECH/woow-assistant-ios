@@ -105,7 +105,13 @@ struct BrowserView: View {
         .sheet(isPresented: $showInteractions, onDismiss: { browser.cancelInteraction() }) {
             BrowserInteractionView(browser: browser, chat: chat)
         }
-        .sheet(isPresented: $showLibrary) { BrowserLibraryView(workspace: workspace) }
+        .sheet(isPresented: $showLibrary) {
+            BrowserLibraryView(workspace: workspace, pdfDestination: { selection in
+                AnyView(SkillExecutionView(learning: chat.learning, modelAccess: chat.modelAccess,
+                    modelChanges: chat.$savedSettings.dropFirst().map { _ in () }.eraseToAnyPublisher(),
+                    downloadedPDF: selection))
+            })
+        }
         .sheet(isPresented: $showTranscript) { TranscriptBrowserView(browser: browser, chat: chat) }
         .sheet(isPresented: $showMultiResearch) { MultiSourceResearchView(chat: chat) }
         .sheet(isPresented: $showSearchSettings) { BrowserSearchSettingsView(workspace: workspace) }

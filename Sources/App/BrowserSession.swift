@@ -59,6 +59,12 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     @Published var goal = ""
     @Published private(set) var status = "輸入網址開始瀏覽"
     @Published private(set) var error: String?
+    #if DEBUG
+    func reportDownloadPDFFixtureFailure() {
+        guard BrowserDownloadedPDFFixture.enabled != nil else { return }
+        error = "測試下載頁面未能啟動。"
+    }
+    #endif
     @Published private(set) var current: WebObservation?
     @Published private(set) var actions: [WebResearchAction] = []
     @Published private(set) var answer: String?
@@ -117,7 +123,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         websiteDataStore = dataStore
         suppliedConfiguration = configuration
         #if DEBUG
-        fixtureMode = ProcessInfo.processInfo.arguments.contains("-UITestMode") && !ProcessInfo.processInfo.arguments.contains("-UITestBrowserNetwork") && BrowserUploadFixture.enabled == nil && BrowserLoginFixture.enabled == nil
+        fixtureMode = ProcessInfo.processInfo.arguments.contains("-UITestMode") && !ProcessInfo.processInfo.arguments.contains("-UITestBrowserNetwork") && BrowserUploadFixture.enabled == nil && BrowserLoginFixture.enabled == nil && BrowserDownloadedPDFFixture.enabled == nil
         #else
         fixtureMode = false
         #endif
@@ -1194,6 +1200,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         #if DEBUG
         if BrowserUploadFixture.enabled?.allows(url) == true { return true }
         if BrowserLoginFixture.enabled?.allows(url) == true { return true }
+        if BrowserDownloadedPDFFixture.enabled?.allowsNavigation(url) == true { return true }
         #endif
         return BrowserManualNavigationPolicy.allows(url) && (!fixtureMode || url.host == "research.example.invalid")
     }
@@ -1203,7 +1210,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
         // Only the exact fixture URL may use HTTP loopback. A lossy parse must
         // not turn a malformed address into a permitted local fixture request.
         if let url = URL(string: address), url.absoluteString == address,
-           BrowserUploadFixture.enabled?.allows(url) == true || BrowserLoginFixture.enabled?.allows(url) == true {
+           BrowserUploadFixture.enabled?.allows(url) == true || BrowserLoginFixture.enabled?.allows(url) == true
+            || BrowserDownloadedPDFFixture.enabled?.allowsNavigation(url) == true {
             return url
         }
         #endif

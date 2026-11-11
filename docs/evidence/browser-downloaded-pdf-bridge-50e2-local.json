@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "status": "local_pass_native_ui_pending",
+  "base_sha": "d51f739896d59ec95c3596d176a74e5e356b784b",
+  "scope": "User-selected completed browser PDF download to reviewed skill execution with real WKDownload fixture",
+  "checks": {
+    "bridge": {
+      "report_sha256": "cf6e862c8bc56a3240d1f60f1d395af3dd6c52c735a664cb3ae09b5f0144f7ce",
+      "checks": 12,
+      "debug_assertions": 50,
+      "release_assertions": 49
+    },
+    "native_ui_fixture": {
+      "report_sha256": "561525cd0aba5c855bf50833d84fcaa8f9133ee7d681939e5d99197f5179551c",
+      "checks": 19,
+      "debug_assertions": 101,
+      "release_assertions": 51
+    }
+  },
+  "project_generation": "PASS",
+  "workflow_actionlint": "PASS",
+  "ui_inventory": "PASS",
+  "release_script_tests": "106/106 PASS",
+  "ios17_syntax": "PASS",
+  "limits": [
+    "No iOS simulator XCTest result yet.",
+    "The local app fixture used loopback HTTP and a synthetic model; it did not perform a public website or paid model call."
+  ]
+}

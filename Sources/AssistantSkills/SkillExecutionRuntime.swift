@@ -37,7 +37,7 @@ public actor SkillExecutionRuntime {
         let steps = [
             SkillExecutionStep(id: UUID(), capability: .selectedPDFRead, title: "讀取選取的 PDF",
                 disclosure: "只讀取本次選取的檔案，最多 10 MiB；不會掃描資料夾。",
-                availability: SkillExecutionAvailability(capability: .selectedPDFRead, available: true, detail: "需要系統檔案選擇器授予存取權。"), provenance: provenance),
+                availability: SkillExecutionAvailability(capability: .selectedPDFRead, available: true, detail: selectedFile.accessDetail), provenance: provenance),
             SkillExecutionStep(id: UUID(), capability: capability, title: native ? "在裝置上擷取 PDF" : "上傳 PDF 並執行原版腳本",
                 disclosure: detail,
                 availability: SkillExecutionAvailability(capability: capability, available: available, detail: detail), provenance: provenance)
@@ -45,6 +45,8 @@ public actor SkillExecutionRuntime {
         let id = UUID()
         let filename = String(selectedFile.url.lastPathComponent.unicodeScalars.filter { !CharacterSet.controlCharacters.contains($0) }.map(String.init).joined().prefix(160))
         let canonical: [String: Any] = ["id": id.uuidString, "selection": selectedFile.id.uuidString,
+            "selectionOrigin": selectedFile.browserDownloadID == nil ? "documentPicker" : "browserDownload",
+            "downloadID": selectedFile.browserDownloadID?.uuidString ?? "",
             "filename": filename, "pages": options.pages ?? "", "metadata": options.metadataOnly,
             "passwordProvided": options.password != nil, "backend": capability.rawValue,
             "destination": native ? "device" : (worker?.destination ?? "unavailable"),

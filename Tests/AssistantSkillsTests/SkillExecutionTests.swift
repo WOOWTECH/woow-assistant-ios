@@ -47,6 +47,16 @@ enum SkillExecutionChecks {
         let documents = reports.first { $0.skillID == "documents" }!
         try expect(documents.provenance.contains { $0.sha256 == SkillExecutionHTTPWorker.scriptSHA256 }, "exact original script hash")
         try expect(documents.provenance.allSatisfy { $0.revision == BundledSkillCatalog.pinnedCommit }, "pinned provenance")
+        let query = documents.dependencies.first { $0.original == "read_file / search_files" }
+        try expect(query?.status == .implementedInRuntime && query?.mapping == SkillExecutionDependencies.pdfQueryScope,
+                   "PDF query is available with exact UI scope")
+        try expect(SkillExecutionDependencies.pdfQueryScope.contains("本次已擷取") &&
+                   SkillExecutionDependencies.pdfQueryScope.contains("不開放任意路徑、workspace"), "no arbitrary workspace claim")
+        try expect(documents.dependencies.first { $0.original == "run_command + pypdf / OCR" }?.status == .excluded,
+                   "query availability does not enable shell")
+        try expect(documents.dependencies.first { $0.original == "--out / share_file" }?.status == .hostIntegrationRequired,
+                   "user export is not a generic skill share tool")
+
     }
 
     static func nativePDF() async throws {

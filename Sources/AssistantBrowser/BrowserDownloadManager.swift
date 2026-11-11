@@ -61,7 +61,13 @@ public final class BrowserDownloadManager: NSObject, ObservableObject, WKDownloa
     public convenience init(directory: URL? = nil, limits: BrowserDownloadLimits = .init()) {
         let root = directory ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
             .first?.appendingPathComponent("BrowserDownloads", isDirectory: true)
+        #if DEBUG && canImport(Network)
+        self.init(directory: root, limits: limits, allowsURL: { url in
+            BrowserDownloadPolicy.allows(url) || BrowserDownloadedPDFFixture.enabled?.allowsDownload(url) == true
+        })
+        #else
         self.init(directory: root, limits: limits, allowsURL: BrowserDownloadPolicy.allows)
+        #endif
     }
 
     // Only @testable hosted tests can substitute an exact loopback fixture URL.

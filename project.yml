@@ -212,6 +212,7 @@ targets:
       - Tests/AssistantBrowserIntegrationTests
       - scripts/CheckBrowserSiteModesApp.swift
       - Tests/AssistantDomainTests/BrowserUserSiteModesChecks.swift
+      - scripts/CheckBrowserDownloadedPDFApp.swift
       - scripts/CheckBrowserSearchApp.swift
       - Tests/AssistantDomainTests/BrowserSearchChecks.swift
       - scripts/CheckResearchSourceDiscoveryApp.swift
