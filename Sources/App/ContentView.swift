@@ -65,6 +65,7 @@ struct ContentView: View {
             mcpSession.onConnectionChange = { [weak session] in session?.cancelMCP() }
         }
         .onChange(of: scenePhase) { _, phase in
+            if phase == .background { session.pdfEnteredBackground() }
             if phase != .active {
                 session.cancelMCP()
                 session.invalidateProfileReview()
@@ -78,6 +79,11 @@ struct ContentView: View {
     private var sectionNavigation: some View {
         VStack(spacing: 0) {
             #if DEBUG
+            if (try? ChatPDFUITestConfiguration.resolve(arguments: ProcessInfo.processInfo.arguments)) != nil {
+                Text("PDF 模型請求事件測試觀測").font(.caption2)
+                    .accessibilityIdentifier("chat.pdf.requestEvents")
+                    .accessibilityValue(String(session.pdfModelRequestEvents))
+            }
             if (try? UITestChatStreamingConfiguration.resolve(arguments: ProcessInfo.processInfo.arguments)) != nil {
                 Text("串流通知送出測試觀測")
                     .font(.caption2)
@@ -183,6 +189,7 @@ private struct ChatView: View {
     @FocusState private var isEditingDraft: Bool
     @State private var showsMCPResults = false
     @State private var showsArchive = false
+    @State private var showsPDF = false
 
     var body: some View {
         VStack(spacing: 12) {
@@ -208,6 +215,20 @@ private struct ChatView: View {
             .multilineTextAlignment(.center)
 
             LearningChatNotes(store: session.learning)
+
+            HStack {
+                Button(session.pdfAttachment == nil ? "附加 PDF" : "檢視 PDF 附件") {
+                    isEditingDraft = false; showsPDF = true
+                }.disabled(session.isSubmitting).accessibilityIdentifier("chat.pdf.open")
+                if let attachment = session.pdfAttachment {
+                    Text(verbatim: attachment.plan.filename).lineLimit(1).accessibilityIdentifier("chat.pdf.card")
+                    Button("移除") { session.removePDF() }.accessibilityIdentifier("chat.pdf.removeInline")
+                }
+            }
+            if session.pdfAttachment != nil {
+                Text(session.usesMCP ? "PDF 查詢不使用 MCP；請先關閉 MCP 選項。" : ChatPDFAttachment.scopeNotice)
+                    .font(.caption).accessibilityIdentifier("chat.pdf.boundary")
+            }
 
             if mcp.canUseInConversation || session.usesMCP {
                 Toggle("本次對話使用 MCP 工具", isOn: $session.usesMCP)
@@ -250,6 +271,9 @@ private struct ChatView: View {
                                 Text(entry.content)
                                     .textSelection(.enabled)
                                     .accessibilityIdentifier("chat.message.\(index).\(entry.role)")
+                                if let pdf = entry.pdf {
+                                    ArchivedPDFEvidenceView(evidence: pdf, identifier: "chat.pdf.saved.\(index)")
+                                }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .id(entry.id)
@@ -324,6 +348,7 @@ private struct ChatView: View {
             .frame(minHeight: 44)
         }
         .padding()
+        .sheet(isPresented: $showsPDF) { ChatPDFAttachmentView(session: session) }
         .sheet(isPresented: $showsArchive) {
             if let store = session.archive { ConversationArchiveView(store: store, session: session) }
         }

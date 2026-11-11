@@ -29,7 +29,7 @@ class PrebuildTests(unittest.TestCase):
                  "IOS17_SAMPLE_BOOTSTRAP": "true", "IOS17_PRELAUNCH": "true"}
         cases = [(dict(valid, IOS17_TEST_SCOPE=scope), 0) for scope in
                  ("startup-smoke", "pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated",
-                  "documents-read", "documents-output", *ios17.UI_SHARDS)]
+                  "documents-read", "documents-output", "documents-chat", *ios17.UI_SHARDS)]
         cases += [(dict(valid, **changed), 1) for changed in
                   ({"VALIDATION_MODE": "ios17-self-hosted"}, {"IOS17_SAMPLE_BOOTSTRAP": "false"},
                    {"IOS17_PRELAUNCH": "false"}, {"IOS17_TEST_SCOPE": "core"},
@@ -186,7 +186,7 @@ class PrebuildTests(unittest.TestCase):
             self.assertEqual(report["prebuild_exit_code"], 0)
 
     def test_fixture_ui_shards_and_pdf_followups_keep_selection_budget_and_result_gates(self):
-        for scope in ("pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated", "documents-read", "documents-output", *ios17.UI_SHARDS):
+        for scope in ("pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated", "documents-read", "documents-output", "documents-chat", *ios17.UI_SHARDS):
             with self.subTest(scope=scope):
                 events, commands, report = self.exercise(scope=scope)
                 self.assertLess(events.index("build"), events.index("boot"))
@@ -260,7 +260,7 @@ class PrebuildTests(unittest.TestCase):
             output = Path(folder) / "result"
             for scope, sample in [("all", True), ("ui-documents", True), ("startup-smoke", False), ("startup-smoke", True),
                                   ("pdf-assembly", True), ("pdf-assembly-copy", True), ("pdf-assembly-multi", True), ("pdf-pair-coordinated", True),
-                                  ("documents-read", True), ("documents-output", True), ("core", True),
+                                  ("documents-read", True), ("documents-output", True), ("documents-chat", True), ("core", True),
                                   *((scope, True) for scope in ios17.UI_SHARDS)]:
                 with self.subTest(scope=scope, sample=sample), self.assertRaises(ReleaseError):
                     ios17.execute(output, "17.0.1", False, scope, prelaunch_daemon=True,

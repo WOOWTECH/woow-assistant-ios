@@ -48,7 +48,7 @@ UI_SHARDS = {
     "ui-profile": ["UserProfileUITests", "UserProfileToolUITests"],
     "ui-memory-tools": ["MemoryToolUITests"],
     "ui-skills": ["SkillCatalogUITests", "SkillAuthoringUITests", "TranscriptUITests"],
-    "ui-documents": ["SkillExecutionUITests", "SkillWorkerSettingsUITests", "SkillPDFAssemblyMultiFileUITests"],
+    "ui-documents": ["SkillExecutionUITests", "SkillWorkerSettingsUITests", "SkillPDFAssemblyMultiFileUITests", "ChatPDFAttachmentUITests"],
     "ui-mcp": ["MCPConversationUITests", "MCPLearningUITests"],
 }
 LIVE_UI_CLASSES = {"LiveMCPUITests", "LiveMCPConversationUITests", "LiveModelUITests", "LiveTranscriptUITests",
@@ -76,6 +76,11 @@ DOCUMENT_SCOPES = {
         "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
         "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testDirectoryCoordinatedFixtureCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
         "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile",
+    ],
+    "documents-chat": [
+        "WoowAssistantUITests/ChatPDFAttachmentUITests/testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete",
+        "WoowAssistantUITests/ChatPDFAttachmentUITests/testReadApprovalThenRemoveNeverExtractsOrSubmitsAndRetainsDraft",
+        "WoowAssistantUITests/ChatPDFAttachmentUITests/testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive",
     ],
 }
 
@@ -153,7 +158,7 @@ def ui_inventory(root, shards=None):
 
 def validate_document_scopes(catalog, scopes=None):
     """Require exact disjoint method coverage; equal counts are insufficient."""
-    names = ("documents-read", "documents-output")
+    names = ("documents-read", "documents-output", "documents-chat")
     scopes = {name: TEST_SCOPES[name] for name in names} if scopes is None else scopes
     expected = catalog["shards"]["ui-documents"]["tests"]
     if set(scopes) != set(names) or not expected or len(expected) != len(set(expected)):
@@ -511,7 +516,7 @@ def execute(output, requested, download, test_scope="all", expected_host_arch=No
         raise ReleaseError("未知的 iOS 17 測試範圍。")
     if expected_host_arch not in (None, "arm64", "x86_64"):
         raise ReleaseError("未知的主機架構。")
-    if build_before_boot and (test_scope not in ({"startup-smoke", "pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated", "documents-read", "documents-output"} | UI_SHARDS.keys())
+    if build_before_boot and (test_scope not in ({"startup-smoke", "pdf-assembly", "pdf-assembly-copy", "pdf-assembly-multi", "pdf-pair-coordinated", "documents-read", "documents-output", "documents-chat"} | UI_SHARDS.keys())
                               or not sample_bootstrap or not prelaunch_daemon):
         raise ReleaseError("預編譯啟動比較只允許明確預啟動及取樣的 hosted 非 Live UI 分片或既有 smoke／PDF 文件分組；未執行測試。")
     if bounded_test_diagnostics and not sample_bootstrap:

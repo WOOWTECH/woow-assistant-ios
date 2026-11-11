@@ -221,6 +221,7 @@ targets:
       - scripts/CheckReplayReferencesApp.swift
       - scripts/CheckConversationArchiveApp.swift
       - scripts/CheckChatStreamingApp.swift
+      - scripts/CheckChatPDFAttachmentApp.swift
       - Tests/AssistantModelsTests/ModelProtocolFixture.swift
       - Tests/AssistantDomainTests/TaskNotificationChecks.swift
     dependencies:

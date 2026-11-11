@@ -1,0 +1,532 @@
+{
+  "status": "LOCAL_INTEGRATION_PASS_NATIVE_AND_LIVE_PENDING",
+  "base_commit": "834d816a33d6458a286633e846832a1e53e1dc38",
+  "source_files": {
+    ".github/workflows/ios.yml": "f17954bfc666bbc0eb8eb1cc14780d1c49442a116b06e0cf75b2ccb005e6fd53",
+    ".github/workflows/release-ios.yml": "ee9c4523586126a56bb39308bd4885e1e77b5def2fb8a23c48e4513085ab175a",
+    "Sources/App/ChatPDFAttachment.swift": "c40b3020eef7f7b7d0b3956ca381f88afaa5cb3e0ee369172beaa6b4b176640d",
+    "Sources/App/ChatPDFAttachmentView.swift": "dff3e88e455fbe7ae90d10b41de148ba3b3d1368f117d9c0bbb8a50de7d4ccba",
+    "Sources/App/ChatPDFUITestSupport.swift": "3294a3cada351ca2938be274d774c60f1f6e3bbbd3ce0fe5f49ffc62b51372f9",
+    "Sources/App/ChatSession.swift": "1a54f74edcb3d04ea7f9b5797060a7c27e304a62607c60bd2ec10fc0c117e1e6",
+    "Sources/App/ContentView.swift": "ad13415dc9f51fb90a4ea86f91b07be6930340fa1e3265f3cbba30c8d6881c19",
+    "Sources/App/ConversationArchiveView.swift": "8f819b96bd430e9afbdea710c92a60cc87e2a415ef02f4ac48f27085867a5a8c",
+    "Sources/AssistantPersistence/ArchivedPDFAnswer.swift": "0a16c0cc7a8028c22386159ce6dcab83d8d6e08580a07d27d485cebbd2d6b70e",
+    "Sources/AssistantPersistence/ConversationArchive.swift": "2bcd3b96c663f1f29f83fee92a32ff7650f8156656ca4eea83126fc541898bc3",
+    "Tests/AssistantPersistenceTests/ConversationArchiveTests.swift": "3f1b479ee75ea553966fa620d0be72a6d7b5597208e892f30839ccf2dc1df8fc",
+    "Tests/WoowAssistantUITests/ChatPDFAttachmentUITests.swift": "ec43ee09d7e3327652e9ad72788e4437399dbacb019538a0bd5b89e93abba7a1",
+    "docs/evidence/chat-pdf-app-local.json": "aa04fdb770cb44d9cf2af352895975b806383f319965a2b061c8ffa1f8255181",
+    "docs/evidence/chat-pdf-app-v2-local.json": "ae48467270d9b6b50f2a82f759a5e32d1de02d72ff17375a2d59ba6af64b83a6",
+    "project.yml": "37d9a973ac54bdee26276317ebf269a4389d5ec02210b0ffc225eb1e0397554b",
+    "scripts/CheckChatPDFAttachmentApp.swift": "002583e4adea61f7afdc4bd801f9eedc3a0edac1134cd33bd9215ef2f89a7e44",
+    "scripts/check_chat_pdf_attachment_app.py": "890bd09a8b7226d107d8b23662293471e290a9ddca3f63189d296bb21c740eb4",
+    "scripts/check_profile_chat_app.py": "624532433a6bfcbbe845cc580a5c924fbfd330fe567436206ba8e4e42e10fa49",
+    "scripts/check_task_notifications.py": "55fb73b27f90898015522725ea56df5080beef43fc03aa4f00f38b132e951d15",
+    "scripts/ios17_bootstrap_watchdog.py": "30f4538cb45346eb7f156180ef685a4741db2a865828e5479a347bb3c1cddf75",
+    "scripts/release_ios17.py": "9c6a2d3a3386ab670da80574f154b806399707a3636e9de21e628c35d70440d2",
+    "scripts/test_release_ios17_document_scopes.py": "46052ed16c8847bae82e3703ab8deb9afe363dbda1d42e81dc6df53717c415dd",
+    "scripts/test_release_ios17_prebuild.py": "e30f7abf312abdfd342e31accdd956472bd94921c9c7456fa536d40e9eb248c2"
+  },
+  "parent_report_sha256": "1f94dce7a00d8a0ab63d1f09130d90e8be832bcbcb95d99627f754ff33af7a76",
+  "report": {
+    "schema_version": 1,
+    "status": "PASS",
+    "source_sha256": {
+      "Sources/AssistantContracts/RunModels.swift": "a3d8bf7a6c7a5f1675f1d23c6c00f03c80f63be64aeaffa0a0136c2d51def0e3",
+      "Sources/AssistantDomain/RunCoordinator.swift": "139d5eca7a97e73c1000e001bf491f2b35e2ea074f7944dff1acb1952d9acb8e",
+      "Sources/AssistantDomain/TaskNotificationChatObserver.swift": "bce8fe72757c221283186430abc7700b85c66af5b5e6d359af711c6f022431bd",
+      "Sources/AssistantDomain/TaskNotificationService.swift": "1e619c0d691314338248e70abf402da7d8cde41dc29b5389ed3f44a45ff4278f",
+      "Sources/AssistantDomain/TaskNotificationTypes.swift": "ad837bace3e6411c9e71de08e6b1145359928c9dfdb57e4eaef1a30092dcda18",
+      "Sources/AssistantModels/ChatContextWindow.swift": "41e04121afe13d5510215a50c4c879907c8c28e03b38650ad3bdfd7fbc9b4d3b",
+      "Sources/AssistantModels/ChatSSEParser.swift": "daaf8668b25edac1d67cb6fb1e804f3d359bbcd9580368bb30618d56022aad5d",
+      "Sources/AssistantModels/HTTPChatModelClient.swift": "510ae58e926b974737910f8aad9bdceedeccc708f0cb0be33fccc5c500caa925",
+      "Sources/AssistantModels/ModelConfiguration.swift": "1c678f6faafa99fbdd30097d5c93b14d5808ea1b8a4448726d9bff02f665c481",
+      "Sources/AssistantModels/RawCommandEnvelope.swift": "afccf73ee49f91da1ff74a61c54076d5807ccd470b1bfde2f973c0cd2ca3a200",
+      "Sources/AssistantModels/RunReferenceContext.swift": "ca1e0b88a5b08e3ac074d167d4d4b5ef5eba414ccb7df0fb189d186edd904fb8",
+      "Sources/AssistantMemory/MemoryContext.swift": "37850875953b46eae9c0862dafdab1c8c81bd58f551c2799cf9644eb14129ca2",
+      "Sources/AssistantMemory/MemoryExtractor.swift": "d6f15fea1e8f75ffb3ab6f3f777ab2792cf16bd1baa9b886c0ccc318aadee404",
+      "Sources/AssistantMemory/MemorySafety.swift": "8a0fdbef488712c96d840aa1b0c55e62b5e07f6035cec6532ebf754f66b09074",
+      "Sources/AssistantMemory/MemoryState.swift": "81025ded6281eedad00ab0d53db5a05d9a630a3f04f0d4d93b04d997c6805b65",
+      "Sources/AssistantMemory/MemoryTools.swift": "2f12e8276d19140883f9d462776bcffc68acf164ab553c7cc51f0d4018b4f86b",
+      "Sources/AssistantMemory/MemoryTypes.swift": "d155ccd1b9274c84f5540f9a0c92b7e3a09d502184707ace6bb194caca3d9fad",
+      "Sources/AssistantMemory/UserProfileChatFlow.swift": "17b2651600ebfea58738ca2e9db0986229e81893512470d7c620cf849d2ed7f4",
+      "Sources/AssistantMemory/UserProfileState.swift": "ae70a9a17e20aed0e29f4196e63102169c2d3b7048b3c8566bfb20f7289bbbdf",
+      "Sources/AssistantMemory/UserProfileTool.swift": "b6107acf0dfd1ec0e39fa5031d265ce7153bd4ead2dbb37fad86214e8e3a157c",
+      "Sources/AssistantPersistence/ArchivedPDFAnswer.swift": "0a16c0cc7a8028c22386159ce6dcab83d8d6e08580a07d27d485cebbd2d6b70e",
+      "Sources/AssistantPersistence/ConversationArchive.swift": "2bcd3b96c663f1f29f83fee92a32ff7650f8156656ca4eea83126fc541898bc3",
+      "Sources/AssistantPersistence/EncryptedLearningFile.swift": "a7ba735e6f17c4e67c8313e25292309388df38d36e0d5c7b826a509fd232b4da",
+      "Sources/AssistantMCP/MCPClient.swift": "aecf3f5e700162558cff4c11fe24cc3aea14f716d2816ed57bf1797f34317762",
+      "Sources/AssistantMCP/MCPConversationRunner.swift": "81561ad4d39a37fb56578fdf9d0a7add13e50cbe80095f5d57f2d7dc0e2c9256",
+      "Sources/AssistantMCP/MCPConversationTypes.swift": "3204dae836ab83a55e9ce92d1a944b11d008cdc96025d36597f4041e5eb2a3a8",
+      "Sources/AssistantMCP/MCPHTTPTransport.swift": "80810c09ca7fd94a923876a28588d618bd96f6bde152128c8b556c01173eb759",
+      "Sources/AssistantMCP/MCPLocalTools.swift": "13a1b244cbfc5429dab6de22d47ee79dc98c44a88ecd1d8985c765e6aa426c55",
+      "Sources/AssistantMCP/MCPResponseParser.swift": "56d4cc3b35cd55ac762a71540c28d1f37aaaeadd584c3561e6638eeb106d7747",
+      "Sources/AssistantMCP/MCPTypes.swift": "dcce43b8528990968b0255f6f9f1d7a2145eadfd76bc7cb15a5f6634784dbff3",
+      "Sources/AssistantSkills/BundledSkillCatalog.swift": "7f2314d60f904b457f83f20947ce800c61224d42968725de4f89d382992de43e",
+      "Sources/AssistantSkills/DocumentQueryRuntime.swift": "e8d8768a3f74997f5af456356494254c1179e1c9749782a2220f308ec0637457",
+      "Sources/AssistantSkills/DocumentTextTools.swift": "4fc688fcc85464387dd53fda21b396bea230010cbdc78abea253340cfadaecfc",
+      "Sources/AssistantSkills/SelfConfigurationRuntime.swift": "4cb62629c5ebb7fa3c942b768add371af2ac8f8f4a3b63ddb9ebbcebaf9cb506",
+      "Sources/AssistantSkills/SelfConfigurationStore.swift": "10107071276deafab8d5e57ef537e1b4fea22de376a131804245777257c0deb1",
+      "Sources/AssistantSkills/SkillAuthoringBridge.swift": "afb2b96a33b7827858c3a95a1628bfa315d2730cc94b8a97e8df18e5f0789110",
+      "Sources/AssistantSkills/SkillDocument.swift": "f8f816f022a6570bd7e5f9c367e9c2ef10323af0de00686668a24779b0204039",
+      "Sources/AssistantSkills/SkillExecutionDependencies.swift": "655ee489aedf4c06d97035443329671aaac8884d9f9ea9a0fbabeae6a8a40d3e",
+      "Sources/AssistantSkills/SkillExecutionPDF.swift": "503699512b828faabfafb456e4c28033227f6b7df4b6f6678055c1f8e77a8bbf",
+      "Sources/AssistantSkills/SkillExecutionRuntime.swift": "ed414d76a87749f934dcf5ee51b61a1722c2ac967d020f5af4efb79c58b3d650",
+      "Sources/AssistantSkills/SkillExecutionTypes.swift": "748fe7c152690ebaf7803785161fc72c8a0d4486c32593eea9f769dbf175193d",
+      "Sources/AssistantSkills/SkillExecutionWorker.swift": "daf86d6884c4d3aaf67db774dd133b6201d05da77e65237f7b1970f4d0d89684",
+      "Sources/AssistantSkills/SkillLearning.swift": "83a44eb4ab4495905efc75d2ca040ed050a0da5cee4d196fecc5c57e9649902b",
+      "Sources/AssistantSkills/SkillLearningSafety.swift": "96fe72ad19a1bc3806d86fff3063bf0ba5d65f53dda00b8812b5ae368168dce0",
+      "Sources/AssistantSkills/SkillLearningService.swift": "d0a17f0e1af20870c46f530681c85c69e238c46562a9343b0f4549e21de87a18",
+      "Sources/AssistantSkills/SkillPDFAssemblyNative.swift": "91f69b7137f7e8cf684aeec849c8170eb98cf915c4ebfee92db71e0da2e6f6da",
+      "Sources/AssistantSkills/SkillPDFAssemblyRuntime.swift": "9652e1062c2419dd0ced80fb9af14754b95100179d445c0db6f555addea20e43",
+      "Sources/AssistantSkills/SkillPDFAssemblyTypes.swift": "aeb8e474cfd9d3ef67f55a0d76fa20083dbb5da1f315c8f86f82000d4f75f428",
+      "Sources/AssistantSkills/SkillRetrieval.swift": "47f3499031ba9cda5c96fce503fec797432e12b651e412c816b433323b5824ca",
+      "Sources/AssistantSkills/SkillSensitiveContent.swift": "6d1627820b2dddf7504f008ecd2db8b32227f204b857f737dc639f8b651b11f0",
+      "Sources/AssistantSkills/SkillTaskEvidence.swift": "4ff23d2fb36fa9ef6897837de6a1756d8b3d4ad5e35bb6edd51f362d39f316df",
+      "Sources/AssistantSkills/SkillToolCommand.swift": "5bff3061b948d2766df99dbaedb3bd2596185f7f26304487bda755780c60a164",
+      "Sources/AssistantSkills/SkillToolSession.swift": "f2c1e77316c9847daa12e7efa87cb3c3b46a382788b43422c4ca4b209df32226",
+      "Sources/AssistantSkills/SkillToolTypes.swift": "9c3496eea3a24e58e7c24ebe4dad7c65473b9122a5751078b0cf7eefe8c7aef0",
+      "Sources/AssistantSkills/SkillTypes.swift": "e050e01d760d68bc4d43030218a417b00a5d744280dfcaf67aec58193e3a113c",
+      "Sources/AssistantSkills/SkillsState.swift": "fea8f8a0ecc3a9ecbbab69df480711ddd21b93f599ecdbf9f9c5c2565673717e",
+      "Sources/AssistantSkills/TranscriptCommand.swift": "0f98ef1c25d766fd82e25f6fe4f2fe4a5a41acfe1d94bef7578d414f9c37a75c",
+      "Sources/AssistantSkills/TranscriptFileAccess.swift": "4c5fa61ac0bb91b17e0f9a2bad92c4a85e262dfeab2a2c1649125c7a2086c168",
+      "Sources/AssistantSkills/TranscriptRuntime.swift": "ef5e8353ea49082f061f40c8eb5267f7677c51b9039ffc826a4098c96ad4c521",
+      "Sources/AssistantSkills/TranscriptTypes.swift": "051814db9e18752ba445f8c515e61e24a92c938786ca99a7f49bd5c024d26428",
+      "Sources/AssistantSkills/TranscriptWebSource.swift": "635984c44e580d9f9c9c02477200fde44bdbd77217830fecabc4371f7ab37e01",
+      "Sources/AssistantBrowser/BrowserContracts.swift": "048bf72fe5ed049589d30322a448fb5c93f337f651c23c9a4e73650a7aaf8839",
+      "Sources/AssistantBrowser/BrowserDOMExecutor.swift": "7c71633644dc4feffb497ee498b465da0664118b48ce67e70b8ba04eb0e7183c",
+      "Sources/AssistantBrowser/BrowserDownloadManager.swift": "94b8d9ca1159cf881728cfb8121ebe44f5f3dcf1b77b7e1161d3f10ae74f48d1",
+      "Sources/AssistantBrowser/BrowserDownloadStore.swift": "aac2bdd4d2db5b31c9ed02df740f97ad40a8e11ef0d796bd1894a0af76da926a",
+      "Sources/AssistantBrowser/BrowserDownloadTypes.swift": "e3e28570ec7875f944f07bc2198c0f48a02e22046dad6ed536052abc452c3b7e",
+      "Sources/AssistantBrowser/BrowserInteraction.swift": "de08979f7795717bdcaea63f6496e7d4f265ba446fd0cebe939c0571a945e8e6",
+      "Sources/AssistantBrowser/BrowserInteractionPlanner.swift": "7884160f46caee31afa9ee79f44ae51afa89c22f18e6cefd7ae4255142095f7e",
+      "Sources/AssistantBrowser/BrowserLibrary.swift": "387200cdec0158267937ed1a29b5f2becd1dee2afce4146599e3500853ad065f",
+      "Sources/AssistantBrowser/BrowserNavigationIntent.swift": "13f93881ba8aeab0b772ddce30300918ad56a182432a97d684defb0cc85583c5",
+      "Sources/AssistantBrowser/BrowserPolicy.swift": "a09b109a19083ebcf644de972e42df3046da28a1d794efd7e8b9467807e5fafc",
+      "Sources/AssistantBrowser/BrowserSearchSettings.swift": "bf58023963704c447b3ac2f6f5b66f7b6004db600b08d1217efa6f65db4e9b78",
+      "Sources/AssistantBrowser/BrowserSiteModeReloadState.swift": "9c9e22c3c5b504757c33f35d5e8c563013b2b5e3f2cf25f2ab8a7bc00aa42334",
+      "Sources/AssistantBrowser/BrowserUserSiteModes.swift": "04c897c96ca03650f9ca1ed4687bda9d1c578e7cb9a2c072402cade9cb6def6c",
+      "Sources/AssistantBrowser/MultiSourceResearchRunner.swift": "48737e0d81bf891e0e8acabe1b5992c7ffe8ae6fbf0a28834fd4b03ad4c30d2e",
+      "Sources/AssistantBrowser/MultiSourceResearchTypes.swift": "af1ac51d3b6d243217678b033f1b82be8c22fb3ed890370fe6e8b4f0ed9f82d2",
+      "Sources/AssistantBrowser/ResearchSourceDiscoveryTypes.swift": "5fa96ef5e733204a0935f6b15d8895ae794b6c63f32e9a57473155b6f050ff52",
+      "Sources/AssistantBrowser/ResearchSourceDiscoveryWebKit.swift": "fc35dcedbe3ab776abbd70e8fd2326f9d72e540e97164ba0e587627df047bedc",
+      "Sources/AssistantBrowser/WebResearchRunner.swift": "005480efebed05a5c7a5e7af705e0f16d579c1ecfde83f0110ac76f05ceef342",
+      "Sources/AssistantBrowser/WebRoute.swift": "f96f4c159bb5aad61270283e0d7ebc87ba0784a34efb766eb0e84c67c4760aea",
+      "Sources/AssistantBrowser/WebRouteState.swift": "02448dd236d11611c5cfc1dabf5a1732319627d584692f2f1a048ffa05696a7e",
+      "Sources/AssistantBrowser/WebsiteKnowledgeSafety.swift": "eef4c8ad1deddd60d1062d8928aebaab5e5b5afa4cd3c87e7270d5686641ee64",
+      "Sources/AssistantBrowser/WebsiteKnowledgeState.swift": "50114ebafbd5b05f7bcf043cb8aef333079ff6087f00ade800512b85dbb7b9ac",
+      "Sources/AssistantBrowser/WebsiteKnowledgeTypes.swift": "a6a4bf2918cc01fd1cfb9018177b8841dc25512ef3126f22614eec9ba749174e",
+      "Sources/App/AppLanguage.swift": "0c3b6ebfcc653c802cf413d03f35b596697eb19ba0899ef54e82b5dd236e624f",
+      "Sources/App/AppLanguageStore.swift": "1e49a31057d0b6513568de66cc2fbcd32c7a491ac57939dda4b85a955e44b71a",
+      "Sources/App/AppLanguagePreferences.swift": "d9dc2d3c20c59b72b7916f7e0603517689814d9e134edab0912193aa3cb2ed7d",
+      "Sources/App/AppText.swift": "2db5622013d618a21a722946e3a6c8d3d9449410d547a61f84fbf6846d010a62",
+      "Sources/App/AppLocalizer.swift": "98cc72bf29259966a539ae845b5c75ace61d9bc4c3150d6c662bd0e88d9efd81",
+      "Sources/App/AppMCPText.swift": "1b385b35d56588bcaa5fed394454985aec6f3615c1762a738833383b70cdc981",
+      "Sources/App/AppNotificationText.swift": "cfe7b2b78a14da01d8b0f948553bb588c61d5208e138b423ccbcaea23c17dcaa",
+      "Sources/App/BrowserUploadFixture.swift": "a1a3b3586f5cedb8457b3c71aab445411052554ae30fb976c47d059bfbe1e59a",
+      "Sources/App/BrowserLoginFixture.swift": "3578a046f5cacd2466b06b2efeb12d76982c96d394505778acfa9648b9153f19",
+      "Sources/App/SkillExecutionUITestSupport.swift": "8ad114534d08be5980ac2ae8017da3e97e63cb4d0335dfeeff48c9d452f45cc0",
+      "Sources/App/BrowserWorkspace.swift": "c0071399e6a6b248bf5613d54ac303b464a3e715782b5c52ec52e875f18243b2",
+      "Sources/App/ChatSession.swift": "1a54f74edcb3d04ea7f9b5797060a7c27e304a62607c60bd2ec10fc0c117e1e6",
+      "Sources/App/ChatPDFAttachment.swift": "c40b3020eef7f7b7d0b3956ca381f88afaa5cb3e0ee369172beaa6b4b176640d",
+      "Sources/App/ChatPDFUITestSupport.swift": "3294a3cada351ca2938be274d774c60f1f6e3bbbd3ce0fe5f49ffc62b51372f9",
+      "Sources/App/ConversationArchiveStore.swift": "8a840b7616a5a1ea100d8686e630fe73fdd9db1bf3c504834a32acbd756bb633",
+      "Sources/App/BrowserSession.swift": "6528d1e048d5d8336afba70a2f76376f712cc7faf3525a0db8047968b606eb3d",
+      "Sources/App/LearningKeychainStore.swift": "9a6275783caa50300a19802f2e06aa3ecb35f1f1f5ea7c4c50a84e75300460a7",
+      "Sources/App/UITestModelFixture.swift": "7321c5cea0b57bb0c8b4bf0f40eac1b90e66cd353d65346e77a21b3c6f261d3f",
+      "Sources/App/MCPSettings.swift": "324512189ac78b564ac2822928ce208ff7352387beb0595c313bee4ffe855e8b",
+      "Sources/App/LiveModelUITestSupport.swift": "4f16545b116cfc5e74a5a637def440646f1ee43f38e2bf85cdb70783fe3449cb",
+      "Sources/App/ModelSettings.swift": "afbeeb5d6d1f5deb860fde17f11dc3be073ba9df319bd0c69d74dc16515cff2c",
+      "Sources/App/LearningStore.swift": "0a72d0516f0086daa4da0a1c28149a199253551709bba74d0a2d88157d67de97",
+      "Sources/App/UITestMCPFixture.swift": "1a12765725ffd7a79878ac09eceadde8310e81a9bcb63d690f59013c1671c591",
+      "Sources/App/MCPSession.swift": "b53cf5d7e6628a4f48cfa3b27a3a0bb72ec4db7348700826c9685a4a02b5bd84",
+      "Sources/App/MultiSourceResearchSession.swift": "64e8b3188cca65a50eeeb7b4baac4b552acab0111bd7e974d7627432ffecaa89",
+      "Sources/App/LearningRunContext.swift": "3f481ed8a03fb60bf5a25d3a0f963f6589d1b928ea0520b087680fcf5345a636",
+      "Sources/App/TaskNotificationCenterAdapter.swift": "49f82a7118b86dcb3fed188835a96f2b703c9d916f494f998c472ecb8d99f19a",
+      "Sources/App/TaskNotificationStore.swift": "3a02cc324823ebfbedce99ac97aa152b40ef983ed9bc579ed5770d22f6d0ef8f",
+      "Sources/App/TaskNotificationChatBridge.swift": "0184d1e792531fb9c82430a0e0d4f67ab9d0db9ceb40bde69fb2dee9b565b67b",
+      "Sources/App/ContentView.swift": "ad13415dc9f51fb90a4ea86f91b07be6930340fa1e3265f3cbba30c8d6881c19",
+      "Sources/App/ConversationArchiveView.swift": "8f819b96bd430e9afbdea710c92a60cc87e2a415ef02f4ac48f27085867a5a8c",
+      "Sources/App/ChatPDFAttachmentView.swift": "dff3e88e455fbe7ae90d10b41de148ba3b3d1368f117d9c0bbb8a50de7d4ccba",
+      "Sources/App/PDFNativePicker.swift": "022dce11aadef4bb0fcfb01d31afb9eed32f343d936b0fb86b59a0bafc881572",
+      "Tests/AssistantPersistenceTests/ConversationArchiveTests.swift": "3f1b479ee75ea553966fa620d0be72a6d7b5597208e892f30839ccf2dc1df8fc",
+      "scripts/CheckChatStreamingApp.swift": "2231f41016a5c9abb79408ce7f43dc6b62bf3173c1a1b99f4f95cba19a8e761c",
+      "scripts/CheckChatPDFAttachmentApp.swift": "002583e4adea61f7afdc4bd801f9eedc3a0edac1134cd33bd9215ef2f89a7e44",
+      "Tests/WoowAssistantUITests/ChatPDFAttachmentUITests.swift": "ec43ee09d7e3327652e9ad72788e4437399dbacb019538a0bd5b89e93abba7a1",
+      "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "7f5155aa2a970dd541e5caf144d2e1ba329b1c48c63a73057b69c19bec7bc204",
+      "Tests/AssistantModelsTests/ModelProtocolFixture.swift": "5613d6ce3490af3c673a0c33f89db7df8c8d2d19e20e84ad5be39701babf682b",
+      "Tests/AssistantModelsTests/ModelClientChecks.swift": "f4619ff106e8d75705786ebf33cb4f09ddc2533ee5cf7f6d30d4305b34a0887e",
+      "scripts/CheckProfileChatApp.swift": "c564bf35a1cfecf3acd97acc2af3dcb345d288baae64ee53c6593d6dddca7eb3",
+      "scripts/CheckConversationArchiveApp.swift": "658dfcc5fa5119003123c4dbe09b676029434cbe9f465e48e629df4f90044052",
+      "scripts/check_chat_pdf_attachment_app.py": "890bd09a8b7226d107d8b23662293471e290a9ddca3f63189d296bb21c740eb4",
+      "scripts/check_task_notifications.py": "55fb73b27f90898015522725ea56df5080beef43fc03aa4f00f38b132e951d15",
+      "scripts/check_profile_chat_app.py": "624532433a6bfcbbe845cc580a5c924fbfd330fe567436206ba8e4e42e10fa49",
+      "scripts/check_chat_context_window.py": "8a834ccf46443e605b5368ad81121effc4d8c93fe55153e6c32425c1fd69e5f3",
+      "Tests/AssistantModelsTests/ChatContextWindowTests.swift": "23e9ecb835f541b88682bf25c3563b260c4d7bfb5d3579f1b566a26e41e016a4",
+      "Sources/AssistantSkills/Resources/MikaBundledSkills.json": "e7389c7c3b39d0dd0bb133d0d7f8733cd1ecfbd3a2e2eb4b66d28b43850a9176"
+    },
+    "checks": [
+      {
+        "name": "AssistantContracts-compile",
+        "exit_code": 0,
+        "seconds": 1.224
+      },
+      {
+        "name": "AssistantDomain-compile",
+        "exit_code": 0,
+        "seconds": 3.006
+      },
+      {
+        "name": "AssistantModels-compile",
+        "exit_code": 0,
+        "seconds": 3.659
+      },
+      {
+        "name": "AssistantMemory-compile",
+        "exit_code": 0,
+        "seconds": 9.161
+      },
+      {
+        "name": "AssistantPersistence-compile",
+        "exit_code": 0,
+        "seconds": 3.925
+      },
+      {
+        "name": "AssistantMCP-compile",
+        "exit_code": 0,
+        "seconds": 5.442
+      },
+      {
+        "name": "AssistantSkills-compile",
+        "exit_code": 0,
+        "seconds": 35.415
+      },
+      {
+        "name": "AssistantBrowser-compile",
+        "exit_code": 0,
+        "seconds": 33.721
+      },
+      {
+        "name": "Debug-iOS-syntax-only",
+        "exit_code": 0,
+        "seconds": 0.14
+      },
+      {
+        "name": "Debug-compile",
+        "exit_code": 0,
+        "seconds": 26.525
+      },
+      {
+        "name": "Debug-execute",
+        "exit_code": 0,
+        "seconds": 6.288,
+        "result": {
+          "actual_app_sources": true,
+          "actual_encrypted_archive": true,
+          "actual_pdfkit": true,
+          "failed": 0,
+          "groups": {
+            "boundsAndRestoreCancellation": 19,
+            "failuresAndPersistence": 12,
+            "fixtureIsolation": 34,
+            "grantsAndSuccess": 32,
+            "lateLifecycle": 36,
+            "migrationAndMalformed": 21,
+            "requestBoundaryAndEncryptedMigration": 40
+          },
+          "model_network_requests": 0,
+          "native_ios_ui": false,
+          "passed": 194
+        }
+      },
+      {
+        "name": "Debug-chat-compile",
+        "exit_code": 0,
+        "seconds": 31.534
+      },
+      {
+        "name": "Debug-chat-execute",
+        "exit_code": 0,
+        "seconds": 4.802,
+        "result": {
+          "failed": 0,
+          "groups": {
+            "actualUIFixtureEdits": 22,
+            "actualUIFixtureMCPLearning": 8,
+            "actualUIFixtureMemoryEdits": 44,
+            "actualWriteFailure": 12,
+            "approvalAndDurableReceipt": 26,
+            "encryptedTransaction": 15,
+            "groundingAndOrdinaryChat": 14,
+            "lateProposals": 14,
+            "mcpLocalAuthorityAndLimits": 23,
+            "mcpMemoryAndRemoteApprovals": 13,
+            "mcpMemorySearchDeleteAndFences": 53,
+            "mcpProfileReceiptSurvivesRemoteRefusal": 8,
+            "memoryNotesThroughExtraction": 36,
+            "memoryPostCommitAndLateCancellation": 24,
+            "memoryProcedureReview": 23,
+            "memoryRefusalAndFences": 36,
+            "memorySaveSearchEditUndo": 40,
+            "memorySearchGrounding": 32,
+            "memoryWriteFailureAndPriorReceipt": 20,
+            "postCommitFailure": 11,
+            "priorReceiptAndFailedNewWrite": 7,
+            "refusalCancellationAndCommitFences": 36,
+            "twentyTurnContextWindow": 56
+          },
+          "long_chat": {
+            "completed_responses": 20,
+            "displayed_entries": 40,
+            "last_client_messages_including_flow_system": 33,
+            "last_window_messages": 32,
+            "model_calls": 20,
+            "model_calls_after_oversized_rejection": 20,
+            "omitted_history_pairs": 4,
+            "oversized_prompt_utf8_bytes": 65538,
+            "retained_history_pairs": 15
+          },
+          "native_ui_executed": false,
+          "passed": 573,
+          "real_encrypted_files": true
+        }
+      },
+      {
+        "name": "Debug-archive-compile",
+        "exit_code": 0,
+        "seconds": 24.097
+      },
+      {
+        "name": "Debug-archive-execute",
+        "exit_code": 0,
+        "seconds": 0.852,
+        "result": {
+          "groups": 6,
+          "assertions": 90,
+          "group_counts": [
+            26,
+            17,
+            7,
+            14,
+            19,
+            7
+          ]
+        }
+      },
+      {
+        "name": "Debug-stream-compile",
+        "exit_code": 0,
+        "seconds": 26.119
+      },
+      {
+        "name": "Debug-stream-execute",
+        "exit_code": 0,
+        "seconds": 32.49,
+        "result": {
+          "groups": 6,
+          "assertions": 101,
+          "group_counts": [
+            12,
+            14,
+            9,
+            5,
+            42,
+            19
+          ]
+        }
+      },
+      {
+        "name": "Release-iOS-syntax-only",
+        "exit_code": 0,
+        "seconds": 0.114
+      },
+      {
+        "name": "Release-compile",
+        "exit_code": 0,
+        "seconds": 19.759
+      },
+      {
+        "name": "Release-execute",
+        "exit_code": 0,
+        "seconds": 1.546,
+        "result": {
+          "actual_app_sources": true,
+          "actual_encrypted_archive": true,
+          "actual_pdfkit": true,
+          "failed": 0,
+          "groups": {
+            "boundsAndRestoreCancellation": 19,
+            "failuresAndPersistence": 12,
+            "fixtureIsolation": 5,
+            "grantsAndSuccess": 32,
+            "lateLifecycle": 36,
+            "migrationAndMalformed": 21,
+            "requestBoundaryAndEncryptedMigration": 40
+          },
+          "model_network_requests": 0,
+          "native_ios_ui": false,
+          "passed": 165
+        }
+      },
+      {
+        "name": "Release-chat-compile",
+        "exit_code": 0,
+        "seconds": 24.764
+      },
+      {
+        "name": "Release-chat-execute",
+        "exit_code": 0,
+        "seconds": 3.739,
+        "result": {
+          "failed": 0,
+          "groups": {
+            "actualWriteFailure": 12,
+            "approvalAndDurableReceipt": 26,
+            "encryptedTransaction": 15,
+            "groundingAndOrdinaryChat": 7,
+            "lateProposals": 14,
+            "mcpLocalAuthorityAndLimits": 23,
+            "mcpMemoryAndRemoteApprovals": 13,
+            "mcpMemorySearchDeleteAndFences": 53,
+            "mcpProfileReceiptSurvivesRemoteRefusal": 8,
+            "memoryNotesThroughExtraction": 36,
+            "memoryPostCommitAndLateCancellation": 24,
+            "memoryProcedureReview": 23,
+            "memoryRefusalAndFences": 36,
+            "memorySaveSearchEditUndo": 40,
+            "memorySearchGrounding": 32,
+            "memoryWriteFailureAndPriorReceipt": 20,
+            "postCommitFailure": 11,
+            "priorReceiptAndFailedNewWrite": 7,
+            "refusalCancellationAndCommitFences": 36,
+            "twentyTurnContextWindow": 56
+          },
+          "long_chat": {
+            "completed_responses": 20,
+            "displayed_entries": 40,
+            "last_client_messages_including_flow_system": 33,
+            "last_window_messages": 32,
+            "model_calls": 20,
+            "model_calls_after_oversized_rejection": 20,
+            "omitted_history_pairs": 4,
+            "oversized_prompt_utf8_bytes": 65538,
+            "retained_history_pairs": 15
+          },
+          "native_ui_executed": false,
+          "passed": 492,
+          "real_encrypted_files": true
+        }
+      },
+      {
+        "name": "Release-archive-compile",
+        "exit_code": 0,
+        "seconds": 19.346
+      },
+      {
+        "name": "Release-archive-execute",
+        "exit_code": 0,
+        "seconds": 0.846,
+        "result": {
+          "groups": 6,
+          "assertions": 76,
+          "group_counts": [
+            12,
+            17,
+            7,
+            14,
+            19,
+            7
+          ]
+        }
+      },
+      {
+        "name": "Release-stream-compile",
+        "exit_code": 0,
+        "seconds": 19.668
+      },
+      {
+        "name": "Release-stream-execute",
+        "exit_code": 0,
+        "seconds": 0.984,
+        "result": {
+          "groups": 6,
+          "assertions": 75,
+          "group_counts": [
+            12,
+            14,
+            9,
+            5,
+            16,
+            19
+          ]
+        }
+      },
+      {
+        "name": "archive-core-compile",
+        "exit_code": 0,
+        "seconds": 0.756
+      },
+      {
+        "name": "archive-core-execute",
+        "exit_code": 0,
+        "seconds": 0.526,
+        "result": {
+          "groups": 3,
+          "assertions": 37
+        }
+      },
+      {
+        "name": "model-transport-compile",
+        "exit_code": 0,
+        "seconds": 1.871
+      },
+      {
+        "name": "model-transport-regression",
+        "exit_code": 0,
+        "seconds": 2.4
+      },
+      {
+        "name": "existing-context-window",
+        "exit_code": 0,
+        "seconds": 2.539
+      }
+    ],
+    "head_at_start": "45254c1b5a5870af864abd67c132840bb666e766",
+    "source_snapshot_kind": "isolated worktree bytes",
+    "focused": false,
+    "external_network_or_personal_keychain": false,
+    "native_ios_execution": false,
+    "swiftui_typechecked": false,
+    "production_source_substitutions": false,
+    "changed_sources": [],
+    "sources_still_current": true
+  },
+  "python_regression": {
+    "passed": 286,
+    "failed": 0,
+    "errors": 0
+  },
+  "registration": {
+    "scope": "documents-chat",
+    "methods": [
+      "WoowAssistantUITests/ChatPDFAttachmentUITests/testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive",
+      "WoowAssistantUITests/ChatPDFAttachmentUITests/testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete",
+      "WoowAssistantUITests/ChatPDFAttachmentUITests/testReadApprovalThenRemoveNeverExtractsOrSubmitsAndRetainsDraft"
+    ],
+    "hosted_pdf_methods": 7,
+    "non_live_inventory": 103,
+    "ui_shards": 13,
+    "ui_language_launch_assignments": 41,
+    "actionlint": "PASS",
+    "xcodegen": "PASS"
+  },
+  "limits": [
+    "Actual macOS PDFKit, encrypted file migration and URLSession fixture; no actual provider requests or native iOS UI in this local run.",
+    "Native picker delivery, small-screen controls and live provider answer remain separately required.",
+    "Only one text PDF attachment; no OCR or arbitrary file execution.",
+    "Archive v2 retains extracted text and validated citations; no original PDF, file grants or automatic continuation."
+  ],
+  "v1_development_parent_report": {
+    "status": "SOURCE_CHANGED",
+    "only_change": "EOF blank line removed from harness after snapshot; all checks exited0. Superseded by complete source-bound v2 run; old report retained."
+  }
+}

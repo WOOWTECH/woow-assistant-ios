@@ -47,7 +47,7 @@ enum ConversationArchiveChecks {
             var bad = json; bad.removeValue(forKey: field)
             try a.rejects("required archive field " + field) { _ = try JSONDecoder().decode(ConversationArchive.self, from: JSONSerialization.data(withJSONObject: bad)) }
         }
-        for value: Any in [2, "1", NSNull()] {
+        for value: Any in [3, "1", NSNull()] {
             var bad = json; bad["version"] = value
             try a.rejects("unknown/malformed version") { _ = try JSONDecoder().decode(ConversationArchive.self, from: JSONSerialization.data(withJSONObject: bad)) }
         }

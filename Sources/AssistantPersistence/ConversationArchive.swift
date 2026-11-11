@@ -39,21 +39,25 @@ public struct ArchivedConversationTurn: Codable, Equatable, Sendable {
     public let assistantID: UUID
     public let userText: String
     public let assistantText: String
+    public let pdf: ArchivedPDFAnswer?
 
-    public init(userID: UUID = UUID(), assistantID: UUID = UUID(), userText: String, assistantText: String) throws {
+    public init(userID: UUID = UUID(), assistantID: UUID = UUID(), userText: String, assistantText: String,
+                pdf: ArchivedPDFAnswer? = nil) throws {
         guard userID != assistantID,
               [userText, assistantText].allSatisfy({ !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
                   && $0.utf8.count <= ConversationArchive.maximumMessageBytes })
         else { throw ConversationArchiveError.invalidData }
         self.userID = userID; self.assistantID = assistantID
         self.userText = userText; self.assistantText = assistantText
+        self.pdf = pdf
     }
 
-    private enum CodingKeys: String, CodingKey { case userID, assistantID, userText, assistantText }
+    private enum CodingKeys: String, CodingKey { case userID, assistantID, userText, assistantText, pdf }
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
         try self.init(userID: c.decode(UUID.self, forKey: .userID), assistantID: c.decode(UUID.self, forKey: .assistantID),
-                      userText: c.decode(String.self, forKey: .userText), assistantText: c.decode(String.self, forKey: .assistantText))
+                      userText: c.decode(String.self, forKey: .userText), assistantText: c.decode(String.self, forKey: .assistantText),
+                      pdf: c.decodeIfPresent(ArchivedPDFAnswer.self, forKey: .pdf))
     }
 }
 
@@ -87,7 +91,7 @@ public struct ConversationArchive: Codable, Equatable, Sendable {
     public static let maximumMessageBytes = 1024 * 1024
     public static let maximumEncodedBytes = 3 * 1024 * 1024
     public private(set) var conversations: [ArchivedConversation] = []
-    private let version = 1
+    private let version = 2
     public init() {}
 
     public mutating func save(_ record: ArchivedConversation) throws {
@@ -120,8 +124,11 @@ public struct ConversationArchive: Codable, Equatable, Sendable {
     private enum CodingKeys: String, CodingKey { case version, conversations }
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)
-        guard try c.decode(Int.self, forKey: .version) == 1 else { throw ConversationArchiveError.invalidData }
+        let storedVersion = try c.decode(Int.self, forKey: .version)
+        guard storedVersion == 1 || storedVersion == 2 else { throw ConversationArchiveError.invalidData }
         conversations = try c.decode([ArchivedConversation].self, forKey: .conversations)
+        guard storedVersion != 1 || conversations.allSatisfy({ $0.turns.allSatisfy { $0.pdf == nil } })
+        else { throw ConversationArchiveError.invalidData }
         try validate()
     }
 }

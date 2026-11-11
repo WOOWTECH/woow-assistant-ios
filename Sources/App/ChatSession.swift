@@ -2,6 +2,7 @@ import AssistantModels
 import AssistantMCP
 import AssistantMemory
 import AssistantPersistence
+import AssistantSkills
 import Combine
 import Foundation
 
@@ -15,8 +16,10 @@ struct ChatEntry: Identifiable {
     let id: UUID
     let role: String
     let content: String
-    init(id: UUID = UUID(), role: String, content: String) {
+    let pdf: ArchivedPDFAnswer?
+    init(id: UUID = UUID(), role: String, content: String, pdf: ArchivedPDFAnswer? = nil) {
         self.id = id; self.role = role; self.content = content
+        self.pdf = pdf
     }
 }
 
@@ -63,6 +66,8 @@ final class ChatSession: ObservableObject {
     @Published var keyDraft = ""
     @Published private(set) var entries: [ChatEntry] = []
     @Published private(set) var replyPreview: ChatReplyPreview?
+    @Published private(set) var pdfAttachment: ChatPDFAttachment?
+    private var pdfChanges: AnyCancellable?
     @Published private(set) var savedSettings: SavedModelSettings?
     @Published private(set) var hasStoredKey = false
     @Published private(set) var isSubmitting = false
@@ -90,6 +95,9 @@ final class ChatSession: ObservableObject {
     private var isMCPRun = false
     private var mcpSentCount = 0
 
+    #if DEBUG
+    @Published private(set) var pdfModelRequestEvents = 0
+    #endif
     let isUITestMode: Bool
     private let repository: ModelSettingsRepository
     private let client: any ChatModelClient
@@ -103,8 +111,12 @@ final class ChatSession: ObservableObject {
         #if DEBUG
         let arguments = ProcessInfo.processInfo.arguments
         let streamFixture: UITestChatStreamingConfiguration?
-        do { streamFixture = try UITestChatStreamingConfiguration.resolve(arguments: arguments) }
-        catch { preconditionFailure("Streaming UI fixture requires one isolated UI test mode and UUID namespace; no Live mode") }
+        let pdfFixture: ChatPDFUITestConfiguration?
+        do {
+            streamFixture = try UITestChatStreamingConfiguration.resolve(arguments: arguments)
+            pdfFixture = try ChatPDFUITestConfiguration.resolve(arguments: arguments)
+        }
+        catch { preconditionFailure("Chat UI fixture requires one isolated UI test mode and UUID namespace; no Live mode") }
         #endif
         learning = LearningStore()
         archive = ConversationArchiveStore()
@@ -125,7 +137,8 @@ final class ChatSession: ObservableObject {
             catch { bootstrapFailure = Self.settingsMessage(error) }
         } else if arguments.contains("-UITestMode") {
             repository = UITestModelFixture.repository(arguments: arguments)
-            if let streamFixture { client = UITestStreamingChatModelClient(configuration: streamFixture) }
+            if let pdfFixture { client = UITestPDFChatModelClient(configuration: pdfFixture) }
+            else if let streamFixture { client = UITestStreamingChatModelClient(configuration: streamFixture) }
             else { client = UITestChatModelClient() }
             isUITestMode = true
         } else {
@@ -172,6 +185,7 @@ final class ChatSession: ObservableObject {
         savedSettings != nil && hasStoredKey && !isSubmitting
             && (conversationDestination == nil || conversationDestination == archiveDestination)
             && !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && (pdfAttachment == nil || (pdfAttachment?.isReady == true && !usesMCP))
     }
 
     var archiveDestination: ConversationDestination? {
@@ -195,7 +209,7 @@ final class ChatSession: ObservableObject {
         conversationID = record.id.uuidString
         conversationDestination = record.destination
         draft = ""
-        entries = record.turns.flatMap { [ChatEntry(id: $0.userID, role: "user", content: $0.userText),
+        entries = record.turns.flatMap { [ChatEntry(id: $0.userID, role: "user", content: $0.userText, pdf: $0.pdf),
                                          ChatEntry(id: $0.assistantID, role: "assistant", content: $0.assistantText)] }
         chatNotice = "已開啟保存的對話；尚未傳送任何訊息。"
         return true
@@ -250,6 +264,7 @@ final class ChatSession: ObservableObject {
             modelDraft = result.record.model
             keyDraft = ""
             if changed {
+                pdfAttachment?.revokeDestination()
                 entries = []
                 replyPreview = nil
                 conversationDestination = nil; archiveNotice = nil; pendingArchiveSave = nil
@@ -278,6 +293,7 @@ final class ChatSession: ObservableObject {
         settingsNotice = nil
         do {
             try repository.remove()
+            pdfAttachment?.revokeDestination()
             savedSettings = nil
             hasStoredKey = false
             baseURLDraft = ""
@@ -302,6 +318,7 @@ final class ChatSession: ObservableObject {
 
     func send(mcp: MCPSession? = nil) {
         guard canSend, let savedSettings else { return }
+        if let pdfAttachment { sendPDF(pdfAttachment); return }
         let mcpConnection: ((any MCPDiscovering), [MCPTool], [MCPResource])?
         if usesMCP {
             do {
@@ -385,7 +402,7 @@ final class ChatSession: ObservableObject {
                         let all = self.entries + [userEntry, assistantEntry]
                         let turns = try stride(from: 0, to: all.count, by: 2).map { index in
                             try ArchivedConversationTurn(userID: all[index].id, assistantID: all[index + 1].id,
-                                userText: all[index].content, assistantText: all[index + 1].content)
+                                userText: all[index].content, assistantText: all[index + 1].content, pdf: all[index].pdf)
                         }
                         let record = try ArchivedConversation(id: archiveID, destination: destination,
                             updatedAt: Date(), turns: turns)
@@ -450,6 +467,127 @@ final class ChatSession: ObservableObject {
         }
     }
 
+    /// Native picker callback only. Selecting creates a plan, never reads bytes.
+    func selectPDF(url: URL, pages: String? = nil, password: String? = nil) {
+        guard !isSubmitting else { return }
+        do {
+            let selected = try ChatPDFAttachment(userSelectedURL: url, pages: pages, password: password)
+            removePDF()
+            pdfAttachment = selected
+            pdfChanges = selected.objectWillChange.sink { [weak self] _ in self?.objectWillChange.send() }
+            chatError = nil
+        } catch {
+            chatError = (error as? SkillExecutionError)?.errorDescription ?? "無法選取這份 PDF。"
+        }
+    }
+
+    func removePDF() {
+        if pdfAttachment != nil && isSubmitting { cancel() }
+        pdfAttachment?.remove(); pdfChanges = nil; pdfAttachment = nil
+    }
+
+    func pdfEnteredBackground() {
+        guard let attachment = pdfAttachment else { return }
+        if isSubmitting { cancel() }
+        attachment.stopPreparation()
+        attachment.revokeDestination()
+    }
+
+    func confirmPDFDestination() {
+        guard !isSubmitting, let attachment = pdfAttachment, let destination = archiveDestination else { return }
+        do { attachment.confirmDestination(access: try currentPDFModelAccess(), destination: destination); chatError = nil }
+        catch { chatError = "無法確認模型服務，請先檢查已儲存的設定。" }
+    }
+
+    private func currentPDFModelAccess() throws -> ModelAccess {
+        guard let stored = try repository.load(), let savedSettings,
+              stored.baseURL == savedSettings.baseURL, stored.model == savedSettings.model,
+              stored.credentialAccount == savedSettings.credentialAccount else { throw DocumentQueryError.contextChanged }
+        return try modelAccess()
+    }
+
+    private func sendPDF(_ attachment: ChatPDFAttachment) {
+        guard !usesMCP, let source = attachment.source else { return }
+        let prompt = draft
+        let archiveID = UUID(uuidString: conversationID)!
+        let archivePrior = archive?.state.conversations.first { $0.id == archiveID }
+        do {
+            let access = try currentPDFModelAccess()
+            try attachment.validate(access: access, destination: archiveDestination)
+            guard let destination = archiveDestination else { throw DocumentQueryError.contextChanged }
+            let runtime = try DocumentQueryRuntime(source: source, question: prompt)
+            learning.cancelLearning()
+            let references = try learning.captureRunReferences(goal: prompt, capabilities: DocumentQueryRuntime.referenceCapabilities)
+            let id = UUID(); requestID = id; replyPreview = nil; chatError = nil
+            isMCPRun = false; isSubmitting = true
+            #if DEBUG
+            pdfModelRequestEvents = 0
+            #endif
+            chatNotice = nil // The attached card already displays the disclosure; keep the composer reachable.
+            references.onRevoke = { [weak self] in
+                guard let self, self.requestID == id else { return }
+                self.cancel(); self.chatError = "本次參考資料已撤銷，PDF 查詢已停止；請重新確認後再傳送。"
+            }
+            request = Task { [weak self] in
+                defer { references.onRevoke = nil; references.revoke() }
+                do {
+                    let outcome = try await runtime.run(client: access.client, configuration: access.configuration,
+                        apiKey: access.key, references: references.references, validateContext: { [weak self] in
+                            guard let self, self.requestID == id, self.pdfAttachment?.id == attachment.id,
+                                  self.draft == prompt, !Task.isCancelled else { throw DocumentQueryError.contextChanged }
+                            try references.check()
+                            try attachment.validate(access: self.currentPDFModelAccess(), destination: self.archiveDestination)
+                        }, onEvent: { [weak self] event in
+                            #if DEBUG
+                            guard let self, self.requestID == id else { return }
+                            if case .requestingModel(let count) = event { self.pdfModelRequestEvents = count }
+                            #endif
+                        })
+                    guard let self, self.requestID == id else { return }
+                    guard self.pdfAttachment?.id == attachment.id, self.draft == prompt, !Task.isCancelled
+                    else { throw DocumentQueryError.contextChanged }
+                    try references.check()
+                    try attachment.validate(access: self.currentPDFModelAccess(), destination: self.archiveDestination)
+                    guard case .completed(let result) = outcome else {
+                        self.finish(id: id, error: "模型未完成 PDF 查詢；問題與擷取文字保留，未保存完成問答。")
+                        return
+                    }
+                    let evidence = try ChatPDFAttachment.archive(result)
+                    let user = ChatEntry(role: "user", content: prompt, pdf: evidence)
+                    let assistant = ChatEntry(role: "assistant", content: result.answer)
+                    if let archive = self.archive {
+                        self.pendingArchiveSave = nil
+                        do {
+                            let all = self.entries + [user, assistant]
+                            let turns = try stride(from: 0, to: all.count, by: 2).map { i in
+                                try ArchivedConversationTurn(userID: all[i].id, assistantID: all[i + 1].id,
+                                    userText: all[i].content, assistantText: all[i + 1].content, pdf: all[i].pdf)
+                            }
+                            let record = try ArchivedConversation(id: archiveID, destination: destination, updatedAt: Date(), turns: turns)
+                            self.pendingArchiveSave = (record, archivePrior)
+                            try archive.save(record, expected: archivePrior)
+                            self.pendingArchiveSave = nil; self.archiveNotice = nil
+                        } catch { self.archiveNotice = Self.archiveSaveFailure }
+                    }
+                    self.conversationDestination = destination
+                    self.entries.append(user); self.entries.append(assistant)
+                    if self.draft == prompt { self.draft = "" }
+                    self.finish(id: id)
+                    self.removePDF()
+                    // Deliberately no rememberAfterReply: source text is not a user utterance.
+                } catch {
+                    guard let self, self.requestID == id else { return }
+                    if (error as? DocumentQueryError) == .contextChanged { attachment.revokeDestination() }
+                    self.finish(id: id, error: (error as? DocumentQueryError)?.errorDescription
+                        ?? "PDF 查詢未完成；問題與擷取文字保留，未保存完成問答。")
+                }
+            }
+        } catch {
+            attachment.revokeDestination()
+            chatError = (error as? DocumentQueryError)?.errorDescription ?? "無法開始 PDF 查詢；請確認目的服務與來源。"
+        }
+    }
+
     private func completePlain(messages: [ModelMessage], configuration: ModelConfiguration,
                                key: String, client: any ChatModelClient, requestID id: UUID) async throws -> String {
         try Task.checkCancellation()
@@ -507,6 +645,7 @@ final class ChatSession: ObservableObject {
     func cancel() {
         learning.cancelLearning()
         guard let id = requestID else { return }
+        pdfAttachment?.revokeDestination()
         if isMCPRun { updateMCPDiagnostics(failure: "cancelled") }
         stopPreview(id: id, phase: .cancelled)
         request?.cancel()
@@ -778,6 +917,7 @@ final class ChatSession: ObservableObject {
 
     func newConversation() {
         guard !isSubmitting else { return }
+        removePDF()
         learning.resetConversationPresentation()
         entries = []; conversationID = UUID().uuidString
         replyPreview = nil
