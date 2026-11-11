@@ -1,0 +1,37 @@
+{
+  "revision": "fe66ab2ed1607c32ab7623d45f31e60e963d0550",
+  "run_id": 42961335239,
+  "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961335239",
+  "runtime_requested": "iOS 18.5",
+  "conclusion": "failure",
+  "completed_at_utc": "2026-11-11T05:47:09Z",
+  "private_failed_step_log_sha256": "2a3664a93b92922fb520421cafa49180b0ca111dee3b1a04329ed5f1d208615c",
+  "native_transport": {
+    "json_and_sse_probe": "failed_before_first_success",
+    "fixed_failure_category": "rate_limited"
+  },
+  "fixed_text_transcript_probe": {
+    "formats_attempted": 5,
+    "formats_passed": 0,
+    "formats_failed": 5,
+    "model_calls_each": 1,
+    "model_responses_each": 0,
+    "fixed_failure_code_each": "modelFailed"
+  },
+  "app_ui": {
+    "methods_started": 18,
+    "methods_passed": 3,
+    "methods_failed": 15,
+    "methods_skipped": 0,
+    "passed_methods": [
+      "testRealHTTPTransportFailureKeepsDraft",
+      "testPublicSearchAppliesTwoDistinctOriginsWithoutStartingResearch",
+      "testPublicSearchCancellationOrCompletionPreservesQueryUntilSheetCloses"
+    ]
+  },
+  "limits": [
+    "The native probe proves a fixed HTTP 429 category; the transcript probe's modelFailed category is less specific.",
+    "The UI methods have separate assertion sites and cannot all be attributed to HTTP 429 from this summary alone.",
+    "Private model configuration, response bodies, and raw logs are intentionally excluded."
+  ]
+}

@@ -29,6 +29,17 @@ Four additional latest-source, non-Live iOS 17 UI shards are queued:
 and [skills](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967066402).
 Their dispatch does not constitute a pass.
 
+The companion SE/iOS 18.5 real-model run at `fe66ab2`,
+[42961335239](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961335239),
+also failed its native probe with fixed `rate_limited`, then completed **0/5**
+fixed-text formats (one call and zero replies each). Its UI started 18 methods:
+**3 passed, 15 failed, zero skipped**. The passes were invalid-transport draft
+retention and two public search behaviors; they do not accept a successful
+model response. This matches the iOS 17 service-entry failure, while individual
+UI assertion causes remain separate. [Sanitized SE evidence](evidence/live-model-se-fe66ab2-first-failure.json).
+One new-source, bounded [SE full live-model rerun](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42968311920)
+is queued alone; its gate will stop dependent steps if the native probe fails.
+
 ## Staged dual-PDF FileProvider experiment in isolated branch
 
 Current and SE logs correlate missed native picker callbacks with FileProvider
