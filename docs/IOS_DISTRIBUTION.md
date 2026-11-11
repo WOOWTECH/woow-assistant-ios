@@ -1,6 +1,6 @@
 # iOS 簽章與最低版本驗證
 
-最新已核實的 Release 裝置建置為 `f49c8f7` 的 [建置 57](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42902524475)：Xcode／iphoneos SDK 26.2、最低 iOS 17.0、九個二進位檔及原生文件／ATS／隱私檢查通過。產物**未簽章、不可安裝、未上傳**；[完整證據](evidence/unsigned-device-f49c8f7.json)。後續 `bb5c9eb` 等修改另待其版本驗證。
+最新已核實的 Release 裝置建置為 `eebb019` 的 [建置 92](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42950596606)：Xcode／iphoneos SDK 26.2、最低 iOS 17.0、九個二進位檔及原生文件／ATS／隱私檢查通過。產物**未簽章、不可安裝、未上傳**；[完整證據](evidence/unsigned-device-eebb019.json)。其後主線修改限於介面測試與驗證文件，仍需各自的原生測試結果。
 
 最低版本模擬器已有獨立實跑證據：`8c4195f` 的 iOS 17.0.1 啟動介面 13/13、保存對話 4/4、通知介面 2/2；`956aa9f` 真實模型 PDF 問答完整流程 1/1，均零略過。這些通過不代表整個 App、所有後續版本或真機已通過；詳細來源與限制見 [VERIFICATION.md](VERIFICATION.md)。下方歷史紀錄保留當次結果。
 
