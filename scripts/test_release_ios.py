@@ -23,6 +23,8 @@ TEAM = "ABCD123456"
 CERT = b"synthetic-public-certificate"
 DIGEST = hashlib.sha1(CERT).hexdigest().upper()
 PROFILE_ID = "12345678-1234-1234-1234-123456789ABC"
+MEDIA_PURPOSES = {"NSCameraUsageDescription": "User approved website camera access.",
+                  "NSMicrophoneUsageDescription": "User approved website microphone access."}
 
 
 def synthetic_xctest_completion(scope):
@@ -248,13 +250,35 @@ class BuildTests(unittest.TestCase):
                                     release.verify_app(app, signed=signed, identity=DIGEST if signed else None)
                                 native_tool.assert_not_called()
 
+    def test_release_rejects_missing_or_blank_browser_media_purpose_strings(self):
+        with tempfile.TemporaryDirectory() as directory:
+            app = Path(directory) / "Example.app"
+            app.mkdir()
+            base = {"CFBundleIdentifier": release.BUNDLE_ID, "CFBundleExecutable": "Example",
+                    "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos",
+                    "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True,
+                    **MEDIA_PURPOSES}
+            for key in MEDIA_PURPOSES:
+                for value in (None, "", "  "):
+                    with self.subTest(key=key, value=value):
+                        info = dict(base)
+                        if value is None:
+                            info.pop(key)
+                        else:
+                            info[key] = value
+                        (app / "Info.plist").write_bytes(plistlib.dumps(info))
+                        with patch.object(release, "run") as native_tool:
+                            with self.assertRaisesRegex(release.ReleaseError, key):
+                                release.verify_app(app)
+                            native_tool.assert_not_called()
+
     def test_release_accepts_no_ats_key_and_reports_product_verification(self):
         with tempfile.TemporaryDirectory() as directory:
             app = Path(directory) / "Example.app"
             app.mkdir()
             copy_privacy_manifest(app)
             (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleIdentifier": release.BUNDLE_ID,
-                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True},
+                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True, **MEDIA_PURPOSES},
                 fmt=plistlib.FMT_BINARY))
             (app / "embedded.mobileprovision").write_bytes(b"synthetic")
             def fake_run(args, label, **kwargs):
@@ -267,6 +291,7 @@ class BuildTests(unittest.TestCase):
                 with self.subTest(signed=signed), patch.object(release, "run", side_effect=fake_run):
                     report = release.verify_app(app, signed=signed, identity=DIGEST if signed else None)
                     self.assertTrue(report["ats_key_absent"])
+                    self.assertTrue(report["browser_media_purpose_strings_verified"])
                     self.assertTrue(report["required_reason_entries_verified"])
                     self.assertEqual(report["signature_verified"], signed)
 
@@ -276,7 +301,7 @@ class BuildTests(unittest.TestCase):
             app.mkdir()
             copy_privacy_manifest(app)
             (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleIdentifier": release.BUNDLE_ID,
-                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True}))
+                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True, **MEDIA_PURPOSES}))
             (app / "embedded.mobileprovision").write_bytes(b"synthetic")
             def fake_run(args, label, **kwargs):
                 if "lipo" in args: return b"arm64"
@@ -292,7 +317,7 @@ class BuildTests(unittest.TestCase):
             app.mkdir()
             copy_privacy_manifest(app)
             (app / "Info.plist").write_bytes(plistlib.dumps({"CFBundleIdentifier": release.BUNDLE_ID,
-                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True}))
+                "CFBundleExecutable": "Example", "MinimumOSVersion": "17.0", "DTPlatformName": "iphoneos", "UIFileSharingEnabled": True, "LSSupportsOpeningDocumentsInPlace": True, **MEDIA_PURPOSES}))
             (app / "embedded.mobileprovision").write_bytes(b"synthetic")
             def fake_run(args, label, **kwargs):
                 if "lipo" in args: return b"arm64"

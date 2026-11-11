@@ -235,6 +235,10 @@ def verify_app(app, signed=False, identity=None, expected_build_number=None):
     # Even an empty ATS dictionary is unexpected in the Release configuration.
     if "NSAppTransportSecurity" in info:
         raise ReleaseError("Release App 的 Info.plist 不得含 NSAppTransportSecurity；請檢查 Debug 測試例外是否混入產物。")
+    for key in ("NSCameraUsageDescription", "NSMicrophoneUsageDescription"):
+        value = info.get(key)
+        if not isinstance(value, str) or not value.strip():
+            raise ReleaseError("Release App 缺少網站媒體權限用途說明：" + key)
     if not all(info.get(key) is True for key in ("UIFileSharingEnabled", "LSSupportsOpeningDocumentsInPlace")):
         raise ReleaseError("Release App 缺少系統檔案選擇器所需的 Documents 共享設定。")
     verify_required_reasons(app)
@@ -271,6 +275,7 @@ def verify_app(app, signed=False, identity=None, expected_build_number=None):
     return {"bundle_id": BUNDLE_ID, "minimum_os": "17.0", "platform": "iphoneos",
             "verified_binary_count": len(binaries), "signature_verified": signed,
             "ats_key_absent": True, "native_documents_enabled": True,
+            "browser_media_purpose_strings_verified": True,
             "required_reason_entries_verified": True}
 
 
