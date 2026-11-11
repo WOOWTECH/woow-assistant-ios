@@ -1,0 +1,71 @@
+{
+  "status": "FAIL",
+  "source_commit": "fe66ab2ed1607c32ab7623d45f31e60e963d0550",
+  "run_id": 42961307238,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961307238",
+  "job_id": 130328226376,
+  "runtime": "iOS 18.5 simulator",
+  "ui_scope": "all",
+  "workflow_steps": {
+    "native_read_only_ha_acceptance": "success",
+    "native_app_build": "success",
+    "real_mcp_ui": "failure",
+    "private_runner_cleanup": "success"
+  },
+  "ui_counts": {
+    "started": 4,
+    "passed": 1,
+    "failed": 3,
+    "skipped": 0
+  },
+  "passed_method": "WoowAssistantUITests.LiveMCPUITests testRealDiscoveryDisconnectAndReconnect",
+  "failed_methods": [
+    "WoowAssistantUITests.LiveMCPConversationUITests testRealModelChoosesTwoReadOnlyToolsAndUsesTheirResults",
+    "WoowAssistantUITests.LiveMCPConversationUITests testRealModelToolRefusalKeepsDraft",
+    "WoowAssistantUITests.LiveMCPConversationUITests testRealModelUsesRemoteToolThenReviewedLocalMemoryAndUndo"
+  ],
+  "failure_locations": [
+    "LiveMCPConversationUITests.swift:88",
+    "LiveMCPConversationUITests.swift:126",
+    "LiveMCPConversationUITests.swift:247"
+  ],
+  "fixed_diagnostics": {
+    "two_tool_case": {
+      "phase": "requestingModel",
+      "modelCalls": 1,
+      "attempts": 0,
+      "results": 0,
+      "failure": "modelRateLimited",
+      "proposal": false,
+      "error": true,
+      "answer": false
+    },
+    "refusal_case": {
+      "phase": "requestingModel",
+      "modelCalls": 1,
+      "attempts": 0,
+      "results": 0,
+      "failure": "modelRateLimited",
+      "proposal": false,
+      "error": true
+    },
+    "remote_memory_case": {
+      "stage": "remote_proposal",
+      "modelCalls": 1,
+      "attempts": 0,
+      "results": 0,
+      "remoteReview": false,
+      "memoryReview": false,
+      "error": true,
+      "answer": false,
+      "failure_category": "not_recorded_in_fixed_diagnostic"
+    }
+  },
+  "private_log_sha256": "942738ea6a2dd6f9247d9566945c33bc2f341ee34cc7fd1c97235ae8f0bbec92",
+  "limits": [
+    "Private provider/endpoint settings and raw model/tool responses are not published.",
+    "Two explicit modelRateLimited categories observed; simultaneous live jobs may contribute but causation is unproven.",
+    "No approved remote tool call or model-result synthesis passed in the three failed conversation methods.",
+    "Native read-only HA step succeeded, but UI all-scope acceptance failed."
+  ]
+}
