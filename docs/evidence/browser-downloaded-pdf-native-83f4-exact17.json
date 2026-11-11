@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "status": "verified_pass",
+  "run_id": 42946934332,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42946934332",
+  "head_sha": "83f4ddd15db9a40f54dc81de6ba43226a94b5f51",
+  "scope": "ui-download-pdf",
+  "device_model": "iPhone 15",
+  "runtime_version": "17.0.1",
+  "runtime_build": "21A342",
+  "method": "WoowAssistantUITests/BrowserDownloadedPDFUITests/testRealBrowserDownloadRequiresBothApprovalsAndReturnsExactPDFText",
+  "counts": {
+    "expectedFailures": 0,
+    "failedTests": 0,
+    "passedTests": 1,
+    "skippedTests": 0,
+    "totalTestCount": 1
+  },
+  "method_duration_seconds": 79.146,
+  "caller_audit_states": [
+    {
+      "counts": [
+        0,
+        0,
+        0
+      ],
+      "plan_present": false
+    },
+    {
+      "counts": [
+        0,
+        0,
+        0
+      ],
+      "plan_present": true
+    },
+    {
+      "counts": [
+        1,
+        0,
+        0
+      ],
+      "plan_present": true
+    },
+    {
+      "counts": [
+        1,
+        1,
+        1
+      ],
+      "plan_present": true
+    },
+    {
+      "counts": [
+        1,
+        1,
+        1
+      ],
+      "plan_present": false
+    }
+  ],
+  "same_download_id": true,
+  "same_plan_id_when_present": true,
+  "artifact_id": 13823701828,
+  "artifact_zip_sha256": "8b2d59dc8db1e22f5f37b5f64f615a5d7c1b22eb0bcf6f96470643db7e1cb1ce",
+  "artifact_members": 69,
+  "artifact_crc_verified": true,
+  "agent_evidence_sha256": "5c40b74a055490321f781128b5e9539393278db35736c0b8101be86176a4ac2f",
+  "limits": [
+    "This is one exact iOS 17.0.1 Simulator UI shard, not full acceptance or a physical-device run.",
+    "The result proves the scripted native UI path and exported caller audit for this fixture, not arbitrary remote PDFs or deployed worker capability."
+  ]
+}
