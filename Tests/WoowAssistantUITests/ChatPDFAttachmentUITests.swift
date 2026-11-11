@@ -328,9 +328,13 @@ final class ChatPDFAttachmentUITests: XCTestCase {
         ready(button); XCTAssertTrue(app.frame.contains(button.frame)); button.tap()
     }
     private func tapDisclosure(_ id: String) {
-        let disclosure = app.disclosureTriangles[id].firstMatch
+        let disclosure = app.buttons[id].firstMatch
         revealLearningElement(disclosure, in: app)
-        ready(disclosure); XCTAssertTrue(app.frame.contains(disclosure.frame)); disclosure.tap()
+        ready(disclosure); XCTAssertTrue(app.frame.contains(disclosure.frame))
+        XCTAssertEqual(disclosure.value as? String, "已收合")
+        disclosure.tap()
+        wait(NSPredicate(format: "value == %@", "已展開"), on: disclosure)
+        XCTAssertEqual(disclosure.value as? String, "已展開")
     }
     /// Diagnostic only: inspect the real archived row without exporting labels,
     /// model output, field values, or the synthetic filename itself.

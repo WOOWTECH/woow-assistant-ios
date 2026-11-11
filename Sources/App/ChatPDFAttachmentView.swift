@@ -131,28 +131,64 @@ import SwiftUI
 @MainActor struct ArchivedPDFEvidenceView: View {
     let evidence: ArchivedPDFAnswer
     let identifier: String
+    @State private var isExpanded = false
+    @State private var arePagesExpanded = false
+
     var body: some View {
-        DisclosureGroup {
-            Text(ChatPDFAttachment.retentionNotice).font(.caption)
-            Text("引文已核對實際讀取範圍；不表示全文已讀或解讀已證實。")
-            ForEach(Array(evidence.citations.enumerated()), id: \.offset) { index, citation in
-                Text("第 \(evidence.pages[citation.pageIndex - 1].number) 頁（選取序號 \(citation.pageIndex)）")
-                Text(verbatim: citation.quote).textSelection(.enabled)
-                    .accessibilityIdentifier(identifier + ".citation.\(index)")
-            }
-            DisclosureGroup("已保存的擷取文字") {
-                ForEach(Array(evidence.pages.enumerated()), id: \.offset) { index, page in
-                    Text("第 \(page.number) 頁（選取序號 \(index + 1)）")
-                    Text(verbatim: page.text).textSelection(.enabled)
-                        .accessibilityIdentifier(identifier + ".page.\(index)")
+        VStack(alignment: .leading, spacing: 4) {
+            Button { isExpanded.toggle() } label: {
+                HStack(spacing: 8) {
+                    Text(verbatim: "PDF：" + evidence.filename)
+                        .multilineTextAlignment(.leading)
+                    Spacer(minLength: 8)
+                    Image(systemName: isExpanded ? "chevron.down" : "chevron.right")
+                        .accessibilityHidden(true)
                 }
-            }.accessibilityIdentifier(identifier + ".pages")
-        } label: {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(verbatim: "PDF：" + evidence.filename)
-                Text("已保存擷取文字與引文；再次查詢原 PDF 請重新選取。")
-                    .font(.caption).accessibilityIdentifier(identifier + ".reselectNotice")
+                .contentShape(Rectangle())
             }
-        }.accessibilityIdentifier(identifier)
+            .buttonStyle(.plain)
+            .accessibilityIdentifier(identifier)
+            .accessibilityValue(isExpanded ? "已展開" : "已收合")
+            .accessibilityHint("顯示或收合已保存的 PDF 引文與擷取文字")
+
+            Text("已保存擷取文字與引文；再次查詢原 PDF 請重新選取。")
+                .font(.caption).accessibilityIdentifier(identifier + ".reselectNotice")
+
+            if isExpanded {
+                VStack(alignment: .leading, spacing: 8) {
+                    Text(ChatPDFAttachment.retentionNotice).font(.caption)
+                    Text("引文已核對實際讀取範圍；不表示全文已讀或解讀已證實。")
+                    ForEach(Array(evidence.citations.enumerated()), id: \.offset) { index, citation in
+                        Text("第 \(evidence.pages[citation.pageIndex - 1].number) 頁（選取序號 \(citation.pageIndex)）")
+                        Text(verbatim: citation.quote).textSelection(.enabled)
+                            .accessibilityIdentifier(identifier + ".citation.\(index)")
+                    }
+                    Button { arePagesExpanded.toggle() } label: {
+                        HStack(spacing: 8) {
+                            Text("已保存的擷取文字")
+                            Spacer(minLength: 8)
+                            Image(systemName: arePagesExpanded ? "chevron.down" : "chevron.right")
+                                .accessibilityHidden(true)
+                        }
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityIdentifier(identifier + ".pages")
+                    .accessibilityValue(arePagesExpanded ? "已展開" : "已收合")
+                    .accessibilityHint("顯示或收合已保存的 PDF 擷取文字")
+                    if arePagesExpanded {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(Array(evidence.pages.enumerated()), id: \.offset) { index, page in
+                                Text("第 \(page.number) 頁（選取序號 \(index + 1)）")
+                                Text(verbatim: page.text).textSelection(.enabled)
+                                    .accessibilityIdentifier(identifier + ".page.\(index)")
+                            }
+                        }
+                        .padding(.leading, 16)
+                    }
+                }
+                .padding(.leading, 16)
+            }
+        }
     }
 }
