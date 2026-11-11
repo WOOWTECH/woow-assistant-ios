@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "status": "local_pass_native_ui_pending",
+  "base_sha": "a663fbd1a523027511b9ac7d85208aaf301ae154",
+  "scope": "Viewport helper and two actual English navigation UI cases",
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/LearningUITestSupport.swift": "de57d4a4774129088c4792d0ebc9d3659d79a7f5c4405b141f6978a4d9559272",
+    "Tests/WoowAssistantUITests/AppLanguagePhase2UITests.swift": "672932e8c00f3a7e2cfa33781da82ac9c522ba296f42a40c734550df73ee239b",
+    "scripts/release_ios17.py": "91d5cf58c421b81883d7e868f64b7bfa7bd78a54a72aea75893ca430be4d563e",
+    "scripts/ios17_bootstrap_watchdog.py": "74fd7f8853b7cdf19aa48f8f65437ec93699990fe96569d69694b7148a6325b5"
+  },
+  "frozen_patch_sha256": {
+    "viewport": "f6def5b28d252d0895c91fa23ff75b444ae1c338acfd1e4997a4849c2d7a4e34",
+    "phase2_ui": "f6a5661401a400982cf5526a8c5b6a0073b298fa3b7f050754181659a5160401",
+    "keyboard_selector": "344446926701f5c8372556edfeb54138c31cdc7bc55c275e98570c5368dc8ca6"
+  },
+  "checks": {
+    "phase2_app_report_sha256": "d1632c930ee0cd81ec3fa570f1d7e59ab2a152d8d34d4213b118495b3bcf13a6",
+    "phase2_app_checks": 21,
+    "debug_foundation_assertions": 131,
+    "release_foundation_assertions": 131,
+    "debug_app_assertions": 101,
+    "release_app_assertions": 101,
+    "release_python_tests": "106/106 PASS",
+    "ui_inventory_language_cases": 5,
+    "explicit_ui_launch_locale_assignments": 44,
+    "iOS17_syntax": "PASS"
+  },
+  "limits": [
+    "The two new English UI methods have not yet run on an iOS simulator.",
+    "Existing shell/chat copy and newly added browser PDF UI remain outside this phase2 English scope."
+  ]
+}

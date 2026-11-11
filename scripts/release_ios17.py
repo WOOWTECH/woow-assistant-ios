@@ -38,7 +38,7 @@ class RuntimeInventoryError(ReleaseError):
 # UI class exactly once. Keep class selectors so new methods cannot be omitted.
 UI_SHARDS = {
     "ui-startup": ["WoowAssistantUITests", "SelfConfigurationUITests", "ChatStreamingUITests"],
-    "ui-language": ["AppLanguageUITests"],
+    "ui-language": ["AppLanguageUITests", "AppLanguagePhase2UITests"],
     "ui-notifications": ["NotificationUITests", "NotificationApprovalUITests"],
     "ui-archive": ["ConversationArchiveUITests"],
     "ui-workspace": ["BrowserWorkspaceUITests", "BrowserLoginUITests", "BrowserSiteModesUITests", "BrowserSearchUITests"],

@@ -46,6 +46,14 @@ func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
             }
         }
         var bounds = contentFrame.intersection(appFrame)
+        // A Form can cover the whole window while its top rows sit behind the
+        // native navigation bar. iOS 17 reported y=6.7 for an obscured static
+        // text, inside the former viewport, with an unhittable (-1,-1) point.
+        // Keep the full visibility requirement and scroll below the actual bar.
+        let topBars = app.navigationBars.allElementsBoundByAccessibilityElement.compactMap {
+            visibleFrame(of: $0)
+        }
+        bounds = learningViewportBelowNavigationBars(bounds, bars: topBars)
         if navigation.exists, navigation.isHittable {
             let frame = navigation.frame
             if frame.minY > bounds.minY { bounds.size.height = min(bounds.maxY, frame.minY) - bounds.minY }
@@ -167,6 +175,20 @@ struct LearningScrollContent {
                 && abs(current.frame.height - old.frame.height) < 1
         }
     }
+}
+
+/// Remove only overlapping, visible native navigation bars. Frames come from
+/// the current AX query on each gesture, not a cached device-specific inset.
+func learningViewportBelowNavigationBars(_ viewport: CGRect, bars: [CGRect]) -> CGRect {
+    func valid(_ frame: CGRect) -> Bool {
+        !frame.isNull && !frame.isInfinite && !frame.isEmpty
+            && [frame.minX, frame.minY, frame.width, frame.height].allSatisfy { $0.isFinite }
+    }
+    guard valid(viewport) else { return .zero }
+    let top = bars.filter { valid($0) && viewport.intersects($0) }
+        .reduce(viewport.minY) { max($0, $1.maxY) }
+    return CGRect(x: viewport.minX, y: min(top, viewport.maxY),
+                  width: viewport.width, height: max(0, viewport.maxY - top))
 }
 
 func learningFrameIsVisible(_ frame: CGRect, in viewport: CGRect, visibility: LearningElementVisibility) -> Bool {
