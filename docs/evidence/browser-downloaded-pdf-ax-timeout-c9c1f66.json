@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "scope": "ui-download-pdf",
+  "runtime": "iOS 17.0.1 Simulator, iPhone 15",
+  "successful_baseline": {
+    "run": 42946934332,
+    "source_revision": "83f4ddd15db9a40f54dc81de6ba43226a94b5f51",
+    "artifact_zip_sha256": "8b2d59dc8db1e22f5f37b5f64f615a5d7c1b22eb0bcf6f96470643db7e1cb1ce",
+    "method": "BrowserDownloadedPDFUITests/testRealBrowserDownloadRequiresBothApprovalsAndReturnsExactPDFText",
+    "method_seconds": 79.146,
+    "passed": 1,
+    "skipped": 0,
+    "action_seconds": {
+      "open_browser": 6.36,
+      "tap_completed_download": 21.55,
+      "first_approval": 30.84,
+      "second_approval": 36.84,
+      "clear_plan": 61.93
+    }
+  },
+  "timed_out_run": {
+    "run": 42967461669,
+    "source_revision": "c9c1f66c0c329600c45efb10a1ce628b16dde627",
+    "artifact_zip_sha256": "34d06ebcb5a4070a8714184d4250e353d35ef69594a36d371721c88abfda9733",
+    "artifact_members": 108,
+    "all_members_crc_passed": true,
+    "prebuild_exit_code": 0,
+    "test_exit_code": 65,
+    "method_started": 1,
+    "xcresult_failed": 1,
+    "skipped": 0,
+    "failure": "Test exceeded execution time allowance of 5 minutes",
+    "action_seconds": {
+      "open_browser": 28.51,
+      "tap_completed_download": 156.53,
+      "first_approval": 255.98,
+      "second_approval": 297.57,
+      "allowance": 300.0
+    },
+    "sanitized_audit_counts": [
+      [0, 0, 0],
+      [0, 0, 0],
+      [1, 0, 0]
+    ],
+    "spindump_sha256": "058c615b8c27a8859ebd251136b25a306261de538df8ea9409bf0600a4cd5dd9",
+    "spindump_location": "waitAuditCompletion -> revealLearningElement -> viewport -> LearningUITestSupport.swift:53-54 -> XCUIElement exists/isHittable",
+    "result_after_second_approval": "unobserved"
+  },
+  "finding": "The timed-out run reached a completed WKDownload and the first explicit read grant. It expired in XCTest Accessibility lookups immediately after the second tap, before evaluating the extraction-result predicate. The earlier run passed the same business assertions. This evidence does not establish a product extraction failure.",
+  "repair_scope": "Only the downloaded-PDF UI driver opts into a named active navigation bar and a single target snapshot per reveal. The existing visibility, hittability, approval, audit, digest and five-minute limit checks remain.",
+  "verification_boundary": "This file records pre-repair evidence; the repair needs one focused native ui-download-pdf run."
+}

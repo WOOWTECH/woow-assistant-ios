@@ -31,12 +31,15 @@ final class BrowserDownloadedPDFUITests: XCTestCase {
         let row = downloads.firstMatch
         let selectedID = String(row.identifier.dropFirst("download.pdf.".count))
         XCTAssertNotNil(UUID(uuidString: selectedID))
-        revealLearningElement(row, in: app); row.tap()
+        revealLearningElement(row, in: app,
+                              activeNavigationBar: app.navigationBars["下載項目"],
+                              useTargetSnapshot: true)
+        row.tap()
         let filename = app.staticTexts["downloadPDF.filename"]
-        revealLearningElement(filename, in: app, visibility: .readableText)
+        revealForm(filename, visibility: .readableText)
         XCTAssertEqual(filename.label, "BrowserDownloadedPDF-" + namespace + ".pdf")
         let source = app.staticTexts["downloadPDF.source"]
-        revealLearningElement(source, in: app, visibility: .readableText)
+        revealForm(source, visibility: .readableText)
         XCTAssertEqual(source.label, "來源：此 App 的已完成下載。下載成功尚未授權讀取或擷取。")
         XCTAssertFalse(app.buttons["skillExecutionSelectPDF"].exists)
         XCTAssertFalse(app.staticTexts["skillExecution.uitest.fixture"].exists)
@@ -50,7 +53,7 @@ final class BrowserDownloadedPDFUITests: XCTestCase {
         XCTAssertEqual(audit.counts, [0, 0, 0], "Preparing a plan grants nothing")
         XCTAssertFalse(app.staticTexts["skillExecution.result.text"].exists)
         let approve = app.buttons["skillExecutionApproveStep"]
-        revealLearningElement(approve, in: app)
+        revealForm(approve)
         XCTAssertEqual(approve.value as? String, "讀取選取的 PDF")
         XCTAssertTrue(approve.isEnabled); approve.tap() // First explicit grant only.
         waitForNextApproval("在裝置上擷取 PDF")
@@ -58,21 +61,21 @@ final class BrowserDownloadedPDFUITests: XCTestCase {
         XCTAssertEqual(audit.download, selectedID); XCTAssertEqual(audit.plan, planID)
         XCTAssertEqual(audit.counts, [1, 0, 0], "Reading must not dispatch extraction")
         XCTAssertFalse(app.staticTexts["skillExecution.result.text"].exists)
-        revealLearningElement(approve, in: app)
+        revealForm(approve)
         XCTAssertEqual(approve.value as? String, "在裝置上擷取 PDF")
         XCTAssertTrue(approve.isEnabled); approve.tap() // Second explicit grant.
         waitAuditCompletion()
         let summary = app.staticTexts["skillExecution.result.summary"]
-        revealLearningElement(summary, in: app, visibility: .readableText)
+        revealForm(summary, visibility: .readableText)
         XCTAssertEqual(summary.label, "共 2 頁；引擎：Apple PDFKit")
         let result = app.staticTexts["skillExecution.result.text"]
-        revealLearningElement(result, in: app, visibility: .readableText)
+        revealForm(result, visibility: .readableText)
         XCTAssertEqual(result.label.trimmingCharacters(in: .whitespacesAndNewlines), "--- page 1 ---\nWOOW_DOWNLOADED_PDF_ALPHA\n\n--- page 2 ---\nWOOW_DOWNLOADED_PDF_BETA")
         audit = try readAudit()
         XCTAssertEqual(audit.download, selectedID); XCTAssertEqual(audit.plan, planID)
         XCTAssertEqual(audit.counts, [1, 1, 1], "One dispatch per explicit approval, one actual result")
         let digest = app.staticTexts["downloadPDF.resultDigest"]
-        revealLearningElement(digest, in: app, visibility: .readableText)
+        revealForm(digest, visibility: .readableText)
         XCTAssertEqual(digest.label, "d77115473f53f41562bda05062ca3c1b5a4c1f781b8cf998fa641018206cea4d")
         XCTAssertFalse(app.buttons["skillExecutionApproveStep"].exists)
         let attachment = XCTAttachment(screenshot: app.screenshot())
@@ -85,9 +88,16 @@ final class BrowserDownloadedPDFUITests: XCTestCase {
     }
 
     private struct Audit { let download: String; let plan: String?; let counts: [Int] }
+    private func revealForm(_ element: XCUIElement,
+                            visibility: LearningElementVisibility = .fullyVisible,
+                            file: StaticString = #filePath, line: UInt = #line) {
+        revealLearningElement(element, in: app, visibility: visibility,
+                              activeNavigationBar: app.navigationBars["執行 PDF 技能"],
+                              useTargetSnapshot: true, file: file, line: line)
+    }
     private func readAudit() throws -> Audit {
         let element = app.staticTexts["downloadPDF.audit"]
-        revealLearningElement(element, in: app, visibility: .readableText)
+        revealForm(element, visibility: .readableText)
         let fields = element.label.split(separator: " ").map { $0.split(separator: "=", maxSplits: 1).map(String.init) }
         XCTAssertEqual(fields.count, 5)
         guard fields.count == 5, fields.allSatisfy({ $0.count == 2 }),
@@ -101,18 +111,18 @@ final class BrowserDownloadedPDFUITests: XCTestCase {
     }
     private func waitAuditCompletion() {
         let audit = app.staticTexts["downloadPDF.audit"]
-        revealLearningElement(audit, in: app, visibility: .readableText)
+        revealForm(audit, visibility: .readableText)
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "label ENDSWITH %@", "reads=1 extractions=1 results=1"), object: audit)
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 15), .completed)
     }
     private func waitForNextApproval(_ title: String) {
         let button = app.buttons["skillExecutionApproveStep"]
-        revealLearningElement(button, in: app)
+        revealForm(button)
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND enabled == true AND value == %@", title), object: button)
         XCTAssertEqual(XCTWaiter.wait(for: [ready], timeout: 15), .completed)
     }
     private func tapForm(_ id: String) {
-        let button = app.buttons[id]; revealLearningElement(button, in: app); XCTAssertTrue(button.isEnabled); button.tap()
+        let button = app.buttons[id]; revealForm(button); XCTAssertTrue(button.isEnabled); button.tap()
     }
     private func tapFixed(_ element: XCUIElement, timeout: TimeInterval = 10) {
         let ready = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == true AND hittable == true"), object: element)
