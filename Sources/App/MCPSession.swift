@@ -33,8 +33,10 @@ final class MCPSession: ObservableObject {
     var onConnectionChange: (() -> Void)?
     @Published private(set) var supportsTools = false
     @Published private(set) var supportsResources = false
-    @Published private(set) var errorMessage: String?
-    @Published private(set) var notice: String?
+    @Published private(set) var errorText: AppText?
+    var errorMessage: String? { errorText.map { AppLocalizer(language: .traditionalChinese).text($0) } }
+    @Published private(set) var noticeText: AppText?
+    var notice: String? { noticeText.map { AppLocalizer(language: .traditionalChinese).text($0) } }
 
     let allowsNetwork: Bool
     private let repository: (any MCPEndpointStoring)?
@@ -64,7 +66,7 @@ final class MCPSession: ObservableObject {
             store = try MCPSettingsStore.makeDefault()
         } catch {
             repository = nil
-            errorMessage = Self.settingsMessage(error)
+            errorText = Self.settingsMessage(error)
             phase = .failed
             return
         }
@@ -73,7 +75,7 @@ final class MCPSession: ObservableObject {
             hasStoredEndpoint = try store.load() != nil
             phase = hasStoredEndpoint ? .saved : .notConfigured
         } catch {
-            errorMessage = Self.settingsMessage(error)
+            errorText = Self.settingsMessage(error)
             phase = .failed
         }
         // Never load the credential into a published property or start networking here.
@@ -88,7 +90,7 @@ final class MCPSession: ObservableObject {
             hasStoredEndpoint = try repository.load() != nil
             phase = hasStoredEndpoint ? .saved : .notConfigured
         } catch {
-            errorMessage = Self.settingsMessage(error)
+            errorText = Self.settingsMessage(error)
             phase = .failed
         }
     }
@@ -106,7 +108,7 @@ final class MCPSession: ObservableObject {
     func selectTool(_ name: String, enabled: Bool) {
         guard tools.contains(where: { $0.name == name }) else { return }
         guard !enabled || selectedToolNames.count < 64 else {
-            notice = "每次對話最多選取 64 個工具。"; return
+            noticeText = .mcpSelectionLimit; return
         }
         onConnectionChange?()
         if enabled { selectedToolNames.insert(name) }
@@ -131,23 +133,24 @@ final class MCPSession: ObservableObject {
         hasStoredEndpoint && !isBusy && phase != .connected
             && endpointDraft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && allowsNetwork
     }
-    var statusText: String {
+    var statusText: String { AppLocalizer(language: .traditionalChinese).text(statusMessage) }
+    var statusMessage: AppText {
         switch phase {
-        case .notConfigured: return "尚未設定 MCP"
-        case .saved: return "端點已儲存，尚未驗證連線"
-        case .connecting: return "正在建立 MCP 工作階段…"
-        case .discovering: return "正在擷取工具與資源目錄…"
-        case .connected: return "已連線，目錄擷取完成"
-        case .disconnected: return "已中斷本機連線"
-        case .cancelled: return "已取消等待"
-        case .failed: return "MCP 設定或連線未完成"
+        case .notConfigured: return .mcpNotConfigured
+        case .saved: return .mcpSavedStatus
+        case .connecting: return .mcpConnecting
+        case .discovering: return .mcpDiscovering
+        case .connected: return .mcpConnected
+        case .disconnected: return .mcpDisconnected
+        case .cancelled: return .mcpCancelled
+        case .failed: return .mcpFailedStatus
         }
     }
 
     func saveEndpoint() {
         guard !isBusy, let repository else { return }
-        errorMessage = nil
-        notice = nil
+        errorText = nil
+        noticeText = nil
         do {
             try repository.save(endpoint: endpointDraft)
             stopWork()
@@ -155,14 +158,14 @@ final class MCPSession: ObservableObject {
             endpointDraft = ""
             hasStoredEndpoint = true
             phase = .saved
-            notice = "端點已存入此裝置的 Keychain；尚未送出連線請求。"
-        } catch { errorMessage = Self.settingsMessage(error) }
+            noticeText = .mcpSavedNotice
+        } catch { errorText = Self.settingsMessage(error) }
     }
 
     func removeEndpoint() {
         guard !isBusy, let repository else { return }
-        errorMessage = nil
-        notice = nil
+        errorText = nil
+        noticeText = nil
         do {
             try repository.remove()
             stopWork()
@@ -170,14 +173,14 @@ final class MCPSession: ObservableObject {
             endpointDraft = ""
             hasStoredEndpoint = false
             phase = .notConfigured
-            notice = "已移除此 App 的 MCP 端點。"
-        } catch { errorMessage = Self.settingsMessage(error) }
+            noticeText = .mcpRemovedNotice
+        } catch { errorText = Self.settingsMessage(error) }
     }
 
     func connect() {
         guard canConnect, let repository else { return }
-        errorMessage = nil
-        notice = nil
+        errorText = nil
+        noticeText = nil
         clearCatalog()
         let endpoint: URL
         do {
@@ -189,7 +192,7 @@ final class MCPSession: ObservableObject {
             endpoint = stored
         } catch {
             phase = .failed
-            errorMessage = Self.settingsMessage(error)
+            errorText = Self.settingsMessage(error)
             return
         }
         let connection = clientFactory(endpoint)
@@ -227,14 +230,14 @@ final class MCPSession: ObservableObject {
                 self.resources = resources
                 self.finish(id: id)
                 self.phase = .connected
-                self.notice = "僅完成握手與目錄探索，未執行工具或讀取資源內容；不代表服務持續在線。"
+                self.noticeText = .mcpDiscoveryNotice
             } catch {
                 guard let self, self.requestID == id else { return }
                 self.stopWork()
                 self.clearCatalog()
                 self.phase = .failed
                 // Never interpolate server errors, names, resource URIs, or endpoint URLs.
-                self.errorMessage = "MCP 連線或目錄擷取失敗。請檢查端點、網路及伺服器的 Streamable HTTP 支援；不會自動重試。"
+                self.errorText = .mcpConnectionError
             }
         }
         deadline = Task { [weak self] in
@@ -244,7 +247,7 @@ final class MCPSession: ObservableObject {
             self.stopWork()
             self.clearCatalog()
             self.phase = .failed
-            self.errorMessage = "探索超過 90 秒，已停止本機等待；伺服器可能已收到目錄請求。"
+            self.errorText = .mcpTimeout
         }
     }
 
@@ -253,16 +256,16 @@ final class MCPSession: ObservableObject {
         stopWork()
         clearCatalog()
         phase = .cancelled
-        errorMessage = nil
-        notice = "已取消本機等待；伺服器可能已收到目錄請求。"
+        errorText = nil
+        noticeText = .mcpCancelledNotice
     }
 
     func disconnect() {
         stopWork()
         clearCatalog()
         phase = hasStoredEndpoint ? .disconnected : .notConfigured
-        errorMessage = nil
-        notice = "已停止本機工作並清除目錄；端點設定保留。未要求伺服器撤銷憑證或刪除遠端工作階段。"
+        errorText = nil
+        noticeText = .mcpDisconnectedNotice
     }
 
     private func finish(id: UUID) {
@@ -297,8 +300,9 @@ final class MCPSession: ObservableObject {
         supportsResources = false
     }
 
-    private static func settingsMessage(_ error: Error) -> String {
-        (error as? MCPSettingsError)?.errorDescription ?? "MCP 設定存取失敗；不會顯示端點或原始錯誤內容。"
+    private static func settingsMessage(_ error: Error) -> AppText {
+        guard let error = error as? MCPSettingsError else { return .mcpSettingsError }
+        return AppLocalizer.mcpSettingsError(error)
     }
 
     private static func displayName(_ name: String, endpoint: URL) -> String {

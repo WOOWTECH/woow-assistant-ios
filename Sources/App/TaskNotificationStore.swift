@@ -24,13 +24,18 @@ import AssistantDomain
             preconditionFailure("Notification defaults unavailable")
         }
         if configuration.reset { defaults.removeObject(forKey: preferenceKey) }
-        let store = TaskNotificationStore(defaults: defaults, center: .current(), scope: configuration.scope)
+        let store = TaskNotificationStore(defaults: defaults, center: .current(), scope: configuration.scope,
+            languageProvider: { AppLanguageStore.applicationPreferences(arguments: arguments).resolved })
         stores[configuration.suite] = store
         return store
     }
 
-    init(defaults: UserDefaults, center: UNUserNotificationCenter, scope: String = "production") {
-        adapter = TaskNotificationCenterAdapter(center: center, scope: scope)
+    init(defaults: UserDefaults, center: UNUserNotificationCenter, scope: String = "production",
+         languageProvider: @escaping () -> AppDisplayLanguage = { .traditionalChinese }) {
+        // Resolve at delivery from the matching preference suite, without replacing this service.
+        // Existing delivered notifications remain in their original language.
+        adapter = TaskNotificationCenterAdapter(center: center, scope: scope,
+            localizer: { AppLocalizer(language: languageProvider()) })
         service = TaskNotificationService(client: adapter, enabled: defaults.bool(forKey: Self.preferenceKey),
             persistEnabled: { defaults.set($0, forKey: TaskNotificationStore.preferenceKey) })
         service.onChange = { [weak self] in self?.objectWillChange.send() }

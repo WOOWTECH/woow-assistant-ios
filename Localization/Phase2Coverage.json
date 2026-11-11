@@ -1,0 +1,807 @@
+{
+  "schema_version": 1,
+  "base_commit": "2758966f51134fd9684549d537d9e08d15cb9d3e",
+  "phase1_handoff_unchanged": true,
+  "full_app_localized": false,
+  "native_phase2_acceptance": false,
+  "languages": [
+    "zh-Hant",
+    "zh-Hans",
+    "en"
+  ],
+  "mika_explicit_languages": 10,
+  "root_injection": "already in base2758966; no root edits in phase2",
+  "protected_files": {
+    "ChatSession.swift": {
+      "sha256": "3c2ce7d21f9f967e905acdc8f14e4a9726bc4777112e7e40db5260fd906bc2db",
+      "unchanged": true
+    },
+    "ContentView.swift": {
+      "sha256": "1fc3be78c930a891c089a2c5c66c09807bb2c5a65379f2c1e40a87b21e3fa4fa",
+      "unchanged": true
+    },
+    "ConversationArchiveStore.swift": {
+      "sha256": "8a840b7616a5a1ea100d8686e630fe73fdd9db1bf3c504834a32acbd756bb633",
+      "unchanged": true
+    },
+    "ConversationArchiveView.swift": {
+      "sha256": "aa6589bcfb57364b08f4e4a4f27a6de5c5bef48c68d68a8383f25d0394e93eba",
+      "unchanged": true
+    },
+    "BrowserSession.swift": {
+      "sha256": "6528d1e048d5d8336afba70a2f76376f712cc7faf3525a0db8047968b606eb3d",
+      "unchanged": true
+    },
+    "BrowserDownloadsView.swift": {
+      "sha256": "86d242bc16348e176e075e8c694e401c2dcf4654dc06fb8d85ccb1ef469c8777",
+      "unchanged": true
+    },
+    "SkillExecutionView.swift": {
+      "sha256": "529f795c68597455ac9017a529866bf72ad066637a386007afa5ff7f3f92e424",
+      "unchanged": true
+    },
+    "LearningStore.swift": {
+      "sha256": "0a72d0516f0086daa4da0a1c28149a199253551709bba74d0a2d88157d67de97",
+      "unchanged": true
+    }
+  },
+  "scope": {
+    "mcp": [
+      {
+        "file": "Sources/App/MCPSession.swift",
+        "sha256": "b53cf5d7e6628a4f48cfa3b27a3a0bb72ec4db7348700826c9685a4a02b5bd84",
+        "typed_render_or_state_sites": [
+          {
+            "line": 36,
+            "sha256": "5f270560c7a1fadd5c96ee65f46e249317e83cbdcff2cceac1aa0f97dec180e4"
+          },
+          {
+            "line": 38,
+            "sha256": "4d0457852d01bb97a6cfe7fa2974007c57a80a1431a326f93221b458c0dd45be"
+          },
+          {
+            "line": 305,
+            "sha256": "43933c7570315a4bde26c9dede5b89d8f888864e6858741c52ab1fee268b5f64"
+          }
+        ],
+        "stable_accessibility_identifiers_unchanged": true
+      },
+      {
+        "file": "Sources/App/MCPToolsView.swift",
+        "sha256": "f7b22da7b52a3b23028a881f2e6b2591e65458320c7860acdcba05aeb08f9a72",
+        "typed_render_or_state_sites": [
+          {
+            "line": 19,
+            "sha256": "d68549ed24b55936cfa05126cb0513bbd386dab28f5a34be6b9f32b40d801e3e"
+          },
+          {
+            "line": 22,
+            "sha256": "4d1ebd9ebc78e03b83ce61de20acd0e9ab6b3538a0b759c73720edb0dfdfe216"
+          },
+          {
+            "line": 29,
+            "sha256": "6f86cd4b1269a8d6938dd94dde5dc8184080d7587b46def4e1a442300f1c295e"
+          },
+          {
+            "line": 30,
+            "sha256": "109cf75c502d667d258f6d2d89929bddf8800b250fdd12fef241b8ebdbd3d0a7"
+          },
+          {
+            "line": 33,
+            "sha256": "bd178caac2f6f7619e534db3349d6b916be9328d3ca0be5b6f14c2fca144298d"
+          },
+          {
+            "line": 35,
+            "sha256": "6deba9e1a921f55a4e5f9438d0dfd9efb988ebca714333189b839ee35c9a46e5"
+          },
+          {
+            "line": 38,
+            "sha256": "0f13c014c0109642b0a25099a903f4987aa28020b21db5b994f90e093c1a119d"
+          },
+          {
+            "line": 43,
+            "sha256": "20e0aa7cc281f96273df81c21b6a16ec77f1541b761109a4c9bece0d142924b5"
+          },
+          {
+            "line": 46,
+            "sha256": "4800e9a0e3e42f82c27c9139cdb18ec939912f2489160b6c48c0c7e660430c60"
+          },
+          {
+            "line": 48,
+            "sha256": "d6c1fab08c1e836843ff84fb467c114352613df78c8e8f09fe40a90f3318190b"
+          },
+          {
+            "line": 57,
+            "sha256": "9436c8c48d43872c619f0e5507c43a0e183908cc42c0154d3084739e0e454ea8"
+          },
+          {
+            "line": 59,
+            "sha256": "0968fad1037872930dfccefb41466bc92ee5bd1fdd61e4bfe214e647006f0260"
+          },
+          {
+            "line": 62,
+            "sha256": "7b07d22ea2fe052867a9507d0d0788ff263c13665bb7c7d768d87a3ff7c55c2b"
+          },
+          {
+            "line": 68,
+            "sha256": "392a69832fe3f3db3113058196b6267f6e9635f8d8fd6f0c52bb5e21ae8a56e0"
+          },
+          {
+            "line": 72,
+            "sha256": "e50069c32c2a1dda87b4e5d331bb658fb632bf3002c9c0310d5b5484bf3bae0f"
+          },
+          {
+            "line": 78,
+            "sha256": "12653f4c3377962cdd29b23d214c2c154836845064294da321ae76e8e20e5df0"
+          },
+          {
+            "line": 80,
+            "sha256": "2f84687bc7e3d6d5d4c800889abf3566da7bf0668f58c274acc6dcd172bafa8a"
+          },
+          {
+            "line": 81,
+            "sha256": "80051ff63bcf0efa78c3a5267ceb51b9f679562a41b8b9ceffab9190e6f14dd5"
+          },
+          {
+            "line": 84,
+            "sha256": "a13d2d806ce4a228ab22fa31ae123205ac957a66b15e896489d61a5ff9c25252"
+          },
+          {
+            "line": 92,
+            "sha256": "779863f3ab26ac125247a0137bd0f4e5ab49e5946cec5e25de446ca69fe45070"
+          },
+          {
+            "line": 96,
+            "sha256": "141f9e8afe5e86ec56d6aa5f8771d1c2c9b310cd5197009f5b47ee2f632bb4e5"
+          },
+          {
+            "line": 101,
+            "sha256": "5e9d384ffeaae973bbfae16114feca64bb669fc245a28e31c4bacd87ae82b684"
+          },
+          {
+            "line": 108,
+            "sha256": "d8f8e83c2172ed1683297da72d9fef114f33d5e50fbabb486d01f256fce6d3b1"
+          },
+          {
+            "line": 109,
+            "sha256": "f14e62e52cd5a19ebdacfdc2ae73eb2cdbdbecf009ec9f780f74a38e1ef09d72"
+          },
+          {
+            "line": 111,
+            "sha256": "a97508231ab04f9fac7f142c838c35d7977cc962cb15c5c3ef51d9528c096c62"
+          },
+          {
+            "line": 124,
+            "sha256": "edf0964bbbb0c3a9eefc7eddeb4b728c2b0345cd7d45af032fc16d54cbd32af9"
+          },
+          {
+            "line": 135,
+            "sha256": "40017baf4e79aced69fed7b0077055785f26d7701b332afbd30f77866260cf00"
+          },
+          {
+            "line": 136,
+            "sha256": "d99f60fa218e371fbc6363588b0ab309933bf7cb13e3b31e141de431ad045eda"
+          },
+          {
+            "line": 138,
+            "sha256": "2b8425bf5ca253e926b275efcad0deb42f3c8c999662f32d51fc0fc76e3c18cf"
+          },
+          {
+            "line": 147,
+            "sha256": "17038ecbc5b290cd3bad30cd924ae17dea82674249fe1efb70ba5c271e3d74c8"
+          },
+          {
+            "line": 151,
+            "sha256": "b8d0c2311cafa335b08598a653497cf75675a9f8d161d988a645e91cf33acc94"
+          },
+          {
+            "line": 152,
+            "sha256": "9dbc55f12b35f019cd53af9bc94879e489ac1cd8ce9df55a8640e81366e094e3"
+          }
+        ],
+        "stable_accessibility_identifiers_unchanged": true
+      },
+      {
+        "file": "Sources/App/MCPApprovalView.swift",
+        "sha256": "b536647abff29e10f0d046e300687e7d29ce780589182078e94666c467afd076",
+        "typed_render_or_state_sites": [
+          {
+            "line": 29,
+            "sha256": "f1c760a8ee67a99ff54758bfc1cd7dbc653e833e4dcd0d4fb0ff3bead57dad87"
+          },
+          {
+            "line": 35,
+            "sha256": "85300bf1abd07436809416bd35ba10ef28b8ae6dc40db4a1b91320c569dd60d4"
+          },
+          {
+            "line": 44,
+            "sha256": "7f8d609e5ccbd5b7e3f9ab199bc12f8b08de73a117edf923312a7f97ef952377"
+          },
+          {
+            "line": 49,
+            "sha256": "9203a46e1a38af3a88766612ab868abacb2551452700229d3747693d0b99c2cf"
+          },
+          {
+            "line": 53,
+            "sha256": "6c1be3aec25bcecfdca132ed87e3afc3b78584d1b4b14fdfb046c34a9c2caf61"
+          },
+          {
+            "line": 56,
+            "sha256": "10089c9936584ede2c32706f0dd260ba7241d543d2ae0030011068f92cad4217"
+          },
+          {
+            "line": 103,
+            "sha256": "30ff46740681c22d02e48d50b209326ea1c39618f697b0c13d21f9222e6481dc"
+          },
+          {
+            "line": 104,
+            "sha256": "40de9ff66efa906b760bb5c0884f46ea2f54313e5df8d9e0a3754b8da7334bd8"
+          },
+          {
+            "line": 110,
+            "sha256": "3545c7b6bdd0b7dedfe62f19256d24b20c2b4eca3229a4298440d36cd9d76748"
+          },
+          {
+            "line": 111,
+            "sha256": "7af7fe5a202a716c225c11824dba7a0991085e345bb28c22db88a718292605c3"
+          },
+          {
+            "line": 116,
+            "sha256": "1e0de15d7d54562ebf02ef30442d6ddd5e163b489aa648b1ec9c4c38ef3d7e32"
+          }
+        ],
+        "stable_accessibility_identifiers_unchanged": true
+      },
+      {
+        "file": "Sources/App/AppMCPText.swift",
+        "sha256": "1b385b35d56588bcaa5fed394454985aec6f3615c1762a738833383b70cdc981",
+        "typed_render_or_state_sites": [],
+        "stable_accessibility_identifiers_unchanged": null
+      }
+    ],
+    "browser": [
+      {
+        "file": "Sources/App/BrowserWorkspace.swift",
+        "sha256": "c0071399e6a6b248bf5613d54ac303b464a3e715782b5c52ec52e875f18243b2",
+        "typed_render_or_state_sites": [
+          {
+            "line": 20,
+            "sha256": "5f270560c7a1fadd5c96ee65f46e249317e83cbdcff2cceac1aa0f97dec180e4"
+          },
+          {
+            "line": 22,
+            "sha256": "3af5f7c94960e84280b5d3c0c7a58e4e99717dc7bf5ddc6a6a268c827616862b"
+          }
+        ],
+        "stable_accessibility_identifiers_unchanged": true
+      },
+      {
+        "file": "Sources/App/BrowserLibraryView.swift",
+        "sha256": "aad2f536cde1cf09ff5939b5dca0480e63c73085af189468884c44398349129e",
+        "typed_render_or_state_sites": [
+          {
+            "line": 21,
+            "sha256": "9ac419f792fa9cf30352c91de22a9872eb47c5f2946feda2a03233cb2aa257a2"
+          },
+          {
+            "line": 22,
+            "sha256": "94e7570cae1ff652887cd957837c75740a1e834ee84b6765eb052fa0d9b00915"
+          },
+          {
+            "line": 24,
+            "sha256": "1244318358b7b6e5c443621bcdf8801127d39e974d579fe77aa9d00c84970db5"
+          },
+          {
+            "line": 26,
+            "sha256": "15d9ca3c5b7e44b3a84822edaf8ddd3a0d3240fb0a2dd4b2a00d07747b08f357"
+          },
+          {
+            "line": 36,
+            "sha256": "730d807ac9e28108a341fc9640999b5c5a06cbacca6430be8cee437f3b3100a2"
+          },
+          {
+            "line": 38,
+            "sha256": "21179b92ca52ce2bd50c1cf7232d17f75eeb25bce5dde4682167711ab146e552"
+          },
+          {
+            "line": 40,
+            "sha256": "8a29cffe9cb1909060caf4bddfe5c3d594c5e94e38b389390ef2e7ab95d4b3ea"
+          },
+          {
+            "line": 41,
+            "sha256": "b1c0995ffd67cb817a6390a4eec5f29fc01cfdc167a2cfaa56dcb7a21deb770a"
+          },
+          {
+            "line": 42,
+            "sha256": "5ae63766c6c0e9e808b66b75bc3c0752fb012df4f5a0704bc2e923ec2d3f1f6c"
+          },
+          {
+            "line": 43,
+            "sha256": "badb753363c25c78d495bf899f0452e60a02a45a873136ac9f0f7741320f4380"
+          },
+          {
+            "line": 45,
+            "sha256": "d5ce245d53234cd30dffd28c9d0fe20537862aa968bb9ff7328c6321f9a5babf"
+          },
+          {
+            "line": 46,
+            "sha256": "ce7e57a5c6b27ae6cdad08083b0be80a32f357ba4c9ecc55c2af9ee2a5327b07"
+          },
+          {
+            "line": 48,
+            "sha256": "1f5687f8f2265c5ac5b58f91721b8001d8f48fa6f262849d0bba58e06eaf69f4"
+          },
+          {
+            "line": 49,
+            "sha256": "d3d3e3642020a10e645040249d589b441eab92fa089dd8a60332f7699b39e839"
+          },
+          {
+            "line": 57,
+            "sha256": "a813cc987989330d155d81b4e98352284fe8126362389376e0c4b187bb32ba91"
+          },
+          {
+            "line": 66,
+            "sha256": "a2e14d978f743d092ce1d9c205afeae4f750a629f9f7d387832781a3d6d4b787"
+          },
+          {
+            "line": 69,
+            "sha256": "d817ff0ad99f848fdeb1f046dcea97c0f5a9ebced15baaafcc152c0f390563e7"
+          },
+          {
+            "line": 71,
+            "sha256": "f95ee49cb867144dc96f9addcc11de656966dff9a5d3421ab69a2a9b481ff262"
+          },
+          {
+            "line": 78,
+            "sha256": "8df453d0a3e068adaf7b34eca620a7edb12fe24fc1265a7d82c73bb92183439e"
+          },
+          {
+            "line": 81,
+            "sha256": "aa0b2abb483894719622baf76936470a80371c23935302a5ffbdfdc0b04efc0d"
+          },
+          {
+            "line": 86,
+            "sha256": "e4b4a2a466c1037e9bb98ed1c981a7133e673058373cd11037ce899ea51d4e00"
+          },
+          {
+            "line": 87,
+            "sha256": "6af7441de713fbe04ab1829f91a2dfe19016babf7649ef191f96b29d73878dc5"
+          },
+          {
+            "line": 95,
+            "sha256": "f9acfdd7f7dc23843dbb949889d65b581ccc35dec0eebedfa62bd5f28ee28d7b"
+          },
+          {
+            "line": 97,
+            "sha256": "5040fd0df57bfacec9e0e4592914bf5331e7a67cc2275ecb0a959f227f33a5a9"
+          },
+          {
+            "line": 101,
+            "sha256": "a69cfec1b99a7d504e9afd265091c963c7ccb31e464d75e5a2a69a976deecb8d"
+          },
+          {
+            "line": 109,
+            "sha256": "8458dd2b86a38bae8708fb132ce494e95c4ce42cec17b808721cf4b10f00f756"
+          },
+          {
+            "line": 111,
+            "sha256": "72479ef852761c3255281312713f2eefd8fa04aa1549963438252a063c7da330"
+          },
+          {
+            "line": 116,
+            "sha256": "bddeeb87c7669816e216dc7577ecf83f731510856271cc63c5334a79108eaf23"
+          },
+          {
+            "line": 126,
+            "sha256": "3626835e07e912afc3424b3166fad78acf0c1fb9a25a70dd6724421b049b70dc"
+          }
+        ],
+        "stable_accessibility_identifiers_unchanged": true
+      },
+      {
+        "file": "Sources/App/BrowserSearchSettingsView.swift",
+        "sha256": "99e222227edb52a8a32952fc9dcf4230727aa7c5298792afe1dc6744a8e27146",
+        "typed_render_or_state_sites": [
+          {
+            "line": 17,
+            "sha256": "07d79147ed71a1ccc1f8e310d96de269f72435cb0fbf7ea67b0bef2e13848e1c"
+          },
+          {
+            "line": 29,
+            "sha256": "613d0cf513ddc755c530fe811f19aaa7b8f7342ac54bd27a66e291f84b30baeb"
+          },
+          {
+            "line": 31,
+            "sha256": "65da2a35eea0be85043179fcd249cb525927d0d5a4c61cb014a5e24edd45ed53"
+          },
+          {
+            "line": 32,
+            "sha256": "3922aea7e8e8c4c7f94b53e1ad9cf7bc8961df0ad9a1170abf6e95f2f3f8b6a0"
+          },
+          {
+            "line": 38,
+            "sha256": "262aa78cc2a8292ef40fd27c9f96bc5755a26ebf781af1bb219c772936385cb2"
+          },
+          {
+            "line": 39,
+            "sha256": "f270b26f49a95d9b9551ee7b07c449a89090829cabf4896fbbdcb6f7acb39fb3"
+          },
+          {
+            "line": 43,
+            "sha256": "4ba17db8f5040f3462622b92d0a658b57dd52cff087cf1c4fa820a99531d1aec"
+          },
+          {
+            "line": 48,
+            "sha256": "296e3177ab6cfcb8a488089a5a38335c68ab152fc8a868f66341451e33a4dfbb"
+          },
+          {
+            "line": 50,
+            "sha256": "5af52c3a9f866a7700ed4e6985f5447818f86640ad9aa0e6262f4ef4511fd641"
+          },
+          {
+            "line": 56,
+            "sha256": "358dda8e335353c0143198889785e571983275382e778561f46d3f9242ee1195"
+          },
+          {
+            "line": 58,
+            "sha256": "a245af95efaec4febad1fe65e3c3391a0b3935557c419918b4054b3a90626437"
+          },
+          {
+            "line": 63,
+            "sha256": "60275153f6620eb44536d36dc607290a707f608030b7d6a521dd9531455b7cd5"
+          }
+        ],
+        "stable_accessibility_identifiers_unchanged": true
+      },
+      {
+        "file": "Sources/App/BrowserView.swift",
+        "sha256": "1f1d2f8f61544947b66b4e330ec79301985c1a4730c42f4bda5dc45814154471",
+        "typed_render_or_state_sites": [
+          {
+            "line": 60,
+            "sha256": "c1b44d099494472a5800c72e440048896a48b41c8e8b116a8d84d46e42134fbb"
+          },
+          {
+            "line": 63,
+            "sha256": "d16e5973dbff27af2ac3269673cefd836730f25c78e63d862c34456e9bdac4cb"
+          }
+        ],
+        "stable_accessibility_identifiers_unchanged": true
+      }
+    ],
+    "skills": [
+      {
+        "file": "Sources/App/SkillCatalogView.swift",
+        "sha256": "574bff0be5723b92226e0f2bca5f5955450d8b6e6ef4ae6c25b0b66da0e80e50",
+        "typed_render_or_state_sites": [
+          {
+            "line": 20,
+            "sha256": "2b1e727751d6710ffc409639394fac7418de7bebde1b02b85167d0ac4a9e4f1a"
+          },
+          {
+            "line": 23,
+            "sha256": "6574963445a4b93ad56b31c2c261bc8e1e148c63e8d137b2e6ac0ac053622949"
+          },
+          {
+            "line": 25,
+            "sha256": "5c118eb1c3c4570f727d5f46562fb56c60065a0bb6e4ed8df93175317a0111db"
+          },
+          {
+            "line": 31,
+            "sha256": "3475d771302d007fc412209c6d7ce737462a3b296123a7f944ee7e2a641435ed"
+          },
+          {
+            "line": 33,
+            "sha256": "997c557aebd0543f9a949c03e61309192c96d130d813d1154fa4b9b4c7c93a8d"
+          },
+          {
+            "line": 36,
+            "sha256": "b553d90a4a04713efe52679ad127594f2fb56333588ec39be3dfc16cc20d2518"
+          },
+          {
+            "line": 44,
+            "sha256": "27d2221cc31cc16447d024c1a4c0653297d9d87b4216940b9fc56786cffe4769"
+          },
+          {
+            "line": 50,
+            "sha256": "be9515d1ada9e7c36f64e9a01a22a52f56dd409a430ba7f3d0f6a0e0c9f71bb5"
+          },
+          {
+            "line": 54,
+            "sha256": "2339626573e9eecc0f968ea15e4bb65e0c7d35cde505c21141c10c5dd07e5cce"
+          },
+          {
+            "line": 55,
+            "sha256": "7129fac5c2178f08141699cadf15c8ccbe129a4c060da0a36478b842b4e234da"
+          },
+          {
+            "line": 64,
+            "sha256": "541b12449e8659d67246e65e96990ea813d2297ca0d6e3b9f2f04f1dcb352112"
+          },
+          {
+            "line": 65,
+            "sha256": "9522ebb47fe46b2de2d664cd6847ffdab906b5226061cfecb52fe0551e998c86"
+          },
+          {
+            "line": 68,
+            "sha256": "a84713d9538cd8cb10f0adfda1398864e64c9a990abce43c741c8c8712a00796"
+          },
+          {
+            "line": 73,
+            "sha256": "fd8b9bed2fd6d76fa0d8a6807000b7a8ef7b2163c7dc164872523b1c32d412db"
+          },
+          {
+            "line": 77,
+            "sha256": "0030aa54a27dd4947827951285f4006232e181bf1f443090a72ca7cfde6bf64b"
+          },
+          {
+            "line": 85,
+            "sha256": "4ef7550bae1f5b927509a7bebb55a31838463b58e7ee81b766858f7ccd1f64cb"
+          },
+          {
+            "line": 91,
+            "sha256": "4f02e9332916899642c9661043fd8a8edc9ff21da60275d53109dd49e67ad5db"
+          },
+          {
+            "line": 114,
+            "sha256": "1e5abe818c22424bae040fc98f7174a6a290a37d6d788072f955064f55f56966"
+          },
+          {
+            "line": 116,
+            "sha256": "0ce4a9ab821a0705e31ad5ff882dab2ce7727d7dd4e481c5e7485e7e81307f2e"
+          },
+          {
+            "line": 118,
+            "sha256": "3d7d0700ee22cce91e638b23de7935cdbfe257d98b3cedeab187f9103c8ac957"
+          },
+          {
+            "line": 123,
+            "sha256": "a17ba24030ad3b9f757e82e3598394e7abd96f6a7d080a4511ce5e886902e82c"
+          },
+          {
+            "line": 125,
+            "sha256": "bc838253f89b6712ef5be8db1f2c8ef7b8b833d78c58e82428fa311f9976c509"
+          },
+          {
+            "line": 127,
+            "sha256": "7335518c808ffd19ca0489585a49b4583d1959ae995df87bf2d092451b758eda"
+          },
+          {
+            "line": 132,
+            "sha256": "4ed7a61372fabde7be01d3e2846ef94e1aa4b121745c4c953569e9a51fb47c6a"
+          },
+          {
+            "line": 134,
+            "sha256": "e0ac9cf082cbcf4e2419b1a4dabeb57514c975f514cf1eec873a26df19764852"
+          },
+          {
+            "line": 139,
+            "sha256": "6875cd160de3c01be91fe19ddb0f821094bf3882265ec5e89333bfbafe293498"
+          },
+          {
+            "line": 143,
+            "sha256": "c09b6f6192ae5d622ac53a880ffdaf30888eeda2ff078a6f172df7fb556aa7e2"
+          },
+          {
+            "line": 148,
+            "sha256": "47e41dabd2fb552801e17765f69ae14706b20acb448b784cf4807095b9220bf2"
+          },
+          {
+            "line": 149,
+            "sha256": "fa5b0f9550f4ffca26f7a109686ab7f2f9ab3af23f62425f72d3429ec6dbbaba"
+          },
+          {
+            "line": 151,
+            "sha256": "a4ca516ce0c7f769da730220bc7ff471407bbc73ab2f0a9972f5ffc04dfc9728"
+          },
+          {
+            "line": 153,
+            "sha256": "0bcfc2fb2a0127452d92c22f01cc3a5eefb01139432d36cabefbfcdfec0ac92e"
+          },
+          {
+            "line": 157,
+            "sha256": "9756c53964ed6f3abf8d99d2240c811f41a88fa742e148b582374b99dc2f2b2d"
+          },
+          {
+            "line": 161,
+            "sha256": "e953dc13b637aecdc79e92b7bf7fac701b5dd857ca0da9d90bfa98b8129556b6"
+          },
+          {
+            "line": 163,
+            "sha256": "a0a852e64f39d392f03ab969b37b9a99487cb444de921bcb002016c271f3d854"
+          },
+          {
+            "line": 170,
+            "sha256": "f52caaadea3e41f705172f8fe499af06f627bcd1357eee9526ed69d04032c2c5"
+          },
+          {
+            "line": 173,
+            "sha256": "a5581ce989ecccf1e6bbe46b5e82ff4f39f65917f4e26a4689d57daa812c063d"
+          },
+          {
+            "line": 177,
+            "sha256": "5feb41451817eea85b8d8cb9a37ea1a660deab37a598b9da8b0de8bc51e36f5f"
+          },
+          {
+            "line": 180,
+            "sha256": "1d3d73ab0ae7f846a561bfcccea4261491fa243da309ce3da7f3e549772a1d07"
+          },
+          {
+            "line": 182,
+            "sha256": "0bb39120b56246d3b30acc8c19dc700a31f4c6d19eae8b80d88bee1ae6861d5a"
+          },
+          {
+            "line": 183,
+            "sha256": "1aa03c42e81fe11c48b7d62e712e2867deb846ae91d955d7d4954421a84ff09c"
+          },
+          {
+            "line": 185,
+            "sha256": "29c7791ffb4cbbc36248a220b92113c6e2f8b26d85c0a42a0ed26475268d27ce"
+          },
+          {
+            "line": 189,
+            "sha256": "7600fffe68ea25cee29701f7fdf2262bcb8cd9bf43162210cbf3b6d690ee4559"
+          },
+          {
+            "line": 192,
+            "sha256": "9bc40a3f9c8785ea85b562e1529f85ed2454ed303345747dd490d981e71ef545"
+          },
+          {
+            "line": 203,
+            "sha256": "03570d9d26c86b29e81b576e795d88bdebc242d930978c30f4b0d03a827b7aa5"
+          },
+          {
+            "line": 220,
+            "sha256": "09fc9ed205416d7a748e40a0266a42a9fefda843912b640f237d1bfaf0c5696f"
+          },
+          {
+            "line": 232,
+            "sha256": "f690d3208b111f93ccb6859995e3d69352c0f56423ff38312a2248c3e4e67143"
+          }
+        ],
+        "stable_accessibility_identifiers_unchanged": true
+      },
+      {
+        "file": "Sources/App/AppSkillCatalogText.swift",
+        "sha256": "8d8506f92da5f7a35d0b54e7ec754da01da9aefb14dd1cbc8b33ec4cceb71bb7",
+        "typed_render_or_state_sites": [],
+        "stable_accessibility_identifiers_unchanged": null
+      }
+    ],
+    "notifications": [
+      {
+        "file": "Sources/App/TaskNotificationStore.swift",
+        "sha256": "3a02cc324823ebfbedce99ac97aa152b40ef983ed9bc579ed5770d22f6d0ef8f",
+        "typed_render_or_state_sites": [],
+        "stable_accessibility_identifiers_unchanged": true
+      },
+      {
+        "file": "Sources/App/TaskNotificationSettingsView.swift",
+        "sha256": "52edee9dd53bc8ce809d885370e8562599c448612d11c2f41d746dae1a09705f",
+        "typed_render_or_state_sites": [
+          {
+            "line": 13,
+            "sha256": "5393ae6735c45e71153cc5ea73947690064ea1d10ab930e46c7e306976b67830"
+          },
+          {
+            "line": 14,
+            "sha256": "e7c3635000a7ad9401699ff63f40a8176c4e5ad5c1232b814b14d45fbfc2f5d7"
+          },
+          {
+            "line": 15,
+            "sha256": "00dbd046172e6a76c153d60e94a20a1edef5d3eab6d78a99373ded3fdd99dafd"
+          },
+          {
+            "line": 16,
+            "sha256": "62c4c54215f248ac414f0a8f0992c9df5cd49a107f95126fb25ef93782261079"
+          },
+          {
+            "line": 18,
+            "sha256": "af17f811d6bd69b82ebcc7307da8d87e5f6c8497e7a868c3d4526579844eff15"
+          },
+          {
+            "line": 21,
+            "sha256": "bcf685c53e139a87edadf0f1021b0ec2dcded2d9411635da9597ba66558a505a"
+          },
+          {
+            "line": 25,
+            "sha256": "3234b25dd2beba00f8def6864f62e277ea025216ab25d4e8958a4cf6b50abf73"
+          },
+          {
+            "line": 30,
+            "sha256": "0ae2aad0af868363360158f08decbb5e280379e05f6af4fd9da7b90f0376ab9d"
+          },
+          {
+            "line": 31,
+            "sha256": "5539c04381dde0ea9594ad4fa3115a4c5d0cb046a105c58312b9e3b414160574"
+          },
+          {
+            "line": 33,
+            "sha256": "b81870ec1127ee0ffbf321f19fa4f55586a21c0614745314434fba3b450e65ec"
+          },
+          {
+            "line": 35,
+            "sha256": "38fb4351304bb38b9a98ea0c03f14d586a190492385d4fc7aa404518d871895c"
+          },
+          {
+            "line": 37,
+            "sha256": "5d2f4ae6ccd7b69823046877ead9f23d180bc6795dd5eb4d7867ae368af29122"
+          },
+          {
+            "line": 39,
+            "sha256": "5185172209cb4d7248550382547aabe1d4597fd7d78e5cd2c48a0a946c49f244"
+          },
+          {
+            "line": 42,
+            "sha256": "b6e0090a06199b8b0a3bc65bfb90ae431b3fa5f9f1bfdeb845b25027041b5547"
+          },
+          {
+            "line": 46,
+            "sha256": "7dfd8ff17e01c1750f5288e70e506bea70a24be2b90a5d33c8ab15ae8c0c4db2"
+          },
+          {
+            "line": 49,
+            "sha256": "33c0eb88041daf4d2b6a6988b0b17691f54bce7fe4122c23d6977c901ec67e70"
+          },
+          {
+            "line": 65,
+            "sha256": "20f47a32505739ecab9a13a455aec5ddd2404cac19efee72ac4c6f477af78a0a"
+          },
+          {
+            "line": 68,
+            "sha256": "bec5b7560aabae1d1b95f47311fccd1823d9a0b57b431446e3454eb6ec26ffe5"
+          }
+        ],
+        "stable_accessibility_identifiers_unchanged": true
+      },
+      {
+        "file": "Sources/App/TaskNotificationCenterAdapter.swift",
+        "sha256": "49f82a7118b86dcb3fed188835a96f2b703c9d916f494f998c472ecb8d99f19a",
+        "typed_render_or_state_sites": [
+          {
+            "line": 49,
+            "sha256": "16a512e13bb55542b49f85c4448f4d808dae156d1b684782b2d858254ea57663"
+          },
+          {
+            "line": 50,
+            "sha256": "196b0c59b7b2bdf14b6841d78bf80c9c1a08a3b751c803bc8964b0dc24cc2b53"
+          }
+        ],
+        "stable_accessibility_identifiers_unchanged": true
+      },
+      {
+        "file": "Sources/App/AppNotificationText.swift",
+        "sha256": "cfe7b2b78a14da01d8b0f948553bb588c61d5208e138b423ccbcaea23c17dcaa",
+        "typed_render_or_state_sites": [],
+        "stable_accessibility_identifiers_unchanged": null
+      }
+    ]
+  },
+  "remaining": [
+    "Chat/ContentView/archive and attachment UI owned by Feynman; no edits",
+    "BrowserSession/BrowserDownloadManager/BrowserDownloadsView messages, domain error adapters and main browser controls remain pending",
+    "LearningStore errors and skill catalog source title/adaptation-scope metadata remain verbatim; not counted as translated",
+    "Skill execution/authoring/agent/document/transcript/research views and sessions remain pending",
+    "Notification AX raw enum values remain stable diagnostic state, alongside translated visible labels; no OS banner/sound/tap verification",
+    "System Files/share/permission UI follows system localization; not implemented by this App",
+    "BrowserTab persisted default/login placeholder titles lack a semantic title discriminator; retained verbatim, not inferred from a nil URL"
+  ],
+  "behavior_preserved": [
+    "MCP request IDs/cancellation/client/selected names/callback order",
+    "Browser WKWebView lifecycle/site-data removal/navigation/permissions",
+    "Notification permission requests/service identity/routes/no-private-payload contract",
+    "Skill original archive hash, original text, adaptation text and import approval flow"
+  ],
+  "test_language_strategy": "Existing normal native launches pin AppleLanguages zh-Hant and AppleLocale zh_TW; dedicated language cases exercise system/explicit/unsupported languages; no DEBUG product locale forcing",
+  "integration_required": [
+    "Append language helper dependencies to central App source list and independent notification checker as provided by delta",
+    "Run scripts/check_app_language_phase2.py and existing notification/search checks",
+    "Native English/Simplified MCP, browser/search, catalog and notification UI still require acceptance; phase1 three UI methods do not establish phase2 acceptance"
+  ],
+  "keys": {
+    "previous": 76,
+    "added": 205,
+    "total": 281,
+    "not_a_ui_coverage_percentage": true
+  }
+}

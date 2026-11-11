@@ -1,0 +1,377 @@
+{
+  "status": "NATIVE_UI_FAILURES_PRESERVED",
+  "source_sha": "d9383c73800562dc102007bf36d42d958853e74f",
+  "runs": [
+    {
+      "run_id": 42929156261,
+      "label": "workspace-current",
+      "source_sha": "d9383c73800562dc102007bf36d42d958853e74f",
+      "result": "FAIL",
+      "counts": {
+        "expectedFailures": 0,
+        "failedTests": 2,
+        "passedTests": 7,
+        "skippedTests": 0,
+        "totalTestCount": 9
+      },
+      "checks": {
+        "run_sha": true,
+        "attempt_one": true,
+        "artifact_run_sha": true,
+        "full_zip_digest": true,
+        "full_zip_bytes": true,
+        "nine_methods_each_once": true,
+        "zero_skips": true,
+        "no_missing_unexpected": true,
+        "xcresult_present": true,
+        "runtime": true,
+        "ui_evidence_same_runtime": true
+      },
+      "evidence_integrity_pass": true,
+      "device": {
+        "architecture": "arm64",
+        "deviceId": "AD4297E7-6988-4DFD-954B-452BE82632A9",
+        "deviceName": "Woow-CI-4a92afd002ee42cf9d9c2efc769fd87a",
+        "modelName": "iPhone 17",
+        "osBuildNumber": "23C54",
+        "osVersion": "26.2",
+        "platform": "iOS Simulator"
+      },
+      "xcode": "2026-11-11T00:17:44.5259420Z Xcode 26.2\n2026-11-11T00:17:44.5259820Z Build version 17C52",
+      "simulator_uuid_note": "Matched xcresult summary to fresh simulator metadata.",
+      "artifact": {
+        "run_id": 42929156261,
+        "artifact_id": 13816519317,
+        "bytes": 207442105,
+        "sha256": "0a79377d170b4b5ab8feb684086964a510841e79e5a5e5fb3de3ccf878b9083b",
+        "digest_matches": true,
+        "bytes_match": true
+      },
+      "method_events": {
+        "WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserSearchUITests/testCustomSearchQueryAndSettingsSurviveRelaunch": [
+          "started",
+          "failed"
+        ],
+        "WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testBookmarkRenameHistoryClearAndRelaunch": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testManualQueryPageAndRealJavaScriptDialog": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindClearsOnReloadAndTabSwitch": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose": [
+          "started",
+          "failed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testTabsKeepIndependentPageStateAndRestoreSelection": [
+          "started",
+          "passed"
+        ]
+      },
+      "failure_lines": [
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserSearchUITests.swift:71: error: -[WoowAssistantUITests.BrowserSearchUITests testCustomSearchQueryAndSettingsSurviveRelaunch] : failed - No safe bounded scroll can reveal browser.searchEngine.template; visibility remains required.",
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserWorkspaceUITests.swift:122: error: -[WoowAssistantUITests.BrowserWorkspaceUITests testNativePageFindQueryNextPreviousAndClose] : XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\") - Two native Next actions must reveal the third real match below the 900pt spacer."
+      ],
+      "test_failures": [
+        {
+          "failureText": "failed - No safe bounded scroll can reveal browser.searchEngine.template; visibility remains required.",
+          "targetName": "WoowAssistantUITests",
+          "testIdentifier": 3,
+          "testIdentifierString": "BrowserSearchUITests/testCustomSearchQueryAndSettingsSurviveRelaunch()",
+          "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserSearchUITests/testCustomSearchQueryAndSettingsSurviveRelaunch",
+          "testName": "testCustomSearchQueryAndSettingsSurviveRelaunch()"
+        },
+        {
+          "failureText": "XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\") - Two native Next actions must reveal the third real match below the 900pt spacer.",
+          "targetName": "WoowAssistantUITests",
+          "testIdentifier": 8,
+          "testIdentifierString": "BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose()",
+          "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose",
+          "testName": "testNativePageFindQueryNextPreviousAndClose()"
+        }
+      ],
+      "xcresult": {
+        "members": 1098,
+        "bytes": 104569840,
+        "decoded_locally": false,
+        "runner_exported_summary_reviewed": true
+      },
+      "retried": false
+    },
+    {
+      "run_id": 42929160936,
+      "label": "workspace-se",
+      "source_sha": "d9383c73800562dc102007bf36d42d958853e74f",
+      "result": "FAIL",
+      "counts": {
+        "expectedFailures": 0,
+        "failedTests": 5,
+        "passedTests": 4,
+        "skippedTests": 0,
+        "totalTestCount": 9
+      },
+      "checks": {
+        "run_sha": true,
+        "attempt_one": true,
+        "artifact_run_sha": true,
+        "full_zip_digest": true,
+        "full_zip_bytes": true,
+        "nine_methods_each_once": true,
+        "zero_skips": true,
+        "no_missing_unexpected": true,
+        "xcresult_present": true,
+        "runtime": true,
+        "ui_evidence_same_runtime": true
+      },
+      "evidence_integrity_pass": true,
+      "device": {
+        "architecture": "arm64",
+        "deviceId": "B616EAFB-4E8D-4629-B50D-B93AB4F98C2E",
+        "deviceName": "Woow-CI-e624580cf5d946f38626fb25b284725b",
+        "modelName": "iPhone SE (3rd generation)",
+        "osBuildNumber": "22F77",
+        "osVersion": "18.5",
+        "platform": "iOS Simulator"
+      },
+      "xcode": "2026-11-11T00:17:49.7135950Z Xcode 16.4\n2026-11-11T00:17:49.7149870Z Build version 16F6",
+      "simulator_uuid_note": "Matched xcresult summary to fresh simulator metadata.",
+      "artifact": {
+        "run_id": 42929160936,
+        "artifact_id": 13817810403,
+        "bytes": 279008863,
+        "sha256": "73ae6fd9e3cf5b5c7385e62f5c02b38456d0a2b7805a35b737fd4084ae5e4996",
+        "digest_matches": true,
+        "bytes_match": true
+      },
+      "method_events": {
+        "WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout": [
+          "started",
+          "failed"
+        ],
+        "WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch": [
+          "started",
+          "failed"
+        ],
+        "WoowAssistantUITests/BrowserSearchUITests/testCustomSearchQueryAndSettingsSurviveRelaunch": [
+          "started",
+          "failed"
+        ],
+        "WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch": [
+          "started",
+          "failed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testBookmarkRenameHistoryClearAndRelaunch": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testManualQueryPageAndRealJavaScriptDialog": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindClearsOnReloadAndTabSwitch": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose": [
+          "started",
+          "failed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testTabsKeepIndependentPageStateAndRestoreSelection": [
+          "started",
+          "passed"
+        ]
+      },
+      "failure_lines": [
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserLoginUITests.swift:472: error: -[WoowAssistantUITests.BrowserLoginUITests testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout] : failed - The native keyboard switch must be available for the synthetic ASCII account.",
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserLoginUITests.swift:395: error: -[WoowAssistantUITests.BrowserLoginUITests testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch] : XCTAssertTrue failed - Website clearing must change the Cookie header observed by the same HTTP server.",
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserSearchUITests.swift:90: error: -[WoowAssistantUITests.BrowserSearchUITests testCustomSearchQueryAndSettingsSurviveRelaunch] : XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\")",
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserSiteModesUITests.swift:103: error: -[WoowAssistantUITests.BrowserSiteModesUITests testManualGETChoiceReloadsAndSurvivesRelaunch] : XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\") - Loaded manual document must expose the saved site mode: 手機版",
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserWorkspaceUITests.swift:122: error: -[WoowAssistantUITests.BrowserWorkspaceUITests testNativePageFindQueryNextPreviousAndClose] : XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\") - Two native Next actions must reveal the third real match below the 900pt spacer."
+      ],
+      "test_failures": [
+        {
+          "failureText": "XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\")",
+          "targetName": "WoowAssistantUITests",
+          "testIdentifier": 3,
+          "testIdentifierString": "BrowserSearchUITests/testCustomSearchQueryAndSettingsSurviveRelaunch()",
+          "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserSearchUITests/testCustomSearchQueryAndSettingsSurviveRelaunch",
+          "testName": "testCustomSearchQueryAndSettingsSurviveRelaunch()"
+        },
+        {
+          "failureText": "XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\") - Loaded manual document must expose the saved site mode: 手機版",
+          "targetName": "WoowAssistantUITests",
+          "testIdentifier": 4,
+          "testIdentifierString": "BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch()",
+          "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch",
+          "testName": "testManualGETChoiceReloadsAndSurvivesRelaunch()"
+        },
+        {
+          "failureText": "failed - The native keyboard switch must be available for the synthetic ASCII account.",
+          "targetName": "WoowAssistantUITests",
+          "testIdentifier": 1,
+          "testIdentifierString": "BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout()",
+          "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+          "testName": "testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout()"
+        },
+        {
+          "failureText": "XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\") - Two native Next actions must reveal the third real match below the 900pt spacer.",
+          "targetName": "WoowAssistantUITests",
+          "testIdentifier": 8,
+          "testIdentifierString": "BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose()",
+          "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose",
+          "testName": "testNativePageFindQueryNextPreviousAndClose()"
+        },
+        {
+          "failureText": "XCTAssertTrue failed - Website clearing must change the Cookie header observed by the same HTTP server.",
+          "targetName": "WoowAssistantUITests",
+          "testIdentifier": 2,
+          "testIdentifierString": "BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch()",
+          "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+          "testName": "testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch()"
+        }
+      ],
+      "xcresult": {
+        "members": 1120,
+        "bytes": 139852629,
+        "decoded_locally": false,
+        "runner_exported_summary_reviewed": true
+      },
+      "retried": false
+    },
+    {
+      "run_id": 42929166070,
+      "label": "workspace-exact17",
+      "source_sha": "d9383c73800562dc102007bf36d42d958853e74f",
+      "result": "FAIL",
+      "counts": {
+        "expectedFailures": 0,
+        "failedTests": 2,
+        "passedTests": 7,
+        "skippedTests": 0,
+        "totalTestCount": 9
+      },
+      "checks": {
+        "run_sha": true,
+        "attempt_one": true,
+        "artifact_run_sha": true,
+        "full_zip_digest": true,
+        "full_zip_bytes": true,
+        "nine_methods_each_once": true,
+        "zero_skips": true,
+        "no_missing_unexpected": true,
+        "xcresult_present": true,
+        "runtime": true,
+        "expected_methods": true,
+        "ui_evidence_same_runtime": true
+      },
+      "evidence_integrity_pass": true,
+      "device": {
+        "architecture": "arm64",
+        "deviceId": "EC570565-24C9-45CA-8C1F-A15604CD1DB5",
+        "deviceName": "Woow-iOS17-edf6d54c5562467bbe4a7a50f84f0d3b",
+        "modelName": "iPhone 15",
+        "osBuildNumber": "21A342",
+        "osVersion": "17.0.1",
+        "platform": "iOS Simulator"
+      },
+      "xcode": "Xcode 16.4\nBuild version 16F6",
+      "simulator_uuid_note": "Observed in xcresult summary and matching screenshot manifest; report simulator_state unavailable after cleanup.",
+      "artifact": {
+        "run_id": 42929166070,
+        "artifact_id": 13817102463,
+        "bytes": 40079035,
+        "sha256": "63c9d257d0d85a08afb3c7869089a6ec5afaec3387be117af16d0215b206973c",
+        "digest_matches": true,
+        "bytes_match": true
+      },
+      "method_events": {
+        "WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserSearchUITests/testCustomSearchQueryAndSettingsSurviveRelaunch": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch": [
+          "started",
+          "failed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testBookmarkRenameHistoryClearAndRelaunch": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testManualQueryPageAndRealJavaScriptDialog": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindClearsOnReloadAndTabSwitch": [
+          "started",
+          "passed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose": [
+          "started",
+          "failed"
+        ],
+        "WoowAssistantUITests/BrowserWorkspaceUITests/testTabsKeepIndependentPageStateAndRestoreSelection": [
+          "started",
+          "passed"
+        ]
+      },
+      "failure_lines": [
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserSiteModesUITests.swift:103: error: -[WoowAssistantUITests.BrowserSiteModesUITests testManualGETChoiceReloadsAndSurvivesRelaunch] : XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\") - Loaded manual document must expose the saved site mode: 手機版",
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserWorkspaceUITests.swift:181: error: -[WoowAssistantUITests.BrowserWorkspaceUITests testNativePageFindQueryNextPreviousAndClose] : XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\")"
+      ],
+      "test_failures": [
+        {
+          "failureText": "XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\") - Loaded manual document must expose the saved site mode: 手機版",
+          "targetName": "WoowAssistantUITests",
+          "testIdentifier": 4,
+          "testIdentifierString": "BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch()",
+          "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch",
+          "testName": "testManualGETChoiceReloadsAndSurvivesRelaunch()"
+        },
+        {
+          "failureText": "XCTAssertEqual failed: (\"XCTWaiterResult(rawValue: 2)\") is not equal to (\"XCTWaiterResult(rawValue: 1)\")",
+          "targetName": "WoowAssistantUITests",
+          "testIdentifier": 8,
+          "testIdentifierString": "BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose()",
+          "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose",
+          "testName": "testNativePageFindQueryNextPreviousAndClose()"
+        }
+      ],
+      "xcresult": {
+        "members": 86,
+        "bytes": 19197554,
+        "decoded_locally": false,
+        "runner_exported_summary_reviewed": true
+      },
+      "retried": false
+    }
+  ],
+  "scope": "ui-workspace",
+  "agent_full_artifact_verification": true,
+  "parent_reviewed_method_counts_and_failure_lines": true,
+  "fix_status": "Find, search settings, SE login/cookie clearing and site mode under investigation. No old failure relabeled as pass."
+}

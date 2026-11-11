@@ -4,6 +4,7 @@ import AssistantBrowser
 
 @MainActor
 struct BrowserView: View {
+    @Environment(\.appLocalizer) private var localizer
     @ObservedObject var browser: BrowserSession
     @ObservedObject var chat: ChatSession
     @ObservedObject var workspace: BrowserWorkspace
@@ -55,11 +56,11 @@ struct BrowserView: View {
             if let error = browser.error {
                 Text(error).font(.caption).foregroundStyle(.red).accessibilityIdentifier("browser.error")
             }
-            if let notice = workspace.siteModeNotice {
-                Text(notice).font(.caption).accessibilityIdentifier("browser.siteMode.notice")
+            if let notice = workspace.siteModeNoticeText {
+                Text(localizer.text(notice)).font(.caption).accessibilityIdentifier("browser.siteMode.notice")
             }
-            if let error = workspace.error {
-                Text(error).font(.caption).foregroundStyle(.red).accessibilityIdentifier("browser.workspace.error")
+            if let error = workspace.errorText {
+                Text(localizer.text(error)).font(.caption).foregroundStyle(.red).accessibilityIdentifier("browser.workspace.error")
             }
             if browser.automationOwnsDocument && !browser.isRunning && !browser.isInteracting {
                 HStack {

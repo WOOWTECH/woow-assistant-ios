@@ -6,6 +6,7 @@ import AssistantDomain
 @MainActor final class TaskNotificationCenterAdapter: NSObject, TaskNotificationClient, UNUserNotificationCenterDelegate {
     private let center: UNUserNotificationCenter
     private let scope: String
+    private let localizer: () -> AppLocalizer
     var onOpen: ((TaskNotificationDestination) -> Void)?
     var onDismiss: ((String) -> Void)?
     var mayPresent: ((String) -> Bool)?
@@ -14,9 +15,10 @@ import AssistantDomain
     var onCompletedAddAttempt: (() -> Void)?
     #endif
 
-    init(center: UNUserNotificationCenter, scope: String = "production") {
+    init(center: UNUserNotificationCenter, scope: String = "production",
+         localizer: @escaping () -> AppLocalizer = { AppLocalizer(language: .traditionalChinese) }) {
         precondition(scope == "production" || UUID(uuidString: scope)?.uuidString == scope)
-        self.center = center; self.scope = scope; super.init()
+        self.center = center; self.scope = scope; self.localizer = localizer; super.init()
     }
     func installDelegate() { center.delegate = self }
 
@@ -41,9 +43,11 @@ import AssistantDomain
         _ = try await center.requestAuthorization(options: [.alert, .sound])
     }
 
-    static func request(_ payload: TaskNotificationPayload, sound: Bool, scope: String = "production") -> UNNotificationRequest {
+    static func request(_ payload: TaskNotificationPayload, sound: Bool, scope: String = "production",
+                        localizer: AppLocalizer = AppLocalizer(language: .traditionalChinese)) -> UNNotificationRequest {
         let content = UNMutableNotificationContent()
-        content.title = payload.title; content.body = payload.body
+        content.title = localizer.notificationTitle(payload.kind)
+        content.body = localizer.notificationBody(payload.kind)
         content.sound = sound ? .default : nil
         // No userInfo, subtitle, thread/category identifiers, badges, attachments or actions.
         return UNNotificationRequest(identifier: scopedIdentifier(payload.identifier, scope: scope), content: content, trigger: nil)
@@ -56,7 +60,7 @@ import AssistantDomain
             onCompletedAddAttempt?()
         }
         #endif
-        try await center.add(Self.request(payload, sound: sound, scope: scope))
+        try await center.add(Self.request(payload, sound: sound, scope: scope, localizer: localizer()))
     }
 
     func remove(identifiers: [String]) async {

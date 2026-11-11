@@ -13,7 +13,9 @@ import tempfile
 import time
 
 
-APP_SOURCES = [
+LANGUAGE_APP_SOURCES = ["AppLanguage", "AppLanguageStore", "AppLanguagePreferences", "AppText", "AppLocalizer", "AppMCPText"]
+
+APP_SOURCES = LANGUAGE_APP_SOURCES + [
     "BrowserUploadFixture", "BrowserLoginFixture", "SkillExecutionUITestSupport",
     "BrowserWorkspace", "ChatSession", "ConversationArchiveStore", "BrowserSession", "LearningKeychainStore",
     "UITestModelFixture", "MCPSettings", "LiveModelUITestSupport", "ModelSettings",

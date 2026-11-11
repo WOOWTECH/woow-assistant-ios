@@ -3,6 +3,7 @@ import SwiftUI
 
 @MainActor
 struct BrowserSearchSettingsView: View {
+    @Environment(\.appLocalizer) private var localizer
     @ObservedObject var workspace: BrowserWorkspace
     @Environment(\.dismiss) private var dismiss
     @State private var name = ""
@@ -13,7 +14,7 @@ struct BrowserSearchSettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("搜尋引擎") {
+                Section(localizer.text(.searchTitle)) {
                     ForEach(workspace.library.searchSettings.all) { engine in
                         HStack {
                             Button { workspace.selectSearchEngine(engine.id) } label: {
@@ -25,41 +26,41 @@ struct BrowserSearchSettingsView: View {
                                     }
                                 }
                             }.accessibilityIdentifier("browser.searchEngine.select.\(engine.id)")
-                                .accessibilityValue(workspace.library.searchSettings.selectedID == engine.id ? "已選取" : "未選取")
+                                .accessibilityValue(workspace.library.searchSettings.selectedID == engine.id ? localizer.text(.commonSelected) : localizer.text(.commonUnselected))
                             if engine.id.hasPrefix("custom:") {
-                                Button("刪除", role: .destructive) { workspace.removeSearchEngine(engine.id) }
-                                    .accessibilityLabel("刪除 \(engine.name)")
+                                Button(localizer.text(.commonDelete), role: .destructive) { workspace.removeSearchEngine(engine.id) }
+                                    .accessibilityLabel(localizer.text(.commonDeleteName(name: engine.name)))
                                     .accessibilityIdentifier("browser.searchEngine.remove.\(engine.id)")
                             }
                         }.buttonStyle(.borderless)
                     }
                 }
-                Section("新增自訂引擎") {
-                    TextField("名稱", text: $name).autocorrectionDisabled()
+                Section(localizer.text(.searchCustom)) {
+                    TextField(localizer.text(.commonName), text: $name).autocorrectionDisabled()
                         .focused($focusedField, equals: .name).submitLabel(.next)
                         .onSubmit { focusedField = .template }
                         .accessibilityIdentifier("browser.searchEngine.name")
-                    TextField("https://example.com/search?q=%s", text: $template)
+                    TextField(localizer.text(.searchTemplate), text: $template)
                         .textInputAutocapitalization(.never).autocorrectionDisabled().keyboardType(.URL)
                         .focused($focusedField, equals: .template).submitLabel(.done)
                         .onSubmit { focusedField = nil }
                         .accessibilityIdentifier("browser.searchEngine.template")
-                    Text("以 %s 代表搜尋文字，只接受公開 HTTPS；不接受網址帳密、登入參數或 #。最多 20 個。")
+                    Text(localizer.text(.searchHelp))
                         .font(.caption)
-                    Button("新增並使用") {
+                    Button(localizer.text(.searchAdd)) {
                         focusedField = nil
                         if workspace.addSearchEngine(name: name, template: template) { name = ""; template = "" }
                     }.accessibilityIdentifier("browser.searchEngine.add")
                 }
-                if let error = workspace.error {
-                    Text(error).foregroundStyle(.red).accessibilityIdentifier("browser.searchEngine.error")
+                if let error = workspace.errorText {
+                    Text(localizer.text(error)).foregroundStyle(.red).accessibilityIdentifier("browser.searchEngine.error")
                 }
-                Text("變更引擎會用於下一次手動搜尋；目前頁面不會重新載入。搜尋結果網址會沿用瀏覽歷史的儲存與清除設定。")
+                Text(localizer.text(.searchChanges))
                     .font(.caption)
             }
             .scrollDismissesKeyboard(.interactively)
             .disabled(!workspace.available || workspace.isClearingWebsiteData)
-            .navigationTitle("搜尋引擎")
+            .navigationTitle(localizer.text(.searchTitle))
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("完成") { dismiss() }.accessibilityIdentifier("browser.searchEngine.close")

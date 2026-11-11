@@ -799,6 +799,2134 @@
         "zh-Hans": "Keychain 访问失败（系统代码 %1$@），设置未更改。",
         "en": "Keychain access failed (system code %1$@). Settings were not changed."
       }
+    },
+    {
+      "case": "commonDelete",
+      "key": "common.delete",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "刪除",
+        "zh-Hans": "删除",
+        "en": "Delete"
+      }
+    },
+    {
+      "case": "commonCancel",
+      "key": "common.cancel",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "取消",
+        "zh-Hans": "取消",
+        "en": "Cancel"
+      }
+    },
+    {
+      "case": "commonSave",
+      "key": "common.save",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "儲存",
+        "zh-Hans": "保存",
+        "en": "Save"
+      }
+    },
+    {
+      "case": "commonClose",
+      "key": "common.close",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "關閉",
+        "zh-Hans": "关闭",
+        "en": "Close"
+      }
+    },
+    {
+      "case": "commonClear",
+      "key": "common.clear",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "清除",
+        "zh-Hans": "清除",
+        "en": "Clear"
+      }
+    },
+    {
+      "case": "commonName",
+      "key": "common.name",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "名稱",
+        "zh-Hans": "名称",
+        "en": "Name"
+      }
+    },
+    {
+      "case": "commonSelected",
+      "key": "common.selected",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已選取",
+        "zh-Hans": "已选取",
+        "en": "Selected"
+      }
+    },
+    {
+      "case": "commonUnselected",
+      "key": "common.unselected",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "未選取",
+        "zh-Hans": "未选取",
+        "en": "Not selected"
+      }
+    },
+    {
+      "case": "commonUnknown",
+      "key": "common.unknown",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "尚未取得",
+        "zh-Hans": "尚未获取",
+        "en": "Not available yet"
+      }
+    },
+    {
+      "case": "mcpTitle",
+      "key": "mcp.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "MCP 與 Skills",
+        "zh-Hans": "MCP 与 Skills",
+        "en": "MCP and Skills"
+      }
+    },
+    {
+      "case": "mcpConnectionSection",
+      "key": "mcp.connection.section",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "MCP 連線與目錄",
+        "zh-Hans": "MCP 连接与目录",
+        "en": "MCP connection and catalog"
+      }
+    },
+    {
+      "case": "mcpNoTools",
+      "key": "mcp.no.tools",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "伺服器未宣告工具能力",
+        "zh-Hans": "服务器未声明工具能力",
+        "en": "The server did not declare tool support"
+      }
+    },
+    {
+      "case": "mcpNoResources",
+      "key": "mcp.no.resources",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "伺服器未宣告資源能力",
+        "zh-Hans": "服务器未声明资源能力",
+        "en": "The server did not declare resource support"
+      }
+    },
+    {
+      "case": "mcpExplanation",
+      "key": "mcp.explanation",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "支援 HTTPS Streamable HTTP。連線後選取要提供給對話模型的工具，再到對話開啟 MCP。每次執行前會顯示工具名稱與完整參數，等你核准；工具說明及結果會送給已設定的模型。",
+        "zh-Hans": "支持 HTTPS Streamable HTTP。连接后选取要提供给对话模型的工具，再到对话开启 MCP。每次执行前会显示工具名称与完整参数，等待你批准；工具说明及结果会发送给已配置的模型。",
+        "en": "Supports HTTPS Streamable HTTP. Connect, select tools for the conversation model, then enable MCP in chat. Each execution requires your approval of the tool name and complete arguments. Tool descriptions and results are sent to your configured model."
+      }
+    },
+    {
+      "case": "mcpIsolation",
+      "key": "mcp.isolation",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "UI 測試隔離模式：不會發送 MCP 網路請求。",
+        "zh-Hans": "UI 测试隔离模式：不会发送 MCP 网络请求。",
+        "en": "Isolated UI test mode: no MCP network requests."
+      }
+    },
+    {
+      "case": "mcpStored",
+      "key": "mcp.stored",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "端點已安全儲存；不顯示網址。",
+        "zh-Hans": "端点已安全保存；不显示网址。",
+        "en": "Endpoint stored securely; its URL is hidden."
+      }
+    },
+    {
+      "case": "mcpNotStored",
+      "key": "mcp.not.stored",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "尚未儲存端點。",
+        "zh-Hans": "尚未保存端点。",
+        "en": "No endpoint saved."
+      }
+    },
+    {
+      "case": "mcpEndpoint",
+      "key": "mcp.endpoint",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "完整 HTTPS MCP 端點",
+        "zh-Hans": "完整 HTTPS MCP 端点",
+        "en": "Complete HTTPS MCP endpoint"
+      }
+    },
+    {
+      "case": "mcpEndpointAX",
+      "key": "mcp.endpoint.a.x",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "MCP 私密端點",
+        "zh-Hans": "MCP 私密端点",
+        "en": "Private MCP endpoint"
+      }
+    },
+    {
+      "case": "mcpEndpointHelp",
+      "key": "mcp.endpoint.help",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "Webhook URL 等同憑證，完整網址僅儲存於此裝置解鎖時可讀取的 Keychain，不透過 iCloud 同步。輸入新端點後，請先儲存或清除草稿再連線。",
+        "zh-Hans": "Webhook URL 等同凭证，完整网址仅保存在此设备解锁时可读取的 Keychain，不通过 iCloud 同步。输入新端点后，请先保存或清除草稿再连接。",
+        "en": "A webhook URL is a credential. The complete URL is stored only in this device’s Keychain, accessible while unlocked, without iCloud sync. Save or clear a new endpoint draft before connecting."
+      }
+    },
+    {
+      "case": "mcpSave",
+      "key": "mcp.save",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "儲存端點",
+        "zh-Hans": "保存端点",
+        "en": "Save endpoint"
+      }
+    },
+    {
+      "case": "mcpClearDraft",
+      "key": "mcp.clear.draft",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "清除輸入",
+        "zh-Hans": "清除输入",
+        "en": "Clear input"
+      }
+    },
+    {
+      "case": "mcpRemoveStored",
+      "key": "mcp.remove.stored",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "移除已儲存端點",
+        "zh-Hans": "移除已保存端点",
+        "en": "Remove saved endpoint"
+      }
+    },
+    {
+      "case": "mcpExploration",
+      "key": "mcp.exploration",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "探索狀態",
+        "zh-Hans": "探索状态",
+        "en": "Discovery status"
+      }
+    },
+    {
+      "case": "mcpCancel",
+      "key": "mcp.cancel",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "取消等待",
+        "zh-Hans": "取消等待",
+        "en": "Cancel waiting"
+      }
+    },
+    {
+      "case": "mcpConnect",
+      "key": "mcp.connect",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "連線並探索目錄",
+        "zh-Hans": "连接并探索目录",
+        "en": "Connect and discover catalog"
+      }
+    },
+    {
+      "case": "mcpDisconnect",
+      "key": "mcp.disconnect",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "中斷連線",
+        "zh-Hans": "断开连接",
+        "en": "Disconnect"
+      }
+    },
+    {
+      "case": "mcpServerTools",
+      "key": "mcp.server.tools",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "伺服器工具",
+        "zh-Hans": "服务器工具",
+        "en": "Server tools"
+      }
+    },
+    {
+      "case": "mcpSearchTools",
+      "key": "mcp.search.tools",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "搜尋工具名稱",
+        "zh-Hans": "搜索工具名称",
+        "en": "Search tool names"
+      }
+    },
+    {
+      "case": "mcpServerResources",
+      "key": "mcp.server.resources",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "伺服器資源",
+        "zh-Hans": "服务器资源",
+        "en": "Server resources"
+      }
+    },
+    {
+      "case": "mcpSkills",
+      "key": "mcp.skills",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "Skills",
+        "zh-Hans": "Skills",
+        "en": "Skills"
+      }
+    },
+    {
+      "case": "mcpSkillsLocation",
+      "key": "mcp.skills.location",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請到「資料 → 技能」管理",
+        "zh-Hans": "请到“数据 → 技能”管理",
+        "en": "Manage skills in Data → Skills"
+      }
+    },
+    {
+      "case": "mcpSkillsHelp",
+      "key": "mcp.skills.help",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "可匯入並審核文字技能，已啟用且相關的內容會提供給對話模型。網站研究可產生待審核技能；MCP 工具依每次對話的核准執行。",
+        "zh-Hans": "可导入并审核文字技能，已启用且相关的内容会提供给对话模型。网站研究可生成待审核技能；MCP 工具依每次对话的批准执行。",
+        "en": "Import and review text skills. Relevant enabled content is provided to the conversation model. Website research can prepare skills for review; MCP tools run with approval in each conversation."
+      }
+    },
+    {
+      "case": "mcpRemoveQuestion",
+      "key": "mcp.remove.question",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "移除此裝置儲存的 MCP 端點？",
+        "zh-Hans": "移除此设备保存的 MCP 端点？",
+        "en": "Remove the MCP endpoint saved on this device?"
+      }
+    },
+    {
+      "case": "mcpRemove",
+      "key": "mcp.remove",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "移除端點",
+        "zh-Hans": "移除端点",
+        "en": "Remove endpoint"
+      }
+    },
+    {
+      "case": "mcpNotConfigured",
+      "key": "mcp.not.configured",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "尚未設定 MCP",
+        "zh-Hans": "尚未配置 MCP",
+        "en": "MCP is not configured"
+      }
+    },
+    {
+      "case": "mcpSavedStatus",
+      "key": "mcp.saved.status",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "端點已儲存，尚未驗證連線",
+        "zh-Hans": "端点已保存，尚未验证连接",
+        "en": "Endpoint saved; connection not verified"
+      }
+    },
+    {
+      "case": "mcpConnecting",
+      "key": "mcp.connecting",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "正在建立 MCP 工作階段…",
+        "zh-Hans": "正在建立 MCP 会话…",
+        "en": "Establishing an MCP session…"
+      }
+    },
+    {
+      "case": "mcpDiscovering",
+      "key": "mcp.discovering",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "正在擷取工具與資源目錄…",
+        "zh-Hans": "正在获取工具与资源目录…",
+        "en": "Fetching tool and resource catalogs…"
+      }
+    },
+    {
+      "case": "mcpConnected",
+      "key": "mcp.connected",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已連線，目錄擷取完成",
+        "zh-Hans": "已连接，目录获取完成",
+        "en": "Connected; catalogs retrieved"
+      }
+    },
+    {
+      "case": "mcpDisconnected",
+      "key": "mcp.disconnected",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已中斷本機連線",
+        "zh-Hans": "已断开本地连接",
+        "en": "Local connection disconnected"
+      }
+    },
+    {
+      "case": "mcpCancelled",
+      "key": "mcp.cancelled",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已取消等待",
+        "zh-Hans": "已取消等待",
+        "en": "Waiting cancelled"
+      }
+    },
+    {
+      "case": "mcpFailedStatus",
+      "key": "mcp.failed.status",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "MCP 設定或連線未完成",
+        "zh-Hans": "MCP 配置或连接未完成",
+        "en": "MCP setup or connection did not complete"
+      }
+    },
+    {
+      "case": "mcpSelectionLimit",
+      "key": "mcp.selection.limit",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "每次對話最多選取 64 個工具。",
+        "zh-Hans": "每次对话最多选取 64 个工具。",
+        "en": "Select at most 64 tools per conversation."
+      }
+    },
+    {
+      "case": "mcpSavedNotice",
+      "key": "mcp.saved.notice",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "端點已存入此裝置的 Keychain；尚未送出連線請求。",
+        "zh-Hans": "端点已存入此设备的 Keychain；尚未发送连接请求。",
+        "en": "Endpoint saved in this device’s Keychain; no connection request has been sent."
+      }
+    },
+    {
+      "case": "mcpRemovedNotice",
+      "key": "mcp.removed.notice",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已移除此 App 的 MCP 端點。",
+        "zh-Hans": "已移除此 App 的 MCP 端点。",
+        "en": "This app’s MCP endpoint was removed."
+      }
+    },
+    {
+      "case": "mcpDiscoveryNotice",
+      "key": "mcp.discovery.notice",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "僅完成握手與目錄探索，未執行工具或讀取資源內容；不代表服務持續在線。",
+        "zh-Hans": "仅完成握手与目录探索，未执行工具或读取资源内容；不代表服务持续在线。",
+        "en": "Only the handshake and catalog discovery completed. No tool ran or resource content was read. This does not guarantee ongoing service availability."
+      }
+    },
+    {
+      "case": "mcpConnectionError",
+      "key": "mcp.connection.error",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "MCP 連線或目錄擷取失敗。請檢查端點、網路及伺服器的 Streamable HTTP 支援；不會自動重試。",
+        "zh-Hans": "MCP 连接或目录获取失败。请检查端点、网络及服务器的 Streamable HTTP 支持；不会自动重试。",
+        "en": "MCP connection or catalog retrieval failed. Check the endpoint, network and server’s Streamable HTTP support. There is no automatic retry."
+      }
+    },
+    {
+      "case": "mcpTimeout",
+      "key": "mcp.timeout",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "探索超過 90 秒，已停止本機等待；伺服器可能已收到目錄請求。",
+        "zh-Hans": "探索超过 90 秒，已停止本地等待；服务器可能已收到目录请求。",
+        "en": "Discovery exceeded 90 seconds. Local waiting stopped; the server may have received catalog requests."
+      }
+    },
+    {
+      "case": "mcpCancelledNotice",
+      "key": "mcp.cancelled.notice",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已取消本機等待；伺服器可能已收到目錄請求。",
+        "zh-Hans": "已取消本地等待；服务器可能已收到目录请求。",
+        "en": "Local waiting cancelled; the server may have received catalog requests."
+      }
+    },
+    {
+      "case": "mcpDisconnectedNotice",
+      "key": "mcp.disconnected.notice",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已停止本機工作並清除目錄；端點設定保留。未要求伺服器撤銷憑證或刪除遠端工作階段。",
+        "zh-Hans": "已停止本地工作并清除目录；端点配置保留。未要求服务器撤销凭证或删除远程会话。",
+        "en": "Local work stopped and catalogs cleared; the endpoint is retained. The server was not asked to revoke credentials or delete its session."
+      }
+    },
+    {
+      "case": "mcpSettingsError",
+      "key": "mcp.settings.error",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "MCP 設定存取失敗；不會顯示端點或原始錯誤內容。",
+        "zh-Hans": "MCP 配置访问失败；不会显示端点或原始错误内容。",
+        "en": "MCP settings could not be accessed. The endpoint and original error are hidden."
+      }
+    },
+    {
+      "case": "mcpInvalidEndpoint",
+      "key": "mcp.invalid.endpoint",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請輸入完整 HTTPS MCP 端點，不可含帳密、片段或空白。查詢參數會與整個端點一起安全儲存。",
+        "zh-Hans": "请输入完整 HTTPS MCP 端点，不可含账号密码、片段或空白。查询参数会与整个端点一起安全保存。",
+        "en": "Enter a complete HTTPS MCP endpoint without URL credentials, fragments or whitespace. Query parameters are stored securely with the endpoint."
+      }
+    },
+    {
+      "case": "mcpKeychainUnavailable",
+      "key": "mcp.keychain.unavailable",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "無法存取 MCP Keychain，請解鎖裝置後再試。",
+        "zh-Hans": "无法访问 MCP Keychain，请解锁设备后再试。",
+        "en": "MCP Keychain is unavailable. Unlock the device and try again."
+      }
+    },
+    {
+      "case": "mcpInvalidNamespace",
+      "key": "mcp.invalid.namespace",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "UI 測試缺少有效的隔離命名空間；不會讀取正式設定。",
+        "zh-Hans": "UI 测试缺少有效的隔离命名空间；不会读取正式配置。",
+        "en": "The UI test has no valid isolated namespace. Production settings will not be read."
+      }
+    },
+    {
+      "case": "mcpMissingLiveEndpoint",
+      "key": "mcp.missing.live.endpoint",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "Live MCP UI 測試設定未完成，未取得私密端點。",
+        "zh-Hans": "Live MCP UI 测试配置未完成，未取得私密端点。",
+        "en": "Live MCP UI test setup is incomplete; no private endpoint was obtained."
+      }
+    },
+    {
+      "case": "mcpApprovalHelp",
+      "key": "mcp.approval.help",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "模型請求執行以下工具。核准只適用於這一次的名稱與參數；結果會提供給已設定的模型。",
+        "zh-Hans": "模型请求执行以下工具。批准只适用于这一次的名称与参数；结果会提供给已配置的模型。",
+        "en": "The model requests this tool. Approval applies only to this name and these arguments for this invocation. Results will be provided to your configured model."
+      }
+    },
+    {
+      "case": "mcpApprovalRisk",
+      "key": "mcp.approval.risk",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "工具可能修改外部資料。取消本機等待無法撤銷已送出的操作。",
+        "zh-Hans": "工具可能修改外部数据。取消本地等待无法撤销已发送的操作。",
+        "en": "Tools may change external data. Cancelling local waiting cannot undo an operation already sent."
+      }
+    },
+    {
+      "case": "mcpApprovalTitle",
+      "key": "mcp.approval.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "核准 MCP 呼叫",
+        "zh-Hans": "批准 MCP 调用",
+        "en": "Approve MCP call"
+      }
+    },
+    {
+      "case": "mcpDecline",
+      "key": "mcp.decline",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "拒絕並停止",
+        "zh-Hans": "拒绝并停止",
+        "en": "Decline and stop"
+      }
+    },
+    {
+      "case": "mcpApprove",
+      "key": "mcp.approve",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "核准這一次",
+        "zh-Hans": "批准这一次",
+        "en": "Approve once"
+      }
+    },
+    {
+      "case": "mcpReadResource",
+      "key": "mcp.read.resource",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "讀取 MCP 資源",
+        "zh-Hans": "读取 MCP 资源",
+        "en": "Read MCP resource"
+      }
+    },
+    {
+      "case": "mcpToolError",
+      "key": "mcp.tool.error",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "工具回報錯誤",
+        "zh-Hans": "工具报告错误",
+        "en": "Tool reported an error"
+      }
+    },
+    {
+      "case": "mcpToolResult",
+      "key": "mcp.tool.result",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已收到工具結果",
+        "zh-Hans": "已收到工具结果",
+        "en": "Tool result received"
+      }
+    },
+    {
+      "case": "mcpResultsTitle",
+      "key": "mcp.results.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "本次 MCP 工具結果",
+        "zh-Hans": "本次 MCP 工具结果",
+        "en": "MCP results for this conversation"
+      }
+    },
+    {
+      "case": "mcpResultUnavailable",
+      "key": "mcp.result.unavailable",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "結果無法顯示",
+        "zh-Hans": "结果无法显示",
+        "en": "Result cannot be displayed"
+      }
+    },
+    {
+      "case": "mcpRouteObservation",
+      "key": "mcp.route.observation",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "通知導頁測試觀測",
+        "zh-Hans": "通知导航测试观测",
+        "en": "Notification routing test observation"
+      }
+    },
+    {
+      "case": "mcpProtocol",
+      "key": "mcp.protocol",
+      "parameters": [
+        {
+          "name": "version",
+          "type": "String"
+        }
+      ],
+      "translations": {
+        "zh-Hant": "協定版本：%1$@",
+        "zh-Hans": "协议版本：%1$@",
+        "en": "Protocol version: %1$@"
+      }
+    },
+    {
+      "case": "mcpKeychainStatus",
+      "key": "mcp.keychain.status",
+      "parameters": [
+        {
+          "name": "code",
+          "type": "String"
+        }
+      ],
+      "translations": {
+        "zh-Hant": "MCP Keychain 存取失敗（系統代碼 %1$@）。",
+        "zh-Hans": "MCP Keychain 访问失败（系统代码 %1$@）。",
+        "en": "MCP Keychain access failed (system code %1$@)."
+      }
+    },
+    {
+      "case": "mcpToolCount",
+      "key": "mcpToolCount",
+      "parameters": [
+        {
+          "name": "count",
+          "type": "Int"
+        }
+      ],
+      "plural": "count",
+      "translations": {
+        "zh-Hant": {
+          "other": "工具：%lld 個"
+        },
+        "zh-Hans": {
+          "other": "工具：%lld 个"
+        },
+        "en": {
+          "one": "Tools: %lld",
+          "other": "Tools: %lld"
+        }
+      }
+    },
+    {
+      "case": "mcpResourceCount",
+      "key": "mcpResourceCount",
+      "parameters": [
+        {
+          "name": "count",
+          "type": "Int"
+        }
+      ],
+      "plural": "count",
+      "translations": {
+        "zh-Hant": {
+          "other": "資源：%lld 個"
+        },
+        "zh-Hans": {
+          "other": "资源：%lld 个"
+        },
+        "en": {
+          "one": "Resources: %lld",
+          "other": "Resources: %lld"
+        }
+      }
+    },
+    {
+      "case": "mcpSelectedCount",
+      "key": "mcpSelectedCount",
+      "parameters": [
+        {
+          "name": "count",
+          "type": "Int"
+        }
+      ],
+      "plural": "count",
+      "translations": {
+        "zh-Hant": {
+          "other": "已選取 %lld 個工具供對話使用"
+        },
+        "zh-Hans": {
+          "other": "已选取 %lld 个工具供对话使用"
+        },
+        "en": {
+          "one": "%lld tool selected for chat",
+          "other": "%lld tools selected for chat"
+        }
+      }
+    },
+    {
+      "case": "searchTitle",
+      "key": "search.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "搜尋引擎",
+        "zh-Hans": "搜索引擎",
+        "en": "Search engines"
+      }
+    },
+    {
+      "case": "searchCustom",
+      "key": "search.custom",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "新增自訂引擎",
+        "zh-Hans": "新增自定义引擎",
+        "en": "Add a custom engine"
+      }
+    },
+    {
+      "case": "searchTemplate",
+      "key": "search.template",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "https://example.com/search?q=%%s",
+        "zh-Hans": "https://example.com/search?q=%%s",
+        "en": "https://example.com/search?q=%%s"
+      }
+    },
+    {
+      "case": "searchHelp",
+      "key": "search.help",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "以 %%s 代表搜尋文字，只接受公開 HTTPS；不接受網址帳密、登入參數或 #。最多 20 個。",
+        "zh-Hans": "以 %%s 代表搜索文字，只接受公开 HTTPS；不接受网址账号密码、登录参数或 #。最多 20 个。",
+        "en": "Use %%s for search text. Only public HTTPS is accepted; no URL credentials, login parameters or #. Limit: 20 engines."
+      }
+    },
+    {
+      "case": "searchAdd",
+      "key": "search.add",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "新增並使用",
+        "zh-Hans": "新增并使用",
+        "en": "Add and use"
+      }
+    },
+    {
+      "case": "searchChanges",
+      "key": "search.changes",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "變更引擎會用於下一次手動搜尋；目前頁面不會重新載入。搜尋結果網址會沿用瀏覽歷史的儲存與清除設定。",
+        "zh-Hans": "变更引擎会用于下一次手动搜索；当前页面不会重新加载。搜索结果网址会沿用浏览历史的保存与清除设置。",
+        "en": "Changes apply to your next manual search without reloading this page. Search result URLs follow your browsing history storage and clearing settings."
+      }
+    },
+    {
+      "case": "browserReadError",
+      "key": "browser.read.error",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "瀏覽資料目前無法讀取，不會覆寫原有資料。",
+        "zh-Hans": "浏览数据目前无法读取，不会覆盖原有数据。",
+        "en": "Browsing data cannot be read. Existing data will not be overwritten."
+      }
+    },
+    {
+      "case": "searchLimit",
+      "key": "search.limit",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "最多儲存 20 個自訂搜尋引擎。",
+        "zh-Hans": "最多保存 20 个自定义搜索引擎。",
+        "en": "You can save at most 20 custom search engines."
+      }
+    },
+    {
+      "case": "searchInvalid",
+      "key": "search.invalid",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請填寫名稱與公開 HTTPS 模板；在路徑或查詢值中使用一個 %%s，不可含網址帳密、登入參數或 #。",
+        "zh-Hans": "请填写名称与公开 HTTPS 模板；在路径或查询值中使用一个 %%s，不可含网址账号密码、登录参数或 #。",
+        "en": "Enter a name and a public HTTPS template with one %%s in its path or a query value. URL credentials, login parameters and # are not allowed."
+      }
+    },
+    {
+      "case": "browserUploadFixtureError",
+      "key": "browser.upload.fixture.error",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "測試上傳頁面未能啟動。",
+        "zh-Hans": "测试上传页面未能启动。",
+        "en": "The test upload page could not start."
+      }
+    },
+    {
+      "case": "browserLoginFixtureError",
+      "key": "browser.login.fixture.error",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "測試登入頁面未能啟動。",
+        "zh-Hans": "测试登录页面未能启动。",
+        "en": "The test login page could not start."
+      }
+    },
+    {
+      "case": "browserSaveUnavailable",
+      "key": "browser.save.unavailable",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "瀏覽資料目前無法儲存。",
+        "zh-Hans": "浏览数据目前无法保存。",
+        "en": "Browsing data cannot currently be saved."
+      }
+    },
+    {
+      "case": "browserTabLimit",
+      "key": "browser.tab.limit",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "最多開啟 20 個分頁，請先關閉不用的分頁。",
+        "zh-Hans": "最多打开 20 个标签页，请先关闭不用的标签页。",
+        "en": "At most 20 tabs can be open. Close an unused tab first."
+      }
+    },
+    {
+      "case": "browserSaveError",
+      "key": "browser.save.error",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "瀏覽資料未變更，請解鎖裝置後重試。",
+        "zh-Hans": "浏览数据未变更，请解锁设备后重试。",
+        "en": "Browsing data was not changed. Unlock the device and try again."
+      }
+    },
+    {
+      "case": "browserClearNotStopped",
+      "key": "browser.clear.not.stopped",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "網頁尚未完全停止，網站資料未清除；請重試。",
+        "zh-Hans": "网页尚未完全停止，网站数据未清除；请重试。",
+        "en": "Pages have not fully stopped. Site data was not cleared; please try again."
+      }
+    },
+    {
+      "case": "browserClearRemaining",
+      "key": "browser.clear.remaining",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "部分網站資料仍保留，請重新確認。",
+        "zh-Hans": "部分网站数据仍保留，请重新确认。",
+        "en": "Some site data remains. Please check again."
+      }
+    },
+    {
+      "case": "browserModeReloading",
+      "key": "browser.mode.reloading",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "網站偏好已儲存，正在重新整理此頁以套用。",
+        "zh-Hans": "网站偏好已保存，正在刷新此页以应用。",
+        "en": "Site preference saved; reloading this page to apply it."
+      }
+    },
+    {
+      "case": "browserModeDeferred",
+      "key": "browser.mode.deferred",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "網站偏好已儲存；為避免重送表單或自動化操作，此頁不會重新整理，下次手動導覽時套用。",
+        "zh-Hans": "网站偏好已保存；为避免重新提交表单或自动化操作，此页不会刷新，下次手动导航时应用。",
+        "en": "Site preference saved. To avoid resubmitting forms or automated actions, this page will not reload. It will apply on your next manual navigation."
+      }
+    },
+    {
+      "case": "browserLibrary",
+      "key": "browser.library",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "瀏覽資料",
+        "zh-Hans": "浏览数据",
+        "en": "Browsing data"
+      }
+    },
+    {
+      "case": "browserTabs",
+      "key": "browser.tabs",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "分頁",
+        "zh-Hans": "标签页",
+        "en": "Tabs"
+      }
+    },
+    {
+      "case": "browserBookmarks",
+      "key": "browser.bookmarks",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "書籤",
+        "zh-Hans": "书签",
+        "en": "Bookmarks"
+      }
+    },
+    {
+      "case": "browserHistory",
+      "key": "browser.history",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "歷史",
+        "zh-Hans": "历史",
+        "en": "History"
+      }
+    },
+    {
+      "case": "browserSites",
+      "key": "browser.sites",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "網站",
+        "zh-Hans": "网站",
+        "en": "Sites"
+      }
+    },
+    {
+      "case": "browserClearing",
+      "key": "browser.clearing",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "正在清除網站資料…",
+        "zh-Hans": "正在清除网站数据…",
+        "en": "Clearing site data…"
+      }
+    },
+    {
+      "case": "browserDownloads",
+      "key": "browser.downloads",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "下載",
+        "zh-Hans": "下载",
+        "en": "Downloads"
+      }
+    },
+    {
+      "case": "browserRenameBookmark",
+      "key": "browser.rename.bookmark",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "修改書籤名稱",
+        "zh-Hans": "修改书签名称",
+        "en": "Rename bookmark"
+      }
+    },
+    {
+      "case": "browserClearHistoryQuestion",
+      "key": "browser.clear.history.question",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "清除瀏覽歷史？書籤與網站登入資料會保留。",
+        "zh-Hans": "清除浏览历史？书签与网站登录数据会保留。",
+        "en": "Clear browsing history? Bookmarks and site sign-in data will be kept."
+      }
+    },
+    {
+      "case": "browserClearHistory",
+      "key": "browser.clear.history",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "清除歷史",
+        "zh-Hans": "清除历史",
+        "en": "Clear history"
+      }
+    },
+    {
+      "case": "browserClearSiteQuestion",
+      "key": "browser.clear.site.question",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "清除此網站的資料？可能需要重新登入，所有分頁與下載將停止。",
+        "zh-Hans": "清除此网站的数据？可能需要重新登录，所有标签页与下载将停止。",
+        "en": "Clear this site’s data? You may need to sign in again. All tabs and downloads will stop."
+      }
+    },
+    {
+      "case": "browserClearSite",
+      "key": "browser.clear.site",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "清除網站資料",
+        "zh-Hans": "清除网站数据",
+        "en": "Clear site data"
+      }
+    },
+    {
+      "case": "browserNewTab",
+      "key": "browser.new.tab",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "新增分頁",
+        "zh-Hans": "新增标签页",
+        "en": "New tab"
+      }
+    },
+    {
+      "case": "browserNoPage",
+      "key": "browser.no.page",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "尚未開啟網頁",
+        "zh-Hans": "尚未打开网页",
+        "en": "No page opened yet"
+      }
+    },
+    {
+      "case": "browserBookmarkCurrent",
+      "key": "browser.bookmark.current",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "加入目前頁面書籤",
+        "zh-Hans": "将当前页面加入书签",
+        "en": "Bookmark current page"
+      }
+    },
+    {
+      "case": "browserNoBookmarks",
+      "key": "browser.no.bookmarks",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "尚無書籤",
+        "zh-Hans": "尚无书签",
+        "en": "No bookmarks yet"
+      }
+    },
+    {
+      "case": "browserRename",
+      "key": "browser.rename",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "改名",
+        "zh-Hans": "改名",
+        "en": "Rename"
+      }
+    },
+    {
+      "case": "browserClearAllHistory",
+      "key": "browser.clear.all.history",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "清除所有歷史",
+        "zh-Hans": "清除所有历史",
+        "en": "Clear all history"
+      }
+    },
+    {
+      "case": "browserNoHistory",
+      "key": "browser.no.history",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "尚無瀏覽歷史",
+        "zh-Hans": "尚无浏览历史",
+        "en": "No browsing history yet"
+      }
+    },
+    {
+      "case": "browserSitesHelp",
+      "key": "browser.sites.help",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "網站資料由 WebKit 儲存，包括 Cookie 與網站儲存空間；出現在清單不代表目前已登入。",
+        "zh-Hans": "网站数据由 WebKit 保存，包括 Cookie 与网站存储空间；出现在列表不代表当前已登录。",
+        "en": "WebKit stores site data, including cookies and site storage. Being listed does not mean you are currently signed in."
+      }
+    },
+    {
+      "case": "browserNoSites",
+      "key": "browser.no.sites",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "尚無網站資料",
+        "zh-Hans": "尚无网站数据",
+        "en": "No site data yet"
+      }
+    },
+    {
+      "case": "commonDeleteName",
+      "key": "common.delete.name",
+      "parameters": [
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "translations": {
+        "zh-Hant": "刪除 %1$@",
+        "zh-Hans": "删除 %1$@",
+        "en": "Delete %1$@"
+      }
+    },
+    {
+      "case": "commonCloseName",
+      "key": "common.close.name",
+      "parameters": [
+        {
+          "name": "name",
+          "type": "String"
+        }
+      ],
+      "translations": {
+        "zh-Hant": "關閉 %1$@",
+        "zh-Hans": "关闭 %1$@",
+        "en": "Close %1$@"
+      }
+    },
+    {
+      "case": "browserHistorySearch",
+      "key": "browser.history.search",
+      "parameters": [
+        {
+          "name": "query",
+          "type": "String"
+        }
+      ],
+      "translations": {
+        "zh-Hant": "搜尋：%1$@",
+        "zh-Hans": "搜索：%1$@",
+        "en": "Search: %1$@"
+      }
+    },
+    {
+      "case": "notificationTitle",
+      "key": "notification.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "任務通知",
+        "zh-Hans": "任务通知",
+        "en": "Task notifications"
+      }
+    },
+    {
+      "case": "notificationLocal",
+      "key": "notification.local",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "本機任務通知",
+        "zh-Hans": "本地任务通知",
+        "en": "Local task notifications"
+      }
+    },
+    {
+      "case": "notificationOn",
+      "key": "notification.on",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已開啟",
+        "zh-Hans": "已开启",
+        "en": "On"
+      }
+    },
+    {
+      "case": "notificationOff",
+      "key": "notification.off",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已關閉",
+        "zh-Hans": "已关闭",
+        "en": "Off"
+      }
+    },
+    {
+      "case": "notificationHelp",
+      "key": "notification.help",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "任務完成或需要核准時提醒你。通知只顯示固定提示；開啟後仍需在 App 內查看並決定。",
+        "zh-Hans": "任务完成或需要批准时提醒你。通知只显示固定提示；打开后仍需在 App 内查看并决定。",
+        "en": "Get reminders when a task completes or needs approval. Notifications contain only fixed prompts. Open the app to review and decide."
+      }
+    },
+    {
+      "case": "notificationDisable",
+      "key": "notification.disable",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "關閉任務通知",
+        "zh-Hans": "关闭任务通知",
+        "en": "Turn off task notifications"
+      }
+    },
+    {
+      "case": "notificationEnable",
+      "key": "notification.enable",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "啟用並請求通知權限",
+        "zh-Hans": "启用并请求通知权限",
+        "en": "Enable and request notification permission"
+      }
+    },
+    {
+      "case": "notificationTest",
+      "key": "notification.test",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "傳送測試通知",
+        "zh-Hans": "发送测试通知",
+        "en": "Send test notification"
+      }
+    },
+    {
+      "case": "notificationSystemState",
+      "key": "notification.system.state",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "系統設定狀態",
+        "zh-Hans": "系统设置状态",
+        "en": "System settings status"
+      }
+    },
+    {
+      "case": "notificationAuthorization",
+      "key": "notification.authorization",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "系統授權",
+        "zh-Hans": "系统授权",
+        "en": "System authorization"
+      }
+    },
+    {
+      "case": "notificationSound",
+      "key": "notification.sound",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "系統聲音",
+        "zh-Hans": "系统声音",
+        "en": "System sound"
+      }
+    },
+    {
+      "case": "notificationAlert",
+      "key": "notification.alert",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "系統提示",
+        "zh-Hans": "系统提示",
+        "en": "System alerts"
+      }
+    },
+    {
+      "case": "notificationRefresh",
+      "key": "notification.refresh",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "重新整理狀態",
+        "zh-Hans": "刷新状态",
+        "en": "Refresh status"
+      }
+    },
+    {
+      "case": "notificationOpenSettings",
+      "key": "notification.open.settings",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "開啟系統通知設定",
+        "zh-Hans": "打开系统通知设置",
+        "en": "Open system notification settings"
+      }
+    },
+    {
+      "case": "notificationSystemHelp",
+      "key": "notification.system.help",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "系統拒絕後，請到設定開啟通知。專注模式、通知摘要與靜音可能影響提示和聲音。",
+        "zh-Hans": "系统拒绝后，请到设置开启通知。专注模式、通知摘要与静音可能影响提示和声音。",
+        "en": "If permission was denied, enable notifications in Settings. Focus, notification summaries and silent mode may affect alerts and sound."
+      }
+    },
+    {
+      "case": "notificationNotAsked",
+      "key": "notification.not.asked",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "尚未詢問",
+        "zh-Hans": "尚未询问",
+        "en": "Not requested"
+      }
+    },
+    {
+      "case": "notificationDenied",
+      "key": "notification.denied",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已拒絕",
+        "zh-Hans": "已拒绝",
+        "en": "Denied"
+      }
+    },
+    {
+      "case": "notificationAuthorized",
+      "key": "notification.authorized",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已允許",
+        "zh-Hans": "已允许",
+        "en": "Allowed"
+      }
+    },
+    {
+      "case": "notificationProvisional",
+      "key": "notification.provisional",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "暫時允許（安靜通知）",
+        "zh-Hans": "暂时允许（安静通知）",
+        "en": "Provisionally allowed (quiet notifications)"
+      }
+    },
+    {
+      "case": "notificationEphemeral",
+      "key": "notification.ephemeral",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "暫時允許（短期）",
+        "zh-Hans": "暂时允许（短期）",
+        "en": "Temporarily allowed"
+      }
+    },
+    {
+      "case": "notificationNotSupported",
+      "key": "notification.not.supported",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "不支援",
+        "zh-Hans": "不支持",
+        "en": "Not supported"
+      }
+    },
+    {
+      "case": "notificationAuthorizationError",
+      "key": "notification.authorization.error",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "無法完成系統權限請求，請重新整理狀態後再試。",
+        "zh-Hans": "无法完成系统权限请求，请刷新状态后再试。",
+        "en": "The system permission request did not complete. Refresh the status and try again."
+      }
+    },
+    {
+      "case": "notificationDeliveryError",
+      "key": "notification.delivery.error",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "這次通知未能送出，請直接在 App 查看任務。",
+        "zh-Hans": "这次通知未能发送，请直接在 App 查看任务。",
+        "en": "This notification could not be sent. View the task in the app."
+      }
+    },
+    {
+      "case": "notificationCompletedTitle",
+      "key": "notification.completed.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "任務已完成",
+        "zh-Hans": "任务已完成",
+        "en": "Task completed"
+      }
+    },
+    {
+      "case": "notificationApprovalTitle",
+      "key": "notification.approval.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "有操作需要你核准",
+        "zh-Hans": "有操作需要你批准",
+        "en": "An action needs your approval"
+      }
+    },
+    {
+      "case": "notificationTestTitle",
+      "key": "notification.test.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "通知測試",
+        "zh-Hans": "通知测试",
+        "en": "Notification test"
+      }
+    },
+    {
+      "case": "notificationCompletedBody",
+      "key": "notification.completed.body",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "開啟渥屋助理查看結果。",
+        "zh-Hans": "打开渥屋助理查看结果。",
+        "en": "Open Woow Assistant to view the result."
+      }
+    },
+    {
+      "case": "notificationApprovalBody",
+      "key": "notification.approval.body",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請開啟渥屋助理查看並決定；通知不會核准操作。",
+        "zh-Hans": "请打开渥屋助理查看并决定；通知不会批准操作。",
+        "en": "Open Woow Assistant to review and decide. Notifications do not approve actions."
+      }
+    },
+    {
+      "case": "notificationTestBody",
+      "key": "notification.test.body",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "這是渥屋助理的測試通知。",
+        "zh-Hans": "这是渥屋助理的测试通知。",
+        "en": "This is a test notification from Woow Assistant."
+      }
+    },
+    {
+      "case": "catalogTitle",
+      "key": "catalog.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "Mika 內建技能目錄",
+        "zh-Hans": "Mika 内置技能目录",
+        "en": "Mika bundled skill catalog"
+      }
+    },
+    {
+      "case": "catalogSearch",
+      "key": "catalog.search",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "搜尋名稱、全文或支援檔案",
+        "zh-Hans": "搜索名称、全文或支持文件",
+        "en": "Search names, full text or supporting files"
+      }
+    },
+    {
+      "case": "catalogScope",
+      "key": "catalog.scope",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "原文與腳本僅供閱讀，不會執行。iOS 文字改寫須先匯入待確認，再由你核准；核准後為試用中，不代表原版功能已完成對齊。",
+        "zh-Hans": "原文与脚本仅供阅读，不会执行。iOS 文字改写须先导入待确认，再由你批准；批准后为试用中，不代表原版功能已完成对齐。",
+        "en": "Original text and scripts are read-only and are not executed. Import an iOS text adaptation for review, then approve it. Approval starts a trial; it does not mean original feature parity."
+      }
+    },
+    {
+      "case": "catalogCapabilities",
+      "key": "catalog.capabilities",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "受控瀏覽器與 MCP 對話有各自的能力限制和核准流程；匯入 Skill 不會授予工具權限或自動派送工具。",
+        "zh-Hans": "受控浏览器与 MCP 对话有各自的能力限制和批准流程；导入 Skill 不会授予工具权限或自动派发工具。",
+        "en": "The controlled browser and MCP chat have separate capability limits and approval flows. Importing a skill grants no tool permissions and dispatches no tools."
+      }
+    },
+    {
+      "case": "catalogSection",
+      "key": "catalog.section",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "原始技能與 iOS 文字改寫",
+        "zh-Hans": "原始技能与 iOS 文字改写",
+        "en": "Original skills and iOS text adaptations"
+      }
+    },
+    {
+      "case": "catalogEmpty",
+      "key": "catalog.empty",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "找不到符合的技能。",
+        "zh-Hans": "找不到匹配的技能。",
+        "en": "No matching skills."
+      }
+    },
+    {
+      "case": "catalogSource",
+      "key": "catalog.source",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "來源與授權",
+        "zh-Hans": "来源与许可",
+        "en": "Source and license"
+      }
+    },
+    {
+      "case": "catalogLicense",
+      "key": "catalog.license",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "Apache-2.0 授權全文",
+        "zh-Hans": "Apache-2.0 许可全文",
+        "en": "Full Apache-2.0 license"
+      }
+    },
+    {
+      "case": "catalogNotice",
+      "key": "catalog.notice",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "原始 NOTICE",
+        "zh-Hans": "原始 NOTICE",
+        "en": "Original NOTICE"
+      }
+    },
+    {
+      "case": "catalogReload",
+      "key": "catalog.reload",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "重新讀取",
+        "zh-Hans": "重新读取",
+        "en": "Reload"
+      }
+    },
+    {
+      "case": "catalogLoading",
+      "key": "catalog.loading",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "讀取本機目錄",
+        "zh-Hans": "读取本地目录",
+        "en": "Reading local catalog"
+      }
+    },
+    {
+      "case": "catalogNavigation",
+      "key": "catalog.navigation",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "內建目錄",
+        "zh-Hans": "内置目录",
+        "en": "Bundled catalog"
+      }
+    },
+    {
+      "case": "catalogLoadFailure",
+      "key": "catalog.load.failure",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "內建技能目錄無法讀取。",
+        "zh-Hans": "内置技能目录无法读取。",
+        "en": "The bundled skill catalog could not be read."
+      }
+    },
+    {
+      "case": "catalogUnavailable",
+      "key": "catalog.unavailable",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "內建技能目錄暫時無法讀取。",
+        "zh-Hans": "内置技能目录暂时无法读取。",
+        "en": "The bundled skill catalog is temporarily unavailable."
+      }
+    },
+    {
+      "case": "catalogInvalid",
+      "key": "catalog.invalid",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "內建技能資源驗證失敗；未匯入任何內容。",
+        "zh-Hans": "内置技能资源验证失败；未导入任何内容。",
+        "en": "Bundled skill resources failed validation. Nothing was imported."
+      }
+    },
+    {
+      "case": "catalogNotFound",
+      "key": "catalog.not.found",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "找不到這個內建技能。",
+        "zh-Hans": "找不到这个内置技能。",
+        "en": "This bundled skill was not found."
+      }
+    },
+    {
+      "case": "catalogAlreadyAdded",
+      "key": "catalog.already.added",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "此文字版已有草稿或已匯入；請到待確認或技能清單管理。",
+        "zh-Hans": "此文字版已有草稿或已导入；请到待确认或技能列表管理。",
+        "en": "This text adaptation has a draft or is already imported. Manage it in pending reviews or your skill list."
+      }
+    },
+    {
+      "case": "catalogTranscriptSection",
+      "key": "catalog.transcript.section",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "整理文字稿與字幕",
+        "zh-Hans": "整理文字稿与字幕",
+        "en": "Organize transcripts and subtitles"
+      }
+    },
+    {
+      "case": "catalogTranscriptOpen",
+      "key": "catalog.transcript.open",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "選取文字稿或字幕檔",
+        "zh-Hans": "选取文字稿或字幕文件",
+        "en": "Select a transcript or subtitle file"
+      }
+    },
+    {
+      "case": "catalogTranscriptHelp",
+      "key": "catalog.transcript.help",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "核准讀檔並確認目的服務後，由模型分段閱讀原文、整理內容與核對引文。",
+        "zh-Hans": "批准读文件并确认目标服务后，由模型分段阅读原文、整理内容与核对引文。",
+        "en": "After you approve reading the file and confirm the destination service, the model reads sections of the source, organizes the content and verifies quotations."
+      }
+    },
+    {
+      "case": "catalogAppearanceSection",
+      "key": "catalog.appearance.section",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "調整本 App 外觀",
+        "zh-Hans": "调整本 App 外观",
+        "en": "Change this app’s appearance"
+      }
+    },
+    {
+      "case": "catalogAppearanceOpen",
+      "key": "catalog.appearance.open",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "外觀與模型調整權限",
+        "zh-Hans": "外观与模型调整权限",
+        "en": "Appearance and model permission"
+      }
+    },
+    {
+      "case": "catalogAppearanceHelp",
+      "key": "catalog.appearance.help",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "可設定跟隨系統、淺色或深色；允許模型調整的開關預設關閉。",
+        "zh-Hans": "可设置跟随系统、浅色或深色；允许模型调整的开关默认关闭。",
+        "en": "Choose system, light or dark appearance. Model permission to change appearance is off by default."
+      }
+    },
+    {
+      "case": "catalogAuthorSection",
+      "key": "catalog.author.section",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "編寫個人技能",
+        "zh-Hans": "编写个人技能",
+        "en": "Author personal skills"
+      }
+    },
+    {
+      "case": "catalogAuthorOpen",
+      "key": "catalog.author.open",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "查閱、編寫與審閱儲存",
+        "zh-Hans": "查阅、编写与审阅保存",
+        "en": "Read, author and review before saving"
+      }
+    },
+    {
+      "case": "catalogAgentOpen",
+      "key": "catalog.agent.open",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "請模型協助編寫技能",
+        "zh-Hans": "请模型协助编写技能",
+        "en": "Ask the model to help author a skill"
+      }
+    },
+    {
+      "case": "catalogAuthorHelp",
+      "key": "catalog.author.help",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "可自行編寫，或請模型查詢、讀取原文並提出草稿；核對全文並核准後，才會儲存至個人技能。",
+        "zh-Hans": "可自行编写，或请模型查询、读取原文并提出草稿；核对全文并批准后，才会保存至个人技能。",
+        "en": "Write a skill yourself, or ask the model to search, read original text and prepare a draft. It is saved to personal skills only after you review the full text and approve."
+      }
+    },
+    {
+      "case": "catalogDocumentsSection",
+      "key": "catalog.documents.section",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "實際文件處理",
+        "zh-Hans": "实际文档处理",
+        "en": "Document processing"
+      }
+    },
+    {
+      "case": "catalogPDFOpen",
+      "key": "catalog.p.d.f.open",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "選取 PDF 並擷取文字",
+        "zh-Hans": "选取 PDF 并提取文字",
+        "en": "Select a PDF and extract text"
+      }
+    },
+    {
+      "case": "catalogPDFAssembly",
+      "key": "catalog.p.d.f.assembly",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "擷取頁面、重排與合併 PDF",
+        "zh-Hans": "提取页面、重排与合并 PDF",
+        "en": "Extract, reorder and combine PDF pages"
+      }
+    },
+    {
+      "case": "catalogDocumentsHelp",
+      "key": "catalog.documents.help",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "在裝置上處理你選取的 PDF；逐步核准，不會自動上傳文件。",
+        "zh-Hans": "在设备上处理你选取的 PDF；逐步批准，不会自动上传文档。",
+        "en": "Process your selected PDFs on the device with approval at each step. Documents are not uploaded automatically."
+      }
+    },
+    {
+      "case": "catalogAdaptationSection",
+      "key": "catalog.adaptation.section",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "iOS 文字改寫 · 非完整原版功能",
+        "zh-Hans": "iOS 文字改写 · 非完整原版功能",
+        "en": "iOS text adaptation · Original features are incomplete"
+      }
+    },
+    {
+      "case": "catalogAdaptationTitle",
+      "key": "catalog.adaptation.title",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "iOS 文字改寫全文",
+        "zh-Hans": "iOS 文字改写全文",
+        "en": "Full iOS text adaptation"
+      }
+    },
+    {
+      "case": "catalogAdaptationRead",
+      "key": "catalog.adaptation.read",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "閱讀 iOS 文字改寫全文",
+        "zh-Hans": "阅读 iOS 文字改写全文",
+        "en": "Read the full iOS text adaptation"
+      }
+    },
+    {
+      "case": "catalogImport",
+      "key": "catalog.import",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "匯入文字版至待確認",
+        "zh-Hans": "导入文字版至待确认",
+        "en": "Import text adaptation for review"
+      }
+    },
+    {
+      "case": "catalogNotImported",
+      "key": "catalog.not.imported",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "未匯入；原資料保留。",
+        "zh-Hans": "未导入；原数据保留。",
+        "en": "Not imported; existing data is unchanged."
+      }
+    },
+    {
+      "case": "catalogPending",
+      "key": "catalog.pending",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "已儲存至待確認，尚未啟用。請關閉目錄後到待確認審閱與核准。",
+        "zh-Hans": "已保存至待确认，尚未启用。请关闭目录后到待确认审阅与批准。",
+        "en": "Saved for review, not enabled. Close the catalog and go to pending reviews to review and approve."
+      }
+    },
+    {
+      "case": "catalogInstalled",
+      "key": "catalog.installed",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "此文字版已在你的技能清單；啟用、試用或驗證狀態請到技能清單查看。",
+        "zh-Hans": "此文字版已在你的技能列表；启用、试用或验证状态请到技能列表查看。",
+        "en": "This text adaptation is already in your skill list. Check that list for its enabled, trial or verified status."
+      }
+    },
+    {
+      "case": "catalogStorageUnavailable",
+      "key": "catalog.storage.unavailable",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "儲存空間目前不可用；仍可閱讀，但不能匯入。",
+        "zh-Hans": "存储空间目前不可用；仍可阅读，但不能导入。",
+        "en": "Storage is unavailable. You can still read, but cannot import."
+      }
+    },
+    {
+      "case": "catalogRequirements",
+      "key": "catalog.requirements",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "原版所需能力與限制",
+        "zh-Hans": "原版所需能力与限制",
+        "en": "Original requirements and limitations"
+      }
+    },
+    {
+      "case": "catalogOriginalSection",
+      "key": "catalog.original.section",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "固定版本的完整原文 · 唯讀",
+        "zh-Hans": "固定版本的完整原文 · 只读",
+        "en": "Complete original text at the pinned version · Read-only"
+      }
+    },
+    {
+      "case": "catalogOriginalRead",
+      "key": "catalog.original.read",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "閱讀原始 SKILL.md 全文",
+        "zh-Hans": "阅读原始 SKILL.md 全文",
+        "en": "Read the complete original SKILL.md"
+      }
+    },
+    {
+      "case": "catalogAttribution",
+      "key": "catalog.attribution",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "Copyright 2026 wangzan101 · Apache-2.0。原文及支援檔案逐位元組保留；iOS 改寫是另外的修改版本。完整 LICENSE 與 NOTICE 見目錄首頁。",
+        "zh-Hans": "Copyright 2026 wangzan101 · Apache-2.0。原文及支持文件逐字节保留；iOS 改写是另外的修改版本。完整 LICENSE 与 NOTICE 见目录首页。",
+        "en": "Copyright 2026 wangzan101 · Apache-2.0. Original text and supporting files are preserved byte for byte; the iOS adaptation is a separate modification. Full LICENSE and NOTICE are on the catalog home page."
+      }
+    },
+    {
+      "case": "catalogTextSafety",
+      "key": "catalog.text.safety",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "唯讀文字，不會執行工具、程式或開啟文內連結。",
+        "zh-Hans": "只读文字，不会执行工具、程序或打开文内链接。",
+        "en": "Read-only text. Tools, code and links in the text will not run or open."
+      }
+    },
+    {
+      "case": "catalogReadyAppearance",
+      "key": "catalog.ready.appearance",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "可調整本 App 外觀；原版能力未完整支援",
+        "zh-Hans": "可调整本 App 外观；原版能力未完整支持",
+        "en": "App appearance can be changed; original capabilities are not fully supported"
+      }
+    },
+    {
+      "case": "catalogReadyAuthor",
+      "key": "catalog.ready.author",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "可請模型編寫並核准儲存；原版能力未完整支援",
+        "zh-Hans": "可请模型编写并批准保存；原版能力未完整支持",
+        "en": "Model-assisted authoring with reviewed saving; original capabilities are not fully supported"
+      }
+    },
+    {
+      "case": "catalogReadyDocuments",
+      "key": "catalog.ready.documents",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "可選取 PDF 擷取文字；原版能力未完整支援",
+        "zh-Hans": "可选取 PDF 提取文字；原版能力未完整支持",
+        "en": "Text can be extracted from selected PDFs; original capabilities are not fully supported"
+      }
+    },
+    {
+      "case": "catalogReadyTranscript",
+      "key": "catalog.ready.transcript",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "可整理核准的文字、字幕與網頁文字；原版能力未完整支援",
+        "zh-Hans": "可整理批准的文字、字幕与网页文字；原版能力未完整支持",
+        "en": "Approved text, subtitles and page text can be organized; original capabilities are not fully supported"
+      }
+    },
+    {
+      "case": "catalogReadyOther",
+      "key": "catalog.ready.other",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "可匯入 iOS 文字改寫；原版能力未完整支援",
+        "zh-Hans": "可导入 iOS 文字改写；原版能力未完整支持",
+        "en": "iOS text adaptations can be imported; original capabilities are not fully supported"
+      }
+    },
+    {
+      "case": "catalogReqSettings",
+      "key": "catalog.req.settings",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "可允許模型調整本 App 外觀；不提供模型、金鑰或手機操作設定",
+        "zh-Hans": "可允许模型调整本 App 外观；不提供模型、密钥或手机操作设置",
+        "en": "You may allow model changes to app appearance; model, key and phone operation settings are not exposed"
+      }
+    },
+    {
+      "case": "catalogReqAndroid",
+      "key": "catalog.req.android",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "Android／其他 App 操作：不在 iOS 範圍",
+        "zh-Hans": "Android／其他 App 操作：不在 iOS 范围",
+        "en": "Android and other app control is outside the iOS scope"
+      }
+    },
+    {
+      "case": "catalogReqWeb",
+      "key": "catalog.req.web",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "原版網頁工具：iOS 提供受控研究與 DOM 操作，非完整瀏覽器能力對齊",
+        "zh-Hans": "原版网页工具：iOS 提供受控研究与 DOM 操作，非完整浏览器能力对齐",
+        "en": "Original web tools: iOS offers controlled research and DOM actions, without complete browser parity"
+      }
+    },
+    {
+      "case": "catalogReqFiles",
+      "key": "catalog.req.files",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "可選取 PDF、文字與字幕；未提供原版的一般工作區",
+        "zh-Hans": "可选取 PDF、文字与字幕；未提供原版的一般工作区",
+        "en": "PDFs, text and subtitles can be selected; the original general workspace is not provided"
+      }
+    },
+    {
+      "case": "catalogReqPython",
+      "key": "catalog.req.python",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "原始 PDF 腳本需另行設定服務；本機不執行 Python",
+        "zh-Hans": "原始 PDF 脚本需另行配置服务；本地不执行 Python",
+        "en": "The original PDF script requires a separate service; Python does not run locally"
+      }
+    },
+    {
+      "case": "catalogReqShell",
+      "key": "catalog.req.shell",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "Shell／桌面命令執行：未提供",
+        "zh-Hans": "Shell／桌面命令执行：未提供",
+        "en": "Shell and desktop command execution is not provided"
+      }
+    },
+    {
+      "case": "catalogReqExport",
+      "key": "catalog.req.export",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "原版檔案產生與分享工具：未提供",
+        "zh-Hans": "原版文件生成与分享工具：未提供",
+        "en": "The original file generation and sharing tools are not provided"
+      }
+    },
+    {
+      "case": "catalogReqResearch",
+      "key": "catalog.req.research",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "原版跨網站自動研究：未提供",
+        "zh-Hans": "原版跨网站自动研究：未提供",
+        "en": "The original cross-site automated research is not provided"
+      }
+    },
+    {
+      "case": "catalogReqAccount",
+      "key": "catalog.req.account",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "原版跨 App 帳號／收件匣讀取：未提供；MCP 能力另依伺服器與授權",
+        "zh-Hans": "原版跨 App 账号／收件箱读取：未提供；MCP 能力另依服务器与授权",
+        "en": "Original cross-app account and inbox access is not provided; MCP capabilities depend on the server and authorization"
+      }
+    },
+    {
+      "case": "catalogReqSend",
+      "key": "catalog.req.send",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "原版跨 App 訊息傳送：未提供；MCP 工具須另行核准",
+        "zh-Hans": "原版跨 App 消息发送：未提供；MCP 工具须另行批准",
+        "en": "Original cross-app messaging is not provided; MCP tools need separate approval"
+      }
+    },
+    {
+      "case": "catalogReqMutation",
+      "key": "catalog.req.mutation",
+      "parameters": [],
+      "translations": {
+        "zh-Hant": "模型可查詢、讀取並提出技能草稿；儲存須由你核准",
+        "zh-Hans": "模型可查询、读取并提出技能草稿；保存须由你批准",
+        "en": "The model can search, read and draft skills; saving requires your approval"
+      }
+    },
+    {
+      "case": "catalogCount",
+      "key": "catalog.count",
+      "parameters": [
+        {
+          "name": "total",
+          "type": "Int"
+        },
+        {
+          "name": "matches",
+          "type": "Int"
+        }
+      ],
+      "translations": {
+        "zh-Hant": "共 %1$lld 項原始技能 · 符合 %2$lld 項",
+        "zh-Hans": "共 %1$lld 项原始技能 · 匹配 %2$lld 项",
+        "en": "Original skills: %1$lld · Matches: %2$lld"
+      }
+    },
+    {
+      "case": "catalogProvenance",
+      "key": "catalog.provenance",
+      "parameters": [
+        {
+          "name": "commit",
+          "type": "String"
+        }
+      ],
+      "translations": {
+        "zh-Hant": "Mika · 固定來源版本 %1$@",
+        "zh-Hans": "Mika · 固定来源版本 %1$@",
+        "en": "Mika · Pinned source version %1$@"
+      }
     }
   ]
 }

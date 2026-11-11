@@ -3,49 +3,50 @@ import UIKit
 import AssistantDomain
 
 @MainActor struct TaskNotificationSettingsView: View {
+    @Environment(\.appLocalizer) private var localizer
     @ObservedObject var store: TaskNotificationStore
     @Environment(\.scenePhase) private var scenePhase
     @Environment(\.openURL) private var openURL
 
     var body: some View {
         Form {
-            Section("本機任務通知") {
-                statusRow("任務通知", text: store.service.enabled ? "已開啟" : "已關閉",
-                          value: store.service.enabled ? "已開啟" : "已關閉", id: "notifications.enabled")
-                Text("任務完成或需要核准時提醒你。通知只顯示固定提示；開啟後仍需在 App 內查看並決定。")
+            Section(localizer.text(.notificationLocal)) {
+                statusRow(localizer.text(.notificationTitle), text: store.service.enabled ? localizer.text(.notificationOn) : localizer.text(.notificationOff),
+                          value: store.service.enabled ? localizer.text(.notificationOn) : localizer.text(.notificationOff), id: "notifications.enabled")
+                Text(localizer.text(.notificationHelp))
                 if store.service.enabled {
-                    Button("關閉任務通知") { store.service.disable() }
+                    Button(localizer.text(.notificationDisable)) { store.service.disable() }
                         .accessibilityIdentifier("notifications.disable")
                 } else {
-                    Button("啟用並請求通知權限") { Task { await store.service.enableFromUserGesture() } }
+                    Button(localizer.text(.notificationEnable)) { Task { await store.service.enableFromUserGesture() } }
                         .disabled(store.service.requestingAuthorization)
                         .accessibilityIdentifier("notifications.enable")
                 }
-                Button("傳送測試通知") { Task { _ = await store.service.sendTestFromUserGesture() } }
+                Button(localizer.text(.notificationTest)) { Task { _ = await store.service.sendTestFromUserGesture() } }
                     .disabled(!store.service.enabled || store.service.systemSettings.authorization != .authorized
                               || store.service.requestingAuthorization)
                     .accessibilityIdentifier("notifications.test")
             }
-            Section("系統設定狀態") {
-                statusRow("系統授權", text: authorizationText,
+            Section(localizer.text(.notificationSystemState)) {
+                statusRow(localizer.text(.notificationAuthorization), text: authorizationText,
                           value: store.service.systemSettings.authorization.rawValue, id: "notifications.authorization")
-                statusRow("系統聲音", text: settingText(store.service.systemSettings.sound),
+                statusRow(localizer.text(.notificationSound), text: settingText(store.service.systemSettings.sound),
                           value: store.service.systemSettings.sound.rawValue, id: "notifications.sound")
-                statusRow("系統提示", text: settingText(store.service.systemSettings.alert),
+                statusRow(localizer.text(.notificationAlert), text: settingText(store.service.systemSettings.alert),
                           value: store.service.systemSettings.alert.rawValue, id: "notifications.alert")
-                Button("重新整理狀態") { Task { await store.service.refresh() } }
+                Button(localizer.text(.notificationRefresh)) { Task { await store.service.refresh() } }
                     .accessibilityIdentifier("notifications.refresh")
-                Button("開啟系統通知設定") {
+                Button(localizer.text(.notificationOpenSettings)) {
                     if let url = URL(string: UIApplication.openNotificationSettingsURLString) { openURL(url) }
                 }.accessibilityIdentifier("notifications.systemSettings")
-                Text("系統拒絕後，請到設定開啟通知。專注模式、通知摘要與靜音可能影響提示和聲音。")
+                Text(localizer.text(.notificationSystemHelp))
                     .font(.footnote)
             }
             if let notice = store.service.notice {
-                Text(notice.message).accessibilityIdentifier("notifications.notice")
+                Text(localizer.text(AppLocalizer.notificationNotice(notice))).accessibilityIdentifier("notifications.notice")
             }
         }
-        .navigationTitle("任務通知")
+        .navigationTitle(localizer.text(.notificationTitle))
         .task { await store.service.refresh() }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { Task { await store.service.refresh() } }
@@ -61,23 +62,12 @@ import AssistantDomain
     }
 
     private var authorizationText: String {
-        switch store.service.systemSettings.authorization {
-        case .unknown: return "尚未取得"
-        case .notDetermined: return "尚未詢問"
-        case .denied: return "已拒絕"
-        case .authorized: return "已允許"
-        case .provisional: return "暫時允許（安靜通知）"
-        case .ephemeral: return "暫時允許（短期）"
-        }
+        localizer.text(AppLocalizer.notificationAuthorization(store.service.systemSettings.authorization))
     }
     private func settingText(_ setting: TaskNotificationSetting) -> String {
-        switch setting {
-        case .unknown: return "尚未取得"
-        case .notSupported: return "不支援"
-        case .disabled: return "已關閉"
-        case .enabled: return "已開啟"
-        }
+        localizer.text(AppLocalizer.notificationSetting(setting))
     }
+
 }
 
 @MainActor private final class TaskNotificationBridgeOwner: ObservableObject {

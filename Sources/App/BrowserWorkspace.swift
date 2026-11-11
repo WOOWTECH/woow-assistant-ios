@@ -17,8 +17,10 @@ struct BrowserPageDialog: Identifiable {
 final class BrowserWorkspace: ObservableObject {
     @Published private(set) var library = BrowserLibraryState()
     @Published private(set) var selected: BrowserSession
-    @Published private(set) var error: String?
-    @Published private(set) var siteModeNotice: String?
+    @Published private(set) var errorText: AppText?
+    var error: String? { errorText.map { AppLocalizer(language: .traditionalChinese).text($0) } }
+    @Published private(set) var siteModeNoticeText: AppText?
+    var siteModeNotice: String? { siteModeNoticeText.map { AppLocalizer(language: .traditionalChinese).text($0) } }
     @Published private(set) var available = false
     @Published private(set) var websiteRecords: [WKWebsiteDataRecord] = []
     @Published private(set) var isClearingWebsiteData = false
@@ -73,7 +75,7 @@ final class BrowserWorkspace: ObservableObject {
             let loaded = try file.load(BrowserLibraryState.self) ?? BrowserLibraryState()
             try loaded.validate()
             library = loaded; vault = file; available = true
-        } catch { self.error = "瀏覽資料目前無法讀取，不會覆寫原有資料。" }
+        } catch { self.errorText = .browserReadError }
         selected = makeSession(id: library.selectedID)
         if reset {
             isClearingWebsiteData = true
@@ -95,14 +97,14 @@ final class BrowserWorkspace: ObservableObject {
             let loaded = try vault.load(BrowserLibraryState.self) ?? BrowserLibraryState()
             try loaded.validate()
             library = loaded; self.vault = vault; available = true
-        } catch { self.error = "瀏覽資料目前無法讀取，不會覆寫原有資料。" }
+        } catch { self.errorText = .browserReadError }
         selected = makeSession(id: library.selectedID)
     }
 
     @discardableResult
     func setManualSiteMode(_ mode: BrowserManualSiteMode) -> Bool {
         guard !isClearingWebsiteData, let host = selected.manualSiteModeHost else { return false }
-        siteModeNotice = nil
+        siteModeNoticeText = nil
         let previous = library.userSiteModes
         guard update({ try $0.setManualSiteMode(mode, for: host) }) else { return false }
         var reloading = false
@@ -114,8 +116,8 @@ final class BrowserWorkspace: ObservableObject {
                 if session === selected { reloading = applied }
             }
         }
-        siteModeNotice = reloading ? "網站偏好已儲存，正在重新整理此頁以套用。"
-            : "網站偏好已儲存；為避免重送表單或自動化操作，此頁不會重新整理，下次手動導覽時套用。"
+        siteModeNoticeText = reloading ? .browserModeReloading
+            : .browserModeDeferred
         return true
     }
 
@@ -129,13 +131,13 @@ final class BrowserWorkspace: ObservableObject {
     func addSearchEngine(name: String, template: String) -> Bool {
         guard !isClearingWebsiteData else { return false }
         guard library.searchSettings.custom.count < BrowserSearchSettings.maximumCustomEngines else {
-            error = "最多儲存 20 個自訂搜尋引擎。"; return false
+            errorText = .searchLimit; return false
         }
         do {
             let engine = try BrowserSearchEngine(name: name, template: template)
             return update { try $0.addSearchEngine(engine) }
         } catch {
-            self.error = "請填寫名稱與公開 HTTPS 模板；在路徑或查詢值中使用一個 %s，不可含網址帳密、登入參數或 #。"
+            self.errorText = .searchInvalid
             return false
         }
     }
@@ -156,7 +158,7 @@ final class BrowserWorkspace: ObservableObject {
                     guard let self else { return }
                     while self.isClearingWebsiteData { try await Task.sleep(nanoseconds: 50_000_000) }
                     self.open(url)
-                } catch { self?.error = "測試上傳頁面未能啟動。" }
+                } catch { self?.errorText = .browserUploadFixtureError }
             }
             return
         }
@@ -168,7 +170,7 @@ final class BrowserWorkspace: ObservableObject {
                     guard let self else { return }
                     while self.isClearingWebsiteData { try await Task.sleep(nanoseconds: 50_000_000) }
                     self.open(url)
-                } catch { self?.error = "測試登入頁面未能啟動。" }
+                } catch { self?.errorText = .browserLoginFixtureError }
             }
             return
         }
@@ -177,11 +179,11 @@ final class BrowserWorkspace: ObservableObject {
         selected.openAddress()
     }
     @discardableResult private func update(_ change: (inout BrowserLibraryState) throws -> Void) -> Bool {
-        guard available, let vault else { error = "瀏覽資料目前無法儲存。"; return false }
+        guard available, let vault else { errorText = .browserSaveUnavailable; return false }
         do {
             var next = library; try change(&next); try next.validate(); try vault.save(next)
-            library = next; error = nil; return true
-        } catch { self.error = (error as? BrowserLibraryError) == .tabLimit ? "最多開啟 20 個分頁，請先關閉不用的分頁。" : "瀏覽資料未變更，請解鎖裝置後重試。"; return false }
+            library = next; errorText = nil; return true
+        } catch { self.errorText = (error as? BrowserLibraryError) == .tabLimit ? .browserTabLimit : .browserSaveError; return false }
     }
     private func makeSession(id: UUID, configuration: WKWebViewConfiguration? = nil) -> BrowserSession {
         if let session = sessions[id] { return session }
@@ -264,7 +266,7 @@ final class BrowserWorkspace: ObservableObject {
         guard !isClearingWebsiteData, !records.isEmpty else { return }
         let selectedNames = Set(records.map(\.displayName))
         websiteRecordRevision = UUID() // Earlier enumeration cannot republish stale records.
-        error = nil
+        errorText = nil
         #if DEBUG
         let started = ProcessInfo.processInfo.systemUptime
         var removalEvents: [[String: String]] = []
@@ -310,7 +312,7 @@ final class BrowserWorkspace: ObservableObject {
             trace("pagesDiscarded", ["ready": ready ? 1 : 0])
             #endif
             guard ready else {
-                self.error = "網頁尚未完全停止，網站資料未清除；請重試。"
+                self.errorText = .browserClearNotStopped
                 self.isClearingWebsiteData = false
                 self.sessions.removeAll()
                 self.selected = self.makeSession(id: self.library.selectedID)
@@ -338,7 +340,7 @@ final class BrowserWorkspace: ObservableObject {
                         guard let self else { return }
                         let selected = remaining.filter { selectedNames.contains($0.displayName) }
                         self.websiteRecords = remaining.sorted { $0.displayName < $1.displayName }
-                        self.error = selected.isEmpty ? nil : "部分網站資料仍保留，請重新確認。"
+                        self.errorText = selected.isEmpty ? nil : .browserClearRemaining
                         #if DEBUG
                         let classifiedTypes: Set<String> = [WKWebsiteDataTypeCookies, WKWebsiteDataTypeMemoryCache, WKWebsiteDataTypeDiskCache]
                         trace("recordsRefreshed", ["allRecords": remaining.count, "selectedRecords": selected.count,

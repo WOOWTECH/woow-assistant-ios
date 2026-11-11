@@ -79,6 +79,211 @@ enum AppText: Equatable {
     case modelSettingsInvalidKey
     case modelSettingsUnavailableKeychain
     case modelSettingsKeychainStatus(code: String)
+    case commonDelete
+    case commonCancel
+    case commonSave
+    case commonClose
+    case commonClear
+    case commonName
+    case commonSelected
+    case commonUnselected
+    case commonUnknown
+    case mcpTitle
+    case mcpConnectionSection
+    case mcpNoTools
+    case mcpNoResources
+    case mcpExplanation
+    case mcpIsolation
+    case mcpStored
+    case mcpNotStored
+    case mcpEndpoint
+    case mcpEndpointAX
+    case mcpEndpointHelp
+    case mcpSave
+    case mcpClearDraft
+    case mcpRemoveStored
+    case mcpExploration
+    case mcpCancel
+    case mcpConnect
+    case mcpDisconnect
+    case mcpServerTools
+    case mcpSearchTools
+    case mcpServerResources
+    case mcpSkills
+    case mcpSkillsLocation
+    case mcpSkillsHelp
+    case mcpRemoveQuestion
+    case mcpRemove
+    case mcpNotConfigured
+    case mcpSavedStatus
+    case mcpConnecting
+    case mcpDiscovering
+    case mcpConnected
+    case mcpDisconnected
+    case mcpCancelled
+    case mcpFailedStatus
+    case mcpSelectionLimit
+    case mcpSavedNotice
+    case mcpRemovedNotice
+    case mcpDiscoveryNotice
+    case mcpConnectionError
+    case mcpTimeout
+    case mcpCancelledNotice
+    case mcpDisconnectedNotice
+    case mcpSettingsError
+    case mcpInvalidEndpoint
+    case mcpKeychainUnavailable
+    case mcpInvalidNamespace
+    case mcpMissingLiveEndpoint
+    case mcpApprovalHelp
+    case mcpApprovalRisk
+    case mcpApprovalTitle
+    case mcpDecline
+    case mcpApprove
+    case mcpReadResource
+    case mcpToolError
+    case mcpToolResult
+    case mcpResultsTitle
+    case mcpResultUnavailable
+    case mcpRouteObservation
+    case mcpProtocol(version: String)
+    case mcpKeychainStatus(code: String)
+    case mcpToolCount(count: Int)
+    case mcpResourceCount(count: Int)
+    case mcpSelectedCount(count: Int)
+    case searchTitle
+    case searchCustom
+    case searchTemplate
+    case searchHelp
+    case searchAdd
+    case searchChanges
+    case browserReadError
+    case searchLimit
+    case searchInvalid
+    case browserUploadFixtureError
+    case browserLoginFixtureError
+    case browserSaveUnavailable
+    case browserTabLimit
+    case browserSaveError
+    case browserClearNotStopped
+    case browserClearRemaining
+    case browserModeReloading
+    case browserModeDeferred
+    case browserLibrary
+    case browserTabs
+    case browserBookmarks
+    case browserHistory
+    case browserSites
+    case browserClearing
+    case browserDownloads
+    case browserRenameBookmark
+    case browserClearHistoryQuestion
+    case browserClearHistory
+    case browserClearSiteQuestion
+    case browserClearSite
+    case browserNewTab
+    case browserNoPage
+    case browserBookmarkCurrent
+    case browserNoBookmarks
+    case browserRename
+    case browserClearAllHistory
+    case browserNoHistory
+    case browserSitesHelp
+    case browserNoSites
+    case commonDeleteName(name: String)
+    case commonCloseName(name: String)
+    case browserHistorySearch(query: String)
+    case notificationTitle
+    case notificationLocal
+    case notificationOn
+    case notificationOff
+    case notificationHelp
+    case notificationDisable
+    case notificationEnable
+    case notificationTest
+    case notificationSystemState
+    case notificationAuthorization
+    case notificationSound
+    case notificationAlert
+    case notificationRefresh
+    case notificationOpenSettings
+    case notificationSystemHelp
+    case notificationNotAsked
+    case notificationDenied
+    case notificationAuthorized
+    case notificationProvisional
+    case notificationEphemeral
+    case notificationNotSupported
+    case notificationAuthorizationError
+    case notificationDeliveryError
+    case notificationCompletedTitle
+    case notificationApprovalTitle
+    case notificationTestTitle
+    case notificationCompletedBody
+    case notificationApprovalBody
+    case notificationTestBody
+    case catalogTitle
+    case catalogSearch
+    case catalogScope
+    case catalogCapabilities
+    case catalogSection
+    case catalogEmpty
+    case catalogSource
+    case catalogLicense
+    case catalogNotice
+    case catalogReload
+    case catalogLoading
+    case catalogNavigation
+    case catalogLoadFailure
+    case catalogUnavailable
+    case catalogInvalid
+    case catalogNotFound
+    case catalogAlreadyAdded
+    case catalogTranscriptSection
+    case catalogTranscriptOpen
+    case catalogTranscriptHelp
+    case catalogAppearanceSection
+    case catalogAppearanceOpen
+    case catalogAppearanceHelp
+    case catalogAuthorSection
+    case catalogAuthorOpen
+    case catalogAgentOpen
+    case catalogAuthorHelp
+    case catalogDocumentsSection
+    case catalogPDFOpen
+    case catalogPDFAssembly
+    case catalogDocumentsHelp
+    case catalogAdaptationSection
+    case catalogAdaptationTitle
+    case catalogAdaptationRead
+    case catalogImport
+    case catalogNotImported
+    case catalogPending
+    case catalogInstalled
+    case catalogStorageUnavailable
+    case catalogRequirements
+    case catalogOriginalSection
+    case catalogOriginalRead
+    case catalogAttribution
+    case catalogTextSafety
+    case catalogReadyAppearance
+    case catalogReadyAuthor
+    case catalogReadyDocuments
+    case catalogReadyTranscript
+    case catalogReadyOther
+    case catalogReqSettings
+    case catalogReqAndroid
+    case catalogReqWeb
+    case catalogReqFiles
+    case catalogReqPython
+    case catalogReqShell
+    case catalogReqExport
+    case catalogReqResearch
+    case catalogReqAccount
+    case catalogReqSend
+    case catalogReqMutation
+    case catalogCount(total: Int, matches: Int)
+    case catalogProvenance(commit: String)
 
     var key: String {
         switch self {
@@ -158,6 +363,211 @@ enum AppText: Equatable {
         case .modelSettingsInvalidKey: return "modelSettings.invalidKey"
         case .modelSettingsUnavailableKeychain: return "modelSettings.unavailableKeychain"
         case .modelSettingsKeychainStatus: return "modelSettings.keychainStatus"
+        case .commonDelete: return "common.delete"
+        case .commonCancel: return "common.cancel"
+        case .commonSave: return "common.save"
+        case .commonClose: return "common.close"
+        case .commonClear: return "common.clear"
+        case .commonName: return "common.name"
+        case .commonSelected: return "common.selected"
+        case .commonUnselected: return "common.unselected"
+        case .commonUnknown: return "common.unknown"
+        case .mcpTitle: return "mcp.title"
+        case .mcpConnectionSection: return "mcp.connection.section"
+        case .mcpNoTools: return "mcp.no.tools"
+        case .mcpNoResources: return "mcp.no.resources"
+        case .mcpExplanation: return "mcp.explanation"
+        case .mcpIsolation: return "mcp.isolation"
+        case .mcpStored: return "mcp.stored"
+        case .mcpNotStored: return "mcp.not.stored"
+        case .mcpEndpoint: return "mcp.endpoint"
+        case .mcpEndpointAX: return "mcp.endpoint.a.x"
+        case .mcpEndpointHelp: return "mcp.endpoint.help"
+        case .mcpSave: return "mcp.save"
+        case .mcpClearDraft: return "mcp.clear.draft"
+        case .mcpRemoveStored: return "mcp.remove.stored"
+        case .mcpExploration: return "mcp.exploration"
+        case .mcpCancel: return "mcp.cancel"
+        case .mcpConnect: return "mcp.connect"
+        case .mcpDisconnect: return "mcp.disconnect"
+        case .mcpServerTools: return "mcp.server.tools"
+        case .mcpSearchTools: return "mcp.search.tools"
+        case .mcpServerResources: return "mcp.server.resources"
+        case .mcpSkills: return "mcp.skills"
+        case .mcpSkillsLocation: return "mcp.skills.location"
+        case .mcpSkillsHelp: return "mcp.skills.help"
+        case .mcpRemoveQuestion: return "mcp.remove.question"
+        case .mcpRemove: return "mcp.remove"
+        case .mcpNotConfigured: return "mcp.not.configured"
+        case .mcpSavedStatus: return "mcp.saved.status"
+        case .mcpConnecting: return "mcp.connecting"
+        case .mcpDiscovering: return "mcp.discovering"
+        case .mcpConnected: return "mcp.connected"
+        case .mcpDisconnected: return "mcp.disconnected"
+        case .mcpCancelled: return "mcp.cancelled"
+        case .mcpFailedStatus: return "mcp.failed.status"
+        case .mcpSelectionLimit: return "mcp.selection.limit"
+        case .mcpSavedNotice: return "mcp.saved.notice"
+        case .mcpRemovedNotice: return "mcp.removed.notice"
+        case .mcpDiscoveryNotice: return "mcp.discovery.notice"
+        case .mcpConnectionError: return "mcp.connection.error"
+        case .mcpTimeout: return "mcp.timeout"
+        case .mcpCancelledNotice: return "mcp.cancelled.notice"
+        case .mcpDisconnectedNotice: return "mcp.disconnected.notice"
+        case .mcpSettingsError: return "mcp.settings.error"
+        case .mcpInvalidEndpoint: return "mcp.invalid.endpoint"
+        case .mcpKeychainUnavailable: return "mcp.keychain.unavailable"
+        case .mcpInvalidNamespace: return "mcp.invalid.namespace"
+        case .mcpMissingLiveEndpoint: return "mcp.missing.live.endpoint"
+        case .mcpApprovalHelp: return "mcp.approval.help"
+        case .mcpApprovalRisk: return "mcp.approval.risk"
+        case .mcpApprovalTitle: return "mcp.approval.title"
+        case .mcpDecline: return "mcp.decline"
+        case .mcpApprove: return "mcp.approve"
+        case .mcpReadResource: return "mcp.read.resource"
+        case .mcpToolError: return "mcp.tool.error"
+        case .mcpToolResult: return "mcp.tool.result"
+        case .mcpResultsTitle: return "mcp.results.title"
+        case .mcpResultUnavailable: return "mcp.result.unavailable"
+        case .mcpRouteObservation: return "mcp.route.observation"
+        case .mcpProtocol: return "mcp.protocol"
+        case .mcpKeychainStatus: return "mcp.keychain.status"
+        case .mcpToolCount: return "mcpToolCount"
+        case .mcpResourceCount: return "mcpResourceCount"
+        case .mcpSelectedCount: return "mcpSelectedCount"
+        case .searchTitle: return "search.title"
+        case .searchCustom: return "search.custom"
+        case .searchTemplate: return "search.template"
+        case .searchHelp: return "search.help"
+        case .searchAdd: return "search.add"
+        case .searchChanges: return "search.changes"
+        case .browserReadError: return "browser.read.error"
+        case .searchLimit: return "search.limit"
+        case .searchInvalid: return "search.invalid"
+        case .browserUploadFixtureError: return "browser.upload.fixture.error"
+        case .browserLoginFixtureError: return "browser.login.fixture.error"
+        case .browserSaveUnavailable: return "browser.save.unavailable"
+        case .browserTabLimit: return "browser.tab.limit"
+        case .browserSaveError: return "browser.save.error"
+        case .browserClearNotStopped: return "browser.clear.not.stopped"
+        case .browserClearRemaining: return "browser.clear.remaining"
+        case .browserModeReloading: return "browser.mode.reloading"
+        case .browserModeDeferred: return "browser.mode.deferred"
+        case .browserLibrary: return "browser.library"
+        case .browserTabs: return "browser.tabs"
+        case .browserBookmarks: return "browser.bookmarks"
+        case .browserHistory: return "browser.history"
+        case .browserSites: return "browser.sites"
+        case .browserClearing: return "browser.clearing"
+        case .browserDownloads: return "browser.downloads"
+        case .browserRenameBookmark: return "browser.rename.bookmark"
+        case .browserClearHistoryQuestion: return "browser.clear.history.question"
+        case .browserClearHistory: return "browser.clear.history"
+        case .browserClearSiteQuestion: return "browser.clear.site.question"
+        case .browserClearSite: return "browser.clear.site"
+        case .browserNewTab: return "browser.new.tab"
+        case .browserNoPage: return "browser.no.page"
+        case .browserBookmarkCurrent: return "browser.bookmark.current"
+        case .browserNoBookmarks: return "browser.no.bookmarks"
+        case .browserRename: return "browser.rename"
+        case .browserClearAllHistory: return "browser.clear.all.history"
+        case .browserNoHistory: return "browser.no.history"
+        case .browserSitesHelp: return "browser.sites.help"
+        case .browserNoSites: return "browser.no.sites"
+        case .commonDeleteName: return "common.delete.name"
+        case .commonCloseName: return "common.close.name"
+        case .browserHistorySearch: return "browser.history.search"
+        case .notificationTitle: return "notification.title"
+        case .notificationLocal: return "notification.local"
+        case .notificationOn: return "notification.on"
+        case .notificationOff: return "notification.off"
+        case .notificationHelp: return "notification.help"
+        case .notificationDisable: return "notification.disable"
+        case .notificationEnable: return "notification.enable"
+        case .notificationTest: return "notification.test"
+        case .notificationSystemState: return "notification.system.state"
+        case .notificationAuthorization: return "notification.authorization"
+        case .notificationSound: return "notification.sound"
+        case .notificationAlert: return "notification.alert"
+        case .notificationRefresh: return "notification.refresh"
+        case .notificationOpenSettings: return "notification.open.settings"
+        case .notificationSystemHelp: return "notification.system.help"
+        case .notificationNotAsked: return "notification.not.asked"
+        case .notificationDenied: return "notification.denied"
+        case .notificationAuthorized: return "notification.authorized"
+        case .notificationProvisional: return "notification.provisional"
+        case .notificationEphemeral: return "notification.ephemeral"
+        case .notificationNotSupported: return "notification.not.supported"
+        case .notificationAuthorizationError: return "notification.authorization.error"
+        case .notificationDeliveryError: return "notification.delivery.error"
+        case .notificationCompletedTitle: return "notification.completed.title"
+        case .notificationApprovalTitle: return "notification.approval.title"
+        case .notificationTestTitle: return "notification.test.title"
+        case .notificationCompletedBody: return "notification.completed.body"
+        case .notificationApprovalBody: return "notification.approval.body"
+        case .notificationTestBody: return "notification.test.body"
+        case .catalogTitle: return "catalog.title"
+        case .catalogSearch: return "catalog.search"
+        case .catalogScope: return "catalog.scope"
+        case .catalogCapabilities: return "catalog.capabilities"
+        case .catalogSection: return "catalog.section"
+        case .catalogEmpty: return "catalog.empty"
+        case .catalogSource: return "catalog.source"
+        case .catalogLicense: return "catalog.license"
+        case .catalogNotice: return "catalog.notice"
+        case .catalogReload: return "catalog.reload"
+        case .catalogLoading: return "catalog.loading"
+        case .catalogNavigation: return "catalog.navigation"
+        case .catalogLoadFailure: return "catalog.load.failure"
+        case .catalogUnavailable: return "catalog.unavailable"
+        case .catalogInvalid: return "catalog.invalid"
+        case .catalogNotFound: return "catalog.not.found"
+        case .catalogAlreadyAdded: return "catalog.already.added"
+        case .catalogTranscriptSection: return "catalog.transcript.section"
+        case .catalogTranscriptOpen: return "catalog.transcript.open"
+        case .catalogTranscriptHelp: return "catalog.transcript.help"
+        case .catalogAppearanceSection: return "catalog.appearance.section"
+        case .catalogAppearanceOpen: return "catalog.appearance.open"
+        case .catalogAppearanceHelp: return "catalog.appearance.help"
+        case .catalogAuthorSection: return "catalog.author.section"
+        case .catalogAuthorOpen: return "catalog.author.open"
+        case .catalogAgentOpen: return "catalog.agent.open"
+        case .catalogAuthorHelp: return "catalog.author.help"
+        case .catalogDocumentsSection: return "catalog.documents.section"
+        case .catalogPDFOpen: return "catalog.p.d.f.open"
+        case .catalogPDFAssembly: return "catalog.p.d.f.assembly"
+        case .catalogDocumentsHelp: return "catalog.documents.help"
+        case .catalogAdaptationSection: return "catalog.adaptation.section"
+        case .catalogAdaptationTitle: return "catalog.adaptation.title"
+        case .catalogAdaptationRead: return "catalog.adaptation.read"
+        case .catalogImport: return "catalog.import"
+        case .catalogNotImported: return "catalog.not.imported"
+        case .catalogPending: return "catalog.pending"
+        case .catalogInstalled: return "catalog.installed"
+        case .catalogStorageUnavailable: return "catalog.storage.unavailable"
+        case .catalogRequirements: return "catalog.requirements"
+        case .catalogOriginalSection: return "catalog.original.section"
+        case .catalogOriginalRead: return "catalog.original.read"
+        case .catalogAttribution: return "catalog.attribution"
+        case .catalogTextSafety: return "catalog.text.safety"
+        case .catalogReadyAppearance: return "catalog.ready.appearance"
+        case .catalogReadyAuthor: return "catalog.ready.author"
+        case .catalogReadyDocuments: return "catalog.ready.documents"
+        case .catalogReadyTranscript: return "catalog.ready.transcript"
+        case .catalogReadyOther: return "catalog.ready.other"
+        case .catalogReqSettings: return "catalog.req.settings"
+        case .catalogReqAndroid: return "catalog.req.android"
+        case .catalogReqWeb: return "catalog.req.web"
+        case .catalogReqFiles: return "catalog.req.files"
+        case .catalogReqPython: return "catalog.req.python"
+        case .catalogReqShell: return "catalog.req.shell"
+        case .catalogReqExport: return "catalog.req.export"
+        case .catalogReqResearch: return "catalog.req.research"
+        case .catalogReqAccount: return "catalog.req.account"
+        case .catalogReqSend: return "catalog.req.send"
+        case .catalogReqMutation: return "catalog.req.mutation"
+        case .catalogCount: return "catalog.count"
+        case .catalogProvenance: return "catalog.provenance"
         }
     }
 
@@ -168,6 +578,16 @@ enum AppText: Equatable {
         case .configurationStepSet(let appearance): return [appearance]
         case .configurationStepCount(let count): return [Int64(count)]
         case .modelSettingsKeychainStatus(let code): return [code]
+        case .mcpProtocol(let version): return [version]
+        case .mcpKeychainStatus(let code): return [code]
+        case .mcpToolCount(let count): return [Int64(count)]
+        case .mcpResourceCount(let count): return [Int64(count)]
+        case .mcpSelectedCount(let count): return [Int64(count)]
+        case .commonDeleteName(let name): return [name]
+        case .commonCloseName(let name): return [name]
+        case .browserHistorySearch(let query): return [query]
+        case .catalogCount(let total, let matches): return [Int64(total), Int64(matches)]
+        case .catalogProvenance(let commit): return [commit]
         default: return []
         }
     }
@@ -251,6 +671,211 @@ enum AppText: Equatable {
         case .modelSettingsInvalidKey: return "API Key 不可包含空白或控制字元。"
         case .modelSettingsUnavailableKeychain: return "無法存取 Keychain，設定未變更。請解鎖裝置後再試。"
         case .modelSettingsKeychainStatus: return "Keychain 存取失敗（系統代碼 %1$@），設定未變更。"
+        case .commonDelete: return "刪除"
+        case .commonCancel: return "取消"
+        case .commonSave: return "儲存"
+        case .commonClose: return "關閉"
+        case .commonClear: return "清除"
+        case .commonName: return "名稱"
+        case .commonSelected: return "已選取"
+        case .commonUnselected: return "未選取"
+        case .commonUnknown: return "尚未取得"
+        case .mcpTitle: return "MCP 與 Skills"
+        case .mcpConnectionSection: return "MCP 連線與目錄"
+        case .mcpNoTools: return "伺服器未宣告工具能力"
+        case .mcpNoResources: return "伺服器未宣告資源能力"
+        case .mcpExplanation: return "支援 HTTPS Streamable HTTP。連線後選取要提供給對話模型的工具，再到對話開啟 MCP。每次執行前會顯示工具名稱與完整參數，等你核准；工具說明及結果會送給已設定的模型。"
+        case .mcpIsolation: return "UI 測試隔離模式：不會發送 MCP 網路請求。"
+        case .mcpStored: return "端點已安全儲存；不顯示網址。"
+        case .mcpNotStored: return "尚未儲存端點。"
+        case .mcpEndpoint: return "完整 HTTPS MCP 端點"
+        case .mcpEndpointAX: return "MCP 私密端點"
+        case .mcpEndpointHelp: return "Webhook URL 等同憑證，完整網址僅儲存於此裝置解鎖時可讀取的 Keychain，不透過 iCloud 同步。輸入新端點後，請先儲存或清除草稿再連線。"
+        case .mcpSave: return "儲存端點"
+        case .mcpClearDraft: return "清除輸入"
+        case .mcpRemoveStored: return "移除已儲存端點"
+        case .mcpExploration: return "探索狀態"
+        case .mcpCancel: return "取消等待"
+        case .mcpConnect: return "連線並探索目錄"
+        case .mcpDisconnect: return "中斷連線"
+        case .mcpServerTools: return "伺服器工具"
+        case .mcpSearchTools: return "搜尋工具名稱"
+        case .mcpServerResources: return "伺服器資源"
+        case .mcpSkills: return "Skills"
+        case .mcpSkillsLocation: return "請到「資料 → 技能」管理"
+        case .mcpSkillsHelp: return "可匯入並審核文字技能，已啟用且相關的內容會提供給對話模型。網站研究可產生待審核技能；MCP 工具依每次對話的核准執行。"
+        case .mcpRemoveQuestion: return "移除此裝置儲存的 MCP 端點？"
+        case .mcpRemove: return "移除端點"
+        case .mcpNotConfigured: return "尚未設定 MCP"
+        case .mcpSavedStatus: return "端點已儲存，尚未驗證連線"
+        case .mcpConnecting: return "正在建立 MCP 工作階段…"
+        case .mcpDiscovering: return "正在擷取工具與資源目錄…"
+        case .mcpConnected: return "已連線，目錄擷取完成"
+        case .mcpDisconnected: return "已中斷本機連線"
+        case .mcpCancelled: return "已取消等待"
+        case .mcpFailedStatus: return "MCP 設定或連線未完成"
+        case .mcpSelectionLimit: return "每次對話最多選取 64 個工具。"
+        case .mcpSavedNotice: return "端點已存入此裝置的 Keychain；尚未送出連線請求。"
+        case .mcpRemovedNotice: return "已移除此 App 的 MCP 端點。"
+        case .mcpDiscoveryNotice: return "僅完成握手與目錄探索，未執行工具或讀取資源內容；不代表服務持續在線。"
+        case .mcpConnectionError: return "MCP 連線或目錄擷取失敗。請檢查端點、網路及伺服器的 Streamable HTTP 支援；不會自動重試。"
+        case .mcpTimeout: return "探索超過 90 秒，已停止本機等待；伺服器可能已收到目錄請求。"
+        case .mcpCancelledNotice: return "已取消本機等待；伺服器可能已收到目錄請求。"
+        case .mcpDisconnectedNotice: return "已停止本機工作並清除目錄；端點設定保留。未要求伺服器撤銷憑證或刪除遠端工作階段。"
+        case .mcpSettingsError: return "MCP 設定存取失敗；不會顯示端點或原始錯誤內容。"
+        case .mcpInvalidEndpoint: return "請輸入完整 HTTPS MCP 端點，不可含帳密、片段或空白。查詢參數會與整個端點一起安全儲存。"
+        case .mcpKeychainUnavailable: return "無法存取 MCP Keychain，請解鎖裝置後再試。"
+        case .mcpInvalidNamespace: return "UI 測試缺少有效的隔離命名空間；不會讀取正式設定。"
+        case .mcpMissingLiveEndpoint: return "Live MCP UI 測試設定未完成，未取得私密端點。"
+        case .mcpApprovalHelp: return "模型請求執行以下工具。核准只適用於這一次的名稱與參數；結果會提供給已設定的模型。"
+        case .mcpApprovalRisk: return "工具可能修改外部資料。取消本機等待無法撤銷已送出的操作。"
+        case .mcpApprovalTitle: return "核准 MCP 呼叫"
+        case .mcpDecline: return "拒絕並停止"
+        case .mcpApprove: return "核准這一次"
+        case .mcpReadResource: return "讀取 MCP 資源"
+        case .mcpToolError: return "工具回報錯誤"
+        case .mcpToolResult: return "已收到工具結果"
+        case .mcpResultsTitle: return "本次 MCP 工具結果"
+        case .mcpResultUnavailable: return "結果無法顯示"
+        case .mcpRouteObservation: return "通知導頁測試觀測"
+        case .mcpProtocol: return "協定版本：%1$@"
+        case .mcpKeychainStatus: return "MCP Keychain 存取失敗（系統代碼 %1$@）。"
+        case .mcpToolCount: return "工具：%lld 個"
+        case .mcpResourceCount: return "資源：%lld 個"
+        case .mcpSelectedCount: return "已選取 %lld 個工具供對話使用"
+        case .searchTitle: return "搜尋引擎"
+        case .searchCustom: return "新增自訂引擎"
+        case .searchTemplate: return "https://example.com/search?q=%%s"
+        case .searchHelp: return "以 %%s 代表搜尋文字，只接受公開 HTTPS；不接受網址帳密、登入參數或 #。最多 20 個。"
+        case .searchAdd: return "新增並使用"
+        case .searchChanges: return "變更引擎會用於下一次手動搜尋；目前頁面不會重新載入。搜尋結果網址會沿用瀏覽歷史的儲存與清除設定。"
+        case .browserReadError: return "瀏覽資料目前無法讀取，不會覆寫原有資料。"
+        case .searchLimit: return "最多儲存 20 個自訂搜尋引擎。"
+        case .searchInvalid: return "請填寫名稱與公開 HTTPS 模板；在路徑或查詢值中使用一個 %%s，不可含網址帳密、登入參數或 #。"
+        case .browserUploadFixtureError: return "測試上傳頁面未能啟動。"
+        case .browserLoginFixtureError: return "測試登入頁面未能啟動。"
+        case .browserSaveUnavailable: return "瀏覽資料目前無法儲存。"
+        case .browserTabLimit: return "最多開啟 20 個分頁，請先關閉不用的分頁。"
+        case .browserSaveError: return "瀏覽資料未變更，請解鎖裝置後重試。"
+        case .browserClearNotStopped: return "網頁尚未完全停止，網站資料未清除；請重試。"
+        case .browserClearRemaining: return "部分網站資料仍保留，請重新確認。"
+        case .browserModeReloading: return "網站偏好已儲存，正在重新整理此頁以套用。"
+        case .browserModeDeferred: return "網站偏好已儲存；為避免重送表單或自動化操作，此頁不會重新整理，下次手動導覽時套用。"
+        case .browserLibrary: return "瀏覽資料"
+        case .browserTabs: return "分頁"
+        case .browserBookmarks: return "書籤"
+        case .browserHistory: return "歷史"
+        case .browserSites: return "網站"
+        case .browserClearing: return "正在清除網站資料…"
+        case .browserDownloads: return "下載"
+        case .browserRenameBookmark: return "修改書籤名稱"
+        case .browserClearHistoryQuestion: return "清除瀏覽歷史？書籤與網站登入資料會保留。"
+        case .browserClearHistory: return "清除歷史"
+        case .browserClearSiteQuestion: return "清除此網站的資料？可能需要重新登入，所有分頁與下載將停止。"
+        case .browserClearSite: return "清除網站資料"
+        case .browserNewTab: return "新增分頁"
+        case .browserNoPage: return "尚未開啟網頁"
+        case .browserBookmarkCurrent: return "加入目前頁面書籤"
+        case .browserNoBookmarks: return "尚無書籤"
+        case .browserRename: return "改名"
+        case .browserClearAllHistory: return "清除所有歷史"
+        case .browserNoHistory: return "尚無瀏覽歷史"
+        case .browserSitesHelp: return "網站資料由 WebKit 儲存，包括 Cookie 與網站儲存空間；出現在清單不代表目前已登入。"
+        case .browserNoSites: return "尚無網站資料"
+        case .commonDeleteName: return "刪除 %1$@"
+        case .commonCloseName: return "關閉 %1$@"
+        case .browserHistorySearch: return "搜尋：%1$@"
+        case .notificationTitle: return "任務通知"
+        case .notificationLocal: return "本機任務通知"
+        case .notificationOn: return "已開啟"
+        case .notificationOff: return "已關閉"
+        case .notificationHelp: return "任務完成或需要核准時提醒你。通知只顯示固定提示；開啟後仍需在 App 內查看並決定。"
+        case .notificationDisable: return "關閉任務通知"
+        case .notificationEnable: return "啟用並請求通知權限"
+        case .notificationTest: return "傳送測試通知"
+        case .notificationSystemState: return "系統設定狀態"
+        case .notificationAuthorization: return "系統授權"
+        case .notificationSound: return "系統聲音"
+        case .notificationAlert: return "系統提示"
+        case .notificationRefresh: return "重新整理狀態"
+        case .notificationOpenSettings: return "開啟系統通知設定"
+        case .notificationSystemHelp: return "系統拒絕後，請到設定開啟通知。專注模式、通知摘要與靜音可能影響提示和聲音。"
+        case .notificationNotAsked: return "尚未詢問"
+        case .notificationDenied: return "已拒絕"
+        case .notificationAuthorized: return "已允許"
+        case .notificationProvisional: return "暫時允許（安靜通知）"
+        case .notificationEphemeral: return "暫時允許（短期）"
+        case .notificationNotSupported: return "不支援"
+        case .notificationAuthorizationError: return "無法完成系統權限請求，請重新整理狀態後再試。"
+        case .notificationDeliveryError: return "這次通知未能送出，請直接在 App 查看任務。"
+        case .notificationCompletedTitle: return "任務已完成"
+        case .notificationApprovalTitle: return "有操作需要你核准"
+        case .notificationTestTitle: return "通知測試"
+        case .notificationCompletedBody: return "開啟渥屋助理查看結果。"
+        case .notificationApprovalBody: return "請開啟渥屋助理查看並決定；通知不會核准操作。"
+        case .notificationTestBody: return "這是渥屋助理的測試通知。"
+        case .catalogTitle: return "Mika 內建技能目錄"
+        case .catalogSearch: return "搜尋名稱、全文或支援檔案"
+        case .catalogScope: return "原文與腳本僅供閱讀，不會執行。iOS 文字改寫須先匯入待確認，再由你核准；核准後為試用中，不代表原版功能已完成對齊。"
+        case .catalogCapabilities: return "受控瀏覽器與 MCP 對話有各自的能力限制和核准流程；匯入 Skill 不會授予工具權限或自動派送工具。"
+        case .catalogSection: return "原始技能與 iOS 文字改寫"
+        case .catalogEmpty: return "找不到符合的技能。"
+        case .catalogSource: return "來源與授權"
+        case .catalogLicense: return "Apache-2.0 授權全文"
+        case .catalogNotice: return "原始 NOTICE"
+        case .catalogReload: return "重新讀取"
+        case .catalogLoading: return "讀取本機目錄"
+        case .catalogNavigation: return "內建目錄"
+        case .catalogLoadFailure: return "內建技能目錄無法讀取。"
+        case .catalogUnavailable: return "內建技能目錄暫時無法讀取。"
+        case .catalogInvalid: return "內建技能資源驗證失敗；未匯入任何內容。"
+        case .catalogNotFound: return "找不到這個內建技能。"
+        case .catalogAlreadyAdded: return "此文字版已有草稿或已匯入；請到待確認或技能清單管理。"
+        case .catalogTranscriptSection: return "整理文字稿與字幕"
+        case .catalogTranscriptOpen: return "選取文字稿或字幕檔"
+        case .catalogTranscriptHelp: return "核准讀檔並確認目的服務後，由模型分段閱讀原文、整理內容與核對引文。"
+        case .catalogAppearanceSection: return "調整本 App 外觀"
+        case .catalogAppearanceOpen: return "外觀與模型調整權限"
+        case .catalogAppearanceHelp: return "可設定跟隨系統、淺色或深色；允許模型調整的開關預設關閉。"
+        case .catalogAuthorSection: return "編寫個人技能"
+        case .catalogAuthorOpen: return "查閱、編寫與審閱儲存"
+        case .catalogAgentOpen: return "請模型協助編寫技能"
+        case .catalogAuthorHelp: return "可自行編寫，或請模型查詢、讀取原文並提出草稿；核對全文並核准後，才會儲存至個人技能。"
+        case .catalogDocumentsSection: return "實際文件處理"
+        case .catalogPDFOpen: return "選取 PDF 並擷取文字"
+        case .catalogPDFAssembly: return "擷取頁面、重排與合併 PDF"
+        case .catalogDocumentsHelp: return "在裝置上處理你選取的 PDF；逐步核准，不會自動上傳文件。"
+        case .catalogAdaptationSection: return "iOS 文字改寫 · 非完整原版功能"
+        case .catalogAdaptationTitle: return "iOS 文字改寫全文"
+        case .catalogAdaptationRead: return "閱讀 iOS 文字改寫全文"
+        case .catalogImport: return "匯入文字版至待確認"
+        case .catalogNotImported: return "未匯入；原資料保留。"
+        case .catalogPending: return "已儲存至待確認，尚未啟用。請關閉目錄後到待確認審閱與核准。"
+        case .catalogInstalled: return "此文字版已在你的技能清單；啟用、試用或驗證狀態請到技能清單查看。"
+        case .catalogStorageUnavailable: return "儲存空間目前不可用；仍可閱讀，但不能匯入。"
+        case .catalogRequirements: return "原版所需能力與限制"
+        case .catalogOriginalSection: return "固定版本的完整原文 · 唯讀"
+        case .catalogOriginalRead: return "閱讀原始 SKILL.md 全文"
+        case .catalogAttribution: return "Copyright 2026 wangzan101 · Apache-2.0。原文及支援檔案逐位元組保留；iOS 改寫是另外的修改版本。完整 LICENSE 與 NOTICE 見目錄首頁。"
+        case .catalogTextSafety: return "唯讀文字，不會執行工具、程式或開啟文內連結。"
+        case .catalogReadyAppearance: return "可調整本 App 外觀；原版能力未完整支援"
+        case .catalogReadyAuthor: return "可請模型編寫並核准儲存；原版能力未完整支援"
+        case .catalogReadyDocuments: return "可選取 PDF 擷取文字；原版能力未完整支援"
+        case .catalogReadyTranscript: return "可整理核准的文字、字幕與網頁文字；原版能力未完整支援"
+        case .catalogReadyOther: return "可匯入 iOS 文字改寫；原版能力未完整支援"
+        case .catalogReqSettings: return "可允許模型調整本 App 外觀；不提供模型、金鑰或手機操作設定"
+        case .catalogReqAndroid: return "Android／其他 App 操作：不在 iOS 範圍"
+        case .catalogReqWeb: return "原版網頁工具：iOS 提供受控研究與 DOM 操作，非完整瀏覽器能力對齊"
+        case .catalogReqFiles: return "可選取 PDF、文字與字幕；未提供原版的一般工作區"
+        case .catalogReqPython: return "原始 PDF 腳本需另行設定服務；本機不執行 Python"
+        case .catalogReqShell: return "Shell／桌面命令執行：未提供"
+        case .catalogReqExport: return "原版檔案產生與分享工具：未提供"
+        case .catalogReqResearch: return "原版跨網站自動研究：未提供"
+        case .catalogReqAccount: return "原版跨 App 帳號／收件匣讀取：未提供；MCP 能力另依伺服器與授權"
+        case .catalogReqSend: return "原版跨 App 訊息傳送：未提供；MCP 工具須另行核准"
+        case .catalogReqMutation: return "模型可查詢、讀取並提出技能草稿；儲存須由你核准"
+        case .catalogCount: return "共 %1$lld 項原始技能 · 符合 %2$lld 項"
+        case .catalogProvenance: return "Mika · 固定來源版本 %1$@"
         }
     }
 }

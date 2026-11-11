@@ -2,6 +2,7 @@ import SwiftUI
 
 @MainActor
 struct MCPToolsView: View {
+    @Environment(\.appLocalizer) private var localizer
     @StateObject private var session: MCPSession
     @FocusState private var isEditingEndpoint: Bool
     @FocusState private var isSearchingTools: Bool
@@ -15,36 +16,36 @@ struct MCPToolsView: View {
         VStack(alignment: .leading, spacing: 0) {
             // Persistent outside List: virtualization must not hide connection state.
             VStack(alignment: .leading, spacing: 4) {
-                Text("MCP 與 Skills")
+                Text(localizer.text(.mcpTitle))
                     .font(.title2.bold())
                     .accessibilityIdentifier("tools.status")
-                Text(session.statusText)
+                Text(localizer.text(session.statusMessage))
                     .font(.callout)
                     .accessibilityIdentifier("mcp.status")
             }
             .padding(.horizontal)
             .padding(.vertical, 8)
         List {
-            Section("MCP 連線與目錄") {
-                Text("協定版本：\(session.protocolVersion ?? "尚未取得")")
+            Section(localizer.text(.mcpConnectionSection)) {
+                Text(localizer.text(.mcpProtocol(version: session.protocolVersion ?? localizer.text(.commonUnknown))))
                     .accessibilityIdentifier("mcp.protocol")
                 if session.phase == .connected {
-                    Text(session.supportsTools ? "工具：\(session.toolNames.count) 個" : "伺服器未宣告工具能力")
+                    Text(session.supportsTools ? localizer.text(.mcpToolCount(count: session.toolNames.count)) : localizer.text(.mcpNoTools))
                         .accessibilityIdentifier("mcp.toolCount")
-                    Text(session.supportsResources ? "資源：\(session.resourceNames.count) 個" : "伺服器未宣告資源能力")
+                    Text(session.supportsResources ? localizer.text(.mcpResourceCount(count: session.resourceNames.count)) : localizer.text(.mcpNoResources))
                         .accessibilityIdentifier("mcp.resourceCount")
                 }
-                Text("支援 HTTPS Streamable HTTP。連線後選取要提供給對話模型的工具，再到對話開啟 MCP。每次執行前會顯示工具名稱與完整參數，等你核准；工具說明及結果會送給已設定的模型。")
+                Text(localizer.text(.mcpExplanation))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
                     .accessibilityIdentifier("tools.explanation")
                 if !session.allowsNetwork {
-                    Text("UI 測試隔離模式：不會發送 MCP 網路請求。")
+                    Text(localizer.text(.mcpIsolation))
                         .accessibilityIdentifier("mcp.testIsolation")
                 }
-                Text(session.hasStoredEndpoint ? "端點已安全儲存；不顯示網址。" : "尚未儲存端點。")
+                Text(session.hasStoredEndpoint ? localizer.text(.mcpStored) : localizer.text(.mcpNotStored))
                     .accessibilityIdentifier("mcp.endpointStatus")
-                SecureField("完整 HTTPS MCP 端點", text: $session.endpointDraft)
+                SecureField(localizer.text(.mcpEndpoint), text: $session.endpointDraft)
                     .keyboardType(.URL)
                     .textInputAutocapitalization(.never)
                     .autocorrectionDisabled()
@@ -53,34 +54,34 @@ struct MCPToolsView: View {
                     .submitLabel(.done)
                     .onSubmit { isEditingEndpoint = false }
                     .disabled(session.isBusy)
-                    .accessibilityLabel("MCP 私密端點")
+                    .accessibilityLabel(localizer.text(.mcpEndpointAX))
                     .accessibilityIdentifier("mcp.endpoint")
-                Text("Webhook URL 等同憑證，完整網址僅儲存於此裝置解鎖時可讀取的 Keychain，不透過 iCloud 同步。輸入新端點後，請先儲存或清除草稿再連線。")
+                Text(localizer.text(.mcpEndpointHelp))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                Button("儲存端點") {
+                Button(localizer.text(.mcpSave)) {
                     isEditingEndpoint = false
                     session.saveEndpoint()
                 }
                 .disabled(!session.canSave)
                 .accessibilityIdentifier("mcp.save")
-                Button("清除輸入") { session.endpointDraft = "" }
+                Button(localizer.text(.mcpClearDraft)) { session.endpointDraft = "" }
                     .disabled(session.endpointDraft.isEmpty || session.isBusy)
                     .accessibilityIdentifier("mcp.clearDraft")
                 if session.hasStoredEndpoint {
-                    Button("移除已儲存端點", role: .destructive) { confirmRemoval = true }
+                    Button(localizer.text(.mcpRemoveStored), role: .destructive) { confirmRemoval = true }
                         .disabled(session.isBusy)
                         .accessibilityIdentifier("mcp.remove")
                 }
             }
 
-            Section("探索狀態") {
+            Section(localizer.text(.mcpExploration)) {
                 if session.isBusy {
-                    ProgressView(session.statusText)
-                    Button("取消等待") { session.cancel() }
+                    ProgressView(localizer.text(session.statusMessage))
+                    Button(localizer.text(.mcpCancel)) { session.cancel() }
                         .accessibilityIdentifier("mcp.cancel")
                 } else {
-                    Button("連線並探索目錄") {
+                    Button(localizer.text(.mcpConnect)) {
                         isEditingEndpoint = false
                         session.connect()
                     }
@@ -88,26 +89,26 @@ struct MCPToolsView: View {
                     .accessibilityIdentifier("mcp.connect")
                 }
                 if session.phase == .connected {
-                    Button("中斷連線") { session.disconnect() }
+                    Button(localizer.text(.mcpDisconnect)) { session.disconnect() }
                         .accessibilityIdentifier("mcp.disconnect")
                 }
-                if let error = session.errorMessage {
-                    Text(error)
+                if let error = session.errorText {
+                    Text(localizer.text(error))
                         .foregroundStyle(.red)
                         .accessibilityIdentifier("mcp.error")
                 }
-                if let notice = session.notice {
-                    Text(notice)
+                if let notice = session.noticeText {
+                    Text(localizer.text(notice))
                         .font(.footnote)
                         .accessibilityIdentifier("mcp.notice")
                 }
             }
 
             if session.phase == .connected {
-                Section("伺服器工具") {
-                    Text("已選取 \(session.selectedToolNames.count) 個工具供對話使用")
+                Section(localizer.text(.mcpServerTools)) {
+                    Text(localizer.text(.mcpSelectedCount(count: session.selectedToolNames.count)))
                         .accessibilityIdentifier("mcp.selectionCount")
-                    TextField("搜尋工具名稱", text: $session.toolSearch)
+                    TextField(localizer.text(.mcpSearchTools), text: $session.toolSearch)
                         .autocorrectionDisabled().textInputAutocapitalization(.never)
                         .focused($isSearchingTools).submitLabel(.done)
                         .onSubmit { isSearchingTools = false }
@@ -120,7 +121,7 @@ struct MCPToolsView: View {
                         .accessibilityIdentifier("mcp.enable.\(tool.name)")
                     }
                 }
-                Section("伺服器資源") {
+                Section(localizer.text(.mcpServerResources)) {
                     ForEach(Array(session.resources.enumerated()), id: \.element.uri) { index, resource in
                         Toggle(isOn: Binding(get: { session.selectedResourceURIs.contains(resource.uri) },
                                              set: { session.selectResource(resource.uri, enabled: $0) })) {
@@ -131,10 +132,10 @@ struct MCPToolsView: View {
                 }
             }
 
-            Section("Skills") {
-                Text("請到「資料 → 技能」管理")
+            Section(localizer.text(.mcpSkills)) {
+                Text(localizer.text(.mcpSkillsLocation))
                     .accessibilityIdentifier("mcp.skillsStatus")
-                Text("可匯入並審核文字技能，已啟用且相關的內容會提供給對話模型。網站研究可產生待審核技能；MCP 工具依每次對話的核准執行。")
+                Text(localizer.text(.mcpSkillsHelp))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
             }
@@ -143,12 +144,12 @@ struct MCPToolsView: View {
         .toolbar {
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
-                Button("完成") { isEditingEndpoint = false; isSearchingTools = false }
+                Button(localizer.text(.keyboardDone)) { isEditingEndpoint = false; isSearchingTools = false }
                     .accessibilityIdentifier("mcp.dismissKeyboard")
             }
         }
-        .confirmationDialog("移除此裝置儲存的 MCP 端點？", isPresented: $confirmRemoval, titleVisibility: .visible) {
-            Button("移除端點", role: .destructive) { session.removeEndpoint() }
+        .confirmationDialog(localizer.text(.mcpRemoveQuestion), isPresented: $confirmRemoval, titleVisibility: .visible) {
+            Button(localizer.text(.mcpRemove), role: .destructive) { session.removeEndpoint() }
                 .accessibilityIdentifier("mcp.confirmRemove")
         }
         .onDisappear {

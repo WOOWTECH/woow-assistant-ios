@@ -18,7 +18,8 @@ MODULES = [
     ("AssistantPersistence", []), ("AssistantMCP", ["AssistantModels"]),
     ("AssistantSkills", ["AssistantModels"]), ("AssistantBrowser", ["AssistantModels", "AssistantSkills"]),
 ]
-APPS = [
+LANGUAGE_NOTIFICATION_SOURCES = ["AppLanguage", "AppLanguageStore", "AppLanguagePreferences", "AppText", "AppLocalizer", "AppMCPText", "AppNotificationText"]
+APPS = LANGUAGE_NOTIFICATION_SOURCES + [
     "BrowserUploadFixture", "BrowserLoginFixture", "SkillExecutionUITestSupport", "BrowserWorkspace",
     "ChatSession", "ConversationArchiveStore", "BrowserSession", "LearningKeychainStore", "UITestModelFixture", "MCPSettings",
     "LiveModelUITestSupport", "ModelSettings", "LearningStore", "UITestMCPFixture", "MCPSession",
@@ -89,7 +90,7 @@ def main():
         for config, flags in [("Debug", ["-DDEBUG"]), ("Release", [])]:
             binary = out / (config.lower() + "-app-checks")
             run(config + "-adapter-typecheck", ["swiftc", "-swift-version", "5", "-warnings-as-errors", "-typecheck",
-                "-I", str(out), *flags, *[p for p in apps if Path(p).stem in ("TaskNotificationCenterAdapter", "TaskNotificationStore")]])
+                "-I", str(out), *flags, *[p for p in apps if Path(p).stem in ("TaskNotificationCenterAdapter", "TaskNotificationStore", "AppLanguage", "AppLanguageStore", "AppLanguagePreferences", "AppText", "AppLocalizer", "AppNotificationText")]])
             run(config + "-app-compile", [*common, "-DTASK_NOTIFICATIONS_STANDALONE",
                 "-DTASK_NOTIFICATIONS_APP_STANDALONE", *flags, *["-l" + name for name, _ in MODULES], *linking,
                 *apps, tests, app, "-o", str(binary)])

@@ -35,6 +35,10 @@ private final class BrowserSearchKeys: LearningKeyStore {
         defer { try? FileManager.default.removeItem(at: root) }
         let file = root.appendingPathComponent("library.vault"), keys = BrowserSearchKeys()
         func vault() -> EncryptedLearningFile { EncryptedLearningFile(url: file, keys: keys) }
+        let languageSuite = "woow-language-search-" + UUID().uuidString
+        let languageDefaults = UserDefaults(suiteName: languageSuite)!
+        defer { languageDefaults.removePersistentDomain(forName: languageSuite) }
+        let language = AppLanguageStore(defaults: languageDefaults, preferredLanguages: { ["zh-TW"] })
         let store = WKWebsiteDataStore.nonPersistent()
         let workspace = BrowserWorkspace(dataStore: store, vault: vault(), downloadDirectory: root.appendingPathComponent("Downloads"))
         let browser = workspace.selected, probe = BrowserSiteModesAppChecks.Probe(workspace.selected)
@@ -91,6 +95,11 @@ private final class BrowserSearchKeys: LearningKeyStore {
         _ = try await browser.webView.evaluateJavaScript("document.querySelector('input').value='keep document'; true")
         let originalView = browser.webView, originalNavigation = probe.lastNavigation
         let actions = probe.actions.count, finishes = probe.finishes
+        let beforeLanguage = workspace.library
+        let draftBeforeLanguage = browser.address
+        try check(language.setFromUser(.english) && language.setFromUser(.simplifiedChinese), "change display language with a live manual document")
+        try check(workspace.library == beforeLanguage && workspace.selected === browser && browser.address == draftBeforeLanguage,
+                  "language preserves encrypted metadata, session and address draft")
         try check(workspace.selectSearchEngine("bing"), "change engine on completed document")
         try await Task.sleep(nanoseconds: 100_000_000)
         let note = try await browser.webView.evaluateJavaScript("document.querySelector('input').value") as? String

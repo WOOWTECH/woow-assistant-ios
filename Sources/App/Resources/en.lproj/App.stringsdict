@@ -18,5 +18,53 @@
 			<string>%lld steps</string>
 		</dict>
 	</dict>
+	<key>mcpResourceCount</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>Resources: %lld</string>
+			<key>other</key>
+			<string>Resources: %lld</string>
+		</dict>
+	</dict>
+	<key>mcpSelectedCount</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>%lld tool selected for chat</string>
+			<key>other</key>
+			<string>%lld tools selected for chat</string>
+		</dict>
+	</dict>
+	<key>mcpToolCount</key>
+	<dict>
+		<key>NSStringLocalizedFormatKey</key>
+		<string>%#@count@</string>
+		<key>count</key>
+		<dict>
+			<key>NSStringFormatSpecTypeKey</key>
+			<string>NSStringPluralRuleType</string>
+			<key>NSStringFormatValueTypeKey</key>
+			<string>lld</string>
+			<key>one</key>
+			<string>Tools: %lld</string>
+			<key>other</key>
+			<string>Tools: %lld</string>
+		</dict>
+	</dict>
 </dict>
 </plist>

@@ -4,6 +4,7 @@ import WebKit
 
 @MainActor
 struct BrowserLibraryView: View {
+    @Environment(\.appLocalizer) private var localizer
     @ObservedObject var workspace: BrowserWorkspace
     @Environment(\.dismiss) private var dismiss
     @State private var section = 0
@@ -17,12 +18,12 @@ struct BrowserLibraryView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Picker("瀏覽資料", selection: $section) {
-                    Text("分頁").tag(0); Text("書籤").tag(1); Text("歷史").tag(2); Text("網站").tag(3)
+                Picker(localizer.text(.browserLibrary), selection: $section) {
+                    Text(localizer.text(.browserTabs)).tag(0); Text(localizer.text(.browserBookmarks)).tag(1); Text(localizer.text(.browserHistory)).tag(2); Text(localizer.text(.browserSites)).tag(3)
                 }.pickerStyle(.segmented).padding(.horizontal).accessibilityIdentifier("browser.library.sections")
-                if let error = workspace.error { Text(error).foregroundStyle(.red).accessibilityIdentifier("browser.library.error") }
+                if let error = workspace.errorText { Text(localizer.text(error)).foregroundStyle(.red).accessibilityIdentifier("browser.library.error") }
                 if workspace.isClearingWebsiteData {
-                    ProgressView("正在清除網站資料…")
+                    ProgressView(localizer.text(.browserClearing))
                         .accessibilityIdentifier("browser.library.clearing")
                 }
                 List {
@@ -32,20 +33,20 @@ struct BrowserLibraryView: View {
                     else { websites }
                 }
             }
-            .navigationTitle("瀏覽資料")
+            .navigationTitle(localizer.text(.browserLibrary))
             .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { dismiss() }.accessibilityIdentifier("browser.library.close") } }
-            .toolbar { ToolbarItem(placement: .navigationBarLeading) { Button("下載") { showDownloads = true }.accessibilityIdentifier("browser.downloads.open") } }
+            .toolbar { ToolbarItem(placement: .navigationBarLeading) { Button(localizer.text(.browserDownloads)) { showDownloads = true }.accessibilityIdentifier("browser.downloads.open") } }
             .sheet(isPresented: $showDownloads) { BrowserDownloadsView(manager: workspace.downloads) }
-            .alert("修改書籤名稱", isPresented: $showRename) {
-                TextField("名稱", text: $renameTitle).accessibilityIdentifier("browser.bookmark.name")
-                Button("儲存") { if let id = renameID { workspace.renameBookmark(id, title: renameTitle) }; renameID = nil }
-                Button("取消", role: .cancel) { renameID = nil }
+            .alert(localizer.text(.browserRenameBookmark), isPresented: $showRename) {
+                TextField(localizer.text(.commonName), text: $renameTitle).accessibilityIdentifier("browser.bookmark.name")
+                Button(localizer.text(.commonSave)) { if let id = renameID { workspace.renameBookmark(id, title: renameTitle) }; renameID = nil }
+                Button(localizer.text(.commonCancel), role: .cancel) { renameID = nil }
             }
-            .confirmationDialog("清除瀏覽歷史？書籤與網站登入資料會保留。", isPresented: $confirmHistory, titleVisibility: .visible) {
-                Button("清除歷史", role: .destructive) { workspace.clearHistory() }.accessibilityIdentifier("browser.history.confirmClear")
+            .confirmationDialog(localizer.text(.browserClearHistoryQuestion), isPresented: $confirmHistory, titleVisibility: .visible) {
+                Button(localizer.text(.browserClearHistory), role: .destructive) { workspace.clearHistory() }.accessibilityIdentifier("browser.history.confirmClear")
             }
-            .confirmationDialog("清除此網站的資料？可能需要重新登入，所有分頁與下載將停止。", isPresented: $confirmSite, titleVisibility: .visible, presenting: deleteSite) { record in
-                Button("清除網站資料", role: .destructive) { workspace.removeWebsiteData([record]); deleteSite = nil }
+            .confirmationDialog(localizer.text(.browserClearSiteQuestion), isPresented: $confirmSite, titleVisibility: .visible, presenting: deleteSite) { record in
+                Button(localizer.text(.browserClearSite), role: .destructive) { workspace.removeWebsiteData([record]); deleteSite = nil }
                     .accessibilityIdentifier("browser.sites.confirmClear")
             }
             .onChange(of: section) { _, selected in if selected == 3 { workspace.refreshWebsiteRecords() } }
@@ -53,7 +54,7 @@ struct BrowserLibraryView: View {
     }
     private var tabs: some View {
         Group {
-            Button("新增分頁") { workspace.newTab(); dismiss() }.disabled(!workspace.available)
+            Button(localizer.text(.browserNewTab)) { workspace.newTab(); dismiss() }.disabled(!workspace.available)
                 .accessibilityIdentifier("browser.tabs.new")
             ForEach(workspace.library.tabs) { tab in
                 HStack {
@@ -62,28 +63,28 @@ struct BrowserLibraryView: View {
                     } label: {
                         VStack(alignment: .leading) {
                             Text(tab.title).lineLimit(2)
-                            Text(tab.url?.host ?? "尚未開啟網頁").font(.caption)
+                            Text(tab.url?.host ?? localizer.text(.browserNoPage)).font(.caption)
                         }.frame(maxWidth: .infinity, alignment: .leading)
                     }.accessibilityIdentifier("browser.tabs.select.\(tab.id)")
-                        .accessibilityValue(workspace.library.selectedID == tab.id ? "已選取" : "未選取")
+                        .accessibilityValue(workspace.library.selectedID == tab.id ? localizer.text(.commonSelected) : localizer.text(.commonUnselected))
                     Button { workspace.closeTab(tab.id) } label: { Image(systemName: "xmark.circle") }
-                        .accessibilityLabel("關閉 \(tab.title)").accessibilityIdentifier("browser.tabs.close.\(tab.id)")
+                        .accessibilityLabel(localizer.text(.commonCloseName(name: tab.title))).accessibilityIdentifier("browser.tabs.close.\(tab.id)")
                 }.buttonStyle(.borderless)
             }
         }
     }
     private var bookmarks: some View {
         Group {
-            Button("加入目前頁面書籤") { workspace.addBookmark() }
+            Button(localizer.text(.browserBookmarkCurrent)) { workspace.addBookmark() }
                 .disabled(!workspace.available || workspace.selected.loadedURL.flatMap(BrowserManualNavigationPolicy.libraryURL) == nil)
                 .accessibilityIdentifier("browser.bookmarks.add")
-            if workspace.library.bookmarks.isEmpty { Text("尚無書籤").accessibilityIdentifier("browser.bookmarks.empty") }
+            if workspace.library.bookmarks.isEmpty { Text(localizer.text(.browserNoBookmarks)).accessibilityIdentifier("browser.bookmarks.empty") }
             ForEach(workspace.library.bookmarks) { page in
                 VStack(alignment: .leading, spacing: 8) {
                     pageButton(page, prefix: "bookmark")
                     HStack {
-                        Button("改名") { renameTitle = page.title; renameID = page.id; showRename = true }.accessibilityIdentifier("browser.bookmark.rename.\(page.id)")
-                        Button("刪除", role: .destructive) { workspace.removeBookmark(page.id) }.accessibilityIdentifier("browser.bookmark.delete.\(page.id)")
+                        Button(localizer.text(.browserRename)) { renameTitle = page.title; renameID = page.id; showRename = true }.accessibilityIdentifier("browser.bookmark.rename.\(page.id)")
+                        Button(localizer.text(.commonDelete), role: .destructive) { workspace.removeBookmark(page.id) }.accessibilityIdentifier("browser.bookmark.delete.\(page.id)")
                     }.buttonStyle(.borderless)
                 }
             }
@@ -91,13 +92,13 @@ struct BrowserLibraryView: View {
     }
     private var history: some View {
         Group {
-            Button("清除所有歷史", role: .destructive) { confirmHistory = true }
+            Button(localizer.text(.browserClearAllHistory), role: .destructive) { confirmHistory = true }
                 .disabled(workspace.library.history.isEmpty).accessibilityIdentifier("browser.history.clear")
-            if workspace.library.history.isEmpty { Text("尚無瀏覽歷史").accessibilityIdentifier("browser.history.empty") }
+            if workspace.library.history.isEmpty { Text(localizer.text(.browserNoHistory)).accessibilityIdentifier("browser.history.empty") }
             ForEach(workspace.library.history) { page in
                 HStack {
                     pageButton(page, prefix: "history")
-                    Button("刪除", role: .destructive) { workspace.removeHistory(page.id) }
+                    Button(localizer.text(.commonDelete), role: .destructive) { workspace.removeHistory(page.id) }
                         .accessibilityIdentifier("browser.history.delete.\(page.id)")
                 }.buttonStyle(.borderless)
             }
@@ -105,14 +106,14 @@ struct BrowserLibraryView: View {
     }
     private var websites: some View {
         Group {
-            Text("網站資料由 WebKit 儲存，包括 Cookie 與網站儲存空間；出現在清單不代表目前已登入。")
+            Text(localizer.text(.browserSitesHelp))
                 .font(.caption)
-            if workspace.websiteRecords.isEmpty { Text("尚無網站資料").accessibilityIdentifier("browser.sites.empty") }
+            if workspace.websiteRecords.isEmpty { Text(localizer.text(.browserNoSites)).accessibilityIdentifier("browser.sites.empty") }
             ForEach(workspace.websiteRecords, id: \.displayName) { record in
                 HStack {
                     Text(record.displayName)
                     Spacer()
-                    Button("清除", role: .destructive) { deleteSite = record; confirmSite = true }
+                    Button(localizer.text(.commonClear), role: .destructive) { deleteSite = record; confirmSite = true }
                         .disabled(workspace.isClearingWebsiteData).accessibilityIdentifier("browser.sites.clear.\(record.displayName)")
                 }
             }
@@ -122,7 +123,7 @@ struct BrowserLibraryView: View {
         Button { workspace.open(page.url); dismiss() } label: {
             VStack(alignment: .leading) {
                 if prefix == "history", let match = workspace.library.searchSettings.match(page.url) {
-                    Text("搜尋：\(match.query)").lineLimit(2)
+                    Text(localizer.text(.browserHistorySearch(query: match.query))).lineLimit(2)
                     Text(match.engineName).font(.caption)
                 } else { Text(page.title).lineLimit(2) }
                 Text(page.url.absoluteString).font(.caption).lineLimit(2)

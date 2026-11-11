@@ -35,7 +35,7 @@ for path in (ROOT/'Sources/App/Resources').rglob('*'):
     if path.is_file(): capture(path)
 owned=['AppLanguage','AppLanguageStore','AppLanguagePreferences','AppText','AppLocalizer','SelfConfigurationText','AppModelSettingsText']
 foundation=[capture(ROOT/'Sources/App'/f'{name}.swift') for name in owned]
-apps=[capture(ROOT/'Sources/App'/f'{name}.swift') for name in APP_SOURCES]
+apps=[capture(ROOT/'Sources/App'/f'{name}.swift') for name in APP_SOURCES if name not in owned]
 apps += [capture(ROOT/'Sources/App/SelfConfigurationSession.swift'), capture(ROOT/'Sources/App/SkillWorkerSettings.swift')]
 model_settings=capture(ROOT/'Sources/App/ModelSettings.swift')
 views=[capture(ROOT/'Sources/App/SelfConfigurationView.swift'),capture(ROOT/'Sources/App/AppLanguageEnvironment.swift'),capture(ROOT/'Sources/App/SkillWorkerSettingsView.swift')]

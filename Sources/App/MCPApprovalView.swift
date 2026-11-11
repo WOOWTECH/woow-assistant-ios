@@ -14,6 +14,7 @@ extension EnvironmentValues {
 #endif
 
 struct MCPApprovalView: View {
+    @Environment(\.appLocalizer) private var localizer
     let proposal: MCPApprovalRequest
     let approve: () -> Void
     let decline: () -> Void
@@ -25,13 +26,13 @@ struct MCPApprovalView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("模型請求執行以下工具。核准只適用於這一次的名稱與參數；結果會提供給已設定的模型。")
+                    Text(localizer.text(.mcpApprovalHelp))
                     proposalName
                     #if DEBUG
                     if Self.exposesFixtureIdentity(arguments: ProcessInfo.processInfo.arguments), !routeObservation.isEmpty {
                         // The modal can hide root AX. Mirror its read-only route
                         // value so tests can observe the callback before approval.
-                        Text("通知導頁測試觀測")
+                        Text(localizer.text(.mcpRouteObservation))
                             .font(.caption2)
                             .accessibilityIdentifier("mcp.approval.routeObservation")
                             .accessibilityValue(routeObservation)
@@ -40,19 +41,19 @@ struct MCPApprovalView: View {
                     Text(verbatim: proposal.argumentsText)
                         .font(.system(.body, design: .monospaced)).textSelection(.enabled)
                         .accessibilityIdentifier("mcp.approval.arguments")
-                    Text("工具可能修改外部資料。取消本機等待無法撤銷已送出的操作。")
+                    Text(localizer.text(.mcpApprovalRisk))
                         .font(.footnote).foregroundStyle(.secondary)
                 }
                 .padding()
             }
-            .navigationTitle("核准 MCP 呼叫")
+            .navigationTitle(localizer.text(.mcpApprovalTitle))
             .navigationBarTitleDisplayMode(.inline)
             .safeAreaInset(edge: .bottom) {
                 HStack {
-                    Button("拒絕並停止", role: .cancel, action: decline)
+                    Button(localizer.text(.mcpDecline), role: .cancel, action: decline)
                         .accessibilityIdentifier("mcp.approval.decline")
                     Spacer()
-                    Button("核准這一次", action: approve)
+                    Button(localizer.text(.mcpApprove), action: approve)
                         .buttonStyle(.borderedProminent)
                         .accessibilityIdentifier("mcp.approval.approve")
                 }
@@ -91,6 +92,7 @@ struct MCPApprovalView: View {
 }
 
 struct MCPResultsView: View {
+    @Environment(\.appLocalizer) private var localizer
     let steps: [MCPConversationStep]
     @Environment(\.dismiss) private var dismiss
     var body: some View {
@@ -98,19 +100,19 @@ struct MCPResultsView: View {
             List(Array(steps.enumerated()), id: \.offset) { index, step in
                 VStack(alignment: .leading, spacing: 8) {
                     if case .callTool(let name, _) = step.proposal.action { Text(verbatim: name).font(.headline) }
-                    if case .readResource = step.proposal.action { Text("讀取 MCP 資源").font(.headline) }
-                    Text(step.isError ? "工具回報錯誤" : "已收到工具結果")
+                    if case .readResource = step.proposal.action { Text(localizer.text(.mcpReadResource)).font(.headline) }
+                    Text(step.isError ? localizer.text(.mcpToolError) : localizer.text(.mcpToolResult))
                     Text(verbatim: resultText(step.result))
                         .font(.system(.caption, design: .monospaced)).textSelection(.enabled)
                         .privacySensitive().accessibilityIdentifier("mcp.result.\(index)")
                 }
             }
-            .navigationTitle("本次 MCP 工具結果")
-            .toolbar { ToolbarItem(placement: .confirmationAction) { Button("完成") { dismiss() } } }
+            .navigationTitle(localizer.text(.mcpResultsTitle))
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button(localizer.text(.keyboardDone)) { dismiss() } } }
         }
     }
     private func resultText(_ value: JSONValue) -> String {
         let encoder = JSONEncoder(); encoder.outputFormatting = [.prettyPrinted, .sortedKeys, .withoutEscapingSlashes]
-        return (try? encoder.encode(value)).flatMap { String(data: $0, encoding: .utf8) } ?? "結果無法顯示"
+        return (try? encoder.encode(value)).flatMap { String(data: $0, encoding: .utf8) } ?? localizer.text(.mcpResultUnavailable)
     }
 }
