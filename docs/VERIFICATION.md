@@ -1,5 +1,16 @@
 # Verification — 2026-11-11
 
+## SE native core at `dfd6eff`
+
+[Run 42958707611](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42958707611)
+passed **345/345 native and hosted App methods**, zero failures and zero skips,
+on iPhone SE (3rd generation) / iOS 18.5. The full 819-member artifact ZIP
+passed CRC and SHA-256 verification. The XCTest summary, completion gate and
+345 unique method start/pass events agree. This source includes the language,
+PDF and MCP test-driver candidates through `dfd6eff`; their separate UI shards
+remain independent. The later website media-permission changes need their own
+native compile result. [Method-level evidence](evidence/native-se-dfd6eff.json).
+
 ## Dual-PDF UIDocument candidate: one platform passes, two fail
 
 The isolated `9600dfb` candidate creates the two synthetic PDF fixtures through
