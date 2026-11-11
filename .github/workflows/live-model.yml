@@ -100,6 +100,7 @@ jobs:
               --runtime "$WOOW_LIVE_RUNTIME" --products build/LiveDerivedData/Build/Products/Debug-iphonesimulator
           fi
       - name: Make two bounded live requests inside iOS Simulator
+        id: transport_probe
         timeout-minutes: 4
         env:
           SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
@@ -123,7 +124,7 @@ jobs:
           SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
         run: xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveSkillLearningSmoke"
       - name: Real model completes all five transcript formats over fixed text
-        if: ${{ !cancelled() && steps.native-build.outcome == 'success' && contains(fromJSON('["all","transcript-formats","transcript-files","browser-transcript"]'), inputs.ui_scope || 'all') }}
+        if: ${{ !cancelled() && steps.native-build.outcome == 'success' && steps.transport_probe.outcome == 'success' && contains(fromJSON('["all","transcript-formats","transcript-files","browser-transcript"]'), inputs.ui_scope || 'all') }}
         timeout-minutes: 12
         env:
           SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
@@ -133,7 +134,7 @@ jobs:
           xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveTranscriptSmoke" \
             "$PWD/Sources/AssistantSkills/Resources/MikaBundledSkills.json"
       - name: Real model App UI tests
-        if: ${{ !cancelled() && steps.app-build.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.app-build.outcome == 'success' && steps.transport_probe.outcome == 'success' }}
         # Live UI methods include settings, reviewed profile tools and research flows;
         # focused scopes keep their previous 20-minute bound and case limits.
         timeout-minutes: ${{ (inputs.ui_scope || 'all') == 'all' && 40 || 20 }}

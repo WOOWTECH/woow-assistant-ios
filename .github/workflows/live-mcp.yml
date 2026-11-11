@@ -69,6 +69,9 @@ jobs:
           xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -parse-as-library \
             -I build/live -L build/live -lAssistantMCP -lAssistantModels scripts/LiveMCPSmoke.swift \
             -o build/live/LiveMCPSmoke
+          xcrun swiftc -sdk "$sdk_path" -target "$sim_target" -parse-as-library \
+            -I build/live -L build/live -lAssistantModels scripts/LiveModelSmoke.swift \
+            -o build/live/LiveModelSmoke
       - name: Read-only HA acceptance inside iOS Simulator
         timeout-minutes: 8
         env:
@@ -76,6 +79,16 @@ jobs:
         run: |
           test -n "$SIMCTL_CHILD_WOOW_HA_MCP_TEST_URL" || { echo 'Missing private MCP test configuration'; exit 1; }
           xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveMCPSmoke"
+      - name: Verify model service before model-dependent HA UI
+        id: model_transport_probe
+        timeout-minutes: 4
+        env:
+          SIMCTL_CHILD_WOOW_MODEL_TEST_BASE_URL: ${{ vars.WOOW_MODEL_TEST_BASE_URL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_MODEL: ${{ vars.WOOW_MODEL_TEST_MODEL }}
+          SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY: ${{ secrets.WOOW_MODEL_TEST_API_KEY }}
+        run: |
+          test -n "$SIMCTL_CHILD_WOOW_MODEL_TEST_API_KEY" || { echo 'Missing model test secret'; exit 1; }
+          xcrun simctl spawn "$WOOW_LIVE_SIMULATOR" "$PWD/build/live/LiveModelSmoke"
       - name: Build App for live MCP UI tests
         id: app-build
         run: |

@@ -14,6 +14,14 @@ failure was a 429, nor whether concurrent jobs caused the provider limit.
 No private configuration, model output or raw log was published in the
 [sanitized evidence](evidence/live-model-exact17-fe66ab2-first-failure.json).
 
+Following this observed limit, the live-model workflow now gates its fixed-text
+probe and model-dependent UI suite on the bounded native JSON/SSE probe. The
+live-HA workflow first performs its existing read-only HA probe, then the same
+bounded model probe before building/running model-dependent UI. A failed probe
+still fails its workflow, and no conversation case is marked passed. Both
+workflow edits passed local `actionlint`; the live-HA prelaunch checks passed
+7/7. The new gates have not yet run in GitHub Actions.
+
 Four additional latest-source, non-Live iOS 17 UI shards are queued:
 [archive](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967052289),
 [memory](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42967057485),
