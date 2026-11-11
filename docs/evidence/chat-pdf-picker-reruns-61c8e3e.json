@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "scope": "documents-chat",
+  "source_revision": "61c8e3e033a2372d1c3d921c0b9a53ddb79cc7e7",
+  "source_sha256": {
+    "Tests/WoowAssistantUITests/ChatPDFAttachmentUITests.swift": "eb1b947702fcc4f9fcdabf7b3378c47a858402aaa4e219a85b5f37cfec92acc7",
+    "Sources/App/ChatPDFAttachmentView.swift": "b341e02cd0fac1ce84e7fafb6071eeb2f9183ff908e6f1db2d25c23ca7fcc571"
+  },
+  "scope_boundary": "Three real native UI methods; fixture PDF and closed model client. No private request or raw AX/log is included.",
+  "se": {
+    "id": 42969099406,
+    "status": "completed",
+    "conclusion": "failure",
+    "variant": "ios18-compact",
+    "artifact": {
+      "id": 13834352691,
+      "name": "ios-test-evidence-ios18-compact-42969099406",
+      "size_in_bytes": 300464664,
+      "digest": "sha256:aafed56d50aedd41f45d2fac1f7d9550536ab145c9ac39ffe2c6ad45dcb2d6b6"
+    },
+    "runtime": {
+      "device_name": "iPhone SE (3rd generation)",
+      "runtime_version": "18.5",
+      "runtime_build": "22F77",
+      "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-18-5"
+    },
+    "counts": {
+      "totalTestCount": 3,
+      "passedTests": 1,
+      "failedTests": 2,
+      "skippedTests": 0
+    },
+    "ui_shard": {
+      "verified": false,
+      "expected_ui_count": 3,
+      "completed_ui_count": 3
+    },
+    "methods": {
+      "testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete": {
+        "started": 1,
+        "completed": 1,
+        "outcome": "failed",
+        "seconds": 103.723,
+        "failure_lines": [
+          156
+        ],
+        "success_receipt": false
+      },
+      "testReadApprovalThenRemoveNeverExtractsOrSubmitsAndRetainsDraft": {
+        "started": 1,
+        "completed": 1,
+        "outcome": "passed",
+        "seconds": 127.228,
+        "failure_lines": [],
+        "success_receipt": true
+      },
+      "testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive": {
+        "started": 1,
+        "completed": 1,
+        "outcome": "failed",
+        "seconds": 147.621,
+        "failure_lines": [
+          125
+        ],
+        "success_receipt": false
+      }
+    },
+    "failure_phases": {
+      "testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete": "line 156: native Files image-coordinate selection left picker open; navigation/list/sheet true, selectionError/Open false; no read/query/archive/AX reached",
+      "testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive": "line 125: after one Browse action, 12-second route predicate timed out; video at 124s confirms Files Locations page and On My iPhone visible; no PDF selection reached"
+    },
+    "ax_fix_exercised": false
+  },
+  "current": {
+    "id": 42969112726,
+    "status": "completed",
+    "conclusion": "failure",
+    "variant": "ios26-current",
+    "artifact": {
+      "id": 13836005549,
+      "name": "ios-test-evidence-ios26-current-42969112726",
+      "size_in_bytes": 17734235,
+      "digest": "sha256:0e9ec54b3fe6f79c610f23b95ca8dc39855ed98d2be34d610e2c7fd101e3f504"
+    },
+    "runtime": {
+      "device_name": "iPhone 17",
+      "runtime_version": "26.2",
+      "runtime_build": "23C54",
+      "runtime_identifier": "com.apple.CoreSimulator.SimRuntime.iOS-26-2"
+    },
+    "xcresult_summary": "unavailable: test-summary.json zero bytes; result bundle only staging; no verifier counts or zero-skip claim",
+    "test_step": {
+      "status": "failure",
+      "started": "2026-11-11T06:39:02Z",
+      "completed": "2026-11-11T06:59:16Z"
+    },
+    "observed_method_events": {
+      "testCancelActualQueryKeepsQuestionAndSourceWithoutCompletedArchive": {
+        "starts": 1,
+        "finished_fail": 1,
+        "allowance_exceeded": 1,
+        "failure_line": 156,
+        "phase": "Native Files image-coordinate selection unresolved: picker navigation/list/sheet true, selectionError/Open false; no query/archive reached"
+      },
+      "testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete": {
+        "starts": 2,
+        "finished_fail": 1,
+        "incomplete": 1,
+        "allowance_exceeded": 1,
+        "first_failure_line": 250,
+        "first_phase": "initial app.launch failed before fixture: timed out while launching via Xcode; no product assertion",
+        "second_phase": "selected actual PDF, separate grants, model answer, archive relaunch, distinct citation/pages identifiers and assertions, archive open/delete; second invocation exceeded case allowance before completion"
+      },
+      "testReadApprovalThenRemoveNeverExtractsOrSubmitsAndRetainsDraft": {
+        "starts": 2,
+        "finished": 0,
+        "phase": "no completed method verdict; read approval action observed in log"
+      }
+    },
+    "ax_snapshots": {
+      "collapsed": {
+        "visited": 40,
+        "relevant": 3,
+        "identifiers": [
+          "archive.turn.0.pdf",
+          "archive.turn.0.pdf.reselectNotice"
+        ]
+      },
+      "expanded": {
+        "visited": 47,
+        "relevant": 5,
+        "identifiers": [
+          "archive.turn.0.pdf",
+          "archive.turn.0.pdf.citation.0",
+          "archive.turn.0.pdf.pages",
+          "archive.turn.0.pdf.reselectNotice"
+        ]
+      },
+      "conclusion": "23b4e6a distinct citation/pages AX identifiers observed and later assertions passed in second full invocation; no full method pass"
+    },
+    "acceptance": "not accepted; no completed 3-method xcresult or 0-skip proof"
+  },
+  "diagnosis": {
+    "se_full": "Files remained open after one unique visible PDF thumbnail coordinate action; no importer callback. The native read/query/archive path was not reached.",
+    "se_cancel": "Recording shows Files moved from Recent to Browse Locations with On My iPhone visible; the driver predicate did not recognize this route, before file selection.",
+    "current_cancel": "Files selection remained unresolved; method exceeded its 240-second allowance. No query or archive was reached.",
+    "current_full": "First invocation failed at initial app.launch via Xcode. A later invocation reached actual PDF, grants, model answer, encrypted archive, distinct citation/page AX nodes and assertions, open/delete actions, but did not complete. The Test step ran about 20 minutes and had no usable xcresult summary.",
+    "product_ax": "The 23b4e6a sibling-button fix exposed distinct citation/pages identifiers in current AX; no complete 3-method shard passed."
+  },
+  "candidate_fix": {
+    "scope": "UI test driver only",
+    "file": "Tests/WoowAssistantUITests/ChatPDFAttachmentUITests.swift",
+    "behavior": "one tap on the uniquely verified native file cell; find local Files route through bounded exact-label table cells and visible matches",
+    "retains": "all assertions, 240-second case cap, route/action count, no retry",
+    "native_validation": "not yet run; the above reruns used unmodified driver"
+  }
+}

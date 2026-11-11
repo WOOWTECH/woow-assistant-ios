@@ -139,7 +139,10 @@ final class ChatPDFAttachmentUITests: XCTestCase {
                   viewport: nativeList.frame.intersection(app.frame), navigation: nativeNavigation.frame) else {
             XCTFail("Exact native PDF thumbnail must be fully visible"); throw Failure.nativeTarget
         }
-        thumbnail.coordinate(withNormalizedOffset: CGVector(dx: 0.5, dy: 0.5)).tap()
+        // The exact native cell is already unique and visible. The iOS 26
+        // image-coordinate tap left Files open with no selection; use the
+        // cell's accessibility action for the single native selection.
+        file.tap()
         let selected = app.staticTexts["chat.pdf.filename"].firstMatch
         let open = nativeNavigation.buttons.matching(NSPredicate(format: "label IN %@", ["打開", "開啟", "Open", "完成", "Done"])).firstMatch
         let selectionReady = {
@@ -170,8 +173,9 @@ final class ChatPDFAttachmentUITests: XCTestCase {
     }
 
     private func visible(_ query: XCUIElementQuery) -> XCUIElement? {
-        let element = query.firstMatch
-        return element.exists && element.isEnabled && element.isHittable ? element : nil
+        // Files can keep an offscreen duplicate of a known route while its
+        // visible row is in another table. Inspect only bounded exact matches.
+        query.allElementsBoundByIndex.prefix(6).first { $0.exists && $0.isEnabled && $0.isHittable }
     }
 
     private func exactPDF() -> XCUIElement? {
@@ -183,7 +187,8 @@ final class ChatPDFAttachmentUITests: XCTestCase {
 
     private func nativeItem(_ labels: [String]) -> XCUIElement? {
         let predicate = NSPredicate(format: "label IN %@", labels)
-        for query in [nativeList.cells, app.buttons, app.staticTexts] {
+        // The Browse locations page is a table, not the "File View" grid.
+        for query in [app.cells, app.buttons, app.staticTexts] {
             if let item = visible(query.matching(predicate)) { return item }
         }
         return nil
