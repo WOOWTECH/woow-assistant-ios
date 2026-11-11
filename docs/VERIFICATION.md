@@ -1,5 +1,18 @@
 # Verification — 2026-11-11
 
+## Current full native core completed at `43ba9d0`
+
+[Run 42971179669](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42971179669)
+passed **345/345 seven-target iOS XCTest core methods** on a fresh iPhone 17 /
+iOS 26.2 simulator, plus **217/217 portable macOS core methods**, all with
+zero failed or skipped. The complete 819-member artifact ZIP matched GitHub's
+SHA-256 digest and passed member CRC checks. Each of the 345 iOS methods and
+217 portable methods started and passed exactly once; native completion
+verification matched the 345-method summary. This covers no UI shard, live
+service or physical iPhone. New [SE](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42971185488)
+and [exact17](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42971191200)
+full-core reruns remain independent. [Method lists and artifact evidence](evidence/native-current-full-43ba9d0.json).
+
 ## Staged two-PDF FileProvider branch remains isolated at 2/3
 
 The `d8b568e` isolated branch creates PDF B only after the first genuine
