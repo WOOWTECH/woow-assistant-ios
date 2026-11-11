@@ -13,6 +13,8 @@ enum LearningElementVisibility {
 /// viewport before tapping; never fall back to a blind screen coordinate.
 func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
                            visibility: LearningElementVisibility = .fullyVisible,
+                           activeNavigationBar: XCUIElement? = nil,
+                           useTargetSnapshot: Bool = false,
                            file: StaticString = #filePath, line: UInt = #line) {
     // Navigation/keyboard transitions can replace the containing Form/List.
     // Cache its AX identity, not its position in a changing query result, and
@@ -50,8 +52,16 @@ func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
         // native navigation bar. iOS 17 reported y=6.7 for an obscured static
         // text, inside the former viewport, with an unhittable (-1,-1) point.
         // Keep the full visibility requirement and scroll below the actual bar.
-        let topBars = app.navigationBars.allElementsBoundByAccessibilityElement.compactMap {
-            visibleFrame(of: $0)
+        // A caller that knows the current screen can inspect its one visible
+        // bar. Fall back to the full search during a navigation transition.
+        // Both paths retain the same clipped viewport and visibility check.
+        let topBars: [CGRect]
+        if let activeNavigationBar, let frame = visibleFrame(of: activeNavigationBar) {
+            topBars = [frame]
+        } else {
+            topBars = app.navigationBars.allElementsBoundByAccessibilityElement.compactMap {
+                visibleFrame(of: $0)
+            }
         }
         bounds = learningViewportBelowNavigationBars(bounds, bars: topBars)
         if navigation.exists, navigation.isHittable {
@@ -73,15 +83,19 @@ func revealLearningElement(_ element: XCUIElement, in app: XCUIApplication,
     var reversedAtBoundary = false
     for attempt in 0...8 {
         let (bounds, scrollTarget, scrollFrame) = viewport()
-        let exists = element.exists
+        // A snapshot supplies existence, frame, type and identifier in one AX
+        // request. Preserve the original queries if a transient snapshot fails.
+        let targetSnapshot = useTargetSnapshot ? try? element.snapshot() : nil
+        let exists = targetSnapshot != nil || element.exists
         // A virtualized Form row has no snapshot until scrolling materializes
         // it. Querying elementType before exists fails before any scroll occurs.
-        if exists && visibility == .readableText && element.elementType != .staticText {
+        if exists && visibility == .readableText &&
+            (targetSnapshot?.elementType ?? element.elementType) != .staticText {
             XCTFail("Partial visibility is permitted only for read-only static text.", file: file, line: line)
             return
         }
-        let frame = exists ? element.frame : .zero
-        if exists { lastKnownIdentifier = element.identifier }
+        let frame = targetSnapshot?.frame ?? (exists ? element.frame : .zero)
+        if exists { lastKnownIdentifier = targetSnapshot?.identifier ?? element.identifier }
         if exists && learningFrameIsVisible(frame, in: bounds, visibility: visibility) {
             // Long static text can have its tap point outside the viewport even
             // when its lines are visible; reading its label needs no tap point.
