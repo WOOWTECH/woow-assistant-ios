@@ -1,5 +1,16 @@
 # Verification — 2026-11-11
 
+## Current native core at `50e2b74` — 2026-11-11
+
+The iPhone 17 / iOS 26.2 native and hosted integration run
+[42945328369](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42945328369)
+passed **341/341 methods, zero failures and zero skips**. The complete downloaded
+artifact ZIP passed its CRC check; its SHA-256, XCTest summary, completion gate,
+and 341 unique method starts and passes match. This is core and hosted App
+coverage at the named source revision. It does not accept the separate UI shards,
+the later keyboard changes, iOS 17, signing, or a physical device.
+[Method-level evidence](evidence/native-current-50e2b74.json).
+
 ## Manual address search integrated; observed browser driver failures retained — 2026-11-11
 
 Manual address input now uses pinned Mika's Bing default, four built-in engines and persisted custom templates, with escaped queries and history query restoration. The additive encrypted-library field preserves existing tabs, bookmarks, history and site modes. Switching engines does not reload the page or grant model research capabilities. Custom template entry has normal Next/Done keyboard actions. [Behavior and differences](MANUAL_BROWSER_SEARCH.md).
