@@ -37,8 +37,11 @@ fixed-text formats (one call and zero replies each). Its UI started 18 methods:
 retention and two public search behaviors; they do not accept a successful
 model response. This matches the iOS 17 service-entry failure, while individual
 UI assertion causes remain separate. [Sanitized SE evidence](evidence/live-model-se-fe66ab2-first-failure.json).
-One new-source, bounded [SE full live-model rerun](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42968311920)
+One new-source, bounded [SE full live-model rerun](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42969482818)
 is queued alone; its gate will stop dependent steps if the native probe fails.
+The earlier pending [42968311920](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42968311920)
+was cancelled before starting and replaced so the new run also uses masked
+model-service settings.
 
 A bounded review of those two public failed-step logs found the model service
 host printed three times in each, because GitHub Actions configuration
