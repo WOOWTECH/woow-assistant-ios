@@ -1,5 +1,35 @@
 # Verification — 2026-11-11
 
+## Dual-PDF UIDocument candidate: one platform passes, two fail
+
+The isolated `9600dfb` candidate creates the two synthetic PDF fixtures through
+`UIDocument.save(to:for:.forCreating)`. The unchanged focused method passed
+**1/1 on exact iOS 17.0.1**, with two native picker callbacks, two read grants,
+the expected A2/B1/A1 PDF page order, unchanged source files and the result
+retained after cancelling export. It failed **0/1 on current iOS 26.2** after
+the first of two picker callbacks, and **0/1 on SE/iOS 18.5** before the first
+callback; both had two successful fixture save/close events. Each failed run
+contains a nearby FileProvider `-1005` diagnostic, which does not establish
+causation. All three artifact ZIPs passed SHA-256 and CRC checks. The candidate
+remains isolated; its iOS 17 pass is not a cross-platform fix.
+[Run and artifact evidence](evidence/pdf-pair-uidocument-9600-three-runs.json).
+
+## Website camera and microphone request boundary
+
+At `8c79a66`, Debug and Release Info.plists gained camera and microphone
+purpose strings. Apple requires purpose strings when an app uses those protected
+resources; both plists passed `plutil -lint` and key-presence checks. At
+`1fb3aea`, the iOS WebKit media-capture delegate returns `.prompt` only for a
+visible, manually browsed page in the selected tab; it returns `.deny` for new
+requests from hidden tabs, model-owned documents, clearing sessions or a page
+dialog. It does not auto-grant access. The delegate source passed iOS syntax
+parsing, which is **not** native typechecking or a camera/microphone permission
+flow test. Current native compile/core run
+[42962749795](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42962749795)
+is pending; physical capture, already-active streams and iOS 17 system prompts
+remain unverified. [Apple WebKit default prompt](https://developer.apple.com/documentation/webkit/wkuidelegate/webview%28_%3Arequestmediacapturepermissionfor%3Ainitiatedbyframe%3Atype%3Adecisionhandler%3A%29),
+[Apple purpose strings](https://developer.apple.com/documentation/avfoundation/requesting-authorization-to-capture-and-save-media).
+
 ## MCP UI after iOS 17 keyboard correction
 
 At `b4e8c70`, current completed **4/8** and SE **7/8** MCP UI methods, zero

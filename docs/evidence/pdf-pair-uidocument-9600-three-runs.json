@@ -1,0 +1,56 @@
+{
+  "source_sha": "9600dfb16b8d46770e606e40926182cae4d3d688",
+  "candidate": "DEBUG-only UIDocument.save(to:for:.forCreating) synthetic two-PDF creation",
+  "verdict": "reject_as_cross_platform_fix",
+  "reason": "Focused unchanged method passed on exact iOS 17.0.1 but failed on iOS 26.2 and 18.5 before two genuine native picker callbacks, per-source grants, assembly, or export.",
+  "runs": [
+    {
+      "platform": "iOS 26.2 current",
+      "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42956138473",
+      "result": "failed",
+      "method": "0/1",
+      "save_close": "2/2",
+      "native_picker_callbacks": 1,
+      "failure_stage": "B second pick; source 2 absent",
+      "artifact_id": 13828149561,
+      "artifact_sha256": "8051b6cebe3a8ccaf66121f6f4b3c3104a1ac434f90a7aea78207ae305c0ed36",
+      "artifact_bytes": 184920011,
+      "zip_crc": "ok",
+      "diagnostic": "FileProvider -1005 localstorage/did=4 near B tap"
+    },
+    {
+      "platform": "iOS 18.5 SE",
+      "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42956152142",
+      "result": "failed",
+      "method": "0/1",
+      "save_close": "2/2",
+      "native_picker_callbacks": 0,
+      "failure_stage": "A first pick; source 1 absent",
+      "artifact_id": 13829545996,
+      "artifact_sha256": "cfa3d3de400daecceb8f4c618535b317b69c2b5534294014bf4dbcdf23ad67da",
+      "artifact_bytes": 215813014,
+      "zip_crc": "ok",
+      "diagnostic": "FileProvider -1005 localstorage/did=3 near A tap"
+    },
+    {
+      "platform": "exact iOS 17.0.1 (21A342)",
+      "url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42956167684",
+      "result": "passed",
+      "method": "1/1",
+      "save_close": "2/2",
+      "native_picker_callbacks": 2,
+      "failure_stage": null,
+      "artifact_id": 13828877953,
+      "artifact_sha256": "2f66a97abb221c286cb12a80cd9fa3ae29b9f8790a9f1f697e99a8afbeb0af29",
+      "artifact_bytes": 11610563,
+      "zip_crc": "ok",
+      "diagnostic": "Unchanged focused XCTest validates distinct sources, two read grants, A2/B1/A1 PDF output, unchanged originals, and cancelled export retaining result."
+    }
+  ],
+  "limitations": [
+    "Three focused runs only, not the full application matrix.",
+    "The FileProvider -1005 logs correlate with missed callbacks but do not prove root cause.",
+    "Pre-picker fixture stat/hash checks and post-test snapshots do not prove native provider item resolution at tap time."
+  ],
+  "action": "Do not merge this candidate into shared main; preserve iOS17 focused pass and two failures as separate evidence. No rerun dispatched."
+}
