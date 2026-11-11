@@ -1,5 +1,16 @@
 # Verification — 2026-11-11
 
+## iOS 17 archived PDF disclosure selector identified
+
+At `189796c`, the exact iOS 17.0.1 documents-chat shard completed **2/3**,
+zero skips. The bounded AX snapshot before the failed lookup shows the exact
+`archive.turn.0.pdf` identifier on a visible `DisclosureTriangle` with the
+synthetic PDF filename. The prior test queried that identifier as a `Button`
+and stopped before citation, saved-page, reopen and deletion checks. Both
+archived PDF disclosure lookups now use XCTest's disclosure-triangle query;
+all later assertions and time limits remain. A native rerun is required.
+[Source, artifact and bounded AX evidence](evidence/chat-pdf-exact17-disclosure-189796c.json).
+
 ## Exact iOS 17 startup interface after streaming selector correction
 
 At `cacd8f0`, [run 42952165858](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42952165858)

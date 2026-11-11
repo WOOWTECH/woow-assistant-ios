@@ -46,14 +46,14 @@ final class ChatPDFAttachmentUITests: XCTestCase {
         tap("chat.archive"); let saved = row("[fixture:chat-pdf]"); ready(saved); saved.tap()
         assertLabel(app.staticTexts["archive.turn.0.assistant"].firstMatch, "PDF 問答已完成：WOOW_SKILL_PDF_PAGE_2")
         recordArchivedPDFAX()
-        tap("archive.turn.0.pdf", scroll: true)
+        tapDisclosure("archive.turn.0.pdf")
         // Capture the actual expansion outcome before asking the shared scroll
         // helper to reveal a citation. Both can fail at the same source line.
         recordArchivedPDFAX()
         let citation = app.staticTexts["archive.turn.0.pdf.citation.0"].firstMatch
         revealLearningElement(citation, in: app, visibility: .readableText)
         XCTAssertEqual(citation.label, "WOOW_SKILL_PDF_PAGE_2")
-        tap("archive.turn.0.pdf.pages", scroll: true)
+        tapDisclosure("archive.turn.0.pdf.pages")
         let text = app.staticTexts["archive.turn.0.pdf.page.1"].firstMatch
         revealLearningElement(text, in: app, visibility: .readableText)
         XCTAssertTrue(text.label.contains("WOOW_SKILL_PDF_PAGE_2"))
@@ -326,6 +326,11 @@ final class ChatPDFAttachmentUITests: XCTestCase {
         let button = app.buttons[id].firstMatch
         if scroll { revealLearningElement(button, in: app) }
         ready(button); XCTAssertTrue(app.frame.contains(button.frame)); button.tap()
+    }
+    private func tapDisclosure(_ id: String) {
+        let disclosure = app.disclosureTriangles[id].firstMatch
+        revealLearningElement(disclosure, in: app)
+        ready(disclosure); XCTAssertTrue(app.frame.contains(disclosure.frame)); disclosure.tap()
     }
     /// Diagnostic only: inspect the real archived row without exporting labels,
     /// model output, field values, or the synthetic filename itself.

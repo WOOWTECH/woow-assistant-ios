@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "FAIL_PRESERVED_SELECTOR_CORRECTION_PENDING_NATIVE",
+  "source_commit": "189796cf0e5d7549c29acd651403bbaa379c3288",
+  "run_id": 42953392777,
+  "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42953392777",
+  "scope": "documents-chat",
+  "device": "iPhone 15 / iOS 17.0.1 simulator",
+  "artifact": {
+    "id": 13827999532,
+    "bytes": 106223510,
+    "sha256": "f52c0b3533a5a0da4e47f5c3aaebf58d3868b7e9d0bf6ec7105e8bb1b0f5bec8",
+    "zip_crc_checked": true,
+    "zip_members": 239,
+    "test_summary_sha256": "5681f4202f2abcc71a2af388ee492bf5eaa80f78812c2199c3f9627f0889a584",
+    "test_log_sha256": "06730b4b3f1edd8c83129aadc2669ecc06ad9aef254bd3ae597b91341556cfb5",
+    "bounded_ax_attachment_sha256": "109625f0d63476fd30f42c502dd77988608dd77aca413eb4aa729abe2dec599f"
+  },
+  "verification": {
+    "native_prebuild_succeeded": true,
+    "counts": {"total": 3, "passed": 2, "failed": 1, "skipped": 0},
+    "failed_method": "ChatPDFAttachmentUITests/testNativePDFApprovalsCitationsArchiveRelaunchOpenAndDelete",
+    "observed_pdf_row": "Immediately before lookup, archive.turn.0.pdf was visible with the synthetic PDF filename and XCUIElementType rawValue 13 (DisclosureTriangle). The old test queried that exact identifier as a Button and never found it.",
+    "other_two_methods_passed": true
+  },
+  "candidate": "The two archived PDF DisclosureGroup controls now use XCTest disclosureTriangles with their exact identifiers; the original visibility, tap, citation, page, reopen and deletion assertions remain. Native rerun required.",
+  "limits": "The original failure occurred before citation and saved-page assertions. This selector correction does not establish the rest of the flow or current/SE behavior."
+}
