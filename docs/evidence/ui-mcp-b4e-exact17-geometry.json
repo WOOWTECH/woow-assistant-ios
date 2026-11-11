@@ -1,0 +1,61 @@
+{
+  "source_head": "b4e8c702ab744a5f665f29b8ab31deaa15cf1dc4",
+  "run_id": 42948510350,
+  "artifact_id": 13825416737,
+  "platform": "iPhone 15 / iOS 17.0.1",
+  "test_summary": {
+    "total": 8,
+    "passed": 5,
+    "failed": 3,
+    "skipped": 0
+  },
+  "failure": "Three MCPLearningUITests stopped at native keyboard switch full-frame containment assertion at line 366; no MCP business operation reached.",
+  "observed_geometry": [
+    {
+      "method": "testDeclinedLocalMemoryPreservesDraftWithoutDataOrRemoteAttempt",
+      "snapshot_id": "C12BF847-7569-4D0F-A780-ED917FA513A8",
+      "window_height_pt": 852.0,
+      "switch_y_pt": 783.7,
+      "switch_height_pt": 68.7,
+      "frame_overflow_pt": 0.4,
+      "center_inside_window": true,
+      "keyboard_focused": true
+    },
+    {
+      "method": "testProfileApprovalSurvivesRemoteDeclineAndRelaunch",
+      "snapshot_id": "4CA88783-70C5-4FF7-8FA8-D9B9B5C1C774",
+      "window_height_pt": 852.0,
+      "switch_y_pt": 783.7,
+      "switch_height_pt": 68.7,
+      "frame_overflow_pt": 0.4,
+      "center_inside_window": true,
+      "keyboard_focused": true
+    },
+    {
+      "method": "testRemoteThenMemoryApprovalFinishesAndUndoRemainsAbsentAfterRelaunch",
+      "snapshot_id": "8299AFB7-3114-415F-ADC5-CF631039B015",
+      "window_height_pt": 852.0,
+      "switch_y_pt": 783.7,
+      "switch_height_pt": 68.7,
+      "frame_overflow_pt": 0.4,
+      "center_inside_window": true,
+      "keyboard_focused": true
+    }
+  ],
+  "patch": "Keep ready(globe) hittable/enabled and require its tappable center within app.frame; remove only whole-frame containment assumption.",
+  "validation": {
+    "swiftc_parse": true,
+    "git_diff_check": true,
+    "geometry_assertions": 3,
+    "native_rerun": "pending"
+  },
+  "source_sha256": "17acbfad5f33ef2ef41ba8aba69099b307d83aa73fced97679012d9483da588e",
+  "patch_sha256": "e0a140fe645ebf14efb4e28d9dde5b2d47cf62ea6014ea13080eadd580230b71",
+  "schema_version": 1,
+  "status": "FAIL_PRESERVED_NATIVE_CORRECTION_PENDING",
+  "limits": [
+    "Three failed cases stopped before MCP business approval; no MCP outcome is accepted by this run.",
+    "Current and SE variants remain separate and pending.",
+    "The patch preserves the native hittability check, actual keyboard switch and all later consent assertions."
+  ]
+}

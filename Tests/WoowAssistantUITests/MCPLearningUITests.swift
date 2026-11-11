@@ -363,7 +363,13 @@ final class MCPLearningUITests: XCTestCase {
             format: "label IN %@", ["Next keyboard", "下一個鍵盤"]
         )).firstMatch
         ready(globe)
-        XCTAssertTrue(app.frame.contains(globe.frame), "The native keyboard switch must be visible")
+        // On iOS 17 the system globe's accessibility frame can extend a
+        // fraction of a point past the bottom edge while its tappable center
+        // remains on screen. Hittability is checked above.
+        XCTAssertTrue(
+            app.frame.contains(CGPoint(x: globe.frame.midX, y: globe.frame.midY)),
+            "The native keyboard switch must be visible"
+        )
         globe.press(forDuration: 1)
         let english = app.descendants(matching: .any).matching(NSPredicate(format: "label == %@", "English (US)")).firstMatch
         ready(english); english.tap()

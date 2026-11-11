@@ -1,5 +1,15 @@
 # Verification — 2026-11-11
 
+## iOS 17 MCP keyboard geometry
+
+At `b4e8c70`, the exact iOS 17.0.1 MCP UI shard completed **5/8**, zero skips.
+Three learning cases stopped before their MCP approvals because the test required
+the entire native keyboard switch frame inside the app frame; its bottom extended
+0.4 pt beyond the screen while the control was hittable and its center was inside.
+The test now checks the tappable center while retaining the hittability check,
+actual keyboard switch, subsequent input and consent assertions. Native rerun is
+pending. [Method and geometry evidence](evidence/ui-mcp-b4e-exact17-geometry.json).
+
 ## Archived PDF native accessibility diagnosis
 
 At `a663fbd`, the exact iOS 17.0.1 chat PDF shard completed **2/3** with zero
