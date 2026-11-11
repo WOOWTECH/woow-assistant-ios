@@ -8,6 +8,8 @@
 
 最近核實的原生／App 整合結果：`a663fbd` 在 iOS 26.2 **345/345**、`dfd6eff` 在 SE／iOS 18.5 與精確 iOS 17.0.1 各 **345/345**，均零略過。三個系統測試結果不能加總或代替後續修改及獨立介面分片的驗收；見[SE](docs/evidence/native-se-dfd6eff.json)與[精確 iOS 17](docs/evidence/native-exact17-dfd6eff.json)完整方法證據。
 
+網站媒體權限來源加入後，current 模擬器另通過較窄的核心範圍：可攜測試 **217/217**、iOS XCTest **152/152**，均零失敗；它不是完整七組原生核心驗收。[來源及方法證據](docs/evidence/native-current-selected-core-1fb3aea.json)。新版三平台完整核心重測仍待結果。
+
 `fe66ab2` 的 MCP 原生介面在 current、SE 與精確 iOS 17 各 **8/8、零略過**，涵蓋逐次核准、結果檢視、撤銷與重開後狀態；這使用合成 MCP 測試服務，不代表真實 HA 模型對話已通過。[逐方法與附件證據](docs/evidence/ui-mcp-fe66ab2-three-platforms.json)。
 
 `83f4ddd` 的瀏覽器工作區介面在 iOS 26.2、SE／iOS 18.5 及精確 iOS 17.0.1 都是 **5/9**、零略過；兩項登入、搜尋設定及頁內尋找案例尚未通過。已根據三份原生紀錄修正部分測試控制元件選取，重測仍待結果。詳見[三平台失敗證據](docs/evidence/ui-workspace-83f-three-failures.json)。語言介面的原生驗收也尚未完成。

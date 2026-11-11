@@ -30,6 +30,22 @@ signed or installable. The source predates the subsequent packaged purpose
 string release gate; [run 42970132111](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42970132111)
 will test that gate. [Artifact evidence](evidence/unsigned-device-c93f894.json).
 
+## Current simulator selected core with website media source
+
+At `1fb3aea`, [run 42962749795](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42962749795)
+passed 217/217 portable macOS core methods and **152/152 selected iPhone 17 /
+iOS 26.2 XCTest methods**, zero failures and zero skips. The iOS selection was
+only `AssistantMemoryTests`, `AssistantPersistenceTests`, and
+`AssistantSkillsTests`; it was **not** the seven-target full native scope.
+The 374-member full artifact ZIP passed SHA-256 and CRC checks; both logs have
+unique matching starts/passes, and the iOS summary matches 152/152.
+The App build contains the website media delegate/purpose strings, but this
+does not exercise an OS camera/microphone prompt. The separate full-scope
+rechecks are queued for [current](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42971179669),
+[SE](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42971185488),
+and [exact iOS 17](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42971191200).
+[Method and artifact evidence](evidence/native-current-selected-core-1fb3aea.json).
+
 ## Exact iOS 17 live-model suite blocked at model service
 
 At `fe66ab2`, [run 42961323643](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42961323643)
