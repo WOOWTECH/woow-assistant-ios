@@ -40,13 +40,15 @@ def credentials(env):
     return key_id, issuer, key
 
 
-def verified_export(folder):
+def verified_export(folder, method="app-store-connect"):
+    if method not in ("app-store-connect", "release-testing"):
+        raise ReleaseError("不支援的簽章匯出類型。")
     report = json.loads((folder / "report.json").read_text())
     if not (isinstance(report, dict) and report.get("signature_verified") is True
             and report.get("bundle_id") == BUNDLE_ID
             and report.get("artifact_kind") == "signed-local-export"
-            and report.get("export_method") == "app-store-connect"):
-        raise ReleaseError("只接受同一次建置已驗證的 App Store distribution 匯出。")
+            and report.get("export_method") == method):
+        raise ReleaseError("只接受同一次建置已驗證且匯出模式相符的簽章 IPA。")
     ipas = list((folder / "export").glob("*.ipa"))
     if len(ipas) != 1 or ipas[0].is_symlink() or not ipas[0].is_file():
         raise ReleaseError("找不到唯一、一般檔案形式的 IPA。")

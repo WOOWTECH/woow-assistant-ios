@@ -7,7 +7,7 @@ on:
       mode:
         description: 驗證或發行路徑（signed-testflight 會上傳至 Apple）
         type: choice
-        options: [unsigned-device, signing-preflight, signed-export, signed-testflight, transporter-check, ios17-hosted, ios17-self-hosted]
+        options: [unsigned-device, signing-preflight, signed-export, signed-device-artifact, signed-testflight, transporter-check, ios17-hosted, ios17-self-hosted]
         default: unsigned-device
         required: true
       export_method:
@@ -60,7 +60,7 @@ concurrency:
 
 jobs:
   device-build:
-    if: inputs.mode == 'unsigned-device' || inputs.mode == 'signing-preflight' || inputs.mode == 'signed-export' || inputs.mode == 'signed-testflight'
+    if: inputs.mode == 'unsigned-device' || inputs.mode == 'signing-preflight' || inputs.mode == 'signed-export' || inputs.mode == 'signed-device-artifact' || inputs.mode == 'signed-testflight'
     runs-on: macos-15-intel
     timeout-minutes: 100
     env:
@@ -112,16 +112,32 @@ jobs:
           BUILD_NUMBER: ${{ github.run_number }}
         run: python3 scripts/release_ios.py build --build-number "$BUILD_NUMBER" --output build/release
       - name: 既有憑證簽章、封存與本地匯出
-        if: inputs.mode == 'signed-export' || inputs.mode == 'signed-testflight'
+        if: inputs.mode == 'signed-export' || inputs.mode == 'signed-device-artifact' || inputs.mode == 'signed-testflight'
         env:
           IOS_SIGNING_CERTIFICATE_BASE64: ${{ secrets.IOS_SIGNING_CERTIFICATE_BASE64 }}
           IOS_SIGNING_CERTIFICATE_PASSWORD: ${{ secrets.IOS_SIGNING_CERTIFICATE_PASSWORD }}
           IOS_PROVISION_PROFILE_BASE64: ${{ secrets.IOS_PROVISION_PROFILE_BASE64 }}
           IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
           IOS_KEYCHAIN_PASSWORD: ${{ secrets.IOS_KEYCHAIN_PASSWORD }}
-          EXPORT_METHOD: ${{ inputs.mode == 'signed-testflight' && 'app-store-connect' || inputs.export_method }}
+          EXPORT_METHOD: ${{ inputs.mode == 'signed-testflight' && 'app-store-connect' || inputs.mode == 'signed-device-artifact' && 'release-testing' || inputs.export_method }}
           BUILD_NUMBER: ${{ github.run_number }}
         run: python3 scripts/release_ios.py build --signed --export-method "$EXPORT_METHOD" --build-number "$BUILD_NUMBER" --output build/release
+      - name: 加密已驗證的 Ad Hoc 測試包
+        if: inputs.mode == 'signed-device-artifact'
+        env:
+          IOS_DEVICE_ARTIFACT_PASSPHRASE: ${{ secrets.IOS_DEVICE_ARTIFACT_PASSPHRASE }}
+        run: python3 scripts/release_device_artifact.py --release build/release --output build/device-delivery
+      - name: 保留加密測試包供實機安裝
+        if: inputs.mode == 'signed-device-artifact'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: encrypted-device-ipa-${{ github.run_id }}
+          path: |
+            build/device-delivery/WoowAssistant.ipa.enc
+            build/device-delivery/manifest.json
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 1
       - name: 上傳已驗證的簽章 IPA 至 App Store Connect
         if: inputs.mode == 'signed-testflight'
         timeout-minutes: 31
@@ -143,7 +159,7 @@ jobs:
           retention-days: 14
       - name: 清除本地封存與匯出產物
         if: always()
-        run: rm -rf -- build/release
+        run: rm -rf -- build/release build/device-delivery
 
   transporter-validation:
     if: inputs.mode == 'transporter-check'

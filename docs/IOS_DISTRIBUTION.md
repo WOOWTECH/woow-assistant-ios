@@ -52,6 +52,7 @@ Apple 提供 `xcodebuild -downloadPlatform iOS -buildVersion <版本>` 安裝指
 | `unsigned-device`（預設） | `macos-15-intel`、Xcode 26.2 | Release `iphoneos` arm64 編譯；檢查實際 build settings、App Info.plist、App／framework／Swift dylib 的 Mach-O 最低版本；不產生 IPA |
 | `signing-preflight` | 同上；repository Actions secrets | 先驗證 Xcode／SDK 與既有 `.p12`、profile、Team ID、匯出模式的相符性；不編譯、不產生 IPA、不上傳。設定簽章後先用此模式取得快速回饋 |
 | `signed-export` | 同上；repository Actions secrets | 既有 distribution 憑證與 profile 預檢、手動簽章 archive、`destination=export` 本地 IPA 匯出；驗證簽章完整性及實際 leaf certificate |
+| `signed-device-artifact` | 同上；Ad Hoc profile 與測試包密碼 secret | 強制 `release-testing` 匯出，核對簽章報告和 IPA 雜湊；使用 OpenSSL 加密並解密自驗後，只保留一天的加密 IPA 與無私密資料的 manifest，供已登記 iPhone 實測 |
 | `signed-testflight` | 同上；另需三項 App Store Connect secrets | 強制 App Store distribution 匯出、比對已驗證 IPA 雜湊，明確上傳至 Apple；不宣稱處理完成或已可下載 |
 | `ios17-hosted` | `macos-15-intel`、Xcode 16.4 | 指定 runtime 若缺少便下載；建立專用 iPhone 15 simulator，執行現有 `WoowAssistant` 完整 XCTest scheme，保存 `.xcresult`／測試 log |
 | `ios17-self-hosted` | `[self-hosted, macOS, woow-ios17]`，使用 runner 已選定的 Xcode | 僅用已預裝的指定 runtime；缺少即失敗，不自動改用其他 OS |
@@ -74,11 +75,27 @@ unsigned build、signed archive 與匯出 IPA 的實際 App `Info.plist` 均不�
 | `IOS_TEAM_ID` | 與 profile 相符的 10 位 Team ID |
 | `IOS_KEYCHAIN_PASSWORD` | 暫存鑰匙圈的非空密碼 |
 
+`signed-device-artifact` 另需 `IOS_DEVICE_ARTIFACT_PASSPHRASE`：請自行產生並妥善保存 **32 至 256 字元的隨機 ASCII 密碼**，只設在 repository Actions secret，不貼到公開 repo 或對話。這個模式只接受 `release-testing` Ad Hoc profile，該 profile 必須包含預定實測 iPhone 的 UDID。`signing-preflight` 可先選 `export_method=release-testing` 快速核對五項 Apple 簽章資料；它不需要測試包密碼。
+
+此 repo 公開，GitHub Actions artifact 對有讀取權限的登入者可下載。因此工作流程**只上傳加密後的** `WoowAssistant.ipa.enc` 與 `manifest.json`，不保存未加密 IPA、憑證、profile 或私鑰。密碼以環境變數傳給 OpenSSL，沒有放在命令列參數或日誌；使用 AES-256-CBC、PBKDF2-SHA256、200,000 次迭代。CI 先解密一次，與簽章建置報告的 IPA SHA-256 比對。下載者也必須解密並核對 manifest 中的 `ipa_sha256`，再安裝至 profile 已登記且開啟 Developer Mode 的 iPhone。這個流程是可用路徑的實作，**尚未有真實簽章資料，因此未實測簽章匯出、上傳或安裝**。[GitHub artifact 存取說明](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/download-workflow-artifacts)；[Apple Ad Hoc 設定](https://developer.apple.com/help/account/provisioning-profiles/create-an-ad-hoc-provisioning-profile/)。
+
+下載加密 artifact 後，可在已登入 GitHub 的 Mac 用 `gh run download <run-id> --repo WOOWTECH/woow-assistant-ios -n encrypted-device-ipa-<run-id> --dir <資料夾>` 取得檔案。以私下保存的相同密碼設定環境變數，然後執行以下命令；不要把密碼直接寫入命令或 shell 歷史：
+
+```sh
+read -r -s IOS_DEVICE_ARTIFACT_PASSPHRASE
+export IOS_DEVICE_ARTIFACT_PASSPHRASE
+openssl enc -d -aes-256-cbc -salt -pbkdf2 -iter 200000 -md sha256 -in WoowAssistant.ipa.enc -out WoowAssistant.ipa -pass env:IOS_DEVICE_ARTIFACT_PASSPHRASE
+shasum -a 256 WoowAssistant.ipa
+unset IOS_DEVICE_ARTIFACT_PASSPHRASE
+```
+
+比對輸出與 manifest 的 `ipa_sha256` 完全相同後，使用 Xcode／Apple Configurator 安裝至已登記裝置。若不一致，刪除該 IPA，不要安裝。
+
 `export_method=app-store-connect` 要求 App Store distribution profile；`release-testing` 要求含已登記裝置的 Ad Hoc profile。不接受 development、enterprise 或 wildcard profile。檢查 App ID 時支援舊帳號的 App ID prefix 與 Team ID 不同。
 
 匯入的有效 distribution 身分必須與 profile 的 certificate SHA-1 相符且唯一。暫存 keychain 的搜尋清單會在 `finally` 還原，僅刪除本次安裝的 profile；同 UUID 檔案已存在時拒絕覆寫。簽章 secrets 不傳給 XcodeGen／xcodebuild 子程序環境；`security` 需要的密碼僅作參數傳入，命令、輸出及密碼不回顯。
 
-簽章作業限 hosted ephemeral runner。一般錯誤會清理 keychain／profile；強制終止仍依賴 GitHub 銷毀 VM。工作流程最後移除本次 archive／IPA，只上傳不含憑證資料的 `report.json`，**不保存 IPA artifact**。只有另外選擇 `signed-testflight` 才會呼叫 Apple 上傳工具；其他模式不連線上傳。GitHub Release 與 Ad Hoc 包交付尚未實作，不能把本地 export 稱為已發布。未使用 `-allowProvisioningUpdates`，不會自動註冊裝置或建立憑證。
+簽章作業限 hosted ephemeral runner。一般錯誤會清理 keychain／profile；強制終止仍依賴 GitHub 銷毀 VM。工作流程最後移除本次 archive／未加密 IPA；一般 `signed-export` 只上傳不含憑證資料的 `report.json`，`signed-device-artifact` 額外保留一天的加密包。只有另外選擇 `signed-testflight` 才會呼叫 Apple 上傳工具；其他模式不連線 Apple 上傳。GitHub Release 尚未實作，不能把本地 export 稱為已發布。未使用 `-allowProvisioningUpdates`，不會自動註冊裝置或建立憑證。
 
 Apple 自 2026-04-28 起要求 App Store Connect 上傳使用 Xcode 26 以上與 iOS 26 SDK 以上，因此簽章匯出使用 Xcode 26.2，並檢查 SDK；這不要求把 deployment target 提高到 iOS 26。[Apple SDK 要求](https://developer.apple.com/news/upcoming-requirements/?id=04282026a)
 
