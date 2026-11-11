@@ -119,6 +119,33 @@ final class BrowserWorkspace: ObservableObject {
         return true
     }
 
+    @discardableResult
+    func selectSearchEngine(_ id: String) -> Bool {
+        guard !isClearingWebsiteData else { return false }
+        return update { try $0.selectSearchEngine(id) }
+    }
+
+    @discardableResult
+    func addSearchEngine(name: String, template: String) -> Bool {
+        guard !isClearingWebsiteData else { return false }
+        guard library.searchSettings.custom.count < BrowserSearchSettings.maximumCustomEngines else {
+            error = "最多儲存 20 個自訂搜尋引擎。"; return false
+        }
+        do {
+            let engine = try BrowserSearchEngine(name: name, template: template)
+            return update { try $0.addSearchEngine(engine) }
+        } catch {
+            self.error = "請填寫名稱與公開 HTTPS 模板；在路徑或查詢值中使用一個 %s，不可含網址帳密、登入參數或 #。"
+            return false
+        }
+    }
+
+    @discardableResult
+    func removeSearchEngine(_ id: String) -> Bool {
+        guard !isClearingWebsiteData else { return false }
+        return update { $0.removeSearchEngine(id) }
+    }
+
     func activateSelected() {
         #if DEBUG
         if !uploadFixtureStarted, let fixture = BrowserUploadFixture.enabled {
@@ -160,6 +187,7 @@ final class BrowserWorkspace: ObservableObject {
         if let session = sessions[id] { return session }
         let session = BrowserSession(dataStore: websiteDataStore, configuration: configuration)
         session.manualSiteMode = { [weak self] host in self?.library.userSiteModes.mode(for: host) ?? .mobile }
+        session.manualSearchSettings = { [weak self] in self?.library.searchSettings ?? .init() }
         session.downloads = downloads
         session.canPresentUI = { [weak self] in self?.library.selectedID == id && self?.isClearingWebsiteData == false }
         session.address = library.tabs.first(where: { $0.id == id })?.url?.absoluteString ?? ""

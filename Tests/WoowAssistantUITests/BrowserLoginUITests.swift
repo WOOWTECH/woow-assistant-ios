@@ -620,8 +620,11 @@ final class BrowserLoginUITests: XCTestCase {
                 start.press(forDuration: 0.1, thenDragTo: end,
                             withVelocity: .slow, thenHoldForDuration: 0.3)
             }
-            let ready = XCTNSPredicateExpectation(predicate: NSPredicate { _, _ in passwordIsReady() }, object: nil)
-            if XCTWaiter.wait(for: [ready], timeout: 3) == .completed { return verifiedOffset }
+            // bb5c9eb SE: this short predicate waiter interrupted snapshot()
+            // while the field was still partly covered, aborting the next
+            // bounded scroll. The next loop iteration checks geometry once,
+            // synchronously, after the native gesture's existing hold/idle.
+            // No polling, extra delay, or per-scroll wait budget is added.
         }
         return nil
     }

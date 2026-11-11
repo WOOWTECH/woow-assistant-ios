@@ -40,7 +40,7 @@ UI_SHARDS = {
     "ui-startup": ["WoowAssistantUITests", "SelfConfigurationUITests", "ChatStreamingUITests"],
     "ui-notifications": ["NotificationUITests", "NotificationApprovalUITests"],
     "ui-archive": ["ConversationArchiveUITests"],
-    "ui-workspace": ["BrowserWorkspaceUITests", "BrowserLoginUITests", "BrowserSiteModesUITests"],
+    "ui-workspace": ["BrowserWorkspaceUITests", "BrowserLoginUITests", "BrowserSiteModesUITests", "BrowserSearchUITests"],
     "ui-browser": ["BrowserInteractionUITests", "BrowserUploadUITests"],
     "ui-learning": ["BrowserLearningUITests", "MultiSourceResearchUITests"],
     "ui-memory": ["MemoryUITests", "MemoryRaceUITests"],
@@ -80,7 +80,7 @@ DOCUMENT_SCOPES = {
 TEST_SCOPES = {
     "all": [],
     "core": ["AssistantDomainTests", "AssistantModelsTests", "AssistantMCPTests", "AssistantMemoryTests", "AssistantSkillsTests", "AssistantPersistenceTests", "AssistantBrowserIntegrationTests"],
-    "workspace": ["AssistantDomainTests/BrowserLibraryTests", "AssistantDomainTests/BrowserPolicyTests", "AssistantDomainTests/BrowserNavigationIntentTests", "AssistantBrowserIntegrationTests", "WoowAssistantUITests/BrowserWorkspaceUITests", "WoowAssistantUITests/BrowserLoginUITests", "WoowAssistantUITests/BrowserSiteModesUITests"],
+    "workspace": ["AssistantDomainTests/BrowserLibraryTests", "AssistantDomainTests/BrowserPolicyTests", "AssistantDomainTests/BrowserNavigationIntentTests", "AssistantBrowserIntegrationTests", "WoowAssistantUITests/BrowserWorkspaceUITests", "WoowAssistantUITests/BrowserLoginUITests", "WoowAssistantUITests/BrowserSiteModesUITests", "WoowAssistantUITests/BrowserSearchUITests"],
     "files": ["AssistantSkillsTests", "AssistantDomainTests/BrowserDownloadTests", "AssistantDomainTests/BrowserNavigationIntentTests", "AssistantBrowserIntegrationTests", "WoowAssistantUITests/BrowserUploadUITests", "WoowAssistantUITests/SkillExecutionUITests"],
     "parity": ["AssistantMCPTests", "AssistantSkillsTests", "AssistantDomainTests", "AssistantBrowserIntegrationTests", "WoowAssistantUITests/MCPConversationUITests", "WoowAssistantUITests/BrowserInteractionUITests", "WoowAssistantUITests/BrowserLearningUITests", "WoowAssistantUITests/SkillCatalogUITests", "WoowAssistantUITests/MemoryUITests", "WoowAssistantUITests/MemoryRaceUITests"],
     "startup": ["WoowAssistantUITests/WoowAssistantUITests"],

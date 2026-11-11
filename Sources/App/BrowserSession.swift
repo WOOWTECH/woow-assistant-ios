@@ -18,6 +18,8 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
     // Workspace supplies only manual preferences. Automated navigation keeps
     // WebKit's existing recommended policy, independent of this hostname set.
     var manualSiteMode: (String?) -> BrowserManualSiteMode = { _ in .mobile }
+    var manualSearchSettings: () -> BrowserSearchSettings = { .init() }
+    var manualSearchMatch: BrowserSearchMatch? { loadedURL.flatMap { manualSearchSettings().match($0) } }
     private var siteModeReloadState = BrowserSiteModeReloadState()
     private var automaticSiteModeReload = false
     private var navigationIntent = BrowserNavigationIntent()
@@ -124,8 +126,9 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
 
     func openAddress() {
         guard !isRunning, !isInteracting else { return }
+        guard !address.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         guard let url = manualAddressURL(), manualPermitted(url) else {
-            error = "請使用公開 HTTPS 網址，不可把帳密放在網址中。"; return
+            error = "請輸入搜尋文字或公開 HTTPS 網址；不接受本機網址、網址帳密或過長的查詢。"; return
         }
         answer = nil
         manualNavigation(to: url) {
@@ -1204,7 +1207,7 @@ final class BrowserSession: NSObject, ObservableObject, WKNavigationDelegate, WK
             return url
         }
         #endif
-        return BrowserManualNavigationPolicy.resolve(address: address)
+        return BrowserAddressInput.resolve(address, settings: manualSearchSettings())
     }
 
     func prepareManualPopup(_ request: URLRequest) {

@@ -1,0 +1,66 @@
+{
+  "base": "7609dc60ee312dc1fcb369dc6e2302f89a53ba4b",
+  "isolated_worktree": "/tmp/woow-site-mode-ui-driver-7609dc6",
+  "created_utc": "2026-11-10T23:49:15.511412+00:00",
+  "files": [
+    {
+      "path": "Tests/WoowAssistantUITests/BrowserSiteModesUITests.swift",
+      "sha256": "072d9d3cae452ead44b599cccf646b94297a2326e84261c5e5cb45acd180b071"
+    }
+  ],
+  "patch_sha256": "e349da41d56344711bddbf25a6ac44470bd6ad7626acc1886fd7fd04d7e57231",
+  "clean_base_patch_apply_and_byte_match": true,
+  "product_files_changed": false,
+  "shared_tree_changed": false,
+  "commit_push_dispatch_retry": false,
+  "checks": [
+    {
+      "configuration": "Debug",
+      "syntax_only_exit": 0,
+      "native_execution": false
+    },
+    {
+      "configuration": "Release",
+      "syntax_only_exit": 0,
+      "native_execution": false
+    }
+  ],
+  "native_xctest_and_ui": "PENDING: macOS13 CLT host has no Xcode; AX structure evidence does not prove the revised driver is hittable at runtime",
+  "ui_inventory_count": 95,
+  "ui_inventory_sha256": "b954459ef524ad8966e60534b46004f45c1db0173edfa00f8ee949120855e230",
+  "preserved_assertions": [
+    "same method identifier and 180-second case allowance",
+    "three launches with persistent namespace",
+    "75-second document waits and 30-second GET replacement assertion",
+    "initial mobile, desktop choice, desktop restart, mobile choice, mobile restart",
+    "nonempty field before change and empty field after GET reload",
+    "readable immediate reload notice",
+    "same public fixture URL/hostname after reload and relaunch"
+  ],
+  "driver_changes": [
+    "Tap actual WebKit input-accessory Done/完成 if keyboard/accessory exists; wait for both to disappear.",
+    "Use site-mode anchor within navigationBars; wait for expected saved mode and enabled visible document.",
+    "Select exactly one innermost Button with isEnabled/isHittable and full frame inside the visible identified anchor; tap once.",
+    "No coordinate fallback, JS, hidden product endpoint, timeout increase or repeated mode action."
+  ],
+  "bb5_exact17_failure": {
+    "run_id": 42919374607,
+    "artifact_id": 13813701137,
+    "artifact_sha256": "eff4ead7e9c0e6c1f6ac0a6cf8581cdaeb2117378fa93d14db60e2e51a5de37c",
+    "runtime": "iOS17.0.1 /21A342/iPhone15/arm64/Xcode16.4(16F6)",
+    "result": "5pass/1fail/0skip; all6 started/completed once",
+    "failure": "Menu outer AX Button not hittable at line20; desktop selection/reload not reached",
+    "full_evidence": "/tmp/woow-bb5c9eb-ci-audit/42919374607"
+  },
+  "review_files_sha256": {
+    "BrowserSiteModesUITests.swift": "072d9d3cae452ead44b599cccf646b94297a2326e84261c5e5cb45acd180b071",
+    "Debug-syntax-only.log": "05c4d1c802adb22a75914a8aaf919b2a180a240135b44e7cf970e07a5fcbfced",
+    "Release-syntax-only.log": "05c4d1c802adb22a75914a8aaf919b2a180a240135b44e7cf970e07a5fcbfced",
+    "bb5-exact17-failure-evidence.json": "371a514d92c33993f70d42622645569290221dfeadfd3a37bffc019168b57b5c",
+    "bb5-exact17-site-mode-case.log": "5ccba6daad66d8cb5fbe75b5e4efa366980f1ec2feb3134c97e53e0467a39c76",
+    "bb5-exact17-summary.json": "0b3e8f5261e14ffbf3ab164d651ef33a7ed844bb3151654dea40e9565b6611a9",
+    "exact17-safe-ax-excerpt.txt": "d19420ed90e88b051dfd305898441591c4f944aa747e93c0b52168e8ad238336",
+    "site-mode-ui-driver.patch": "e349da41d56344711bddbf25a6ac44470bd6ad7626acc1886fd7fd04d7e57231",
+    "ui-inventory.json": "45049689896629febfc9ecaf711a65d583b742813e144066bff9423efaaa1cf6"
+  }
+}

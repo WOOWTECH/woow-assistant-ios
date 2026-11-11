@@ -12,10 +12,11 @@ struct BrowserView: View {
     @State private var showLibrary = false
     @State private var showTranscript = false
     @State private var showMultiResearch = false
+    @State private var showSearchSettings = false
     @Environment(\.scenePhase) private var scenePhase
     @FocusState private var addressFocused: Bool
     private var pageCovered: Bool {
-        showResearch || showInteractions || showLibrary || showTranscript || showMultiResearch || browser.pageDialog != nil
+        showResearch || showInteractions || showLibrary || showTranscript || showMultiResearch || showSearchSettings || browser.pageDialog != nil
     }
     private var pageFindHostVisible: Bool {
         scenePhase == .active && !pageCovered && !workspace.isClearingWebsiteData
@@ -23,13 +24,24 @@ struct BrowserView: View {
     var body: some View {
         VStack(spacing: 8) {
             HStack {
-                TextField("https://", text: $browser.address)
+                TextField("搜尋或輸入網址", text: $browser.address)
                     .textInputAutocapitalization(.never).autocorrectionDisabled()
-                    .keyboardType(.URL).submitLabel(.go).focused($addressFocused)
+                    .keyboardType(.default).submitLabel(.go).focused($addressFocused)
                     .onSubmit { open() }.accessibilityIdentifier("browser.address")
                 Button("開啟") { open() }.accessibilityIdentifier("browser.open")
             }
             .padding(.horizontal).disabled(browser.isRunning || browser.isInteracting || workspace.isClearingWebsiteData)
+            HStack {
+                Button("搜尋引擎：\(workspace.library.searchSettings.selected.name)") {
+                    addressFocused = false; browser.webView.endEditing(true); showSearchSettings = true
+                }.font(.caption).lineLimit(1).accessibilityIdentifier("browser.searchEngine.open")
+                    .disabled(!workspace.available || workspace.isClearingWebsiteData)
+                Spacer()
+            }.padding(.horizontal)
+            if let match = browser.manualSearchMatch {
+                Text("搜尋：\(match.query)（\(match.engineName)）")
+                    .font(.caption).lineLimit(2).accessibilityIdentifier("browser.search.query")
+            }
             if workspace.isClearingWebsiteData {
                 ProgressView("正在清除網站資料…")
                     .font(.caption).accessibilityIdentifier("browser.sites.clearing")
@@ -95,6 +107,7 @@ struct BrowserView: View {
         .sheet(isPresented: $showLibrary) { BrowserLibraryView(workspace: workspace) }
         .sheet(isPresented: $showTranscript) { TranscriptBrowserView(browser: browser, chat: chat) }
         .sheet(isPresented: $showMultiResearch) { MultiSourceResearchView(chat: chat) }
+        .sheet(isPresented: $showSearchSettings) { BrowserSearchSettingsView(workspace: workspace) }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button { addressFocused = false; browser.webView.endEditing(true); browser.presentPageFind() } label: {

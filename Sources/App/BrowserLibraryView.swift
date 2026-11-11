@@ -121,7 +121,10 @@ struct BrowserLibraryView: View {
     private func pageButton(_ page: BrowserSavedPage, prefix: String) -> some View {
         Button { workspace.open(page.url); dismiss() } label: {
             VStack(alignment: .leading) {
-                Text(page.title).lineLimit(2)
+                if prefix == "history", let match = workspace.library.searchSettings.match(page.url) {
+                    Text("搜尋：\(match.query)").lineLimit(2)
+                    Text(match.engineName).font(.caption)
+                } else { Text(page.title).lineLimit(2) }
                 Text(page.url.absoluteString).font(.caption).lineLimit(2)
             }.frame(maxWidth: .infinity, alignment: .leading)
         }.accessibilityIdentifier("browser.\(prefix).open.\(page.id)")

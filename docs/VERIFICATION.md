@@ -1,5 +1,25 @@
 # Verification — 2026-11-11
 
+## Manual address search integrated; observed browser driver failures retained — 2026-11-11
+
+Manual address input now uses pinned Mika's Bing default, four built-in engines and persisted custom templates, with escaped queries and history query restoration. The additive encrypted-library field preserves existing tabs, bookmarks, history and site modes. Switching engines does not reload the page or grant model research capabilities. Custom template entry has normal Next/Done keyboard actions. [Behavior and differences](MANUAL_BROWSER_SEARCH.md).
+
+Independent source execution exposed malformed `http:` / `https:` inputs falling back to remote search. The same new regression first failed, then passed after rejecting these malformed schemes; `site:` operators remain accepted. The actual App check also confirms rejected input does not create another WebKit navigation. **127 pure assertions** are included in **170 actual App assertions each Debug/Release**, with existing site modes **118 each**. Find regression passed **50 each**, HTTP navigation **26**, and HTTP site-mode behavior **12**. **277 Python tests**, actionlint, XcodeGen and syntax checks passed. The new inventory is **96 non-Live UI methods**, workspace **9**. [Integration proof](evidence/manual-browser-search-integration-local.json).
+
+A separate public-service App/WebKit probe reached Bing results (HTTP 200, 10 result nodes, matching query). Its Google attempt reached HTTP 200 but an additional main-frame navigation was blocked by the probe's original budget, so that attempt remains incomplete, not a product-failure diagnosis. Two manual opens, no retry or model calls; macOS 13 WebKit only, not iOS acceptance. [Preserved first service attempt](evidence/manual-browser-search-public-services-first.json).
+
+The prior `bb5c9eb` workspace results remain current **6/6**, SE **4 passed / 2 failed**, and exact17 **5 / 1**, all zero skips and each method once. [Full three-run proof](evidence/ui-workspace-bb5c9eb.json). The site-mode candidate now closes the actual WebKit keyboard and targets its verified innermost menu button. The SE website-clear failure was a secure-field snapshot interrupted inside a short predicate waiter while the field was still partly obscured; the candidate moves geometry evaluation back into the existing bounded scroll loop, retaining full containment, three-scroll and 420-second case limits. [SE failure analysis](evidence/site-clear-se-bb5c9eb-password-diagnosis.json), [driver scope](evidence/site-clear-se-driver-local.json). Neither correction is accepted until its new native run completes.
+
+The separate exact17 UIKit open-in-place diagnostic case remains failed before any picker callback; ordinary open/copy cases passed in the same run. Its [original evidence and screenshot](evidence/ios17-documents-read-8c4195f-picker.json) remain separate from the other picker failures.
+
+
+## Native suite accepts transcript/PDF-add/site-mode increment — 2026-11-11
+
+At `bb5c9eb`, [run 42919356039](https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42919356039) passed **321/321 native and hosted App methods, zero failures/skips**, on iPhone 17 / iOS 26.2 / 23C54. Every method started/passed exactly once; xcresult summary and completion gate agree. Parent verified the entire downloaded artifact ZIP digest. The portable run separately passed **216/216**; overlapping counts are not added.
+
+Newly accepted native methods include four PDF-add App cases, eight transcript-reference core/App cases and three site-mode core/App cases. This does not accept the later common preference header, streaming, page-find or search changes, and does not replace the failed exact17 site-mode UI operation. [Source/runtime/method proof](evidence/native-current-bb5c9eb.json).
+
+
 ## Exact iOS 17 baseline completed; memory readiness correction — 2026-11-11
 
 Nine remaining runs at `8c4195f` now have source/runtime/method/xcresult and full artifact ZIP digest evidence. Native core and hosted App methods passed **306/306** on iOS **17.0.1 / 21A342**, zero skips. Independent UI partitions passed browser **5/5**, profile **9/9**, memory tools **6/6**, skills **10/10**, and MCP **8/8**. Learning was **3 passed / 2 failed**, memory **7 / 1**, and documents-read **5 / 1**; none is relabeled a pass. Counts across suites/revisions are not added. [Per-run evidence](evidence/exact17-8c-remaining-shards.json).

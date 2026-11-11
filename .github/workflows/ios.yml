@@ -209,7 +209,7 @@ jobs:
               test_filters=(-only-testing:AssistantSkillsTests -only-testing:AssistantDomainTests/BrowserDownloadTests -only-testing:AssistantDomainTests/BrowserNavigationIntentTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/BrowserUploadUITests -only-testing:WoowAssistantUITests/SkillExecutionUITests)
               ;;
             workspace)
-              test_filters=(-only-testing:AssistantDomainTests/BrowserLibraryTests -only-testing:AssistantDomainTests/BrowserNavigationIntentTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/BrowserWorkspaceUITests -only-testing:WoowAssistantUITests/BrowserLoginUITests -only-testing:WoowAssistantUITests/BrowserSiteModesUITests)
+              test_filters=(-only-testing:AssistantDomainTests/BrowserLibraryTests -only-testing:AssistantDomainTests/BrowserNavigationIntentTests -only-testing:AssistantBrowserIntegrationTests -only-testing:WoowAssistantUITests/BrowserWorkspaceUITests -only-testing:WoowAssistantUITests/BrowserLoginUITests -only-testing:WoowAssistantUITests/BrowserSiteModesUITests -only-testing:WoowAssistantUITests/BrowserSearchUITests)
               ;;
             memory-rollback)
               test_filters=(-only-testing:WoowAssistantUITests/MemoryUITests/testSkillUpdateRejectionAndRollback)

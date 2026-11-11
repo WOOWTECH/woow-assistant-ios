@@ -1,0 +1,520 @@
+{
+  "schema_version": 1,
+  "source_commit": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7",
+  "status": "COMPLETE_WITH_FAILURES",
+  "runs": [
+    {
+      "receipt": {
+        "run_id": 42919362251,
+        "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42919362251",
+        "source_sha": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7",
+        "attempt": 1,
+        "conclusion": "success",
+        "updated_at": "2026-11-10T23:45:28Z",
+        "artifact": {
+          "id": 13813084356,
+          "name": "ios-test-evidence-ios26-current-42919362251",
+          "size_in_bytes": 6291037,
+          "url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13813084356",
+          "archive_download_url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13813084356/zip",
+          "expired": false,
+          "created_at": "2026-11-10T23:45:21Z",
+          "expires_at": "2026-11-24T23:45:18Z",
+          "updated_at": "2026-11-10T23:45:21Z",
+          "digest": "sha256:a03ab041ca3aef4ff41761e77212554e660d2cd6141642999d0345363ee40fbb",
+          "workflow_run": {
+            "id": 42919362251,
+            "repository_id": 1451405662,
+            "head_repository_id": 1451405662,
+            "head_branch": "main",
+            "head_sha": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7"
+          }
+        },
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "six_methods_each_once": true,
+        "archive_local_path": "/tmp/woow-bb5c9eb-ci-audit/42919362251/artifact.zip",
+        "archive_digest_matches_api": true,
+        "archive_bytes_match_api": true
+      },
+      "review": {
+        "run_id": 42919362251,
+        "status": "PASS",
+        "source_sha": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7",
+        "attempt": 1,
+        "artifact_id": 13813084356,
+        "artifact_sha256": "a03ab041ca3aef4ff41761e77212554e660d2cd6141642999d0345363ee40fbb",
+        "checks": {
+          "run_source_sha": true,
+          "run_attempt_1": true,
+          "run_terminal": true,
+          "artifact_run_association": true,
+          "artifact_digest_matches": true,
+          "artifact_size_matches": true,
+          "runtime_matches_expected": true,
+          "summary_device_uuid": true,
+          "summary_device_model": true,
+          "summary_runtime_version": true,
+          "summary_runtime_build": true,
+          "summary_architecture": true,
+          "xcresult_structurally_present": true,
+          "six_methods_each_once": true,
+          "no_missing_or_unexpected_methods": true,
+          "no_skips": true,
+          "test_counts_match_events": true,
+          "source_checkout_receipt": true,
+          "xcode_job_receipt": true
+        },
+        "actual_device": {
+          "architecture": "arm64",
+          "deviceId": "56C37CFF-CD75-48F3-BC16-B93B252F54B1",
+          "deviceName": "Woow-CI-1594167e2cfc423ca47429777349c7ed",
+          "modelName": "iPhone 17",
+          "osBuildNumber": "23C54",
+          "osVersion": "26.2",
+          "platform": "iOS Simulator"
+        },
+        "xcode": "Xcode 26.2 / 17C52",
+        "passed": 6,
+        "failed": 0,
+        "skipped": 0,
+        "six_methods_each_started_and_completed_once": true,
+        "methods": {
+          "WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout": [
+            "started",
+            "passed"
+          ],
+          "WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch": [
+            "started",
+            "passed"
+          ],
+          "WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch": [
+            "started",
+            "passed"
+          ],
+          "WoowAssistantUITests/BrowserWorkspaceUITests/testBookmarkRenameHistoryClearAndRelaunch": [
+            "started",
+            "passed"
+          ],
+          "WoowAssistantUITests/BrowserWorkspaceUITests/testManualQueryPageAndRealJavaScriptDialog": [
+            "started",
+            "passed"
+          ],
+          "WoowAssistantUITests/BrowserWorkspaceUITests/testTabsKeepIndependentPageStateAndRestoreSelection": [
+            "started",
+            "passed"
+          ]
+        },
+        "native_xcresult": "ZIP preserved; runner-exported test summary reviewed; CLT host cannot locally decode xcresult",
+        "xcresult_members": 44,
+        "xcresult_bytes": 3058497,
+        "failure_details": [],
+        "rerun_or_source_change": false,
+        "evidence_sha256": {
+          "test-summary.json": "8639f8bb1c164e844fbb779859ee6f64438dbaa87d3230b89b6c1ae7a98fb8ac",
+          "test-simulator.json": "707f893b4e258eefa41beb1a893efaf5112f56766f25692b05e0e7c2c06e66f0",
+          "ios-tests.log": "922fe294e8955c803d1601914033db726a472b615ab14116bc3dc9ce0acb5c12",
+          "github-metadata.json": "28115cc69337ac3b31cbb16c460643536e28888af16b4a6a8f91648492e61b5d",
+          "github-job-receipt.log": "72e22a686de7a462bca69ec4c5e6d8ed2d2312d429b2bf710490e212f31efadf",
+          "artifact-inspection.json": "6cbce4eed12878643e87f91a62b41db09468c8aeb3f5db0960034155f305f2c2"
+        }
+      },
+      "xcresult_summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "56C37CFF-CD75-48F3-BC16-B93B252F54B1",
+              "deviceName": "Woow-CI-1594167e2cfc423ca47429777349c7ed",
+              "modelName": "iPhone 17",
+              "osBuildNumber": "23C54",
+              "osVersion": "26.2",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 0,
+            "passedTests": 6,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "WoowAssistant \u00b7 Built with macOS 15.8.2",
+        "expectedFailures": 0,
+        "failedTests": 0,
+        "finishTime": 1794354297.358,
+        "passedTests": 6,
+        "result": "Passed",
+        "skippedTests": 0,
+        "startTime": 1794353678.993,
+        "statistics": [],
+        "testFailures": [],
+        "title": "Test - WoowAssistant",
+        "topInsights": [],
+        "totalTestCount": 6
+      },
+      "method_events": [
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout]' passed (127.290 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch]' passed (86.867 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserSiteModesUITests testManualGETChoiceReloadsAndSurvivesRelaunch]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserSiteModesUITests testManualGETChoiceReloadsAndSurvivesRelaunch]' passed (47.972 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testBookmarkRenameHistoryClearAndRelaunch]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testBookmarkRenameHistoryClearAndRelaunch]' passed (55.843 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testManualQueryPageAndRealJavaScriptDialog]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testManualQueryPageAndRealJavaScriptDialog]' passed (22.203 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testTabsKeepIndependentPageStateAndRestoreSelection]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testTabsKeepIndependentPageStateAndRestoreSelection]' passed (46.027 seconds)."
+      ]
+    },
+    {
+      "receipt": {
+        "run_id": 42919368066,
+        "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42919368066",
+        "source_sha": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7",
+        "attempt": 1,
+        "conclusion": "failure",
+        "updated_at": "2026-11-10T23:52:35Z",
+        "artifact": {
+          "id": 13813429128,
+          "name": "ios-test-evidence-ios18-compact-42919368066",
+          "size_in_bytes": 171546656,
+          "url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13813429128",
+          "archive_download_url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13813429128/zip",
+          "expired": false,
+          "created_at": "2026-11-10T23:52:30Z",
+          "expires_at": "2026-11-24T23:52:18Z",
+          "updated_at": "2026-11-10T23:52:30Z",
+          "digest": "sha256:c01651f3d4c19f751bebc9db9fbe8268470fc31031fc58bc944a1752b3194008",
+          "workflow_run": {
+            "id": 42919368066,
+            "repository_id": 1451405662,
+            "head_repository_id": 1451405662,
+            "head_branch": "main",
+            "head_sha": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7"
+          }
+        },
+        "passed": 4,
+        "failed": 2,
+        "skipped": 0,
+        "six_methods_each_once": true,
+        "archive_local_path": "/tmp/woow-bb5c9eb-ci-audit/42919368066/artifact.zip",
+        "archive_digest_matches_api": true,
+        "archive_bytes_match_api": true
+      },
+      "review": {
+        "run_id": 42919368066,
+        "status": "FAIL_PRESERVED",
+        "source_sha": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7",
+        "attempt": 1,
+        "artifact_id": 13813429128,
+        "artifact_sha256": "c01651f3d4c19f751bebc9db9fbe8268470fc31031fc58bc944a1752b3194008",
+        "checks": {
+          "run_source_sha": true,
+          "run_attempt_1": true,
+          "run_terminal": true,
+          "artifact_run_association": true,
+          "artifact_digest_matches": true,
+          "artifact_size_matches": true,
+          "runtime_matches_expected": true,
+          "summary_device_uuid": true,
+          "summary_device_model": true,
+          "summary_runtime_version": true,
+          "summary_runtime_build": true,
+          "summary_architecture": true,
+          "xcresult_structurally_present": true,
+          "six_methods_each_once": true,
+          "no_missing_or_unexpected_methods": true,
+          "no_skips": true,
+          "test_counts_match_events": true,
+          "source_checkout_receipt": true,
+          "xcode_job_receipt": true
+        },
+        "actual_device": {
+          "architecture": "arm64",
+          "deviceId": "69C8C2A1-0A79-4580-956D-B296DD5AE2B4",
+          "deviceName": "Woow-CI-626464d826f14beea05f62ef387e3c5d",
+          "modelName": "iPhone SE (3rd generation)",
+          "osBuildNumber": "22F77",
+          "osVersion": "18.5",
+          "platform": "iOS Simulator"
+        },
+        "xcode": "Xcode 16.4 / 16F6",
+        "passed": 4,
+        "failed": 2,
+        "skipped": 0,
+        "six_methods_each_started_and_completed_once": true,
+        "methods": {
+          "WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout": [
+            "started",
+            "passed"
+          ],
+          "WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch": [
+            "started",
+            "failed"
+          ],
+          "WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch": [
+            "started",
+            "failed"
+          ],
+          "WoowAssistantUITests/BrowserWorkspaceUITests/testBookmarkRenameHistoryClearAndRelaunch": [
+            "started",
+            "passed"
+          ],
+          "WoowAssistantUITests/BrowserWorkspaceUITests/testManualQueryPageAndRealJavaScriptDialog": [
+            "started",
+            "passed"
+          ],
+          "WoowAssistantUITests/BrowserWorkspaceUITests/testTabsKeepIndependentPageStateAndRestoreSelection": [
+            "started",
+            "passed"
+          ]
+        },
+        "native_xcresult": "ZIP preserved; runner-exported test summary reviewed; CLT host cannot locally decode xcresult",
+        "xcresult_members": 1002,
+        "xcresult_bytes": 87546401,
+        "failure_details": [
+          {
+            "failureText": "Failed to failed to scroll to visible (by AX action) Button, {{232.5, 25.0}, {37.5, 34.5}}, identifier: 'browser.siteMode', label: '\u7db2\u7ad9\u986f\u793a\u504f\u597d', value: \u624b\u6a5f\u7248, error: Error kAXErrorCannotComplete performing AXAction kAXScrollToVisibleAction on element AX element pid: 22075, elementOrHash.elementID: 105553169828032.50. (Underlying Error: Error kAXErrorCannotComplete performing AXAction kAXScrollToVisibleAction on element AX element pid: 22075, elementOrHash.elementID: 105553169828032.50)",
+            "targetName": "WoowAssistantUITests",
+            "testIdentifier": 3,
+            "testIdentifierString": "BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch()",
+            "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch",
+            "testName": "testManualGETChoiceReloadsAndSurvivesRelaunch()"
+          },
+          {
+            "failureText": "failed - Unable to snapshot the exact synthetic password field; no touch was sent.",
+            "targetName": "WoowAssistantUITests",
+            "testIdentifier": 2,
+            "testIdentifierString": "BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch()",
+            "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+            "testName": "testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch()"
+          }
+        ],
+        "rerun_or_source_change": false,
+        "evidence_sha256": {
+          "test-summary.json": "9a58899a83710b81d3124a2789482c3f2db3adfa46bfd15f3ec2144ec9d6dba4",
+          "test-simulator.json": "9a1f83d66c63b1e15f9ac1e3fb645aea6a0d7a7796ed887f85016ca3b7943436",
+          "ios-tests.log": "edf0c95d4a27cc7db355b8be4f59a249f3a42516b1c1420629ad3fbbd7513492",
+          "github-metadata.json": "8979061a15836bcc963539b724a482568f32103dcb1688b093f2e63b51211487",
+          "github-job-receipt.log": "8447eff9cb91c10234628ac0fac8d98df291113687d51c35628e9b94c30dab81",
+          "artifact-inspection.json": "558e11ab7987b38e49721d16569f93d0995102311503b90c6f9d332f3bf64e90"
+        }
+      },
+      "xcresult_summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "69C8C2A1-0A79-4580-956D-B296DD5AE2B4",
+              "deviceName": "Woow-CI-626464d826f14beea05f62ef387e3c5d",
+              "modelName": "iPhone SE (3rd generation)",
+              "osBuildNumber": "22F77",
+              "osVersion": "18.5",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 2,
+            "passedTests": 4,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "WoowAssistant \u00b7 Built with macOS 15.8.2",
+        "expectedFailures": 0,
+        "failedTests": 2,
+        "finishTime": 1794354711.967,
+        "passedTests": 4,
+        "result": "Failed",
+        "skippedTests": 0,
+        "startTime": 1794354154.308,
+        "statistics": [],
+        "testFailures": [
+          {
+            "failureText": "Failed to failed to scroll to visible (by AX action) Button, {{232.5, 25.0}, {37.5, 34.5}}, identifier: 'browser.siteMode', label: '\u7db2\u7ad9\u986f\u793a\u504f\u597d', value: \u624b\u6a5f\u7248, error: Error kAXErrorCannotComplete performing AXAction kAXScrollToVisibleAction on element AX element pid: 22075, elementOrHash.elementID: 105553169828032.50. (Underlying Error: Error kAXErrorCannotComplete performing AXAction kAXScrollToVisibleAction on element AX element pid: 22075, elementOrHash.elementID: 105553169828032.50)",
+            "targetName": "WoowAssistantUITests",
+            "testIdentifier": 3,
+            "testIdentifierString": "BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch()",
+            "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch",
+            "testName": "testManualGETChoiceReloadsAndSurvivesRelaunch()"
+          },
+          {
+            "failureText": "failed - Unable to snapshot the exact synthetic password field; no touch was sent.",
+            "targetName": "WoowAssistantUITests",
+            "testIdentifier": 2,
+            "testIdentifierString": "BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch()",
+            "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+            "testName": "testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch()"
+          }
+        ],
+        "title": "Test - WoowAssistant",
+        "topInsights": [],
+        "totalTestCount": 6
+      },
+      "method_events": [
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout]' passed (151.465 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch]' started.",
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserLoginUITests.swift:574: error: -[WoowAssistantUITests.BrowserLoginUITests testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch] : failed - Unable to snapshot the exact synthetic password field; no touch was sent.",
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch]' failed (35.377 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserSiteModesUITests testManualGETChoiceReloadsAndSurvivesRelaunch]' started.",
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserSiteModesUITests.swift:20: error: -[WoowAssistantUITests.BrowserSiteModesUITests testManualGETChoiceReloadsAndSurvivesRelaunch] : Failed to failed to scroll to visible (by AX action) Button, {{232.5, 25.0}, {37.5, 34.5}}, identifier: 'browser.siteMode', label: '\u7db2\u7ad9\u986f\u793a\u504f\u597d', value: \u624b\u6a5f\u7248, error: Error kAXErrorCannotComplete performing AXAction kAXScrollToVisibleAction on element AX element pid: 22075, elementOrHash.elementID: 105553169828032.50. (Underlying Error: Error kAXErrorCannotComplete performing AXAction kAXScrollToVisibleAction on element AX element pid: 22075, elementOrHash.elementID: 105553169828032.50)",
+        "Test Case '-[WoowAssistantUITests.BrowserSiteModesUITests testManualGETChoiceReloadsAndSurvivesRelaunch]' failed (18.575 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testBookmarkRenameHistoryClearAndRelaunch]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testBookmarkRenameHistoryClearAndRelaunch]' passed (62.169 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testManualQueryPageAndRealJavaScriptDialog]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testManualQueryPageAndRealJavaScriptDialog]' passed (34.076 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testTabsKeepIndependentPageStateAndRestoreSelection]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testTabsKeepIndependentPageStateAndRestoreSelection]' passed (44.882 seconds)."
+      ]
+    },
+    {
+      "receipt": {
+        "run_id": 42919374607,
+        "run_url": "https://github.com/WOOWTECH/woow-assistant-ios/actions/runs/42919374607",
+        "source_sha": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7",
+        "attempt": 1,
+        "conclusion": "failure",
+        "updated_at": "2026-11-10T23:38:54Z",
+        "artifact": {
+          "id": 13813701137,
+          "name": "ios17-17.0.1-42919374607",
+          "size_in_bytes": 20552757,
+          "url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13813701137",
+          "archive_download_url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13813701137/zip",
+          "expired": false,
+          "created_at": "2026-11-10T23:38:46Z",
+          "expires_at": "2026-11-24T23:38:41Z",
+          "updated_at": "2026-11-10T23:38:46Z",
+          "digest": "sha256:eff4ead7e9c0e6c1f6ac0a6cf8581cdaeb2117378fa93d14db60e2e51a5de37c",
+          "workflow_run": {
+            "id": 42919374607,
+            "repository_id": 1451405662,
+            "head_repository_id": 1451405662,
+            "head_branch": "main",
+            "head_sha": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7"
+          }
+        },
+        "passed": 5,
+        "failed": 1,
+        "skipped": 0,
+        "six_methods_each_once": true,
+        "archive_local_path": "/tmp/woow-bb5c9eb-ci-audit/42919374607/artifact.zip",
+        "archive_digest_matches_api": true,
+        "archive_bytes_match_api": true
+      },
+      "review": {
+        "run_id": 42919374607,
+        "status": "FAIL_PRESERVED",
+        "source_sha": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7",
+        "attempt": 1,
+        "artifact_id": 13813701137,
+        "artifact_sha256": "eff4ead7e9c0e6c1f6ac0a6cf8581cdaeb2117378fa93d14db60e2e51a5de37c",
+        "github_artifact_digest_matches": true,
+        "actual_device": {
+          "architecture": "arm64",
+          "deviceId": "E9D972AF-659C-476A-B597-3434D576FFB1",
+          "deviceName": "Woow-iOS17-2a5e899694a74f498ee51266ba38ce74",
+          "modelName": "iPhone 15",
+          "osBuildNumber": "21A342",
+          "osVersion": "17.0.1",
+          "platform": "iOS Simulator"
+        },
+        "xcode": "Xcode 16.4\nBuild version 16F6",
+        "six_methods_each_started_and_completed_once": true,
+        "passed": 5,
+        "failed": 1,
+        "skipped": 0,
+        "missing_or_unexpected_methods": 0,
+        "native_xcresult": "Preserved in artifact.zip; runner-exported summary reviewed; no local xcresulttool available",
+        "failure_method": "BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch",
+        "failure_location": "Tests/WoowAssistantUITests/BrowserSiteModesUITests.swift:20",
+        "failure": "XCTest cannot hit browser.siteMode menu outer AX button; hit point {-1,-1}, kAXErrorCannotComplete scroll-to-visible",
+        "observed_context": "WebKit Tab note still Keyboard Focused with Retain this note; keyboard remains visible after tapping already-selected browser tab. AX has nested buttons.",
+        "not_proven": "Desktop selection, reload, relaunch assertions and effective content mode were not reached in this UI case. Keyboard causality is a hypothesis, not proven.",
+        "rerun_or_source_change": false,
+        "evidence_sha256": {
+          "test-summary.json": "0b3e8f5261e14ffbf3ab164d651ef33a7ed844bb3151654dea40e9565b6611a9",
+          "tests.log": "6f7a5c0e397a89b372b49a755b38fa5edd78bae062f6aeb7015aec88fd1c6eef",
+          "report.json": "374325916cf63a34335604ecf00bde06cbc4d3358936373391b3a811b490e817",
+          "github-metadata.json": "e079487de86996e3174678b62da531f6b02688b8271217ca058b516392c5cf7a",
+          "327B44C8-24D8-4145-A76D-64A2D14BD2F9.txt": "bf235df08798728330b862aad1fc62330683e1d54308827f61c87bb3fb37f544"
+        }
+      },
+      "xcresult_summary": {
+        "devicesAndConfigurations": [
+          {
+            "device": {
+              "architecture": "arm64",
+              "deviceId": "E9D972AF-659C-476A-B597-3434D576FFB1",
+              "deviceName": "Woow-iOS17-2a5e899694a74f498ee51266ba38ce74",
+              "modelName": "iPhone 15",
+              "osBuildNumber": "21A342",
+              "osVersion": "17.0.1",
+              "platform": "iOS Simulator"
+            },
+            "expectedFailures": 0,
+            "failedTests": 1,
+            "passedTests": 5,
+            "skippedTests": 0,
+            "testPlanConfiguration": {
+              "configurationId": "1",
+              "configurationName": "Test Scheme Action"
+            }
+          }
+        ],
+        "environmentDescription": "WoowAssistant \u00b7 Built with macOS 15.8.2",
+        "expectedFailures": 0,
+        "failedTests": 1,
+        "finishTime": 1794353906.858,
+        "passedTests": 5,
+        "result": "Failed",
+        "skippedTests": 0,
+        "startTime": 1794353411.301,
+        "statistics": [],
+        "testFailures": [
+          {
+            "failureText": "Failed to failed to scroll to visible (by AX action) Button, {{249.7, 58.7}, {37.7, 34.3}}, identifier: 'browser.siteMode', label: '\u7db2\u7ad9\u986f\u793a\u504f\u597d', value: \u624b\u6a5f\u7248, error: Error kAXErrorCannotComplete performing AXAction kAXScrollToVisibleAction on element AX element pid: 23798, elementOrHash.elementID: 105553169821088.49. (Underlying Error: Error kAXErrorCannotComplete performing AXAction kAXScrollToVisibleAction on element AX element pid: 23798, elementOrHash.elementID: 105553169821088.49)",
+            "targetName": "WoowAssistantUITests",
+            "testIdentifier": 3,
+            "testIdentifierString": "BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch()",
+            "testIdentifierURL": "test://com.apple.xcode/WoowAssistant/WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch",
+            "testName": "testManualGETChoiceReloadsAndSurvivesRelaunch()"
+          }
+        ],
+        "title": "Test - WoowAssistant",
+        "topInsights": [],
+        "totalTestCount": 6
+      },
+      "method_events": [
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout]' passed (83.908 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserLoginUITests testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch]' passed (69.492 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserSiteModesUITests testManualGETChoiceReloadsAndSurvivesRelaunch]' started.",
+        "/Users/runner/work/woow-assistant-ios/woow-assistant-ios/Tests/WoowAssistantUITests/BrowserSiteModesUITests.swift:20: error: -[WoowAssistantUITests.BrowserSiteModesUITests testManualGETChoiceReloadsAndSurvivesRelaunch] : Failed to failed to scroll to visible (by AX action) Button, {{249.7, 58.7}, {37.7, 34.3}}, identifier: 'browser.siteMode', label: '\u7db2\u7ad9\u986f\u793a\u504f\u597d', value: \u624b\u6a5f\u7248, error: Error kAXErrorCannotComplete performing AXAction kAXScrollToVisibleAction on element AX element pid: 23798, elementOrHash.elementID: 105553169821088.49. (Underlying Error: Error kAXErrorCannotComplete performing AXAction kAXScrollToVisibleAction on element AX element pid: 23798, elementOrHash.elementID: 105553169821088.49)",
+        "Test Case '-[WoowAssistantUITests.BrowserSiteModesUITests testManualGETChoiceReloadsAndSurvivesRelaunch]' failed (17.211 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testBookmarkRenameHistoryClearAndRelaunch]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testBookmarkRenameHistoryClearAndRelaunch]' passed (39.630 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testManualQueryPageAndRealJavaScriptDialog]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testManualQueryPageAndRealJavaScriptDialog]' passed (19.688 seconds).",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testTabsKeepIndependentPageStateAndRestoreSelection]' started.",
+        "Test Case '-[WoowAssistantUITests.BrowserWorkspaceUITests testTabsKeepIndependentPageStateAndRestoreSelection]' passed (72.184 seconds)."
+      ]
+    }
+  ],
+  "source_manifest_sha256": "5498e60f0261b3c598267ff7c306609db9c9aa0fef10ba01c27c3bf338f366ef",
+  "aggregate_test_count": "not summed across runtimes or prior revisions",
+  "limits": [
+    "Current6/6, SE4/6, exact17 5/6; no failures relabeled PASS.",
+    "UI driver candidates are later source and need independent reruns.",
+    "This artifact is safe selected fixture evidence, not a broad simulator dump."
+  ]
+}

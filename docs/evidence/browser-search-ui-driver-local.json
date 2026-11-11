@@ -1,0 +1,56 @@
+{
+  "created_utc": "2026-11-10T23:56:15.657722+00:00",
+  "worktree": "/tmp/woow-manual-search-bb5c9eb",
+  "delta_applies_after_patch_sha256": "62ec3efb2a0c18906800b3867e8275aad456c74f321f1504e9c4a3626192e4af",
+  "file": "Tests/WoowAssistantUITests/BrowserSearchUITests.swift",
+  "old_sha256": "097bcfdfcba79a44aea46284b365c3e055203ad9f65c02c719712162c117f07a",
+  "new_sha256": "2ca291264871ace44492ba2c87b2e6da92ecdac22772208cdde5b3b9b3283cf8",
+  "old_git_blob": "39fe8246495a45ce5db51358e97f84c76d68b66a",
+  "new_git_blob": "06b15236ccc4c00c72fa2aebac7cc3ab44d84689",
+  "patch": "/tmp/woow-search-ui-driver-review/browser-search-ui-driver.patch",
+  "patch_sha256": "f00c22c3c2084f1ad14b275e8ad943961fa28e58dc489bd860b3182ae1c26b41",
+  "changed_from_frozen_18_files": [
+    "Tests/WoowAssistantUITests/BrowserSearchUITests.swift"
+  ],
+  "unchanged_other_frozen_files": 17,
+  "clean_delta_apply_and_byte_match": true,
+  "verification_directory": "/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-search-ui-delta-verify-9aylz602",
+  "validation": {
+    "ios-syntax": {
+      "exit_code": 0,
+      "sha256": "05c4d1c802adb22a75914a8aaf919b2a180a240135b44e7cf970e07a5fcbfced"
+    },
+    "ui-inventory": {
+      "exit_code": 0,
+      "sha256": "443f723722f07816d9128f666cbf1fc36ce9c51779629e06491ca60616fb9568"
+    },
+    "whitespace": {
+      "exit_code": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "case_seconds": 180,
+  "document_waits_seconds": [
+    75,
+    75
+  ],
+  "original_nonvisibility_assertions_preserved": true,
+  "native_ui": "PENDING: no local Xcode; syntax parse is not native proof",
+  "app_checks_rerun": false,
+  "scope": [
+    "Traditional Chinese normal launch arguments",
+    "Existing LearningUITestSupport viewport/container scrolling",
+    "Native English keyboard selection copied from existing UI drivers",
+    "Exact field value assertions after one input only",
+    "Native Return and keyboard-absent assertion before Add",
+    "Existing query/history/relaunch/remove assertions retained"
+  ],
+  "new_helpers": "Private methods in BrowserSearchUITests.swift only; LearningUITestSupport.swift unchanged",
+  "core_files_untouched": [
+    "Sources/AssistantBrowser/BrowserSearchSettings.swift",
+    "Tests/AssistantDomainTests/BrowserSearchChecks.swift"
+  ],
+  "product_files_changed": false,
+  "shared_tree_edited": false,
+  "commit_push_dispatch": false
+}

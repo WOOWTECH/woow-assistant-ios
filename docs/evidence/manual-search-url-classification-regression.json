@@ -1,0 +1,23 @@
+{
+  "root": "/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-search-url-regression-nuli512o",
+  "before_exit": 1,
+  "before_log": "FAIL Failure(check: \"URL rejection never searches: https:127.0.0.1\")",
+  "before_source_sha256": {
+    "Sources/AssistantBrowser/BrowserPolicy.swift": "a09b109a19083ebcf644de972e42df3046da28a1d794efd7e8b9467807e5fafc",
+    "Sources/AssistantBrowser/BrowserLibrary.swift": "387200cdec0158267937ed1a29b5f2becd1dee2afce4146599e3500853ad065f",
+    "Sources/AssistantBrowser/BrowserUserSiteModes.swift": "04c897c96ca03650f9ca1ed4687bda9d1c578e7cb9a2c072402cade9cb6def6c",
+    "Sources/AssistantBrowser/BrowserSearchSettings.swift": "673f1c41e7efc252143e8744f44c47ab68a9023cdc7bf163f82b837aa504bf75"
+  },
+  "test_sha256": "f17b1d448a812d92b6f3777cf78798b40b127c95e390f53968122b21ac667229",
+  "after_exit": 0,
+  "after_log": "PASS 127",
+  "after_source_sha256": {
+    "Sources/AssistantBrowser/BrowserPolicy.swift": "a09b109a19083ebcf644de972e42df3046da28a1d794efd7e8b9467807e5fafc",
+    "Sources/AssistantBrowser/BrowserLibrary.swift": "387200cdec0158267937ed1a29b5f2becd1dee2afce4146599e3500853ad065f",
+    "Sources/AssistantBrowser/BrowserUserSiteModes.swift": "04c897c96ca03650f9ca1ed4687bda9d1c578e7cb9a2c072402cade9cb6def6c",
+    "Sources/AssistantBrowser/BrowserSearchSettings.swift": "bf58023963704c447b3ac2f6f5b66f7b6004db600b08d1217efa6f65db4e9b78"
+  },
+  "network_requests": 0,
+  "synthetic_inputs_only": true,
+  "tests_unchanged_between_red_and_green": true
+}

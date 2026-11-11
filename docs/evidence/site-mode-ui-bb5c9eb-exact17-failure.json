@@ -1,0 +1,53 @@
+{
+  "run_id": 42919374607,
+  "status": "FAIL_PRESERVED",
+  "source_sha": "bb5c9eb73a48536cd8699170f86ba4328cf69ce7",
+  "attempt": 1,
+  "artifact_id": 13813701137,
+  "artifact_sha256": "eff4ead7e9c0e6c1f6ac0a6cf8581cdaeb2117378fa93d14db60e2e51a5de37c",
+  "github_artifact_digest_matches": true,
+  "actual_device": {
+    "architecture": "arm64",
+    "deviceId": "E9D972AF-659C-476A-B597-3434D576FFB1",
+    "deviceName": "Woow-iOS17-2a5e899694a74f498ee51266ba38ce74",
+    "modelName": "iPhone 15",
+    "osBuildNumber": "21A342",
+    "osVersion": "17.0.1",
+    "platform": "iOS Simulator"
+  },
+  "xcode": "Xcode 16.4\nBuild version 16F6",
+  "six_methods_each_started_and_completed_once": true,
+  "passed": 5,
+  "failed": 1,
+  "skipped": 0,
+  "missing_or_unexpected_methods": 0,
+  "native_xcresult": "Preserved in artifact.zip; runner-exported summary reviewed; no local xcresulttool available",
+  "failure_method": "BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch",
+  "failure_location": "Tests/WoowAssistantUITests/BrowserSiteModesUITests.swift:20",
+  "failure": "XCTest cannot hit browser.siteMode menu outer AX button; hit point {-1,-1}, kAXErrorCannotComplete scroll-to-visible",
+  "observed_context": "WebKit Tab note still Keyboard Focused with Retain this note; keyboard remains visible after tapping already-selected browser tab. AX has nested buttons.",
+  "not_proven": "Desktop selection, reload, relaunch assertions and effective content mode were not reached in this UI case. Keyboard causality is a hypothesis, not proven.",
+  "rerun_or_source_change": false,
+  "evidence_sha256": {
+    "test-summary.json": "0b3e8f5261e14ffbf3ab164d651ef33a7ed844bb3151654dea40e9565b6611a9",
+    "tests.log": "6f7a5c0e397a89b372b49a755b38fa5edd78bae062f6aeb7015aec88fd1c6eef",
+    "report.json": "374325916cf63a34335604ecf00bde06cbc4d3358936373391b3a811b490e817",
+    "github-metadata.json": "e079487de86996e3174678b62da531f6b02688b8271217ca058b516392c5cf7a",
+    "327B44C8-24D8-4145-A76D-64A2D14BD2F9.txt": "bf235df08798728330b862aad1fc62330683e1d54308827f61c87bb3fb37f544"
+  },
+  "selector_evidence": {
+    "identified_wrapper": "Other browser.siteMode",
+    "identified_outer_button": "browser.siteMode; observed no hittable point",
+    "unidentified_native_leaf_button_count": 1,
+    "wrapper_and_leaf_same_frame": [
+      249.7,
+      58.7,
+      37.7,
+      34.3
+    ],
+    "accessory_done_observed": true,
+    "keyboard_still_present_in_failure": true,
+    "new_driver_hittability_execution": "PENDING; captured tree proves structure, not future hit testing",
+    "original_ax_sha256": "bf235df08798728330b862aad1fc62330683e1d54308827f61c87bb3fb37f544"
+  }
+}

@@ -58,6 +58,7 @@ public struct BrowserLibraryState: Codable, Equatable, Sendable {
     public private(set) var bookmarks: [BrowserSavedPage] = []
     public private(set) var history: [BrowserSavedPage] = []
     public private(set) var userSiteModes = BrowserUserSiteModes()
+    public private(set) var searchSettings = BrowserSearchSettings()
 
     public init() {
         let tab = BrowserTab(title: "新分頁")
@@ -65,7 +66,7 @@ public struct BrowserLibraryState: Codable, Equatable, Sendable {
     }
 
     private enum CodingKeys: String, CodingKey {
-        case version, tabs, selectedID, bookmarks, history, userSiteModes
+        case version, tabs, selectedID, bookmarks, history, userSiteModes, searchSettings
     }
 
     public init(from decoder: Decoder) throws {
@@ -79,14 +80,21 @@ public struct BrowserLibraryState: Codable, Equatable, Sendable {
         // present malformed/null field must not silently erase saved choices.
         userSiteModes = values.contains(.userSiteModes)
             ? try values.decode(BrowserUserSiteModes.self, forKey: .userSiteModes) : .init()
+        searchSettings = values.contains(.searchSettings)
+            ? try values.decode(BrowserSearchSettings.self, forKey: .searchSettings) : .init()
     }
 
     public mutating func setManualSiteMode(_ mode: BrowserManualSiteMode, for host: String) throws {
         try userSiteModes.set(mode, for: host)
     }
 
+    public mutating func selectSearchEngine(_ id: String) throws { try searchSettings.select(id) }
+    public mutating func addSearchEngine(_ engine: BrowserSearchEngine) throws { try searchSettings.add(engine) }
+    public mutating func removeSearchEngine(_ id: String) { searchSettings.remove(id) }
+
     public func validate() throws {
         try userSiteModes.validate()
+        try searchSettings.validate()
         guard version == 1, !tabs.isEmpty, tabs.count <= Self.maximumTabs,
               Set(tabs.map(\.id)).count == tabs.count, tabs.contains(where: { $0.id == selectedID }),
               bookmarks.count <= 300, history.count <= 500 else { throw BrowserLibraryError.invalidState }

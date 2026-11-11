@@ -1,0 +1,272 @@
+{
+  "schema_version": 1,
+  "source_revision": "8c4195f51afcfee5e7b06af247a42800718c2c88",
+  "run_id": 42911539426,
+  "job_id": 130163173134,
+  "scope": "documents-read",
+  "conclusion": "failure",
+  "artifact": {
+    "id": 13813172750,
+    "name": "ios17-17.0.1-42911539426",
+    "size_in_bytes": 54863021,
+    "digest": "sha256:14af4f0b831a505f5c3940c0d69591167fd5b31760324b4b490e6393b24e3f0c",
+    "expired": false,
+    "url": "https://api.github.com/repos/WOOWTECH/woow-assistant-ios/actions/artifacts/13813172750"
+  },
+  "counts": {
+    "totalTestCount": 6,
+    "passedTests": 5,
+    "failedTests": 1,
+    "skippedTests": 0,
+    "expectedFailures": 0
+  },
+  "actual_methods": [
+    {
+      "identifier": "WoowAssistantUITests/SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 19
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 703,
+          "duration_seconds": 123.744
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 704
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 1358,
+          "duration_seconds": 124.167
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/SkillExecutionUITests/testNativePickerCancellationDoesNotReadOrExtract",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 1359
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 1556,
+          "duration_seconds": 63.573
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 1557
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 2213,
+          "duration_seconds": 123.116
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+      "starts": 1,
+      "passed": 0,
+      "failed": 1,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 2214
+        },
+        {
+          "event": "failed",
+          "tests_log_line": 2568,
+          "duration_seconds": 87.273
+        }
+      ]
+    },
+    {
+      "identifier": "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText",
+      "starts": 1,
+      "passed": 1,
+      "failed": 0,
+      "skipped": 0,
+      "events": [
+        {
+          "event": "started",
+          "tests_log_line": 2569
+        },
+        {
+          "event": "passed",
+          "tests_log_line": 3266,
+          "duration_seconds": 136.734
+        }
+      ]
+    }
+  ],
+  "runtime": {
+    "xcresult_devices": [
+      {
+        "architecture": "arm64",
+        "deviceId": "13534A45-D4DA-476E-A06E-BB3D8E2AD157",
+        "deviceName": "Woow-iOS17-b2b6fdb7f9bd404c9460c8a165c61fd4",
+        "modelName": "iPhone 15",
+        "osBuildNumber": "21A342",
+        "osVersion": "17.0.1",
+        "platform": "iOS Simulator"
+      }
+    ],
+    "selected_runtime": {
+      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-17-0",
+      "version": "17.0.1",
+      "buildversion": "21A342"
+    }
+  },
+  "classification": "experimental_UIKit_open_in_place_no_native_pick_callback_after_exact_synthetic_thumbnail_tap",
+  "fixture": {
+    "namespace": "56DAE540-1D68-43A1-A869-BA0F15FE4586",
+    "write_mode": "coordinated",
+    "created_baseline": "valid",
+    "created_bytes": 8413,
+    "created_inode": 3555977,
+    "created_sha256": "35a55a88bf6ee3f55efa570c0d4c6812bedf6691dbe85bbdf96e6bf2b49ebb24",
+    "baseline_is_not_proof_of_presence_at_selection_failure": true
+  },
+  "picker": {
+    "source": "uikit",
+    "mode": "open",
+    "allowsMultipleSelection": false,
+    "delegate_present_on_creation_and_observation": true,
+    "native_picked_events": 0,
+    "App_completion_events": 0,
+    "native_dismantled_events": 0,
+    "fixed_events": [
+      "SKILL_PDF_FIXTURE_WRITE namespace=56DAE540-1D68-43A1-A869-BA0F15FE4586 mode=coordinated phase=willCreate sampledAt=1794353504.090653",
+      "SKILL_PDF_FIXTURE_BASELINE {\"version\":1,\"phase\":\"created\",\"namespace\":\"56DAE540-1D68-43A1-A869-BA0F15FE4586\",\"evidence\":{\"bytes\":8413,\"sha256\":\"35a55a88bf6ee3f55efa570c0d4c6812bedf6691dbe85bbdf96e6bf2b49ebb24\",\"device\":16777231,\"status\":\"valid\",\"modifiedNanoseconds\":105005374,\"sampledAt\":1794353504.106351,\"inode\":3555977,\"modifiedSeconds\":1794353504}}",
+      "SKILL_PDF_FIXTURE_WRITE namespace=56DAE540-1D68-43A1-A869-BA0F15FE4586 mode=coordinated phase=created sampledAt=1794353504.107182",
+      "SKILL_PDF_PICKER_LIFECYCLE namespace=56DAE540-1D68-43A1-A869-BA0F15FE4586 event=bindingChanged ordinal=1 presented=true callbacks=0 sampledAt=1794353513.238381",
+      "SKILL_PDF_PICKER_LIFECYCLE namespace=56DAE540-1D68-43A1-A869-BA0F15FE4586 event=nativeCreated mode=open allowsMultipleSelection=false delegatePresent=true inWindow=false dismissing=false identitySame=true callbacks=0 sampledAt=1794353513.2436209",
+      "SKILL_PDF_PICKER_PRESENTATION namespace=56DAE540-1D68-43A1-A869-BA0F15FE4586 source=uikit mode=open allowsMultipleSelection=false sampledAt=1794353513.328583",
+      "SKILL_PDF_PICKER_LIFECYCLE namespace=56DAE540-1D68-43A1-A869-BA0F15FE4586 source=uikit event=observed mode=open allowsMultipleSelection=false delegatePresent=true inWindow=true dismissing=false sampledAt=1794353513.328649"
+    ]
+  },
+  "failure": {
+    "method": "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+    "line": 909,
+    "seconds": 87.273,
+    "test_start_UTC": "2026-11-10T23:31:20.627Z",
+    "tap_elapsed_seconds": 46.19,
+    "exact_thumbnail_frame_points": {
+      "x": 164.3,
+      "y": 192,
+      "width": 65,
+      "height": 84
+    },
+    "synthesized_touch_points": [
+      {
+        "coordinate.x": 196.83333333333331,
+        "coordinate.y": 234.0,
+        "offset": 0.0,
+        "eventType": 1
+      },
+      {
+        "coordinate.x": 196.83333333333331,
+        "coordinate.y": 234.0,
+        "offset": 0.05,
+        "eventType": 3
+      }
+    ],
+    "touch_source_member": "screenshots/5A0AA095-4F0C-4104-AC19-6E34F892582B",
+    "touch_source_sha256": "e224dbebb8d115d5a9a3d47ebb14838b31f3f39305a2489cdf8634334b690d84",
+    "source_exists_waits_seconds": [
+      3,
+      15
+    ],
+    "after_failure_UI_diagnostics_still_find_exact_synthetic_cell": true,
+    "remote_AX_invalid_UI_element_error_observed": false,
+    "read_or_extract_approvals_reached": false
+  },
+  "visual_evidence": {
+    "path": "docs/evidence/ios17-documents-read-8c4195f-open-picker.png",
+    "sha256": "cdf8baf46ef237e182964e366c4484c7b4fce17a93de4f1b62d95714827fa78e",
+    "video": {
+      "member": "screenshots/E68B6B31-43CC-4136-9DC7-9709096FA3CC.mp4",
+      "bytes": 12029941,
+      "sha256": "f4a37c17c43b9ad9baff278b4287b8ba5872d889c90924bd39c617004b7df2f5"
+    },
+    "frame_seconds": 55,
+    "observation": "Native Files remains open with the exact namespace PDF in the first row, Cancel visible and no Open confirmation or user-visible error. The expected App filename did not appear."
+  },
+  "evidence_limits": {
+    "artifact_has_system_logarchive": false,
+    "App_stdout_pair_window_provider_error_found": false,
+    "FileProvider_minus_1005_established": false,
+    "physical_file_removal_established": false,
+    "same_cause_as_copy_or_pair_established": false,
+    "root_cause": "unresolved_before_UIDocumentPicker_pick_delegate"
+  },
+  "comparators_same_run": {
+    "standard_SwiftUI_direct_open": "PASS 124.167s",
+    "standard_SwiftUI_coordinated_open": "PASS 123.744s",
+    "experimental_UIKit_coordinated_copy": "PASS 123.116s",
+    "public_user_chosen_copy": "PASS 136.734s",
+    "native_cancel": "PASS 63.573s",
+    "interpretation": "The failed DEBUG experimental UIKit open arm must not be reported as failure of all default open or copy workflows."
+  },
+  "source_proofs": [
+    {
+      "file": "report.json",
+      "bytes": 8639,
+      "sha256": "ff3818a5009181b7f064a8e633dadf9f0573633a705f70b3a7338aedfcb4fc97"
+    },
+    {
+      "file": "test-summary.json",
+      "bytes": 1605,
+      "sha256": "c8ba634898e51c6c8ecbd592ae81eeab6cb98ee4b0117247cbed61b6aedf8958"
+    },
+    {
+      "file": "tests.log",
+      "bytes": 248269,
+      "sha256": "01ec58f9da265267573f00968342a17df87214c2499c9f9a762c7006229957eb"
+    },
+    {
+      "file": "runner-diagnostics/0_Test_Woow-iOS17-b2b6fdb7f9bd404c9460c8a165c61fd4_Diagnostics/WoowAssistantUITests-3E50A9DE-AC51-4B98-A1DE-4AE8D91E0E0C-Configuration-Test Scheme Action-Iteration-1/WoowAssistantUITests-FEDF3238-5E10-44C2-9EA6-3D536B65052B/StandardOutputAndStandardError-io.woowtech.assistant.txt",
+      "bytes": 175554043,
+      "sha256": "949b6e8a35296d7843e0b00c7b9830fba1f7d9d8626d249aae2179f59173c609"
+    }
+  ],
+  "collection": {
+    "reused_Copernicus_local_artifact": true,
+    "full_zip_digest_verified": true,
+    "network_download_bytes": 0,
+    "source_edits": 0,
+    "dispatches_retries_cancellations": 0
+  },
+  "next_step": "Compare fresh 3a pair lifecycle/identity evidence independently. Do not retap, inject URLs, apply the exact17 post-callback AX candidate to this no-callback case, or claim an unsupported provider cause."
+}

@@ -1,0 +1,416 @@
+{
+  "schema_version": 1,
+  "status": "PASS_LOCAL_NATIVE_PENDING",
+  "integration_base": "7609dc60ee312dc1fcb369dc6e2302f89a53ba4b",
+  "source_sha256": {
+    "Sources/App/BrowserLibraryView.swift": "881018d9b795be4a05c97f4b923004d4a2878202a7becfd9880984c1e598bf09",
+    "Sources/App/BrowserLoginFixture.swift": "3578a046f5cacd2466b06b2efeb12d76982c96d394505778acfa9648b9153f19",
+    "Sources/App/BrowserSearchSettingsView.swift": "3d3a8c5f982e42152882cbf1fa411880e35d441b3b6bfe8c372c54e6dc835357",
+    "Sources/App/BrowserSession.swift": "6528d1e048d5d8336afba70a2f76376f712cc7faf3525a0db8047968b606eb3d",
+    "Sources/App/BrowserUploadFixture.swift": "a1a3b3586f5cedb8457b3c71aab445411052554ae30fb976c47d059bfbe1e59a",
+    "Sources/App/BrowserView.swift": "675ba7ddce4a20a74067592f2d67e56000b020bb3252e22adf24f5d86de8e4fb",
+    "Sources/App/BrowserWorkspace.swift": "bb2e39806311c5c175896b6695e4c16c1009956c04239bf2c0d66c84a324627f",
+    "Sources/App/ChatSession.swift": "3c2ce7d21f9f967e905acdc8f14e4a9726bc4777112e7e40db5260fd906bc2db",
+    "Sources/App/ConversationArchiveStore.swift": "8a840b7616a5a1ea100d8686e630fe73fdd9db1bf3c504834a32acbd756bb633",
+    "Sources/App/LearningKeychainStore.swift": "9a6275783caa50300a19802f2e06aa3ecb35f1f1f5ea7c4c50a84e75300460a7",
+    "Sources/App/LearningRunContext.swift": "3f481ed8a03fb60bf5a25d3a0f963f6589d1b928ea0520b087680fcf5345a636",
+    "Sources/App/LearningStore.swift": "0a72d0516f0086daa4da0a1c28149a199253551709bba74d0a2d88157d67de97",
+    "Sources/App/LiveModelUITestSupport.swift": "4f16545b116cfc5e74a5a637def440646f1ee43f38e2bf85cdb70783fe3449cb",
+    "Sources/App/MCPSession.swift": "a21a55b070f8efb7a32a32a2ca9555c37977ab5f64d9e6dc184ef8e8abd0c8cd",
+    "Sources/App/MCPSettings.swift": "324512189ac78b564ac2822928ce208ff7352387beb0595c313bee4ffe855e8b",
+    "Sources/App/ModelSettings.swift": "afbeeb5d6d1f5deb860fde17f11dc3be073ba9df319bd0c69d74dc16515cff2c",
+    "Sources/App/MultiSourceResearchSession.swift": "64e8b3188cca65a50eeeb7b4baac4b552acab0111bd7e974d7627432ffecaa89",
+    "Sources/App/SkillExecutionUITestSupport.swift": "aba8cf1a387abc7f631b13e8bb3db0bd9c84c91a11122640cd183753b7563aa8",
+    "Sources/App/UITestMCPFixture.swift": "1a12765725ffd7a79878ac09eceadde8310e81a9bcb63d690f59013c1671c591",
+    "Sources/App/UITestModelFixture.swift": "7321c5cea0b57bb0c8b4bf0f40eac1b90e66cd353d65346e77a21b3c6f261d3f",
+    "Sources/AssistantBrowser/BrowserContracts.swift": "048bf72fe5ed049589d30322a448fb5c93f337f651c23c9a4e73650a7aaf8839",
+    "Sources/AssistantBrowser/BrowserDOMExecutor.swift": "7c71633644dc4feffb497ee498b465da0664118b48ce67e70b8ba04eb0e7183c",
+    "Sources/AssistantBrowser/BrowserDownloadManager.swift": "94b8d9ca1159cf881728cfb8121ebe44f5f3dcf1b77b7e1161d3f10ae74f48d1",
+    "Sources/AssistantBrowser/BrowserDownloadStore.swift": "aac2bdd4d2db5b31c9ed02df740f97ad40a8e11ef0d796bd1894a0af76da926a",
+    "Sources/AssistantBrowser/BrowserDownloadTypes.swift": "e3e28570ec7875f944f07bc2198c0f48a02e22046dad6ed536052abc452c3b7e",
+    "Sources/AssistantBrowser/BrowserInteraction.swift": "de08979f7795717bdcaea63f6496e7d4f265ba446fd0cebe939c0571a945e8e6",
+    "Sources/AssistantBrowser/BrowserInteractionPlanner.swift": "7884160f46caee31afa9ee79f44ae51afa89c22f18e6cefd7ae4255142095f7e",
+    "Sources/AssistantBrowser/BrowserLibrary.swift": "387200cdec0158267937ed1a29b5f2becd1dee2afce4146599e3500853ad065f",
+    "Sources/AssistantBrowser/BrowserNavigationIntent.swift": "13f93881ba8aeab0b772ddce30300918ad56a182432a97d684defb0cc85583c5",
+    "Sources/AssistantBrowser/BrowserPolicy.swift": "a09b109a19083ebcf644de972e42df3046da28a1d794efd7e8b9467807e5fafc",
+    "Sources/AssistantBrowser/BrowserSearchSettings.swift": "bf58023963704c447b3ac2f6f5b66f7b6004db600b08d1217efa6f65db4e9b78",
+    "Sources/AssistantBrowser/BrowserSiteModeReloadState.swift": "9c9e22c3c5b504757c33f35d5e8c563013b2b5e3f2cf25f2ab8a7bc00aa42334",
+    "Sources/AssistantBrowser/BrowserUserSiteModes.swift": "04c897c96ca03650f9ca1ed4687bda9d1c578e7cb9a2c072402cade9cb6def6c",
+    "Sources/AssistantBrowser/MultiSourceResearchRunner.swift": "48737e0d81bf891e0e8acabe1b5992c7ffe8ae6fbf0a28834fd4b03ad4c30d2e",
+    "Sources/AssistantBrowser/MultiSourceResearchTypes.swift": "af1ac51d3b6d243217678b033f1b82be8c22fb3ed890370fe6e8b4f0ed9f82d2",
+    "Sources/AssistantBrowser/ResearchSourceDiscoveryTypes.swift": "5fa96ef5e733204a0935f6b15d8895ae794b6c63f32e9a57473155b6f050ff52",
+    "Sources/AssistantBrowser/ResearchSourceDiscoveryWebKit.swift": "fc35dcedbe3ab776abbd70e8fd2326f9d72e540e97164ba0e587627df047bedc",
+    "Sources/AssistantBrowser/WebResearchRunner.swift": "005480efebed05a5c7a5e7af705e0f16d579c1ecfde83f0110ac76f05ceef342",
+    "Sources/AssistantBrowser/WebRoute.swift": "f96f4c159bb5aad61270283e0d7ebc87ba0784a34efb766eb0e84c67c4760aea",
+    "Sources/AssistantBrowser/WebRouteState.swift": "02448dd236d11611c5cfc1dabf5a1732319627d584692f2f1a048ffa05696a7e",
+    "Sources/AssistantBrowser/WebsiteKnowledgeSafety.swift": "eef4c8ad1deddd60d1062d8928aebaab5e5b5afa4cd3c87e7270d5686641ee64",
+    "Sources/AssistantBrowser/WebsiteKnowledgeState.swift": "50114ebafbd5b05f7bcf043cb8aef333079ff6087f00ade800512b85dbb7b9ac",
+    "Sources/AssistantBrowser/WebsiteKnowledgeTypes.swift": "a6a4bf2918cc01fd1cfb9018177b8841dc25512ef3126f22614eec9ba749174e",
+    "Sources/AssistantMCP/MCPClient.swift": "aecf3f5e700162558cff4c11fe24cc3aea14f716d2816ed57bf1797f34317762",
+    "Sources/AssistantMCP/MCPConversationRunner.swift": "81561ad4d39a37fb56578fdf9d0a7add13e50cbe80095f5d57f2d7dc0e2c9256",
+    "Sources/AssistantMCP/MCPConversationTypes.swift": "3204dae836ab83a55e9ce92d1a944b11d008cdc96025d36597f4041e5eb2a3a8",
+    "Sources/AssistantMCP/MCPHTTPTransport.swift": "80810c09ca7fd94a923876a28588d618bd96f6bde152128c8b556c01173eb759",
+    "Sources/AssistantMCP/MCPLocalTools.swift": "13a1b244cbfc5429dab6de22d47ee79dc98c44a88ecd1d8985c765e6aa426c55",
+    "Sources/AssistantMCP/MCPResponseParser.swift": "56d4cc3b35cd55ac762a71540c28d1f37aaaeadd584c3561e6638eeb106d7747",
+    "Sources/AssistantMCP/MCPTypes.swift": "dcce43b8528990968b0255f6f9f1d7a2145eadfd76bc7cb15a5f6634784dbff3",
+    "Sources/AssistantMemory/MemoryContext.swift": "37850875953b46eae9c0862dafdab1c8c81bd58f551c2799cf9644eb14129ca2",
+    "Sources/AssistantMemory/MemoryExtractor.swift": "d6f15fea1e8f75ffb3ab6f3f777ab2792cf16bd1baa9b886c0ccc318aadee404",
+    "Sources/AssistantMemory/MemorySafety.swift": "8a0fdbef488712c96d840aa1b0c55e62b5e07f6035cec6532ebf754f66b09074",
+    "Sources/AssistantMemory/MemoryState.swift": "81025ded6281eedad00ab0d53db5a05d9a630a3f04f0d4d93b04d997c6805b65",
+    "Sources/AssistantMemory/MemoryTools.swift": "2f12e8276d19140883f9d462776bcffc68acf164ab553c7cc51f0d4018b4f86b",
+    "Sources/AssistantMemory/MemoryTypes.swift": "d155ccd1b9274c84f5540f9a0c92b7e3a09d502184707ace6bb194caca3d9fad",
+    "Sources/AssistantMemory/UserProfileChatFlow.swift": "17b2651600ebfea58738ca2e9db0986229e81893512470d7c620cf849d2ed7f4",
+    "Sources/AssistantMemory/UserProfileState.swift": "ae70a9a17e20aed0e29f4196e63102169c2d3b7048b3c8566bfb20f7289bbbdf",
+    "Sources/AssistantMemory/UserProfileTool.swift": "b6107acf0dfd1ec0e39fa5031d265ce7153bd4ead2dbb37fad86214e8e3a157c",
+    "Sources/AssistantModels/ChatContextWindow.swift": "41e04121afe13d5510215a50c4c879907c8c28e03b38650ad3bdfd7fbc9b4d3b",
+    "Sources/AssistantModels/ChatSSEParser.swift": "daaf8668b25edac1d67cb6fb1e804f3d359bbcd9580368bb30618d56022aad5d",
+    "Sources/AssistantModels/HTTPChatModelClient.swift": "510ae58e926b974737910f8aad9bdceedeccc708f0cb0be33fccc5c500caa925",
+    "Sources/AssistantModels/ModelConfiguration.swift": "1c678f6faafa99fbdd30097d5c93b14d5808ea1b8a4448726d9bff02f665c481",
+    "Sources/AssistantModels/RawCommandEnvelope.swift": "afccf73ee49f91da1ff74a61c54076d5807ccd470b1bfde2f973c0cd2ca3a200",
+    "Sources/AssistantModels/RunReferenceContext.swift": "ca1e0b88a5b08e3ac074d167d4d4b5ef5eba414ccb7df0fb189d186edd904fb8",
+    "Sources/AssistantPersistence/ConversationArchive.swift": "b4abad707307364be3490df1730aef947817f1afdc931deff869d98921db65c1",
+    "Sources/AssistantPersistence/EncryptedLearningFile.swift": "a7ba735e6f17c4e67c8313e25292309388df38d36e0d5c7b826a509fd232b4da",
+    "Sources/AssistantSkills/BundledSkillCatalog.swift": "7f2314d60f904b457f83f20947ce800c61224d42968725de4f89d382992de43e",
+    "Sources/AssistantSkills/DocumentQueryRuntime.swift": "e8d8768a3f74997f5af456356494254c1179e1c9749782a2220f308ec0637457",
+    "Sources/AssistantSkills/DocumentTextTools.swift": "4fc688fcc85464387dd53fda21b396bea230010cbdc78abea253340cfadaecfc",
+    "Sources/AssistantSkills/SelfConfigurationRuntime.swift": "813abaa88284192c2e4372d5e84d31f6082fd0c4919d781c1e519ddfb04e245d",
+    "Sources/AssistantSkills/SelfConfigurationStore.swift": "10107071276deafab8d5e57ef537e1b4fea22de376a131804245777257c0deb1",
+    "Sources/AssistantSkills/SkillAuthoringBridge.swift": "afb2b96a33b7827858c3a95a1628bfa315d2730cc94b8a97e8df18e5f0789110",
+    "Sources/AssistantSkills/SkillDocument.swift": "f8f816f022a6570bd7e5f9c367e9c2ef10323af0de00686668a24779b0204039",
+    "Sources/AssistantSkills/SkillExecutionDependencies.swift": "655ee489aedf4c06d97035443329671aaac8884d9f9ea9a0fbabeae6a8a40d3e",
+    "Sources/AssistantSkills/SkillExecutionPDF.swift": "503699512b828faabfafb456e4c28033227f6b7df4b6f6678055c1f8e77a8bbf",
+    "Sources/AssistantSkills/SkillExecutionRuntime.swift": "ed414d76a87749f934dcf5ee51b61a1722c2ac967d020f5af4efb79c58b3d650",
+    "Sources/AssistantSkills/SkillExecutionTypes.swift": "748fe7c152690ebaf7803785161fc72c8a0d4486c32593eea9f769dbf175193d",
+    "Sources/AssistantSkills/SkillExecutionWorker.swift": "daf86d6884c4d3aaf67db774dd133b6201d05da77e65237f7b1970f4d0d89684",
+    "Sources/AssistantSkills/SkillLearning.swift": "83a44eb4ab4495905efc75d2ca040ed050a0da5cee4d196fecc5c57e9649902b",
+    "Sources/AssistantSkills/SkillLearningSafety.swift": "96fe72ad19a1bc3806d86fff3063bf0ba5d65f53dda00b8812b5ae368168dce0",
+    "Sources/AssistantSkills/SkillLearningService.swift": "d0a17f0e1af20870c46f530681c85c69e238c46562a9343b0f4549e21de87a18",
+    "Sources/AssistantSkills/SkillPDFAssemblyNative.swift": "91f69b7137f7e8cf684aeec849c8170eb98cf915c4ebfee92db71e0da2e6f6da",
+    "Sources/AssistantSkills/SkillPDFAssemblyRuntime.swift": "9652e1062c2419dd0ced80fb9af14754b95100179d445c0db6f555addea20e43",
+    "Sources/AssistantSkills/SkillPDFAssemblyTypes.swift": "aeb8e474cfd9d3ef67f55a0d76fa20083dbb5da1f315c8f86f82000d4f75f428",
+    "Sources/AssistantSkills/SkillRetrieval.swift": "47f3499031ba9cda5c96fce503fec797432e12b651e412c816b433323b5824ca",
+    "Sources/AssistantSkills/SkillSensitiveContent.swift": "6d1627820b2dddf7504f008ecd2db8b32227f204b857f737dc639f8b651b11f0",
+    "Sources/AssistantSkills/SkillTaskEvidence.swift": "4ff23d2fb36fa9ef6897837de6a1756d8b3d4ad5e35bb6edd51f362d39f316df",
+    "Sources/AssistantSkills/SkillToolCommand.swift": "5bff3061b948d2766df99dbaedb3bd2596185f7f26304487bda755780c60a164",
+    "Sources/AssistantSkills/SkillToolSession.swift": "f2c1e77316c9847daa12e7efa87cb3c3b46a382788b43422c4ca4b209df32226",
+    "Sources/AssistantSkills/SkillToolTypes.swift": "9c3496eea3a24e58e7c24ebe4dad7c65473b9122a5751078b0cf7eefe8c7aef0",
+    "Sources/AssistantSkills/SkillTypes.swift": "e050e01d760d68bc4d43030218a417b00a5d744280dfcaf67aec58193e3a113c",
+    "Sources/AssistantSkills/SkillsState.swift": "fea8f8a0ecc3a9ecbbab69df480711ddd21b93f599ecdbf9f9c5c2565673717e",
+    "Sources/AssistantSkills/TranscriptCommand.swift": "0f98ef1c25d766fd82e25f6fe4f2fe4a5a41acfe1d94bef7578d414f9c37a75c",
+    "Sources/AssistantSkills/TranscriptFileAccess.swift": "4c5fa61ac0bb91b17e0f9a2bad92c4a85e262dfeab2a2c1649125c7a2086c168",
+    "Sources/AssistantSkills/TranscriptRuntime.swift": "ef5e8353ea49082f061f40c8eb5267f7677c51b9039ffc826a4098c96ad4c521",
+    "Sources/AssistantSkills/TranscriptTypes.swift": "051814db9e18752ba445f8c515e61e24a92c938786ca99a7f49bd5c024d26428",
+    "Sources/AssistantSkills/TranscriptWebSource.swift": "635984c44e580d9f9c9c02477200fde44bdbd77217830fecabc4371f7ab37e01",
+    "Tests/AssistantBrowserIntegrationTests/BrowserSearchIntegrationTests.swift": "e0cf3305fa096727d7a949a9b0199e0c0e539cec047d83435d21c71c785477e3",
+    "Tests/AssistantDomainTests/BrowserSearchChecks.swift": "f17b1d448a812d92b6f3777cf78798b40b127c95e390f53968122b21ac667229",
+    "Tests/AssistantDomainTests/BrowserSearchTests.swift": "37ea5c60fe00f32b49d6b2dcdde59f132fa19ce8d18807081805ae3e0433c005",
+    "Tests/AssistantDomainTests/BrowserUserSiteModesChecks.swift": "3adc58ca5e391179bb01a25e4a29b3ef380562634e90350925d6645889e6ec1f",
+    "Tests/WoowAssistantUITests/BrowserSearchUITests.swift": "2ca291264871ace44492ba2c87b2e6da92ecdac22772208cdde5b3b9b3283cf8",
+    "scripts/CheckBrowserSearchApp.swift": "10a2f2ce2a934ba5526442804fc5a8a3cabd100e740811cfa3e2b4cc4e69db1c",
+    "scripts/CheckBrowserSiteModesApp.swift": "82482fca23a43bedaf66dc16c175eb45ed0969cb53f8ae5c1f1cb97190390018",
+    "scripts/check_browser_search_app.py": "4dd9e98f1275b5a6da538cd68d035c127675338b08ecb47d92132283e840988d",
+    "scripts/check_profile_chat_app.py": "bf7f2656ab08b4c526796f70a7ba00c4e46fd6477e03e3e08969ff26f06e2b6c",
+    "Tests/AssistantBrowserIntegrationTests/BrowserPageFindAppChecks.swift": "905b3b348bf906937a9b09f3b47f1153dd565eddaf0cb9ed77dae6279aebffc4",
+    "Tests/AssistantBrowserIntegrationTests/BrowserPageFindIntegrationTests.swift": "0746db23016f99e21cb62ebcc42708bcddb91f3a25ed7ec3dfbe6cbf2156eff2",
+    "Tests/AssistantBrowserIntegrationTests/BrowserSiteModesIntegrationTests.swift": "f37b12aee52c9a99c87e565ee57b644de2dd58cd2c40be07f55947fc9af02d88",
+    "Tests/AssistantDomainTests/BrowserUserSiteModesTests.swift": "058211a21e4fd720e7b335c4fc85baed8875c285a619fc32caf4931d90bd0553",
+    "Tests/WoowAssistantUITests/BrowserSiteModesUITests.swift": "072d9d3cae452ead44b599cccf646b94297a2326e84261c5e5cb45acd180b071",
+    "Tests/WoowAssistantUITests/BrowserWorkspaceUITests.swift": "7e05a20b7c34bcd6f322622ca6de02da943224f72bdd5d6a54e8887e6a0d6ca4",
+    "scripts/check_browser_page_find_app.py": "ba241d4c59d36e5ff3456159ffeb1dc34e5fffa30d947c8a713e25de330521ee"
+  },
+  "local_report_sha256": {
+    "woow-browser-search-check-ldk5lecp": "a99d6abcef2c2126700d45d1bb6cf772a4b4eac38765869bc9c202ae35750048",
+    "woow-page-find-check-s3d4yosa": "e380a4a5ab2715fa6f3cd5a1408e37b9df0f817cd09c6be85a39633e64506328"
+  },
+  "checks": {
+    "search_core": 127,
+    "search_actual_app_debug": 170,
+    "search_actual_app_release": 170,
+    "find_debug": 50,
+    "find_release": 50,
+    "find_http_navigation": 26,
+    "site_modes_debug": 118,
+    "site_modes_release": 118,
+    "site_modes_http": 12,
+    "python_tests": 277,
+    "actionlint": true,
+    "xcodegen": true,
+    "syntax_debug_release": true,
+    "native_typecheck": false,
+    "native_ui_execution": false
+  },
+  "test_and_registration_sha256": {
+    ".github/workflows/ios.yml": "ed95ac152969089ff3a9b287312d43c5c860485587d5ffa629b727ee146424de",
+    "Tests/AssistantBrowserIntegrationTests/BrowserSearchIntegrationTests.swift": "e0cf3305fa096727d7a949a9b0199e0c0e539cec047d83435d21c71c785477e3",
+    "Tests/AssistantDomainTests/BrowserSearchChecks.swift": "f17b1d448a812d92b6f3777cf78798b40b127c95e390f53968122b21ac667229",
+    "Tests/AssistantDomainTests/BrowserSearchTests.swift": "37ea5c60fe00f32b49d6b2dcdde59f132fa19ce8d18807081805ae3e0433c005",
+    "Tests/WoowAssistantUITests/BrowserLoginUITests.swift": "f068a4d3f88520b90ece24c813f541b20e8edc0a7800a4e9f7a5124f31b076ae",
+    "Tests/WoowAssistantUITests/BrowserSearchUITests.swift": "2ca291264871ace44492ba2c87b2e6da92ecdac22772208cdde5b3b9b3283cf8",
+    "Tests/WoowAssistantUITests/BrowserSiteModesUITests.swift": "072d9d3cae452ead44b599cccf646b94297a2326e84261c5e5cb45acd180b071",
+    "project.yml": "4295edfef4cd212629a8f5666d3ae81f010ca4d26b6200541559043ec6d16b33",
+    "scripts/CheckBrowserSearchApp.swift": "10a2f2ce2a934ba5526442804fc5a8a3cabd100e740811cfa3e2b4cc4e69db1c",
+    "scripts/check_browser_search_app.py": "4dd9e98f1275b5a6da538cd68d035c127675338b08ecb47d92132283e840988d",
+    "scripts/ios17_bootstrap_watchdog.py": "84493b19639c618c07720a1a4ddd9faad67fcef524b2bc7b105b0411c5369c5c",
+    "scripts/release_ios17.py": "705b34847c75a992063a26b5d92b320d6a9bc13681275c246455b91fc9e20817"
+  },
+  "ui_inventory": {
+    "schema_version": 1,
+    "shards": {
+      "ui-startup": {
+        "classes": [
+          "WoowAssistantUITests",
+          "SelfConfigurationUITests",
+          "ChatStreamingUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/ChatStreamingUITests/testCancelRetainsDraftAndPartialWithoutArchiveOrCompletionNotification",
+          "WoowAssistantUITests/ChatStreamingUITests/testPartialBecomesCompletedReplyAndDurableArchive",
+          "WoowAssistantUITests/SelfConfigurationUITests/testManualAppearanceChangesActualThemePersistsAndModelPermissionDefaultsOff",
+          "WoowAssistantUITests/WoowAssistantUITests/testBrowserReportsCurrentLimitationsAndToolsIsReachable",
+          "WoowAssistantUITests/WoowAssistantUITests/testCancellationPreservesDraftAndAllowsAnotherAttempt",
+          "WoowAssistantUITests/WoowAssistantUITests/testEverySectionIsReachableAndPhoneControlIsExcluded",
+          "WoowAssistantUITests/WoowAssistantUITests/testFailureRetainsDraftAndRetryProducesReply",
+          "WoowAssistantUITests/WoowAssistantUITests/testHTTPSValidationThenConfiguredChatWithoutAutomaticHistoryRestore",
+          "WoowAssistantUITests/WoowAssistantUITests/testKeychainWriteFailureDoesNotPublishConfiguration",
+          "WoowAssistantUITests/WoowAssistantUITests/testMCPEndpointValidationAndKeychainPersistenceWithoutNetworking",
+          "WoowAssistantUITests/WoowAssistantUITests/testMCPKeychainWriteFailureIsNotReportedAsSaved",
+          "WoowAssistantUITests/WoowAssistantUITests/testMCPRemovalClearsOnlyItsSavedEndpoint",
+          "WoowAssistantUITests/WoowAssistantUITests/testRemovingConfigurationKeepsDraftAndDisablesSending",
+          "WoowAssistantUITests/WoowAssistantUITests/testStoredKeyCanBeReusedButNotForDifferentHost",
+          "WoowAssistantUITests/WoowAssistantUITests/testUnconfiguredSendIsDisabledAndDraftSurvivesNavigation"
+        ]
+      },
+      "ui-notifications": {
+        "classes": [
+          "NotificationUITests",
+          "NotificationApprovalUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/NotificationApprovalUITests/testActualApprovalBannerPreservesProposalUntilExplicitNativeApproval",
+          "WoowAssistantUITests/NotificationUITests/testExplicitAuthorizationAndPreferenceSurviveRelaunchThenDisable"
+        ]
+      },
+      "ui-archive": {
+        "classes": [
+          "ConversationArchiveUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/ConversationArchiveUITests/testCancelledRunAndUnsentDraftAreNotClaimedAsSaved",
+          "WoowAssistantUITests/ConversationArchiveUITests/testChangedModelAllowsViewingButDisablesContinuation",
+          "WoowAssistantUITests/ConversationArchiveUITests/testDeletionRemainsAbsentAfterRelaunch",
+          "WoowAssistantUITests/ConversationArchiveUITests/testTwoCompletedConversationsSurviveRelaunchAndOpenExplicitly"
+        ]
+      },
+      "ui-workspace": {
+        "classes": [
+          "BrowserWorkspaceUITests",
+          "BrowserLoginUITests",
+          "BrowserSiteModesUITests",
+          "BrowserSearchUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/BrowserLoginUITests/testNativeFormLoginSharesCookieAcrossTabsAndRelaunchThenLogout",
+          "WoowAssistantUITests/BrowserLoginUITests/testWebsiteRecordClearRevokesCookieAndRemainsClearedAfterRelaunch",
+          "WoowAssistantUITests/BrowserSearchUITests/testCustomSearchQueryAndSettingsSurviveRelaunch",
+          "WoowAssistantUITests/BrowserSiteModesUITests/testManualGETChoiceReloadsAndSurvivesRelaunch",
+          "WoowAssistantUITests/BrowserWorkspaceUITests/testBookmarkRenameHistoryClearAndRelaunch",
+          "WoowAssistantUITests/BrowserWorkspaceUITests/testManualQueryPageAndRealJavaScriptDialog",
+          "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindClearsOnReloadAndTabSwitch",
+          "WoowAssistantUITests/BrowserWorkspaceUITests/testNativePageFindQueryNextPreviousAndClose",
+          "WoowAssistantUITests/BrowserWorkspaceUITests/testTabsKeepIndependentPageStateAndRestoreSelection"
+        ]
+      },
+      "ui-browser": {
+        "classes": [
+          "BrowserInteractionUITests",
+          "BrowserUploadUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/BrowserInteractionUITests/testApprovedTypeSelectAndClickExecuteRealForm",
+          "WoowAssistantUITests/BrowserInteractionUITests/testRefusalAndClosingReviewDoNotTypeOrSubmit",
+          "WoowAssistantUITests/BrowserInteractionUITests/testReloadInvalidatesPendingIdentityAndRequiresNewApproval",
+          "WoowAssistantUITests/BrowserUploadUITests/testNativeFileChooserCancellationDoesNotUpload",
+          "WoowAssistantUITests/BrowserUploadUITests/testNativeFilesSelectionSubmitsExactSyntheticBytesToHTTPServer"
+        ]
+      },
+      "ui-learning": {
+        "classes": [
+          "BrowserLearningUITests",
+          "MultiSourceResearchUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/BrowserLearningUITests/testRemovingModelSettingsCancelsResearchAndPreservesGoalWithoutLearning",
+          "WoowAssistantUITests/BrowserLearningUITests/testUnconfiguredBrowserRetainsGoalAndManualWebsiteKnowledgeSurvivesRelaunch",
+          "WoowAssistantUITests/BrowserLearningUITests/testWebsiteResearchCreatesPendingSkillAndManualApprovalSurvivesRelaunch",
+          "WoowAssistantUITests/MultiSourceResearchUITests/testConfirmedSourcesProduceActualQuotesAndDiscloseFixtureLimits",
+          "WoowAssistantUITests/MultiSourceResearchUITests/testDuplicateOriginsAreRejectedBeforeModelAccessOrWebKitReads"
+        ]
+      },
+      "ui-memory": {
+        "classes": [
+          "MemoryUITests",
+          "MemoryRaceUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/MemoryRaceUITests/testClearWhileReplyPendingDoesNotRepopulateAndNewChatHidesOldNotes",
+          "WoowAssistantUITests/MemoryUITests/testMemoryEditPinSearchAndDeletePersist",
+          "WoowAssistantUITests/MemoryUITests/testOversizedMemoryIsRejectedAndCorrectedTextPersists",
+          "WoowAssistantUITests/MemoryUITests/testProceduresRequireApprovalAndCanBeRejected",
+          "WoowAssistantUITests/MemoryUITests/testSegmentsAndPreferencePersistence",
+          "WoowAssistantUITests/MemoryUITests/testSkillImportFailureReviewAndEnablementPersist",
+          "WoowAssistantUITests/MemoryUITests/testSkillUpdateRejectionAndRollback",
+          "WoowAssistantUITests/MemoryUITests/testTwoStepClearCancellationAndModelSettingsIsolation"
+        ]
+      },
+      "ui-profile": {
+        "classes": [
+          "UserProfileUITests",
+          "UserProfileToolUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/UserProfileToolUITests/testApprovedChatAdditionPersistsInProfileAfterRelaunch",
+          "WoowAssistantUITests/UserProfileToolUITests/testDeclinedChatAdditionPreservesDraftAndNeverCreatesProfileEntry",
+          "WoowAssistantUITests/UserProfileToolUITests/testReviewedDeletionOfManualEntryPersistsWithHistoryAfterRelaunch",
+          "WoowAssistantUITests/UserProfileToolUITests/testReviewedReplacementOfManualEntryPersistsWithHistoryAfterRelaunch",
+          "WoowAssistantUITests/UserProfileUITests/testCreateReplaceDeleteAndHistorySurviveRelaunch",
+          "WoowAssistantUITests/UserProfileUITests/testDuplicateAndCancelledTextNeverPublish",
+          "WoowAssistantUITests/UserProfileUITests/testMasterSwitchAndTwiceConfirmedClearPersist",
+          "WoowAssistantUITests/UserProfileUITests/testMultipleSentencesNeverPublish",
+          "WoowAssistantUITests/UserProfileUITests/testSensitiveTextNeverPublishes"
+        ]
+      },
+      "ui-memory-tools": {
+        "classes": [
+          "MemoryToolUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/MemoryToolUITests/testApprovedSaveCanBeUndoneAndRemainsAbsentAfterRelaunch",
+          "WoowAssistantUITests/MemoryToolUITests/testDeclinedSavePreservesDraftAndCreatesNoData",
+          "WoowAssistantUITests/MemoryToolUITests/testReviewedDeleteCanBeUndoneAndRestoresManualMemoryAfterRelaunch",
+          "WoowAssistantUITests/MemoryToolUITests/testReviewedUpdateOfManualMemoryPersistsAfterRelaunch",
+          "WoowAssistantUITests/MemoryToolUITests/testSavedProcedureCanBeRejectedAndRelaunchesAbsent",
+          "WoowAssistantUITests/MemoryToolUITests/testSavedProcedureRequiresSeparateApprovalAndRelaunchesActive"
+        ]
+      },
+      "ui-skills": {
+        "classes": [
+          "SkillCatalogUITests",
+          "SkillAuthoringUITests",
+          "TranscriptUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/SkillAuthoringUITests/testCancelledReviewLeavesNoSkillOrPendingDraft",
+          "WoowAssistantUITests/SkillAuthoringUITests/testInvalidToolDraftCannotApproveOrPublishSuccess",
+          "WoowAssistantUITests/SkillAuthoringUITests/testPersonalReadAndReviewedUpdatePersistAfterRelaunch",
+          "WoowAssistantUITests/SkillAuthoringUITests/testReviewedCreatePersistsAfterRelaunch",
+          "WoowAssistantUITests/SkillCatalogUITests/testAllPinnedSkillsSearchFullOriginalAssetsAndLicense",
+          "WoowAssistantUITests/SkillCatalogUITests/testEmptySearchAndRejectedAdaptationStayDisabled",
+          "WoowAssistantUITests/SkillCatalogUITests/testTextAdaptationRequiresApprovalAndPersistsOnlyAsTrial",
+          "WoowAssistantUITests/TranscriptUITests/testApprovedNativeTextWithoutModelCannotSendAndKeepsChatDraft",
+          "WoowAssistantUITests/TranscriptUITests/testNativePickerCancellationDoesNotSelectOrRead",
+          "WoowAssistantUITests/TranscriptUITests/testNativeSelectedTextReadRefusalDoesNotReadOrSend"
+        ]
+      },
+      "ui-documents": {
+        "classes": [
+          "SkillExecutionUITests",
+          "SkillWorkerSettingsUITests",
+          "SkillPDFAssemblyMultiFileUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText",
+          "WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry",
+          "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder",
+          "WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText",
+          "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+          "WoowAssistantUITests/SkillExecutionUITests/testNativePickerCancellationDoesNotReadOrExtract",
+          "WoowAssistantUITests/SkillExecutionUITests/testRefusingFirstStepDoesNotReadOrExtract",
+          "WoowAssistantUITests/SkillExecutionUITests/testRefusingSecondStepKeepsExtractionUnauthorized",
+          "WoowAssistantUITests/SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+          "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+          "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+          "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+          "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText",
+          "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
+          "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile"
+        ]
+      },
+      "ui-mcp": {
+        "classes": [
+          "MCPConversationUITests",
+          "MCPLearningUITests"
+        ],
+        "tests": [
+          "WoowAssistantUITests/MCPConversationUITests/testBackgroundRevokesPendingApprovalAndRetainsDraft",
+          "WoowAssistantUITests/MCPConversationUITests/testModelSelectedToolRequiresExactApprovalAndReturnsResult",
+          "WoowAssistantUITests/MCPConversationUITests/testRefusalPreservesDraftAndMakesNoServerCall",
+          "WoowAssistantUITests/MCPConversationUITests/testSelectedResourceRequiresApprovalAndResultIsReviewable",
+          "WoowAssistantUITests/MCPConversationUITests/testToolErrorPreservesDraftAndActualErrorResult",
+          "WoowAssistantUITests/MCPLearningUITests/testDeclinedLocalMemoryPreservesDraftWithoutDataOrRemoteAttempt",
+          "WoowAssistantUITests/MCPLearningUITests/testProfileApprovalSurvivesRemoteDeclineAndRelaunch",
+          "WoowAssistantUITests/MCPLearningUITests/testRemoteThenMemoryApprovalFinishesAndUndoRemainsAbsentAfterRelaunch"
+        ]
+      }
+    },
+    "live_tests_excluded": [
+      "WoowAssistantUITests/LiveDocumentQueryUITests/testRealModelAnswersFromApprovedPDFAndExportCancellationPreservesResult",
+      "WoowAssistantUITests/LiveMCPConversationUITests/testRealModelChoosesTwoReadOnlyToolsAndUsesTheirResults",
+      "WoowAssistantUITests/LiveMCPConversationUITests/testRealModelToolRefusalKeepsDraft",
+      "WoowAssistantUITests/LiveMCPConversationUITests/testRealModelUsesRemoteToolThenReviewedLocalMemoryAndUndo",
+      "WoowAssistantUITests/LiveMCPUITests/testRealDiscoveryDisconnectAndReconnect",
+      "WoowAssistantUITests/LiveModelUITests/testLiveCancellationKeepsDraft",
+      "WoowAssistantUITests/LiveModelUITests/testRealAutomaticMemorySurvivesRelaunchAndMasterSwitchBlocksRecall",
+      "WoowAssistantUITests/LiveModelUITests/testRealHTTPTransportFailureKeepsDraft",
+      "WoowAssistantUITests/LiveModelUITests/testRealModelListsAndChangesAppearanceAndRelaunchPreservesIt",
+      "WoowAssistantUITests/LiveModelUITests/testRealModelProfileEditRequiresReviewAndPersistsAfterRelaunch",
+      "WoowAssistantUITests/LiveModelUITests/testRealModelProposesObservedDOMLinkAndApprovedClickNavigates",
+      "WoowAssistantUITests/LiveModelUITests/testRealModelReadsOriginalSkillAndReviewedSaveSurvivesRelaunch",
+      "WoowAssistantUITests/LiveModelUITests/testRealModelRecallsManualProfileAfterRelaunchAndMasterSwitchDisablesIt",
+      "WoowAssistantUITests/LiveModelUITests/testRealModelSavesOrdinaryMemoryAndUndoSurvivesRelaunch",
+      "WoowAssistantUITests/LiveModelUITests/testRealModelTranscribesApprovedPublicWebTextWithVerifiedQuotes",
+      "WoowAssistantUITests/LiveModelUITests/testRealMultiPageResearchLearnsPendingSkillAndApprovalSurvivesRelaunch",
+      "WoowAssistantUITests/LiveModelUITests/testRealReplyMultiTurnContextAndDraftTabPreservation",
+      "WoowAssistantUITests/LiveModelUITests/testRealWebKitMultiSourceResearchCitesBothApprovedRoots",
+      "WoowAssistantUITests/LiveModelUITests/testRealWebKitResearchUsesPublicWebsiteAndJudgesOutcome",
+      "WoowAssistantUITests/LiveSourceDiscoveryUITests/testPublicSearchAppliesTwoDistinctOriginsWithoutStartingResearch",
+      "WoowAssistantUITests/LiveSourceDiscoveryUITests/testPublicSearchCancellationOrCompletionPreservesQueryUntilSheetCloses",
+      "WoowAssistantUITests/LiveTranscriptUITests/testRealModelReadsEntireNativeTextAndReturnsVerifiedSourceQuotes"
+    ],
+    "non_live_test_count": 96,
+    "document_focused_scopes": {
+      "documents-read": [
+        "WoowAssistantUITests/SkillExecutionUITests/testCoordinatedFixtureCreationNativePDFNeedsBothApprovalsAndReturnsActualText",
+        "WoowAssistantUITests/SkillExecutionUITests/testNativeFilesPDFNeedsBothApprovalsAndReturnsActualText",
+        "WoowAssistantUITests/SkillExecutionUITests/testNativePickerCancellationDoesNotReadOrExtract",
+        "WoowAssistantUITests/SkillExecutionUITests/testUIKitImportCopyCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+        "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenInPlaceCoordinatedPDFNeedsBothApprovalsAndReturnsActualText",
+        "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyNeedsBothApprovalsAndReturnsActualText"
+      ],
+      "documents-output": [
+        "WoowAssistantUITests/SkillExecutionUITests/testNativeExportCancellationPreservesResultAndAllowsRetry",
+        "WoowAssistantUITests/SkillExecutionUITests/testNativeExportSavesTextToChosenLocalFolder",
+        "WoowAssistantUITests/SkillExecutionUITests/testNativePDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+        "WoowAssistantUITests/SkillExecutionUITests/testRefusingFirstStepDoesNotReadOrExtract",
+        "WoowAssistantUITests/SkillExecutionUITests/testRefusingSecondStepKeepsExtractionUnauthorized",
+        "WoowAssistantUITests/SkillExecutionUITests/testUIKitOpenPDFAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+        "WoowAssistantUITests/SkillExecutionUITests/testUserChosenPDFImportCopyAssemblyReviewsReversedPagesAndExportCancellationPreservesResult",
+        "WoowAssistantUITests/SkillPDFAssemblyMultiFileUITests/testUserChosenCopyAddsTwoDistinctPDFsAndInterleavesApprovedPages",
+        "WoowAssistantUITests/SkillWorkerSettingsUITests/testDedicatedWorkerSettingsPersistWithoutSelectingOrReadingAFile"
+      ]
+    },
+    "inventory_sha256": "4bd7daa55acfb3e0d62b04eb8d99b2c717fea7e601c741e7ed9b9050d56a7d24"
+  },
+  "preserved_failure_evidence": [
+    "manual-search-url-classification-regression.json",
+    "ui-workspace-bb5c9eb.json",
+    "site-clear-se-bb5c9eb-password-diagnosis.json",
+    "site-mode-ui-bb5c9eb-exact17-failure.json",
+    "ios17-documents-read-8c4195f-picker.json"
+  ],
+  "limits": [
+    "Search and WebKit source hashes match the final product snapshot; only the separate BrowserLoginUITests helper changed after those runs, with Debug/Release syntax checked independently.",
+    "127 pure assertions are included in each 170 App result; do not add overlapping counts.",
+    "Native UIKit UI and all three runtimes await independent execution.",
+    "Bing/Google service evidence is separate from intercepted local regressions."
+  ]
+}

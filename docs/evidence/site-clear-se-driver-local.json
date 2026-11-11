@@ -1,0 +1,55 @@
+{
+  "created_utc": "2026-11-11T00:02:18.191917+00:00",
+  "base": "7609dc60ee312dc1fcb369dc6e2302f89a53ba4b",
+  "worktree": "/tmp/woow-login-snapshot-driver-7609dc6",
+  "patch": "/tmp/woow-login-snapshot-driver-7609dc6-review/login-password-snapshot-driver.patch",
+  "patch_sha256": "4af1bf384608de560470af1233f1148df2105dc362dbf917862aa48bae69981a",
+  "file": "Tests/WoowAssistantUITests/BrowserLoginUITests.swift",
+  "old_sha256": "fb0a567e575632b77bdb3587bbe7eb4e21e2e04f7b5e9c96d253a786ddac6592",
+  "new_sha256": "f068a4d3f88520b90ece24c813f541b20e8edc0a7800a4e9f7a5124f31b076ae",
+  "file_count": 1,
+  "scope": "Only removes the post-scroll three-second predicate waiter around passwordIsReady(); all other executable lines are byte-identical. Next existing bounded loop iteration performs synchronous readiness/geometry evaluation.",
+  "verification": {
+    "ios-syntax": {
+      "exit_code": 0,
+      "sha256": "05c4d1c802adb22a75914a8aaf919b2a180a240135b44e7cf970e07a5fcbfced"
+    },
+    "ui-inventory": {
+      "exit_code": 0,
+      "sha256": "45049689896629febfc9ecaf711a65d583b742813e144066bff9423efaaa1cf6"
+    },
+    "whitespace": {
+      "exit_code": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "clean_base_patch_apply_and_byte_match": true,
+  "verification_directory": "/var/folders/s6/bm_0d4sj0kq4kt_22bh_f_xw0000gn/T/woow-login-snapshot-patch-verify-bfcu4ys9",
+  "non_live_ui_inventory": 95,
+  "unchanged_requirements": {
+    "max_scroll_gestures": 3,
+    "max_loop_geometry_evaluations": 4,
+    "case_time_allowance_seconds": 420,
+    "initial_existence_waits_seconds": [
+      10,
+      10
+    ],
+    "secure_field_role_label_enabled_checks": true,
+    "full_field_containment_with_one_point_inset": true,
+    "actual_webview_app_keyboard_viewport_geometry": true,
+    "all_existing_hittability_checks": true,
+    "bounded_drag_limit_fraction": 0.6,
+    "native_drag_hold_seconds": 0.3,
+    "coordinate_touch_preconditions": true,
+    "query_login_cookie_clear_relaunch_assertions": true
+  },
+  "wait_budget": "No new wait, deadline, polling, sleep, or retry. Removes up to three explicit 3s waits; synchronous queries already existed at each bounded loop entry. Native XCTest query timeouts and the 420s case cap are unchanged.",
+  "new_skips": 0,
+  "native_ui": "PENDING: local CLT syntax parse is not native execution/typecheck",
+  "product_or_fixture_changes": false,
+  "app_checks_rerun": false,
+  "shared_tree_edits": false,
+  "commit_push_dispatch": false,
+  "original_fail_proof": "/tmp/woow-bb5c9eb-safeproof.tar.gz",
+  "original_fail_proof_sha256": "5fe5211af1b09c03ad8c0995af205ba7253bb16ddcbccb4a42d9eb95acc73a83"
+}
